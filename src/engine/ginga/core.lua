@@ -1,5 +1,5 @@
 local game = require('game')
-local math = require('game_math')
+local math = require('lib_math')
 local canvas = canvas
 local event = event
 local game_obj = {}
