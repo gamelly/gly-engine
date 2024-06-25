@@ -3,4 +3,5 @@ A cross-platform embeddable LUA game engine such as ginga, love2d, roblox and it
 
 ```bash
 $ lua src/cli.lua && ginga dist/main.ncl
+$ lua src/cli.lua --love && love dist
 ```

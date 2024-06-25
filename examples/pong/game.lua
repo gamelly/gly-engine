@@ -51,9 +51,11 @@ local function exit(std, game)
 end
 
 local P = {
-    title='Pong',
-    description='simple pong',
-    version='1.0.0',
+    meta={
+        title='Pong',
+        description='simple pong',
+        version='1.0.0'
+    },
     callbacks={
         init=init,
         loop=loop,

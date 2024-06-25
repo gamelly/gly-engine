@@ -1,5 +1,5 @@
 local game = require('game')
-local math = require('game_math')
+local math = require('lib_math')
 local game_obj = {}
 local std = {draw={},key={press={}},game={}}
 local started = false
@@ -63,5 +63,6 @@ function love.load()
     std.game.reset=std_game_reset
     std.game.witdh=w
     std.game.height=h
+    love.window.setTitle(game.meta.title..' - '..game.meta.version)
     game.callbacks.init(std, game_obj)
 end
