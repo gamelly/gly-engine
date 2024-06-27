@@ -2,14 +2,40 @@ local game = require('game')
 local math = require('lib_math')
 local canvas = canvas
 local event = event
-local game_obj = {}
+local game_obj = {meta={}, config={}, callbacks={}}
 local std = {draw={},key={press={}},game={}}
 local fixture190 = ''
+
+-- FPS
+local fps = require('lib_fps')
+local fps_obj = {total=0,count=0,period=0,passed=0,delta=0,falls=0,drop=0}
+local fps_limiter = {[100]=1, [60]=10, [30]=30, [20]=40, [15]=60, [10]=90}
+local fps_dropper = {[100]=60, [60]=30, [30]=20, [20]=15, [15]=10, [10]=10}
+
+-- Ginga?
 _ENV = nil
+
+local function std_draw_fps(x, y)
+    canvas:attrColor('yellow')
+    if game_obj.fps_show >= 1 then
+        canvas:drawRect('fill', x, y, 40, 24)
+    end
+    if game_obj.fps_show >= 2 then
+        canvas:drawRect('fill', x + 48, y, 40, 24)
+    end
+    canvas:attrColor('black')
+    canvas:attrFont('Tiresias', 16)
+    if game_obj.fps_show >= 1 then
+        canvas:drawText(x + 2, y, fps_obj.total)
+    end
+    if game_obj.fps_show >= 1 then
+        canvas:drawText(x + 50, y, game_obj.fps_max)
+    end
+end
 
 local function std_draw_clear(color)
     canvas:attrColor(color)
-    canvas:drawRect('fill', 0, 0, game_obj.witdh, game_obj.height)
+    canvas:drawRect('fill', 0, 0, game_obj.width, game_obj.height)
 end
 
 local function std_draw_color(color)
@@ -79,13 +105,26 @@ local function event_loop(evt)
 end
 
 local function fixed_loop()
+    -- internal clock 
     game_obj.milis = event.uptime()
+    game_obj.fps = fps_obj.total
+    game_obj.dt = fps_obj.delta 
+    if not fps.counter(game_obj.fps_max, fps_obj, game_obj.milis) then
+        game_obj.fps_max = fps_dropper[game_obj.fps_max]
+    end
+
+    -- game loop
     game.callbacks.loop(std, game_obj)
+    
+    -- game render
     canvas:attrColor(0, 0, 0, 0)
     canvas:clear()
     game.callbacks.draw(std, game_obj)
+    std_draw_fps(8,8)
     canvas:flush()
-    event.timer(1, fixed_loop)
+
+    -- internal loop
+    event.timer(fps_limiter[game_obj.fps_max], fixed_loop)
 end
 
 local function setup(evt)
@@ -103,9 +142,14 @@ local function setup(evt)
     std.key.press.left=0
     std.key.press.right=0
     std.game.reset=std_game_reset
-    game_obj.witdh=w
+    game_obj.width=w
     game_obj.height=h
     game_obj.milis=0
+    game_obj.fps=0
+    game_obj.fps_max = game.config and game.config.fps_max or 100
+    game_obj.fps_show = game.config and game.config.fps_max or 0
+    fps_obj.drop_time = game.config and game.config.fps_time or 1
+    fps_obj.drop_count = game.config and game.config.fps_drop or 2
     game.callbacks.init(std, game_obj)
     event.register(event_loop)
     event.timer(1, fixed_loop)

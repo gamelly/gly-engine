@@ -65,6 +65,7 @@ function love.draw()
 end
 
 function love.update()
+    game_obj.dt = 16
     game_obj.milis = love.timer.getTime() * 1000
     game.callbacks.loop(std, game_obj)
 end
@@ -93,6 +94,7 @@ function love.load()
     std.game.reset=std_game_reset
     game_obj.width=w
     game_obj.height=h
+    game_obj.dt = 0
     love.window.setTitle(game.meta.title..' - '..game.meta.version)
     game.callbacks.init(std, game_obj)
 end
