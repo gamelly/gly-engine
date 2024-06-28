@@ -1,12 +1,10 @@
 local math = require('math')
 
-function dis(x1,y1,x2,y2) return math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2) end -- TODO: move to engine
-
 local function asteroid_nest(std, game, x, y, id)
     local index = 1
     while index < #game.asteroid_size do
         if index ~= id then
-            local distance = dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+            local distance = game.std.dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             if distance - 3 <= game.asteroid_size[index] then
                 return true
             end
@@ -47,7 +45,7 @@ local function asteroids_rain(std, game)
 
             while other < #game.asteroid_size do
                 if other ~= index then
-                    local distance = dis(game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_pos_x[other], game.asteroid_pos_y[other])
+                    local distance = game.std.dis(game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_pos_x[other], game.asteroid_pos_y[other])
                     if distance <= 11 then
                         success = false
                     end

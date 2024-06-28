@@ -8,6 +8,21 @@ local function clamp(value, min, max)
     end
 end
 
+local function dir(value, alpha)
+    alpha = alpha or 0
+    if value < -alpha then
+        return -1
+    elseif value > alpha then
+        return 1
+    else
+        return 0
+    end
+end
+
+local function dis(x1,y1,x2,y2)
+    return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5
+end
+
 local function abs(value)
     if value < 0 then
         return -value
