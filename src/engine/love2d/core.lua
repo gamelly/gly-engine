@@ -64,9 +64,10 @@ function love.draw()
     game.callbacks.draw(std, game_obj)
 end
 
-function love.update()
-    game_obj.dt = 16
+function love.update(dt)
+    game_obj.dt = dt * 1000
     game_obj.milis = love.timer.getTime() * 1000
+    game_obj.fps = love.timer.getFPS()
     game.callbacks.loop(std, game_obj)
 end
 
