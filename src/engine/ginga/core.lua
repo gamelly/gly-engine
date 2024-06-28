@@ -1,5 +1,6 @@
 local game = require('game')
 local math = require('lib_math')
+local decorators = require('decorators')
 local canvas = canvas
 local event = event
 local game_obj = {meta={}, config={}, callbacks={}}
@@ -58,16 +59,12 @@ local function std_draw_font(a,b)
     canvas:attrFont(a,b)
 end
 
-local function std_draw_poly(mode, verts, x, y, size, angle)
-    local index = 1
-    local radius = 10
-    size = size or 1
-    while index < #verts do
-        radius = radius + verts[index]
-        index = index + 1
-    end
-    radius = radius * size / #verts
-    canvas:drawEllipse('fill', x, y, radius, radius)
+local function std_draw_line(x1, y1, x2, y2)
+    canvas:drawLine(x1, y1, x2, y2)
+end
+
+local function std_draw_circle(mode, x, y, radius)
+    canvas:drawEllipse(mode, x, y, radius, radius)
 end
 
 local function std_game_reset()
@@ -136,7 +133,7 @@ local function setup(evt)
     std.draw.rect=std_draw_rect
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
-    std.draw.poly=std_draw_poly
+    std.draw.poly=decorators.poly(0, nil, std_draw_line, std_draw_circle)
     std.key.press.up=0
     std.key.press.down=0
     std.key.press.left=0

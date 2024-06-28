@@ -1,6 +1,7 @@
 local os = require('os')
 local game = require('game')
 local math = require('lib_math')
+local decorators = require('decorators')
 local game_obj = {}
 local std = {draw={},key={press={}},game={}}
 local started = false
@@ -13,7 +14,8 @@ end
 local function std_draw_color(color)
     local colors = {
         black = {0, 0, 0},
-        white = {1, 1, 1}
+        white = {1, 1, 1},
+        yellow = {1, 1, 0}
     }
     love.graphics.setColor(colors[color][1], colors[color][2], colors[color][3])
 end
@@ -28,27 +30,6 @@ end
 
 local function std_draw_font(a,b)
     -- TODO: not must be called in update 
-end
-
-local function std_draw_poly(mode, verts, x, y, scale, angle)
-    if x and y and angle == nil then
-        local index = 0
-        local verts2 = {}
-        scale = scale or 1
-
-        while index < #verts do
-            if index % 2 ~= 0 then
-                verts2[index] = x + (verts[index] * scale)
-            else
-                verts2[index] = y + (verts[index] * scale)
-            end
-            index = index + 1
-        end
-        love.graphics.polygon(mode, verts2)
-        return
-    end
-
-    love.graphics.polygon(mode, verts)
 end
 
 local function std_game_reset()
@@ -87,7 +68,7 @@ function love.load()
     std.draw.rect=std_draw_rect
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
-    std.draw.poly=std_draw_poly
+    std.draw.poly=decorators.poly(0, love.graphics.polygon)
     std.key.press.up=0
     std.key.press.down=0
     std.key.press.left=0
