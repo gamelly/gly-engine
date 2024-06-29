@@ -29,17 +29,17 @@ local function asteroids_rain(std, game)
         repeat
             local success = true
             game.asteroid_size[index] = 32
-            game.asteroid_pos_x[index] = love.math.random(1, game.width) -- TODO: use engine random
-            game.asteroid_pos_y[index] = love.math.random(1, game.height)
-            game.asteroid_spd_x[index] = hspeed[love.math.random(1, #hspeed)]
-            game.asteroid_spd_y[index] = vspeed[love.math.random(1, #vspeed)]
+            game.asteroid_pos_x[index] = std.math.random(1, game.width) -- TODO: use engine random
+            game.asteroid_pos_y[index] = std.math.random(1, game.height)
+            game.asteroid_spd_x[index] = hspeed[std.math.random(1, #hspeed)]
+            game.asteroid_spd_y[index] = vspeed[std.math.random(1, #vspeed)]
 
             if game.asteroid_pos_x[index] > middle_left and game.asteroid_pos_x[index] < middle_right then
                 success = false
             end
 
             if asteroid_nest(std, game, game.asteroid_pos_x[index], game.asteroid_pos_x[index], index) then
-                success = false
+                -- success = false
             end
         until success
         index = index + 1
@@ -123,8 +123,8 @@ local function loop(std, game)
         game.player_spd_x = 0
         game.player_spd_y = 0
         repeat
-            game.player_pos_x = love.math.random(1, game.width) -- TODO: use engine random
-            game.player_pos_y = love.math.random(1, game.height)
+            game.player_pos_x = std.math.random(1, game.width) -- TODO: use engine random
+            game.player_pos_y = std.math.random(1, game.height)
         until not asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1)
     end
     -- player shoot

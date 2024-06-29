@@ -1,3 +1,4 @@
+local mathstd = require('math')
 local game = require('game')
 local math = require('lib_math')
 local decorators = require('decorators')
@@ -6,6 +7,24 @@ local event = event
 local game_obj = {meta={}, config={}, callbacks={}}
 local std = {draw={},key={press={}},game={}}
 local fixture190 = ''
+
+-- key mappings
+local key_bindings={
+    CURSOR_UP='up',
+    CURSOR_DOWN='down',
+    CURSOR_LEFT='left',
+    CURSOR_RIGHT='right',
+    RED='red',
+    GREEN='green',
+    YELLOW='yellow',
+    BLUE='blue',
+    F6='red',
+    z='red',
+    x='green',
+    c='yellow',
+    v='blue',
+    ENTER='enter'
+}
 
 -- FPS
 local fps = require('lib_fps')
@@ -78,6 +97,7 @@ end
 
 local function event_loop(evt)
     if evt.class ~= 'key' then return end
+    if not key_bindings[evt.key] then return end
 
     -- https://github.com/TeleMidia/ginga/issues/190
     if #fixture190 == 0 and evt.key ~= 'ENTER' then
@@ -85,19 +105,9 @@ local function event_loop(evt)
     end
 
     if fixture190 == evt.type then
-        if evt.key == 'CURSOR_UP' then
-            std.key.press.up = 1
-        end
-        if evt.key == 'CURSOR_DOWN' then
-            std.key.press.down = 1
-        end
+        std.key.press[key_bindings[evt.key]] = 1
     else
-        if evt.key == 'CURSOR_UP' then
-            std.key.press.up = 0
-        end
-        if evt.key == 'CURSOR_DOWN' then
-            std.key.press.down = 0
-        end
+        std.key.press[key_bindings[evt.key]] = 0
     end
 end
 
@@ -128,11 +138,13 @@ local function setup(evt)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
     local w, h = canvas:attrSize()
     std.math=math
+    std.math.random = mathstd.random
     std.draw.clear=std_draw_clear
     std.draw.color=std_draw_color
     std.draw.rect=std_draw_rect
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
+    std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, nil, std_draw_line, std_draw_circle)
     std.key.press.up=0
     std.key.press.down=0

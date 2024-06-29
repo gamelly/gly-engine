@@ -83,6 +83,7 @@ end
 function love.load()
     local w, h = love.graphics.getDimensions()
     std.math=math
+    std.math.random = love.math.random
     std.draw.clear=std_draw_clear
     std.draw.color=std_draw_color
     std.draw.rect=std_draw_rect
