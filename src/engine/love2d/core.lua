@@ -14,7 +14,7 @@ local key_bindings = {
     x='green',
     c='yellow',
     v='blue',
-    enter='enter'
+    ['return']='enter'
 }
 
 local function std_draw_clear(color)
