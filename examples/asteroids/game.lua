@@ -4,7 +4,7 @@ local function asteroid_nest(std, game, x, y, id)
     local index = 1
     while index < #game.asteroid_size do
         if index ~= id then
-            local distance = game.std.dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+            local distance = std.math.dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             if distance - 3 <= game.asteroid_size[index] then
                 return true
             end
@@ -45,7 +45,7 @@ local function asteroids_rain(std, game)
 
             while other < #game.asteroid_size do
                 if other ~= index then
-                    local distance = game.std.dis(game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_pos_x[other], game.asteroid_pos_y[other])
+                    local distance = std.math.dis(game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_pos_x[other], game.asteroid_pos_y[other])
                     if distance <= 11 then
                         success = false
                     end
@@ -61,7 +61,7 @@ local function init(std, game)
     -- game
     game.state = 1
     game.lifes = 3
-    game.level = 90
+    game.level = 1
     game.boost = 0.12
     game.speed_max = 5
     game.asteroids_max = 10
@@ -72,6 +72,16 @@ local function init(std, game)
     game.player_spd_y = 0
     game.player_angle = 0
     game.player_last_teleport = 0
+    -- cannon
+    game.laser_enabled = false
+    game.laser_pos_x_1 = 0
+    game.laser_pos_y_1 = 0
+    game.laser_pos_x_2 = 0
+    game.laser_pos_y_2 = 0
+    game.laser_last_fire = 0
+    game.laser_time_fire = 50
+    game.laser_time_recharge = 300
+    game.laser_distance_fire = 300
     -- asteroids
     game.asteroid_pos_x = {}
     game.asteroid_pos_y = {}
@@ -126,6 +136,20 @@ local function loop(std, game)
             game.player_pos_y = love.math.random(1, game.height)
         until not asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1)
     end
+    -- player shoot
+    if not game.laser_enabled and (std.key.press.red == 1 or std.key.press.red == 1) then
+        game.laser_enabled = true
+        game.laser_last_fire = game.milis
+        local sin = math.cos(game.player_angle - math.pi/2)
+        local cos = math.sin(game.player_angle - math.pi/2)
+        game.laser_pos_x_1 = game.player_pos_x + (12 * sin)
+        game.laser_pos_y_1 = game.player_pos_y + (12 * cos)
+        game.laser_pos_x_2 = game.player_pos_x + (game.laser_distance_fire * sin)
+        game.laser_pos_y_2 = game.player_pos_y + (game.laser_distance_fire * cos)
+    end
+    if game.laser_enabled and game.milis > game.laser_last_fire + game.laser_time_recharge then
+        game.laser_enabled = false
+    end
     -- asteroids move
     local index = 1
     while index < #game.asteroid_size do
@@ -159,6 +183,11 @@ local function draw(std, game)
     -- draw player
     std.draw.color('yellow')
     std.draw.poly('fill', game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
+    -- laser bean
+    if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
+        std.draw.color('green')
+        std.draw.line(game.laser_pos_x_1, game.laser_pos_y_1, game.laser_pos_x_2, game.laser_pos_y_2)
+    end
 end
 
 local function exit(std, game)

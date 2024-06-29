@@ -60,6 +60,7 @@ local P = {
     lerp=lerp,
     abs=abs,
     map=map,
+    dis=dis,
     saw=saw
 }
 

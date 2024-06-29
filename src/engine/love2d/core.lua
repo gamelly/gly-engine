@@ -5,6 +5,17 @@ local decorators = require('decorators')
 local game_obj = {}
 local std = {draw={},key={press={}},game={}}
 local started = false
+local key_bindings = {
+    up='up',
+    left='left',
+    right='right',
+    down='down',
+    z='red',
+    x='green',
+    c='yellow',
+    v='blue',
+    enter='enter'
+}
 
 local function std_draw_clear(color)
     love.graphics.setColor(0, 0, 0)
@@ -15,7 +26,8 @@ local function std_draw_color(color)
     local colors = {
         black = {0, 0, 0},
         white = {1, 1, 1},
-        yellow = {1, 1, 0}
+        yellow = {1, 1, 0},
+        green = {0, 1, 0}
     }
     love.graphics.setColor(colors[color][1], colors[color][2], colors[color][3])
 end
@@ -26,6 +38,10 @@ end
 
 local function std_draw_text(a,b,c)
     love.graphics.print(c, a, b)
+end
+
+local function std_draw_line(x1, y1, x2, y2)
+    love.graphics.line(x1, y1, x2, y2)
 end
 
 local function std_draw_font(a,b)
@@ -53,11 +69,15 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-    std.key.press[key] = 1
+    if key_bindings[key] then
+        std.key.press[key_bindings[key]] = 1
+    end
 end
 
 function love.keyreleased(key)
-    std.key.press[key] = 0
+    if key_bindings[key] then
+        std.key.press[key_bindings[key]] = 0
+    end
 end
 
 function love.load()
@@ -68,6 +88,7 @@ function love.load()
     std.draw.rect=std_draw_rect
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
+    std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, love.graphics.polygon)
     std.key.press.up=0
     std.key.press.down=0
