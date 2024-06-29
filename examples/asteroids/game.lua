@@ -1,21 +1,5 @@
 local math = require('math')
 
-function doido(x1, y1, x2, y2, h, k, raio)
-    -- Calcular coeficientes da equação da reta (y = mx + c)
-    local m = (y2 - y1) / (x2 - x1)
-    local c = y1 - m * x1
-    
-    -- Coeficientes da equação do circulo (x - h)^2 + (y - k)^2 = raio^2
-    local A = 1 + m^2
-    local B = 2 * (m * c - m * k - h)
-    local C = h^2 + k^2 + c^2 - 2 * c * k - raio^2
-    
-    -- Calcular o discriminante
-    local discriminante = B^2 - 4 * A * C
-
-    return discriminante >= 0
-end
-
 local function asteroid_nest(std, game, x, y, id)
     local index = 1
     while index < #game.asteroid_size do
@@ -177,10 +161,11 @@ local function loop(std, game)
                 local size = game.asteroid_size[index]/2
                 local x = game.asteroid_pos_x[index] + size 
                 local y = game.asteroid_pos_y[index] + size
-                local dis_real = std.math.dis(game.laser_pos_x2, game.laser_pos_y2, x,y)
+                local dis_p1 = std.math.dis(game.laser_pos_x1, game.laser_pos_y1, x,y)
+                local dis_p2 = std.math.dis(game.laser_pos_x2, game.laser_pos_y2, x,y)
                 local dis_fake = std.math.dis(game.laser_fake_x, game.laser_fake_y, x,y)
-                local intersect = doido(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2, x, y, size*2)
-                if intersect and dis_real < dis_fake and dis_real < game.laser_distance_fire then
+                local intersect = std.math.intersect_line_circle(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2, x, y, size*2)
+                if intersect and dis_p2 < dis_fake and dis_p1 < game.laser_distance_fire then
                     game.asteroid_size[index] = -1
                 end
             end

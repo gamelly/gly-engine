@@ -1,3 +1,13 @@
+local function intersect_line_circle(x1, y1, x2, y2, h, k, raio)
+    local m = (y2 - y1) / (x2 - x1)
+    local c = y1 - m * x1
+    local A = 1 + m^2
+    local B = 2 * (m * c - m * k - h)
+    local C = h^2 + k^2 + c^2 - 2 * c * k - raio^2
+    local discriminante = B^2 - 4 * A * C
+    return discriminante >= 0
+end
+
 local function clamp(value, min, max)
     if value < min then
         return min
@@ -55,6 +65,7 @@ local function cycle(passed, duration)
 end
 
 local P = {
+    intersect_line_circle=intersect_line_circle,
     cycle=cycle,
     clamp=clamp,
     lerp=lerp,
