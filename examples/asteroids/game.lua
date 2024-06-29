@@ -1,3 +1,31 @@
+--! @par Game FSM
+--! @startuml
+--! hide empty description
+--! state 1 as "menu"
+--! state 2 as "credits"
+--! state 3 as "game_spawn"
+--! state 4 as "game_play"
+--! state 5 as "game_player_dead"
+--! state 6 as "game_player_win"
+--! state 7 as "game_over"
+--! state 8 as "menu"
+--! 
+--! [*] -> 1
+--! 1 --> 2
+--! 1 --> 3
+--! 2 --> 1
+--! 3 --> 4
+--! 4 --> 5
+--! 4 --> 6
+--! 5 --> 3
+--! 5 --> 7
+--! 6 --> 3
+--! 7 --> [*]
+--! 
+--! 4 -> 8: pause
+--! 8 -> 4: resume
+--! @enduml
+
 local math = require('math')
 
 local function asteroid_nest(std, game, x, y, id)
@@ -39,7 +67,7 @@ local function asteroids_rain(std, game)
             end
 
             if asteroid_nest(std, game, game.asteroid_pos_x[index], game.asteroid_pos_x[index], index) then
-                -- success = false
+                success = false
             end
         until success
         index = index + 1
