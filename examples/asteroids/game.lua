@@ -20,14 +20,13 @@ local function asteroids_rain(std, game)
     local n2 = 1.0 * math.min(game.level/3, 1)
     local n3 = 2.0 * math.min(game.level/3, 1)
     local n4 = 2.5 * math.min(game.level/3, 1)
-    local hspeed = {n1, 0, 0, 0, 0, 0, n1}
+    local hspeed = {-n1, 0, 0, 0, 0, 0, n1}
     local vspeed = {-n4, -n3, -n2, n2, n3, n4}
     local middle_left = game.width/4
     local middle_right = game.width/4 * 3
 
     while index <= game.asteroids_max and index <= 10 do
         repeat
-            local other = 1
             local success = true
             game.asteroid_size[index] = 32
             game.asteroid_pos_x[index] = love.math.random(1, game.width) -- TODO: use engine random
@@ -41,16 +40,6 @@ local function asteroids_rain(std, game)
 
             if asteroid_nest(std, game, game.asteroid_pos_x[index], game.asteroid_pos_x[index], index) then
                 success = false
-            end
-
-            while other < #game.asteroid_size do
-                if other ~= index then
-                    local distance = std.math.dis(game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_pos_x[other], game.asteroid_pos_y[other])
-                    if distance <= 11 then
-                        success = false
-                    end
-                end
-                other = other + 1
             end
         until success
         index = index + 1
@@ -139,7 +128,7 @@ local function loop(std, game)
         until not asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1)
     end
     -- player shoot
-    if not game.laser_enabled and (std.key.press.red == 1 or std.key.press.red == 1) then
+    if not game.laser_enabled and (std.key.press.red == 1 or std.key.press.enter == 1) then
         game.laser_enabled = true
         game.laser_last_fire = game.milis
         local sin = math.cos(game.player_angle - math.pi/2)
@@ -210,8 +199,8 @@ local function draw(std, game)
     std.draw.color('yellow')
     std.draw.poly('fill', game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
     -- laser bean
+    std.draw.color('green')
     if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
-        std.draw.color('green')
         std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2)
     end
 end
