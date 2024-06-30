@@ -145,6 +145,7 @@ local function setup(evt)
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
+    std.draw.circle=std_draw_circle
     std.draw.poly=decorators.poly(0, nil, std_draw_line, std_draw_circle)
     std.key.press.up=0
     std.key.press.down=0

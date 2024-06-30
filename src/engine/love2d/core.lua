@@ -27,7 +27,8 @@ local function std_draw_color(color)
         black = {0, 0, 0},
         white = {1, 1, 1},
         yellow = {1, 1, 0},
-        green = {0, 1, 0}
+        green = {0, 1, 0},
+        red= {1, 0, 0}
     }
     love.graphics.setColor(colors[color][1], colors[color][2], colors[color][3])
 end
@@ -38,6 +39,10 @@ end
 
 local function std_draw_text(a,b,c)
     love.graphics.print(c, a, b)
+end
+
+local function std_draw_circle(mode, x, y, r)
+    love.graphics.circle(mode, x, y, r)
 end
 
 local function std_draw_line(x1, y1, x2, y2)
@@ -90,7 +95,8 @@ function love.load()
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
-    std.draw.poly=decorators.poly(0, love.graphics.polygon)
+    std.draw.circle=std_draw_circle
+    std.draw.poly=decorators.poly(0, love.graphics.polygon, std_draw_circle)
     std.key.press.up=0
     std.key.press.down=0
     std.key.press.left=0

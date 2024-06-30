@@ -64,6 +64,27 @@ local function cycle(passed, duration)
     return ((endtime == 0 and (passed % (duration * 2)) or endtime)) / duration
 end
 
+local function max(...)
+    local args = {...}
+    local index = 1
+    local value = nil
+    local max_value = nil
+    
+    if #args == 1 and type(args[1]) == "table" then
+        args = args[1]
+    end
+
+    while index <= #args do
+        value = args[index]
+        if max_value == nil or value > max_value then
+            max_value = value
+        end
+        index = index + 1
+    end
+
+    return max_value
+end
+
 local P = {
     intersect_line_circle=intersect_line_circle,
     cycle=cycle,
@@ -72,7 +93,8 @@ local P = {
     abs=abs,
     map=map,
     dis=dis,
-    saw=saw
+    saw=saw,
+    max=max
 }
 
 return P;

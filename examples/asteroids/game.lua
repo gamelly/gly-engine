@@ -28,12 +28,32 @@
 
 local math = require('math')
 
+local function asteroid_fragments(game, size, level)
+    -- level 1,2,3
+    if size == game.asteroid_small_size and level <=3 then return 0, -1 end
+    if size == game.asteroid_mid_size and level <= 3 then return 2, game.asteroid_small_size end				
+    if size == game.asteroid_large_size and level <= 3 then return 1, game.asteroid_mid_size end
+    -- level 4,5,6
+    if size == game.asteroid_small_size and level <= 6 then return 1, game.asteroid_mini_size end
+    if size == game.asteroid_mid_size and level <= 6 then return 2, game.asteroid_small_size end
+    if size == game.asteroid_large_size and level <= 6 then return 1, game.asteroid_mid_size end
+    -- level 7,8,9c
+    if size == game.asteroid_small_size and level <= 9 then return 1, game.asteroid_mini_size end
+    if size ==  game.asteroid_mid_size and level <= 9 then return 3, game.asteroid_small_size end
+    if size == game.asteroid_large_size and level <= 9 then return 1,  game.asteroid_mid_size end
+    -- level 10... all asteroids
+    if size == game.asteroid_small_size then return 1, game.asteroid_mini_size end
+    if size == game.asteroid_mid_size then return 3, game.asteroid_small_size end
+    if size == game.asteroid_large_size then return 2, game.asteroid_mid_size end
+    return 0, -1
+end
+
 local function asteroid_nest(std, game, x, y, id)
     local index = 1
     while index < #game.asteroid_size do
         if index ~= id then
             local distance = std.math.dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
-            if distance - 3 <= game.asteroid_size[index] then
+            if (distance - 3) <= (game.asteroid_size[index] / 2) then
                 return true
             end
         end
@@ -56,8 +76,8 @@ local function asteroids_rain(std, game)
     while index <= game.asteroids_max and index <= 10 do
         repeat
             local success = true
-            game.asteroid_size[index] = 32
-            game.asteroid_pos_x[index] = std.math.random(1, game.width) -- TODO: use engine random
+            game.asteroid_size[index] = game.asteroid_large_size
+            game.asteroid_pos_x[index] = std.math.random(1, game.width)
             game.asteroid_pos_y[index] = std.math.random(1, game.height)
             game.asteroid_spd_x[index] = hspeed[std.math.random(1, #hspeed)]
             game.asteroid_spd_y[index] = vspeed[std.math.random(1, #vspeed)]
@@ -74,11 +94,34 @@ local function asteroids_rain(std, game)
     end
 end
 
+local function asteroid_destroy(std, game, id)
+    local index = 1
+    local hspeed = {-1, 1}
+    local vspeed = {-2, -1, 1, 2}
+    local asteroids = #game.asteroid_size
+    local original_size = game.asteroid_size[id]
+    local fragments, size = asteroid_fragments(game, original_size, game.level)
+    
+    game.asteroid_size[id] = -1
+
+    while index <= fragments do
+        game.asteroid_size[asteroids + index] = size
+        game.asteroid_pos_x[asteroids + index] = game.asteroid_pos_x[id]
+        game.asteroid_pos_y[asteroids + index] = game.asteroid_pos_y[id]
+        game.asteroid_spd_x[asteroids + index] = hspeed[std.math.random(1, #hspeed)] * math.min(game.level/5, 1)
+        game.asteroid_spd_y[asteroids + index] = vspeed[std.math.random(1, #vspeed)] * math.min(game.level/5, 1)
+        index = index + 1
+    end
+
+    return original_size * fragments
+end
+
 local function init(std, game)
     -- game
     game.state = 1
     game.lifes = 3
     game.level = 1
+    game.score = 0
     game.boost = 0.12
     game.speed_max = 5
     game.asteroids_max = 10
@@ -95,8 +138,6 @@ local function init(std, game)
     game.laser_pos_y1 = 0
     game.laser_pos_x2 = 0
     game.laser_pos_y2 = 0
-    game.laser_fake_x = 0
-    game.laser_fake_y = 0
     game.laser_last_fire = 0
     game.laser_time_fire = 50
     game.laser_time_recharge = 300
@@ -107,13 +148,19 @@ local function init(std, game)
     game.asteroid_spd_x = {}
     game.asteroid_spd_y = {}
     game.asteroid_size = {}
-    asteroids_rain(std, game)
     -- polys
-    game.asteroid_large = {4,-5, 4,0, 0,-1, -5,5, 1,8, -2,11, 0,15, 5,17, 11,17, 14,14, 15,12, 17,9, 17,6, 13,-1, 4,-5}
-    game.asteroid_mid = {2,0, 0,7, 3,11, 3,16, 8,17, 12,15, 16,14, 12,4, 16,1, 6,0, 2,0}
-    game.asteroid_small = {1,0, 0,1, 1,3, 1,4, 0,6, 2,7, 4,7, 6,6, 7,5, 7,1, 4,1, 3,2, 1,0}
-    game.asteroid_mini = {2,0, 2,2, 0,2, 0,4, 1,6, 2,6, 2,5, 5,5, 6,3, 4,2, 4,0, 2,0}
+    game.asteroid_large = {27, 0, 27, 15, 15, 12, 0, 30, 18, 39, 9, 48, 15, 60, 30, 66, 48, 66, 57, 57, 60, 51, 66, 42, 66, 33, 54, 12, 27, 0}
+    game.asteroid_mid = {6, 0, 0, 21, 9, 33, 9, 48, 24, 51, 36, 45, 48, 42, 36, 12, 48, 3, 18, 0, 6, 0}
+    game.asteroid_small = {3, 0, 0, 3, 3, 9, 3, 12, 0, 18, 6, 21, 12, 21, 18, 18, 21, 15, 21, 3, 12, 3, 9, 6, 3, 0}
+    game.asteroid_mini = {6, 0, 6, 6, 0, 6, 0, 12, 3, 18, 6, 18, 6, 15, 15, 15, 18, 9, 12, 6, 12, 0, 6, 0}
     game.spaceship = {-2,3, 0,-2, 2,3}
+    -- sizes
+    game.asteroid_large_size = std.math.max(game.asteroid_large)
+    game.asteroid_mid_size = std.math.max(game.asteroid_mid)
+    game.asteroid_small_size = std.math.max(game.asteroid_small)
+    game.asteroid_mini_size = std.math.max(game.asteroid_mini)
+    -- start
+    asteroids_rain(std, game)
 end
 
 local function loop(std, game)
@@ -151,47 +198,46 @@ local function loop(std, game)
         game.player_spd_x = 0
         game.player_spd_y = 0
         repeat
-            game.player_pos_x = std.math.random(1, game.width) -- TODO: use engine random
+            game.player_pos_x = std.math.random(1, game.width)
             game.player_pos_y = std.math.random(1, game.height)
         until not asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1)
     end
     -- player shoot
     if not game.laser_enabled and (std.key.press.red == 1 or std.key.press.enter == 1) then
-        game.laser_enabled = true
-        game.laser_last_fire = game.milis
+        local index = 1
+        local asteroids = #game.asteroid_size
         local sin = math.cos(game.player_angle - math.pi/2)
         local cos = math.sin(game.player_angle - math.pi/2)
-        game.laser_pos_x1 = game.player_pos_x + (12 * sin)
-        game.laser_pos_y1 = game.player_pos_y + (12 * cos)
+        local laser_fake_x = game.player_pos_x - (game.laser_distance_fire * sin * 2)
+        local laser_fake_y = game.player_pos_y - (game.laser_distance_fire * cos * 2)
         game.laser_pos_x2 = game.player_pos_x + (game.laser_distance_fire * sin)
         game.laser_pos_y2 = game.player_pos_y + (game.laser_distance_fire * cos)
-        game.laser_fake_x = game.player_pos_x - (game.laser_distance_fire * sin * 2)
-        game.laser_fake_y = game.player_pos_y - (game.laser_distance_fire * cos * 2)
-    end
-    if game.laser_enabled and game.milis > game.laser_last_fire + game.laser_time_recharge then
-        game.laser_enabled = false
-    end
-    if game.laser_enabled then
-        local index = 1
-        while index < #game.asteroid_size do
+        game.laser_pos_x1 = game.player_pos_x + (12 * sin)
+        game.laser_pos_y1 = game.player_pos_y + (12 * cos)
+        game.laser_last_fire = game.milis
+        game.laser_enabled = true
+        while index <= asteroids do
             if game.asteroid_size[index] ~= -1 then
                 local size = game.asteroid_size[index]/2
-                local x = game.asteroid_pos_x[index] + size 
+                local x = game.asteroid_pos_x[index] + size
                 local y = game.asteroid_pos_y[index] + size
                 local dis_p1 = std.math.dis(game.laser_pos_x1, game.laser_pos_y1, x,y)
                 local dis_p2 = std.math.dis(game.laser_pos_x2, game.laser_pos_y2, x,y)
-                local dis_fake = std.math.dis(game.laser_fake_x, game.laser_fake_y, x,y)
+                local dis_fake = std.math.dis(laser_fake_x, laser_fake_y, x,y)
                 local intersect = std.math.intersect_line_circle(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2, x, y, size*2)
                 if intersect and dis_p2 < dis_fake and dis_p1 < game.laser_distance_fire then
-                    game.asteroid_size[index] = -1
+                    game.score = game.score + asteroid_destroy(std, game, index)
                 end
             end
             index = index + 1
         end
     end
+    if game.laser_enabled and game.milis > game.laser_last_fire + game.laser_time_recharge then
+        game.laser_enabled = false
+    end
     -- asteroids move
     local index = 1
-    while index < #game.asteroid_size do
+    while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
             game.asteroid_pos_x[index] = game.asteroid_pos_x[index] + game.asteroid_spd_x[index]
             game.asteroid_pos_y[index] = game.asteroid_pos_y[index] + game.asteroid_spd_y[index]
@@ -217,9 +263,18 @@ local function draw(std, game)
     -- draw asteroids
     std.draw.color('white')
     local index = 1
-    while index < #game.asteroid_size do
+    while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
-            std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index], 3)
+            std.draw.color('white')
+            if game.asteroid_size[index] == game.asteroid_large_size then
+                std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+            elseif game.asteroid_size[index] == game.asteroid_mid_size then
+                std.draw.poly('fill', game.asteroid_mid, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+            elseif game.asteroid_size[index] == game.asteroid_small_size then
+                std.draw.poly('fill', game.asteroid_small, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+            else
+                std.draw.poly('fill', game.asteroid_mini, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+            end
         end
         index = index + 1
     end
