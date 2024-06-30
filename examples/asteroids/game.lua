@@ -123,8 +123,10 @@ local function init(std, game)
     game.level = 1
     game.score = 0
     game.boost = 0.12
+    game.highscore = 0
     game.speed_max = 5
     game.asteroids_max = 10
+    game.asteroids_count = 0
     -- player
     game.player_pos_x = game.width/2
     game.player_pos_y = game.height/2
@@ -180,17 +182,17 @@ local function loop(std, game)
         game.player_spd_x = std.math.clamp(game.player_spd_x, -max_spd_x, max_spd_x) 
         game.player_spd_y = std.math.clamp(game.player_spd_y, -max_spd_y, max_spd_y)
     end
-    if game.player_pos_y < 1 then
+    if game.player_pos_y < 3 then
         game.player_pos_y = game.height
     end
-    if game.player_pos_x < 1 then
+    if game.player_pos_x < 3 then
         game.player_pos_x = game.width
     end
     if game.player_pos_y > game.height then
-        game.player_pos_y = 1
+        game.player_pos_y = 3
     end
     if game.player_pos_x > game.width then
-        game.player_pos_x = 1
+        game.player_pos_x = 3
     end
     -- player teleport
     if std.key.press.down == 1 and game.milis > game.player_last_teleport + 1000 then
@@ -237,8 +239,10 @@ local function loop(std, game)
     end
     -- asteroids move
     local index = 1
+    game.asteroids_count = 0
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
+            game.asteroids_count = game.asteroids_count + 1
             game.asteroid_pos_x[index] = game.asteroid_pos_x[index] + game.asteroid_spd_x[index]
             game.asteroid_pos_y[index] = game.asteroid_pos_y[index] + game.asteroid_spd_y[index]
             if game.asteroid_pos_y[index] < 1 then
@@ -265,7 +269,6 @@ local function draw(std, game)
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
-            std.draw.color('white')
             if game.asteroid_size[index] == game.asteroid_large_size then
                 std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             elseif game.asteroid_size[index] == game.asteroid_mid_size then
@@ -286,6 +289,21 @@ local function draw(std, game)
     if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
         std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2)
     end
+    -- draw gui
+    local w = game.width/16
+    std.draw.color('black')  
+    std.draw.rect('fill', 0, 0, game.width, 32)
+    std.draw.color('white')
+    s=std.draw.text(8, 8, 'lifes:')
+    std.draw.text(8+s, 8, game.lifes)
+    s=std.draw.text(w*2, 8, 'level:')
+    std.draw.text(w*2+s, 8, game.level)
+    s=std.draw.text(w*4, 8, 'asteroids:')
+    std.draw.text(w*4+s, 8, game.asteroids_count)
+    s=std.draw.text(w*9, 8, 'score:')
+    std.draw.text(w*9+s, 8, game.score)
+    s=std.draw.text(w*12, 8, 'highscore:')
+    std.draw.text(w*12+s, 8, game.highscore)
 end
 
 local function exit(std, game)

@@ -37,8 +37,9 @@ local function std_draw_rect(a,b,c,d,e,f)
     love.graphics.rectangle(a, b, c, d, e)
 end
 
-local function std_draw_text(a,b,c)
-    love.graphics.print(c, a, b)
+local function std_draw_text(x, y, text)
+    love.graphics.print(text, x, y)
+    return love.graphics.getFont():getWidth(text)
 end
 
 local function std_draw_circle(mode, x, y, r)

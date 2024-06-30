@@ -70,8 +70,9 @@ local function std_draw_rect(a,b,c,d,e,f)
     canvas:drawRect(a,b,c,d,e)
 end
 
-local function std_draw_text(a,b,c)
-    canvas:drawText(a,b,c)
+local function std_draw_text(x, y, text)
+    canvas:drawText(x, y, text)
+    return canvas:measureText(text)
 end
 
 local function std_draw_font(a,b)
