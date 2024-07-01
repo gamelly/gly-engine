@@ -284,6 +284,12 @@ local function loop(std, game)
     if game.laser_enabled and game.milis > game.laser_last_fire + game.laser_time_recharge then
         game.laser_enabled = false
     end
+    -- player death
+    if game.imortal ~= 1 and game.state == 4 and asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1) then
+        game.menu_time = game.milis
+        game.lifes = game.lifes - 1
+        game.state = 5
+    end
     -- asteroids move
     local index = 1
     game.asteroids_count = 0
@@ -306,6 +312,26 @@ local function loop(std, game)
             end
         end
         index = index + 1
+    end
+    -- next level
+    if game.state == 4 and game.asteroids_count == 0 then
+        game.menu_time = game.milis
+        game.state = 6
+    end
+    if game.state == 6 and game.milis > game.menu_time + 3000 then
+        std.game.reset()
+        game.level = game.level + 1
+        game.state = 4
+    end
+    -- restart 
+    if game.state == 5 and game.milis > game.menu_time + 3000 then
+        std.game.reset()
+        game.state = 4
+        if game.lifes == 0 then
+            game.score = 0
+            game.lifes = 3
+            game.level = 1
+        end
     end
 end
 
@@ -375,7 +401,9 @@ local function draw(std, game)
     end
     -- draw player
     std.draw.color('yellow')
-    std.draw.poly('fill', game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
+    if game.state ~= 5 then
+        std.draw.poly('fill', game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
+    end
     -- laser bean
     std.draw.color('green')
     if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
