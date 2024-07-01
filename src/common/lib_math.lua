@@ -59,6 +59,10 @@ local function map(x, in_min, in_max, out_min, out_max)
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 end
 
+local function clamp2(value, min, max)
+    return (value - min) % (max - min + 1) + min
+end
+
 local function cycle(passed, duration)
     local endtime = (passed) % duration
     return ((endtime == 0 and (passed % (duration * 2)) or endtime)) / duration
@@ -89,6 +93,7 @@ local P = {
     intersect_line_circle=intersect_line_circle,
     cycle=cycle,
     clamp=clamp,
+    clamp2=clamp2,
     lerp=lerp,
     abs=abs,
     map=map,

@@ -71,8 +71,10 @@ local function std_draw_rect(a,b,c,d,e,f)
 end
 
 local function std_draw_text(x, y, text)
-    canvas:drawText(x, y, text)
-    return canvas:measureText(text)
+    if x and y then
+        canvas:drawText(x, y, text)
+    end
+    return canvas:measureText(text or x)
 end
 
 local function std_draw_font(a,b)
@@ -152,6 +154,11 @@ local function setup(evt)
     std.key.press.down=0
     std.key.press.left=0
     std.key.press.right=0
+    std.key.press.red=0
+    std.key.press.green=0
+    std.key.press.yellow=0
+    std.key.press.blue=0
+    std.key.press.enter=0
     std.game.reset=std_game_reset
     game_obj.width=w
     game_obj.height=h

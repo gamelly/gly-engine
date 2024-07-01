@@ -118,15 +118,18 @@ end
 
 local function init(std, game)
     -- game
-    game.state = 1
-    game.lifes = 3
-    game.level = 1
-    game.score = 0
     game.boost = 0.12
-    game.highscore = 0
     game.speed_max = 5
-    game.asteroids_max = 5
     game.asteroids_count = 0
+    -- configs
+    game.state = game.state or 1
+    game.lifes = game.lifes or 3
+    game.level = game.level or 1
+    game.score = game.score or 0
+    game.imortal = game.imortal or 0
+    game.highscore = game.highscore or 0
+    game.asteroids_max = game.asteroids_max or 60
+    game.graphics_fastest = game.graphics_fastest or 0
     -- player
     game.player_pos_x = game.width/2
     game.player_pos_y = game.height/2
@@ -161,11 +164,53 @@ local function init(std, game)
     game.asteroid_mid_size = std.math.max(game.asteroid_mid)
     game.asteroid_small_size = std.math.max(game.asteroid_small)
     game.asteroid_mini_size = std.math.max(game.asteroid_mini)
+    -- menu
+    game.menu = 2
+    game.menu_time = 0
     -- start
     asteroids_rain(std, game)
 end
 
 local function loop(std, game)
+    if game.state == 1 then
+        local keyv = std.key.press.down - std.key.press.up
+        local keyh = std.key.press.right - std.key.press.left + std.key.press.enter + std.key.press.red 
+        if keyv ~= 0 and game.milis > game.menu_time + 250 then
+            game.menu = std.math.clamp(game.menu + keyv, game.player_pos_x == (game.width/2) and 2 or 1, 8)
+            game.menu_time = game.milis
+        end
+        if keyh ~= 0 and game.milis > game.menu_time + 100 then
+            game.menu_time = game.milis
+            if game.menu == 1 then
+                game.state = 4
+            elseif game.menu == 2 then
+                std.game.reset()
+                game.state = 4
+            elseif game.menu == 3 then
+                game.level = std.math.clamp2(game.level + keyh, 1, 99)
+            elseif game.menu == 4 then
+                game.imortal = std.math.clamp2(game.imortal + keyh, 0, 1)
+            elseif game.menu == 5 then
+                game.asteroids_max = std.math.clamp2(game.asteroids_max + keyh, 5, 60)
+            elseif game.menu == 6 then
+                game.graphics_fastest = std.math.clamp2(game.graphics_fastest + keyh, 0, 1)
+            elseif game.menu == 7 then
+                game.state = 2
+            end
+        end
+        return
+    elseif game.state == 2 then
+        local key = std.key.press.down + std.key.press.up + std.key.press.right + std.key.press.left + std.key.press.enter + std.key.press.red 
+        if key ~= 0 and game.milis > game.menu_time + 250 then
+            game.menu_time = game.milis
+            game.state = 1
+        end
+        return
+    end
+    -- enter in the menu
+    if std.key.press.green == 1then
+        game.state = 1
+    end
     -- player move
     game.player_angle = std.math.cycle(game.player_angle + (std.key.press.right - std.key.press.left) * 0.1, math.pi * 2) * math.pi * 2
     game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * game.dt)
@@ -262,14 +307,59 @@ local function loop(std, game)
     end
 end
 
+local function draw_logo(std, game, height)
+    std.draw.font('sans', 32)
+    std.draw.color('white')
+    local s1 = std.draw.text('AsteroidsTv')
+    local s2 = std.draw.text('Tv')
+    std.draw.text(game.width/2 - s1/2, height, 'Asteroids')
+    std.draw.color('red')
+    std.draw.text(game.width/2 + s1/2 - s2, height, 'Tv')
+    return s1
+end
+
 local function draw(std, game)
     std.draw.clear('black')
+    local s = 0
+    if game.state == 1 then
+        local s2 = 0
+        local h = game.height/16
+        local graphics = game.graphics_fastest == 1 and 'rapido' or 'bonito'
+        local s = draw_logo(std, game, h*2)
+        std.draw.font('sans', 16)
+        std.draw.color('white')
+        if game.player_pos_x ~= (game.width/2) then
+            std.draw.text(game.width/2 - s, h*6, 'Continuar')
+        end
+        std.draw.text(game.width/2 - s, h*7, 'Novo Jogo')
+        std.draw.text(game.width/2 - s, h*8, 'Dificuldade')
+        std.draw.text(game.width/2 - s, h*9, 'Imortalidade')
+        std.draw.text(game.width/2 - s, h*10, 'Limitador')
+        std.draw.text(game.width/2 - s, h*11, 'Graficos')
+        std.draw.text(game.width/2 - s, h*12, 'Creditos')
+        std.draw.text(game.width/2 - s, h*13, 'Sair')
+        std.draw.line(game.width/2 - s, (h*(5+game.menu)) + 24, game.width/2 + s, (h*(5+game.menu)) + 24)
+        std.draw.color('red')
+        s2=std.draw.text(game.level)
+        std.draw.text(game.width/2 + s - s2, h*8, game.level)
+        s2=std.draw.text(game.imortal)
+        std.draw.text(game.width/2 + s - s2, h*9, game.imortal)
+        s2=std.draw.text(game.asteroids_max)
+        std.draw.text(game.width/2 + s - s2, h*10, game.asteroids_max)
+        s2=std.draw.text(graphics)
+        std.draw.text(game.width/2 + s - s2, h*11, graphics)
+        return
+    elseif game.state == 2 then
+        draw_logo(std, game, 100)
+    end
     -- draw asteroids
     std.draw.color('white')
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
-            if game.asteroid_size[index] == game.asteroid_large_size then
+            if game.graphics_fastest == 1 then
+                std.draw.circle('fill', game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_size[index])
+            elseif game.asteroid_size[index] == game.asteroid_large_size then
                 std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             elseif game.asteroid_size[index] == game.asteroid_mid_size then
                 std.draw.poly('fill', game.asteroid_mid, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
