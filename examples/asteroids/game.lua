@@ -201,7 +201,7 @@ local function loop(std, game)
             elseif game.menu == 5 then
                 game.asteroids_max = std.math.clamp2(game.asteroids_max + keyh, 5, 60)
             elseif game.menu == 6 then
-                game.graphics_fastest = std.math.clamp2(game.graphics_fastest + keyh, 0, 1)
+                game.graphics_fastest = std.math.clamp2(game.graphics_fastest + keyh, 0, 2)
                 game.fps_max = 100
             elseif game.menu == 7 then
                 game.state = 2
@@ -362,8 +362,9 @@ local function draw(std, game)
     if game.state == 1 then
         local s2 = 0
         local h = game.height/16
-        local graphics = game.graphics_fastest == 1 and 'rapido' or 'bonito'
+        local graphics = {'bonito', 'rapido', 'feio'}
         local s = draw_logo(std, game, h*2)
+        graphics = graphics[game.graphics_fastest + 1]
         std.draw.font('sans', 16)
         std.draw.color('white')
         if game.player_pos_x ~= (game.width/2) then
@@ -402,7 +403,10 @@ local function draw(std, game)
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
-            if game.graphics_fastest == 1 then
+            if game.graphics_fastest == 2 then
+                local s = game.asteroid_size[index]
+                std.draw.rect('fill', game.asteroid_pos_x[index] - s/2,  game.asteroid_pos_y[index] - s/2, s, s)
+            elseif game.graphics_fastest == 1 then
                 std.draw.circle('fill', game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_size[index])
             elseif game.asteroid_size[index] == game.asteroid_large_size then
                 std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
