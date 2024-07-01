@@ -65,6 +65,7 @@ end
 
 local function asteroids_rain(std, game)
     local index = 1
+    local attemps = 1
     local n1 = 0.5 * math.min(game.level/3, 1)
     local n2 = 1.0 * math.min(game.level/3, 1)
     local n3 = 2.0 * math.min(game.level/3, 1)
@@ -77,6 +78,7 @@ local function asteroids_rain(std, game)
     while index <= game.asteroids_max and index <= 10 do
         repeat
             local success = true
+            attemps = attemps + 1
             game.asteroid_size[index] = game.asteroid_large_size
             game.asteroid_pos_x[index] = std.math.random(1, game.width)
             game.asteroid_pos_y[index] = std.math.random(1, game.height)
@@ -89,6 +91,10 @@ local function asteroids_rain(std, game)
 
             if asteroid_nest(std, game, game.asteroid_pos_x[index], game.asteroid_pos_x[index], index) then
                 success = false
+            end
+
+            if attemps > 100 then
+                success = true
             end
         until success
         index = index + 1
@@ -196,6 +202,7 @@ local function loop(std, game)
                 game.asteroids_max = std.math.clamp2(game.asteroids_max + keyh, 5, 60)
             elseif game.menu == 6 then
                 game.graphics_fastest = std.math.clamp2(game.graphics_fastest + keyh, 0, 1)
+                game.fps_max = 100
             elseif game.menu == 7 then
                 game.state = 2
             elseif game.menu == 8 then
@@ -454,6 +461,10 @@ local P = {
         title='AsteroidsTV',
         description='similar to the original but with lasers because televisions may have limited hardware.',
         version='1.0.0'
+    },
+    config = {
+        fps_drop = 5,
+        fps_time = 5
     },
     callbacks={
         init=init,
