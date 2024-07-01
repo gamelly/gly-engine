@@ -198,6 +198,8 @@ local function loop(std, game)
                 game.graphics_fastest = std.math.clamp2(game.graphics_fastest + keyh, 0, 1)
             elseif game.menu == 7 then
                 game.state = 2
+            elseif game.menu == 8 then
+                std.game.exit()
             end
         end
         return
@@ -210,7 +212,7 @@ local function loop(std, game)
         return
     end
     -- enter in the menu
-    if std.key.press.green == 1then
+    if std.key.press.green == 1 then
         game.state = 1
     end
     -- player move

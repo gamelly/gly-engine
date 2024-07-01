@@ -65,6 +65,13 @@ local function std_game_reset()
     end
 end
 
+local function std_game_exit()
+    if game.callbacks.exit then
+        game.callbacks.exit(std, game_obj)
+    end
+    love.event.quit()
+end
+
 function love.draw()
     game.callbacks.draw(std, game_obj)
 end
@@ -110,6 +117,7 @@ function love.load()
     std.key.press.blue=0
     std.key.press.enter=0
     std.game.reset=std_game_reset
+    std.game.exit=std_game_exit
     game_obj.width=w
     game_obj.height=h
     game_obj.dt = 0

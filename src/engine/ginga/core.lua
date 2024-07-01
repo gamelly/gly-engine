@@ -98,6 +98,13 @@ local function std_game_reset()
     end
 end
 
+local function std_game_exit()
+    if game.callbacks.exit then
+        game.callbacks.exit(std, game_obj)
+    end
+    event.post({class="ncl", type="stop"})
+end
+
 local function event_loop(evt)
     if evt.class ~= 'key' then return end
     if not key_bindings[evt.key] then return end
@@ -160,6 +167,7 @@ local function setup(evt)
     std.key.press.blue=0
     std.key.press.enter=0
     std.game.reset=std_game_reset
+    std.game.exit=std_game_exit
     game_obj.width=w
     game_obj.height=h
     game_obj.milis=0
