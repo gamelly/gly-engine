@@ -104,7 +104,7 @@ local function asteroid_destroy(std, game, id)
     
     game.asteroid_size[id] = -1
 
-    while index <= fragments do
+    while index <= fragments and (game.asteroids_count + index) <= (game.asteroids_max + 1) do
         game.asteroid_size[asteroids + index] = size
         game.asteroid_pos_x[asteroids + index] = game.asteroid_pos_x[id]
         game.asteroid_pos_y[asteroids + index] = game.asteroid_pos_y[id]
@@ -125,7 +125,7 @@ local function init(std, game)
     game.boost = 0.12
     game.highscore = 0
     game.speed_max = 5
-    game.asteroids_max = 10
+    game.asteroids_max = 5
     game.asteroids_count = 0
     -- player
     game.player_pos_x = game.width/2
