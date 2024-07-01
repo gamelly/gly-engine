@@ -337,14 +337,15 @@ local function loop(std, game)
     end
 end
 
-local function draw_logo(std, game, height)
+local function draw_logo(std, game, height, anim)
+    anim = anim or 0
     std.draw.font('sans', 32)
     std.draw.color('white')
     local s1 = std.draw.text('AsteroidsTv')
     local s2 = std.draw.text('Tv')
-    std.draw.text(game.width/2 - s1/2, height, 'Asteroids')
+    std.draw.text(game.width/2 - s1/2, height + anim, 'Asteroids')
     std.draw.color('red')
-    std.draw.text(game.width/2 + s1/2 - s2, height, 'Tv')
+    std.draw.text(game.width/2 + s1/2 - s2, height - anim, 'Tv')
     return s1
 end
 
@@ -380,7 +381,14 @@ local function draw(std, game)
         std.draw.text(game.width/2 + s - s2, h*11, graphics)
         return
     elseif game.state == 2 then
-        draw_logo(std, game, 100)
+        local height = game.height/4
+        local w = std.draw.text('Rodrigo Dornelles')
+        local anim = math.cos(std.math.cycle(game.milis, 200) * math.pi*2)
+        draw_logo(std, game, height, anim) 
+        std.draw.font('sans', 16)
+        std.draw.color('white')
+        std.draw.text(game.width/2 - w/2 + (anim*0.5), height*2, 'Rodrigo Dornelles')
+        return
     end
     -- draw asteroids
     std.draw.color('white')
