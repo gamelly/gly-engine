@@ -45,7 +45,7 @@ local function std_draw_text(x, y, text)
 end
 
 local function std_draw_circle(mode, x, y, r)
-    love.graphics.circle(mode, x, y, r)
+    love.graphics.circle(mode, x, y, r/2)
 end
 
 local function std_draw_line(x1, y1, x2, y2)
