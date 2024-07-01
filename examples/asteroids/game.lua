@@ -254,7 +254,7 @@ local function loop(std, game)
         until not asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1)
     end
     -- player shoot
-    if not game.laser_enabled and (std.key.press.red == 1 or std.key.press.enter == 1) then
+    if not game.laser_enabled and game.state == 4 and (std.key.press.red == 1 or std.key.press.enter == 1) then
         local index = 1
         local asteroids = #game.asteroid_size
         local sin = math.cos(game.player_angle - math.pi/2)
