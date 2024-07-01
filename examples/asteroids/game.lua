@@ -30,22 +30,23 @@ local math = require('math')
 
 local function asteroid_fragments(game, size, level)
     -- level 1,2,3
-    if size == game.asteroid_small_size and level <=3 then return 0, -1 end
-    if size == game.asteroid_mid_size and level <= 3 then return 2, game.asteroid_small_size end				
-    if size == game.asteroid_large_size and level <= 3 then return 1, game.asteroid_mid_size end
+    if size == game.asteroid_small_mini then return 0, -1, 50 end
+    if size == game.asteroid_small_size and level <=3 then return 0, -1, 15 end
+    if size == game.asteroid_mid_size and level <= 3 then return 2, game.asteroid_small_size, 10 end				
+    if size == game.asteroid_large_size and level <= 3 then return 1, game.asteroid_mid_size, 5 end
     -- level 4,5,6
-    if size == game.asteroid_small_size and level <= 6 then return 1, game.asteroid_mini_size end
-    if size == game.asteroid_mid_size and level <= 6 then return 2, game.asteroid_small_size end
-    if size == game.asteroid_large_size and level <= 6 then return 1, game.asteroid_mid_size end
-    -- level 7,8,9c
-    if size == game.asteroid_small_size and level <= 9 then return 1, game.asteroid_mini_size end
-    if size ==  game.asteroid_mid_size and level <= 9 then return 3, game.asteroid_small_size end
-    if size == game.asteroid_large_size and level <= 9 then return 1,  game.asteroid_mid_size end
+    if size == game.asteroid_small_size and level <= 6 then return 1, game.asteroid_mini_size, 20 end
+    if size == game.asteroid_mid_size and level <= 6 then return 2, game.asteroid_small_size, 15 end
+    if size == game.asteroid_large_size and level <= 6 then return 1, game.asteroid_mid_size, 10 end
+    -- level 7,8,9
+    if size == game.asteroid_small_size and level <= 9 then return 1, game.asteroid_mini_size, 25 end
+    if size ==  game.asteroid_mid_size and level <= 9 then return 3, game.asteroid_small_size, 20 end
+    if size == game.asteroid_large_size and level <= 9 then return 1,  game.asteroid_mid_size, 15 end
     -- level 10... all asteroids
-    if size == game.asteroid_small_size then return 1, game.asteroid_mini_size end
-    if size == game.asteroid_mid_size then return 3, game.asteroid_small_size end
-    if size == game.asteroid_large_size then return 2, game.asteroid_mid_size end
-    return 0, -1
+    if size == game.asteroid_small_size then return 1, game.asteroid_mini_size, 40 end
+    if size == game.asteroid_mid_size then return 3, game.asteroid_small_size, 30 end
+    if size == game.asteroid_large_size then return 2, game.asteroid_mid_size, 20 end
+    return 0, -1, 0
 end
 
 local function asteroid_nest(std, game, x, y, id)
@@ -100,7 +101,7 @@ local function asteroid_destroy(std, game, id)
     local vspeed = {-2, -1, 1, 2}
     local asteroids = #game.asteroid_size
     local original_size = game.asteroid_size[id]
-    local fragments, size = asteroid_fragments(game, original_size, game.level)
+    local fragments, size, score = asteroid_fragments(game, original_size, game.level)
     
     game.asteroid_size[id] = -1
 
@@ -113,7 +114,7 @@ local function asteroid_destroy(std, game, id)
         index = index + 1
     end
 
-    return original_size * fragments
+    return score
 end
 
 local function init(std, game)
@@ -186,6 +187,7 @@ local function loop(std, game)
             elseif game.menu == 2 then
                 std.game.reset()
                 game.state = 4
+                game.score = 0
             elseif game.menu == 3 then
                 game.level = std.math.clamp2(game.level + keyh, 1, 99)
             elseif game.menu == 4 then
@@ -397,6 +399,7 @@ local function draw(std, game)
 end
 
 local function exit(std, game)
+    game.highscore = std.math.max(game.score, game.highscore)
     game.asteroid_pos_x = nil
     game.asteroid_pos_y = nil
     game.asteroid_spd_x = nil
