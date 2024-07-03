@@ -2,6 +2,7 @@ local os = require('os')
 local game = require('game')
 local math = require('lib_math')
 local decorators = require('decorators')
+local arglib = require('args')
 local game_obj = {}
 local std = {draw={},key={press={}},game={}}
 local started = false
@@ -95,8 +96,18 @@ function love.keyreleased(key)
     end
 end
 
-function love.load()
+function love.resize(w, h)
+    game_obj.width = w
+    game_obj.height = h
+end
+
+function love.load(args)
+    local screen = arglib.get(args, 'screen')
     local w, h = love.graphics.getDimensions()
+    if screen then
+        w, h = screen:match('(%d+)x(%d+)')
+        love.window.setMode(w, h, {resizable=true})
+    end
     std.math=math
     std.math.random = love.math.random
     std.draw.clear=std_draw_clear

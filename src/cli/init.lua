@@ -15,6 +15,7 @@ os.execute('cp '..game..'/game.lua dist/game.lua')
 
 -- move common lib
 os.execute('cp src/lib/common/*.lua dist')
+os.execute('cp src/shared/*.lua dist')
 
 -- move engine
 if core == 'ginga' then
