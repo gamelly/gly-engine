@@ -1,3 +1,8 @@
+--! @startebnf
+--! line= [frame_skip], variable, ["=", value (* assignment *)];
+--! frame_skip = [digit], "!" ;
+--! digit = { ? 0 - 9 ? }- ;
+--! @endebnf
 package.path=package.path..';dist/?.lua' -- TODO make more smarth solution
 local game_obj = require('src_object_game')
 local key_obj = require('src_object_keys')
