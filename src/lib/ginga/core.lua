@@ -85,10 +85,6 @@ local function std_draw_line(x1, y1, x2, y2)
     canvas:drawLine(x1, y1, x2, y2)
 end
 
-local function std_draw_circle(mode, x, y, radius)
-    canvas:drawEllipse(mode, x, y, radius, radius)
-end
-
 local function std_game_reset()
     if game.callbacks.exit then
         game.callbacks.exit(std, game_obj)
@@ -155,8 +151,7 @@ local function setup(evt)
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
-    std.draw.circle=std_draw_circle
-    std.draw.poly=decorators.poly(0, nil, std_draw_line, std_draw_circle)
+    std.draw.poly=decorators.poly(0, nil, std_draw_line)
     std.key.press.up=0
     std.key.press.down=0
     std.key.press.left=0

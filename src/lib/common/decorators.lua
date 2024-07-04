@@ -1,6 +1,6 @@
 local math = require('math')
 
-local function decorator_poly(limit_verts, func_draw_poly, func_draw_line, func_draw_circle)    
+local function decorator_poly(limit_verts, func_draw_poly, func_draw_line)    
     return function (mode, verts, x, y, scale, angle, ox, oy)
         if #verts < 6 or #verts % 2 ~= 0 then return end
 
@@ -17,17 +17,7 @@ local function decorator_poly(limit_verts, func_draw_poly, func_draw_line, func_
             end
         end
 
-        if (not func_draw_poly or (limit_verts ~= 0 and limit_verts < verts)) and func_draw_circle then
-            local index = 1
-            local radius = 10
-            size = size or 1
-            while index < #verts do
-                radius = radius + verts[index]
-                index = index + 1
-            end
-            radius = radius * size / #verts * 3
-            func_draw_circle(mode, x, y, radius)
-        elseif x and y and (angle == nil or angle == 0) then
+        if x and y and (angle == nil or angle == 0) then
             local index = 1
             local verts2 = {}
             scale = scale or 1

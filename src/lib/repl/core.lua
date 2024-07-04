@@ -82,7 +82,6 @@ local function main()
     stdlib.draw.text=mock
     stdlib.draw.font=mock
     stdlib.draw.line=mock
-    stdlib.draw.circle=mock
     stdlib.draw.poly=mock
     stdlib.key = key_obj
     game.callbacks.init(stdlib, game_obj)

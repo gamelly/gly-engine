@@ -28,6 +28,16 @@
 
 local math = require('math')
 
+local function intersect_line_circle(x1, y1, x2, y2, h, k, raio)
+    local m = (y2 - y1) / (x2 - x1)
+    local c = y1 - m * x1
+    local A = 1 + m^2
+    local B = 2 * (m * c - m * k - h)
+    local C = h^2 + k^2 + c^2 - 2 * c * k - raio^2
+    local discriminante = B^2 - 4 * A * C
+    return discriminante >= 0
+end
+
 local function asteroid_fragments(game, size, level)
     -- level 1,2,3
     if size == game.asteroid_small_mini then return 0, -1, 50 end
@@ -197,11 +207,11 @@ local function loop(std, game)
             elseif game.menu == 3 then
                 game.level = std.math.clamp2(game.level + keyh, 1, 99)
             elseif game.menu == 4 then
-                game.imortal = std.math.clamp2(game.imortal + keyh, 0, 1)
+                game.imortal = std.math.clamp(game.imortal + keyh, 0, 1)
             elseif game.menu == 5 then
                 game.asteroids_max = std.math.clamp2(game.asteroids_max + keyh, 5, 60)
             elseif game.menu == 6 then
-                game.graphics_fastest = std.math.clamp2(game.graphics_fastest + keyh, 0, 2)
+                game.graphics_fastest = std.math.clamp(game.graphics_fastest + keyh, 0, 1)
                 game.fps_max = 100
             elseif game.menu == 7 then
                 game.state = 2
@@ -282,7 +292,7 @@ local function loop(std, game)
                 local dis_p1 = std.math.dis(game.laser_pos_x1, game.laser_pos_y1, x,y)
                 local dis_p2 = std.math.dis(game.laser_pos_x2, game.laser_pos_y2, x,y)
                 local dis_fake = std.math.dis(laser_fake_x, laser_fake_y, x,y)
-                local intersect = std.math.intersect_line_circle(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2, x, y, size*2)
+                local intersect = intersect_line_circle(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2, x, y, size*2)
                 if intersect and dis_p2 < dis_fake and dis_p1 < game.laser_distance_fire then
                     game.score = game.score + asteroid_destroy(std, game, index)
                 end
@@ -362,9 +372,8 @@ local function draw(std, game)
     if game.state == 1 then
         local s2 = 0
         local h = game.height/16
-        local graphics = {'bonito', 'rapido', 'feio'}
+        local graphics = game.graphics_fastest == 1 and 'rapido' or 'bonito'
         local s = draw_logo(std, game, h*2)
-        graphics = graphics[game.graphics_fastest + 1]
         std.draw.font('sans', 16)
         std.draw.color('white')
         if game.player_pos_x ~= (game.width/2) then
@@ -403,11 +412,9 @@ local function draw(std, game)
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
-            if game.graphics_fastest == 2 then
+            if game.graphics_fastest == 1 then
                 local s = game.asteroid_size[index]
                 std.draw.rect('fill', game.asteroid_pos_x[index] - s/2,  game.asteroid_pos_y[index] - s/2, s, s)
-            elseif game.graphics_fastest == 1 then
-                std.draw.circle('fill', game.asteroid_pos_x[index], game.asteroid_pos_y[index], game.asteroid_size[index])
             elseif game.asteroid_size[index] == game.asteroid_large_size then
                 std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             elseif game.asteroid_size[index] == game.asteroid_mid_size then

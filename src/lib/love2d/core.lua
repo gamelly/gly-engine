@@ -45,10 +45,6 @@ local function std_draw_text(x, y, text)
     return love.graphics.getFont():getWidth(text or x)
 end
 
-local function std_draw_circle(mode, x, y, r)
-    love.graphics.circle(mode, x, y, r/2)
-end
-
 local function std_draw_line(x1, y1, x2, y2)
     love.graphics.line(x1, y1, x2, y2)
 end
@@ -116,8 +112,7 @@ function love.load(args)
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
-    std.draw.circle=std_draw_circle
-    std.draw.poly=decorators.poly(0, love.graphics.polygon, std_draw_circle)
+    std.draw.poly=decorators.poly(0, love.graphics.polygon)
     std.key.press.up=0
     std.key.press.down=0
     std.key.press.left=0
