@@ -36,4 +36,29 @@ function test_shared_args_has_no_arguments()
     luaunit.assertFalse(zeebo_args.has(args, 'option'))
 end
 
+function test_shared_args_param_basic()
+    local args = {'value1', '--flag', 'param1', '--flag2', 'param2', 'value2'}
+    local args_get = {'flag', 'flag2'}
+    luaunit.assertEquals(zeebo_args.param(args, args_get, 1, 'default'), 'value1')
+    luaunit.assertEquals(zeebo_args.param(args, args_get, 2, 'default'), 'value2')
+end
+
+function test_shared_args_param_position_out_of_range()
+    local args = {'value1', '--flag', 'param1'}
+    local args_get = {'flag'}
+    luaunit.assertEquals(zeebo_args.param(args, args_get, 2, 'default'), 'default')
+end
+
+function test_shared_args_param_no_arguments()
+    local args = {}
+    local args_get = {'flag'}
+    luaunit.assertEquals(zeebo_args.param(args, args_get, 1, 'default'), 'default')
+end
+
+function test_shared_args_param_single_argument()
+    local args = {'value1'}
+    local args_get = {}
+    luaunit.assertEquals(zeebo_args.param(args, args_get, 1, 'default'), 'value1')
+end
+
 os.exit(luaunit.LuaUnit.run())
