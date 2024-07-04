@@ -19,17 +19,20 @@ local function loop(std, game)
     game.ball_pos_y = game.ball_pos_y + (game.ball_spd_y * game.dt)
     -- colisions
     if game.ball_pos_x >= (game.width - game.ball_size) then
-        game.ball_spd_x = game.ball_spd_x * -1
+        game.ball_spd_x = -std.math.abs(game.ball_spd_x)
     end
-    if game.ball_pos_y <= 0 or game.ball_pos_y >= (game.height - game.ball_size) then
-        game.ball_spd_y = game.ball_spd_y * -1
+    if game.ball_pos_y >= (game.height - game.ball_size) then
+        game.ball_spd_y = -std.math.abs(game.ball_spd_y)
+    end
+    if game.ball_pos_y <= 0 then
+        game.ball_spd_y = std.math.abs(game.ball_spd_y)
     end
     if game.ball_pos_x <= 0 then 
         if std.math.clamp(game.ball_pos_y, game.player_pos, game.player_pos + game.player_size) == game.ball_pos_y then
             local new_spd_y = std.math.clamp(game.ball_spd_y + (game.player_pos % 10) - 5, -10, 10)
             game.ball_spd_y = game.ball_spd_y == 0 and new_spd_y == 0 and 20 or new_spd_y -- WOW!
             game.ball_spd_y = game.ball_spd_y / 16
-            game.ball_spd_x = game.ball_spd_x * -1.003
+            game.ball_spd_x = std.math.abs(game.ball_spd_x) * 1.003
             game.score = game.score + 1
         else
             std.game.reset()
