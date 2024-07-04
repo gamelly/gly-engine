@@ -1,6 +1,12 @@
-name: test
+name: CI
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/*'
+      - 'tests/*'
+      - '.github/workflows/CI.yml'
 
 jobs:
   test:
