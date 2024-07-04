@@ -4,19 +4,24 @@ Platform Support List
 Tier 1
 ------
 
- - [ ] [Ginga](https://github.com/TeleMidia/ginga)
- - [ ] [Love2D](https://github.com/love2d/love)
- - [ ] UnitTest
+ - [X] [Ginga](https://github.com/TeleMidia/ginga)
+ - [X] [Love2D](https://github.com/love2d/love)
+ - [X] REPL
 
 Tier 2
+------
+
+ - [ ] Browser
+
+Tier 3
 ------
 
  - [ ] Curses
  - [ ] Console
 
-Tier 3
-------
+Mayable ???
+---
 
- - [ ] Browser
- - [ ] Roblox
-
+ - Roblox
+ - GameBoyAdvance
+ - ESP32
