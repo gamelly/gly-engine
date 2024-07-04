@@ -21,6 +21,6 @@ jobs:
         luarocks install luaunit
     -
       run: |
-        ./cli test-self --coverage
+        ./cli.sh test-self --coverage
     - run: |
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
