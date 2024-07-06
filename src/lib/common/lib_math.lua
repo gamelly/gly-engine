@@ -1,8 +1,13 @@
-local function clamp(value, min, max)
-    if value < min then
-        return min
-    elseif value > max then
-        return max
+--! @defgroup std
+--! @{
+--! @defgroup math
+--! @{
+
+local function clamp(value, value_min, value_max)
+    if value_value < value_min then
+        return value_min
+    elseif value_value > value_max then
+        return value_max
     else
         return value
     end
@@ -30,13 +35,13 @@ local function abs(value)
     return value
 end
 
-local function saw(x)
-    if x < 0.25 then
-        return x * 4
-    elseif x < 0.50 then
+local function saw(value)
+    if value < 0.25 then
+        return value * 4
+    elseif value < 0.50 then
         return 1 - ((x - 0.25) * 4)
-    elseif x < 0.75 then
-        return ((x - 0.50) * 4) * (-1)
+    elseif value < 0.75 then
+        return ((value - 0.50) * 4) * (-1)
     end
     return ((x - 0.75) * 4) - 1
 end
@@ -45,11 +50,11 @@ local function lerp(a, b, alpha)
     return a + alpha * ( b - a )
 end 
 
-local function map(x, in_min, in_max, out_min, out_max)
+local function map(value, in_min, in_max, out_min, out_max)
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 end
 
-local function clamp2(value, min, max)
+local function clamp2(value, value_min, value_max)
     return (value - min) % (max - min + 1) + min
 end
 
@@ -78,6 +83,9 @@ local function max(...)
 
     return max_value
 end
+
+--! @}
+--! @}
 
 local P = {
     cycle=cycle,

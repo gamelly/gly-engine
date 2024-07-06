@@ -1,12 +1,13 @@
 local os = require('os')
-local args = require('src/shared/args')
+local zeebo_args = require('src/shared/args.lua')
 
-local run = args.has(arg, 'run')
-local coverage = args.has(arg, 'coverage')
-local game = args.get(arg, 'game', './examples/pong')
-local core = args.get(arg, 'core', 'ginga')
-local screen = args.get(arg, 'screen', '1280x720')
-local command = args.param(arg, {'game', 'core', 'screen'}, 1, 'help')
+--! @cond
+local run = zeebo_args.has(arg, 'run')
+local coverage = zeebo_args.has(arg, 'coverage')
+local game = zeebo_args.get(arg, 'game', './examples/pong')
+local core = zeebo_args.get(arg, 'core', 'ginga')
+local screen = zeebo_args.get(arg, 'screen', '1280x720')
+local command = zeebo_args.param(arg, {'game', 'core', 'screen'}, 1, 'help')
 
 if command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
@@ -57,3 +58,5 @@ else
     print('command not found: '..command)
     os.exit(1)
 end
+
+--! @endcond

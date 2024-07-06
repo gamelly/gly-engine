@@ -1,3 +1,7 @@
+--! @file src/lib/repl/core.lua
+--! @short Read Eval Print Loop
+--! @brief an interpreter to debuging the game via stdio.
+--! @par Extended Backus-Naur Form
 --! @startebnf
 --! line= [frame_skip], variable, ["=", value (* assignment *)];
 --! frame_skip = [digit], "!" ;

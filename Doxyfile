@@ -1,0 +1,41 @@
+# Custom Configs
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "Engine"
+PROJECT_NUMBER         = 0.0.2
+PROJECT_BRIEF          = "Game engine in lua"
+PROJECT_LOGO           = 
+OUTPUT_DIRECTORY       = .
+RECURSIVE              = YES
+CREATE_SUBDIRS         = NO
+STRIP_CODE_COMMENTS    = NO
+CALL_GRAPH             = YES
+HAVE_DOT               = YES
+EXTRACT_ALL            = YES
+USE_MATHJAX            = YES
+EXTRACT_STATIC         = NO
+SHORT_NAMES            = YES
+INLINE_GROUPED_CLASSES = YES
+INLINE_SIMPLE_STRUCTS  = YES
+TYPEDEF_HIDES_STRUCT   = YES
+SOURCE_BROWSER         = YES
+VERBATIM_HEADERS       = NO
+PREDEFINED             = DOXYGEN=
+PLANTUML_JAR_PATH      = $(PLANTUML_JAR_PATH)
+PLANTUML_CFG_FILE      =
+PLANTUML_INCLUDE_PATH  =
+OUTPUT_LANGUAGE        = English
+FILE_PATTERNS          = *.lua
+FILTER_PATTERNS        = *.lua=lua2dox
+EXTENSION_MAPPING      = .lua=C++
+INPUT                  = README.md src examples
+USE_MDFILE_AS_MAINPAGE = README.md
+MARKDOWN_ID_STYLE      = GITHUB
+ALIASES               += startebnf=@startuml{ebnf}
+ALIASES               += endebnf=@enduml
+# Theme: https://jothepro.github.io/doxygen-awesome-css/
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+HTML_EXTRA_STYLESHEET  = $(DOXYGEN_AWESOME_PATH)/doxygen-awesome.css \
+                         $(DOXYGEN_AWESOME_PATH)/doxygen-awesome-sidebar-only.css
+HTML_COLORSTYLE        = LIGHT
