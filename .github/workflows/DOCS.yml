@@ -21,8 +21,7 @@ jobs:
         uses: actions/checkout@master
       - 
         run: |
-          docker run --rm -v $(pwd):/app -w /app
-          rodrigodornelles/doxygen:lua doxygen
+          docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua doxygen
       - 
         uses: cloudflare/pages-action@v1
         with:
