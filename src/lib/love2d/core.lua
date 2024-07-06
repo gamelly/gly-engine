@@ -1,11 +1,10 @@
 local os = require('os')
-local game = require('game')
-local math = require('lib_math')
+local application = require('game')
+local zeebo_math = require('lib_math')
 local decorators = require('decorators')
-local arglib = require('args')
-local game_obj = {}
+local zeebo_arg = require('args')
+local game = require('src_object_game')
 local std = {draw={},key={press={}},game={}}
-local started = false
 local key_bindings = {
     up='up',
     left='left',
@@ -20,7 +19,7 @@ local key_bindings = {
 
 local function std_draw_clear(color)
     love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle('fill', 0, 0, game_obj.width, game_obj.height)
+    love.graphics.rectangle('fill', 0, 0, game.width, game.height)
 end
 
 local function std_draw_color(color)
@@ -54,30 +53,30 @@ local function std_draw_font(a,b)
 end
 
 local function std_game_reset()
-    if game.callbacks.exit then
-        game.callbacks.exit(std, game_obj)
+    if application.callbacks.exit then
+        application.callbacks.exit(std, game)
     end
-    if game.callbacks.init then
-        game.callbacks.init(std, game_obj)
+    if application.callbacks.init then
+        application.callbacks.init(std, game)
     end
 end
 
 local function std_game_exit()
-    if game.callbacks.exit then
-        game.callbacks.exit(std, game_obj)
+    if application.callbacks.exit then
+        application.callbacks.exit(std, game)
     end
     love.event.quit()
 end
 
 function love.draw()
-    game.callbacks.draw(std, game_obj)
+    application.callbacks.draw(std, game)
 end
 
 function love.update(dt)
-    game_obj.dt = dt * 1000
-    game_obj.milis = love.timer.getTime() * 1000
-    game_obj.fps = love.timer.getFPS()
-    game.callbacks.loop(std, game_obj)
+    game.dt = dt * 1000
+    game.milis = love.timer.getTime() * 1000
+    game.fps = love.timer.getFPS()
+    application.callbacks.loop(std, game)
 end
 
 function love.keypressed(key)
@@ -93,18 +92,18 @@ function love.keyreleased(key)
 end
 
 function love.resize(w, h)
-    game_obj.width = w
-    game_obj.height = h
+    game.width = w
+    game.height = h
 end
 
 function love.load(args)
-    local screen = arglib.get(args, 'screen')
+    local screen = zeebo_arg.get(args, 'screen')
     local w, h = love.graphics.getDimensions()
     if screen then
         w, h = screen:match('(%d+)x(%d+)')
         love.window.setMode(w, h, {resizable=true})
     end
-    std.math=math
+    std.math=zeebo_math
     std.math.random = love.math.random
     std.draw.clear=std_draw_clear
     std.draw.color=std_draw_color
@@ -124,9 +123,8 @@ function love.load(args)
     std.key.press.enter=0
     std.game.reset=std_game_reset
     std.game.exit=std_game_exit
-    game_obj.width=w
-    game_obj.height=h
-    game_obj.dt = 0
-    love.window.setTitle(game.meta.title..' - '..game.meta.version)
-    game.callbacks.init(std, game_obj)
+    game.width=w
+    game.height=h
+    love.window.setTitle(application.meta.title..' - '..application.meta.version)
+    application.callbacks.init(std, game)
 end

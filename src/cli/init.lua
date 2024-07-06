@@ -28,6 +28,7 @@ elseif command == 'build' then
 
     -- move common lib
     os.execute('cp src/lib/common/*.lua dist')
+    os.execute('cp src/object/application.lua dist/src_object_application.lua')
     os.execute('cp src/object/game.lua dist/src_object_game.lua')
     os.execute('cp src/object/keys.lua dist/src_object_keys.lua')
     os.execute('cp src/shared/*.lua dist')

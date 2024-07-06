@@ -4,9 +4,9 @@
 --! @{
 
 local function clamp(value, value_min, value_max)
-    if value_value < value_min then
+    if value < value_min then
         return value_min
-    elseif value_value > value_max then
+    elseif value > value_max then
         return value_max
     else
         return value

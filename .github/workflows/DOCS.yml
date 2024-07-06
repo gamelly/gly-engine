@@ -6,11 +6,8 @@ env:
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '*.md'
-      - 'src/*'
-      - 'tests/*'
-      - '.github/workflows/DOCS.yml'
+    branches:
+      - main
 
 jobs:
   doxygen:
