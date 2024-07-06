@@ -4,7 +4,7 @@ local zeebo_math = require('lib_math')
 local decorators = require('decorators')
 local zeebo_arg = require('args')
 local game = require('src_object_game')
-local std = {draw={},key={press={}},game={}}
+local std = require('src_object_std')
 local key_bindings = {
     up='up',
     left='left',
@@ -112,15 +112,6 @@ function love.load(args)
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, love.graphics.polygon)
-    std.key.press.up=0
-    std.key.press.down=0
-    std.key.press.left=0
-    std.key.press.right=0
-    std.key.press.red=0
-    std.key.press.green=0
-    std.key.press.yellow=0
-    std.key.press.blue=0
-    std.key.press.enter=0
     std.game.reset=std_game_reset
     std.game.exit=std_game_exit
     game.width=w

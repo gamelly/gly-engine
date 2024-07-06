@@ -1,4 +1,4 @@
---! @file src/object/game.lua
+--! @file src/object/application.lua
 --! @short application object
 --! @brief metatags, configs and code.
 

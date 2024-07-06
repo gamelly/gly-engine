@@ -3,17 +3,16 @@
 --! @brief an interpreter to debuging the game via stdio.
 --! @par Extended Backus-Naur Form
 --! @startebnf
---! line= [frame_skip], variable, ["=", value (* assignment *)];
+--! line = exit | frame_skip | [frame_skip], variable, ["=", value (* assignment *)];
 --! frame_skip = [digit], "!" ;
 --! digit = { ? 0 - 9 ? }- ;
+--! exit = "?" ;
 --! @endebnf
 package.path=package.path..';dist/?.lua' -- TODO make more smarth solution
-local game_obj = require('src_object_game')
-local key_obj = require('src_object_keys')
-local mathstd = require('math')
-local math = require('lib_math')
-
-local function mock() return end
+local game = require('src_object_game')
+local std = require('src_object_std')
+local math = require('math')
+local zeebo_math = require('lib_math')
 
 local function line_skip_frames(line_src)
     local frames, line = line_src:match('(%d+)!(.*)')
@@ -35,13 +34,13 @@ local function line_assignment(line)
     return line, ''
 end
 
-local function evaluate(var, assign, std_lib, game_obj)
+local function evaluate(var, assign, std, game, application)
     local script = ''
 
     if assign and #assign > 0 then
-        script = 'return function(std, game)\n'..var..'=('..assign..')\n return ('..var..')\nend'
+        script = 'return function(std, game, application)\n'..var..'=('..assign..')\n return ('..var..')\nend'
     elseif var and #var > 0 then
-        script = 'return function(std, game)\nreturn ('..var..')\nend'
+        script = 'return function(std, game, application)\nreturn ('..var..')\nend'
     end
 
     if script and #script > 0 then
@@ -49,7 +48,7 @@ local function evaluate(var, assign, std_lib, game_obj)
             local func, err = load(script)
             if func then
                 local result = func()
-                return result(std_lib, game_obj)
+                return result(std, game, application)
             else
                 error(err)
             end
@@ -66,29 +65,23 @@ local function main()
     local frames = 0
     local variable = ''
     local assignment = ''
-    local file_name = arg[1] or 'dist/game.lua'
+    local file_name = arg[1] or './dist/src_object_application.lua'
     local file_src = io.open(file_name, "r")
-    local game = file_src and load(file_src:read('*all'))
-    local stdlib = {draw = {}}
+    local apploader = file_src and load(file_src:read('*all'))
     local started = false
 
-    if not file_src or not game then
-        error('game not found!')
+    if not file_src then
+        error('game not found!'..file_name)
+    end
+    if not apploader then
+        error('game error!')
     end
 
     -- init the game
-    game = game()
-    stdlib.math = math
-    stdlib.math.random = mathstd.random
-    stdlib.draw.clear=mock
-    stdlib.draw.color=mock
-    stdlib.draw.rect=mock
-    stdlib.draw.text=mock
-    stdlib.draw.font=mock
-    stdlib.draw.line=mock
-    stdlib.draw.poly=mock
-    stdlib.key = key_obj
-    game.callbacks.init(stdlib, game_obj)
+    application = apploader()
+    std.math = zeebo_math
+    std.math.random = math.random
+    application.callbacks.init(std, game)
 
     while true do
         local index = 1
@@ -102,7 +95,7 @@ local function main()
         variable, assignment = line_assignment(line)
         frames = tonumber(frames)
 
-        local ok, output = evaluate(variable, assignment, stdlib, game_obj)
+        local ok, output = evaluate(variable, assignment, std, game, application)
         if ok then
             print(output)
         else
@@ -110,21 +103,23 @@ local function main()
             print('\n')
         end
 
-        if not started and frames > 0 and game.callbacks.init then
-            game.callbacks.init(stdlib, game_obj)
+        if not started and frames > 0 and application.callbacks.init then
+            application.callbacks.init(std, game)
             started = true
         end
 
         while index <= frames do
-            if game.callbacks.loop then
-                game.callbacks.loop(stdlib, game_obj)
+            if application.callbacks.loop then
+                application.callbacks.loop(std, game)
             end
-            if game.callbacks.draw then
-                game.callbacks.draw(stdlib, game_obj)
+            if application.callbacks.draw then
+                application.callbacks.draw(std, game)
             end
             index = index + 1
         end
     end
 end
 
-main()
+if not package.loaded['modulename'] then
+    main()
+end
