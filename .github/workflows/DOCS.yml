@@ -29,4 +29,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ env.CLOUDFLARE_PROJECT_DOXYGEN }}
           directory: html
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
