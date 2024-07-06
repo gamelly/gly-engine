@@ -101,6 +101,7 @@ function love.load(args)
     local w, h = love.graphics.getDimensions()
     if screen then
         w, h = screen:match('(%d+)x(%d+)')
+        w, h = tonumber(w), tonumber(h)
         love.window.setMode(w, h, {resizable=true})
     end
     std.math=zeebo_math
