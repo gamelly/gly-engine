@@ -39,11 +39,11 @@ local function saw(value)
     if value < 0.25 then
         return value * 4
     elseif value < 0.50 then
-        return 1 - ((x - 0.25) * 4)
+        return 1 - ((value - 0.25) * 4)
     elseif value < 0.75 then
         return ((value - 0.50) * 4) * (-1)
     end
-    return ((x - 0.75) * 4) - 1
+    return ((value - 0.75) * 4) - 1
 end
 
 local function lerp(a, b, alpha)
@@ -51,11 +51,11 @@ local function lerp(a, b, alpha)
 end 
 
 local function map(value, in_min, in_max, out_min, out_max)
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 end
 
 local function clamp2(value, value_min, value_max)
-    return (value - min) % (max - min + 1) + min
+    return (value - value_min) % (value_max - value_min + 1) + value_min
 end
 
 local function cycle(passed, duration)
@@ -96,7 +96,8 @@ local P = {
     map=map,
     dis=dis,
     saw=saw,
-    max=max
+    max=max,
+    dir=dir
 }
 
 return P;

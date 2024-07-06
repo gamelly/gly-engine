@@ -11,7 +11,8 @@ local command = zeebo_args.param(arg, {'game', 'core', 'screen'}, 1, 'help')
 
 if command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
-    local ok = os.execute('lua '..coverage..' ./tests/*.lua')
+    local ok = os.execute('lua '..coverage..' ./tests/test_lib_common_math.lua')
+    local ok = ok and os.execute('lua '..coverage..' ./tests/test_shared_args.lua')
     if #coverage > 0 then
         os.execute('luacov src')
     end
