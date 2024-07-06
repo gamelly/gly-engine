@@ -1,5 +1,5 @@
 local os = require('os')
-local zeebo_args = require('src/shared/args.lua')
+local zeebo_args = require('src/shared/args')
 
 --! @cond
 local run = zeebo_args.has(arg, 'run')
