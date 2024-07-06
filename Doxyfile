@@ -27,7 +27,7 @@ OUTPUT_LANGUAGE        = English
 FILE_PATTERNS          = *.lua
 FILTER_PATTERNS        = *.lua=lua2dox
 EXTENSION_MAPPING      = .lua=C++
-INPUT                  = README.md src examples
+INPUT                  = README.md SUPPORT.md src examples
 USE_MDFILE_AS_MAINPAGE = README.md
 MARKDOWN_ID_STYLE      = GITHUB
 ALIASES               += startebnf=@startuml{ebnf}
