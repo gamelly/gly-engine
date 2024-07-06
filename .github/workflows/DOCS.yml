@@ -1,0 +1,31 @@
+name: DOCS
+
+env:
+  CLOUDFLARE_PROJECT_DOXYGEN: doxygen-engine
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  doxygen:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: actions/checkout@master
+      - 
+        run: |
+          docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua doxygen
+      - 
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ env.CLOUDFLARE_PROJECT_DOXYGEN }}
+          directory: html

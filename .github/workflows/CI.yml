@@ -3,10 +3,12 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    paths:
-      - 'src/*'
-      - 'tests/*'
-      - '.github/workflows/CI.yml'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   test:

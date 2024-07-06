@@ -1,12 +1,18 @@
-local mathstd = require('math')
-local game = require('game')
-local math = require('lib_math')
+local math = require('math')
+local application = require('game')
+local zeebo_math = require('lib_math')
 local decorators = require('decorators')
-local canvas = canvas
-local event = event
-local game_obj = {meta={}, config={}, callbacks={}}
-local std = {draw={},key={press={}},game={}}
+local game = require('src_object_game')
+local std = require('src_object_std')
 local fixture190 = ''
+
+--! @short nclua:canvas
+--! @li <http://www.telemidia.puc-rio.br/~francisco/nclua/referencia/canvas.html>
+local canvas = canvas
+
+--! @short nclua:event
+--! @li <http://www.telemidia.puc-rio.br/~francisco/nclua/referencia/event.html>
+local event = event
 
 -- key mappings
 local key_bindings={
@@ -37,25 +43,25 @@ _ENV = nil
 
 local function std_draw_fps(x, y)
     canvas:attrColor('yellow')
-    if game_obj.fps_show >= 1 then
+    if game.fps_show >= 1 then
         canvas:drawRect('fill', x, y, 40, 24)
     end
-    if game_obj.fps_show >= 2 then
+    if game.fps_show >= 2 then
         canvas:drawRect('fill', x + 48, y, 40, 24)
     end
     canvas:attrColor('black')
     canvas:attrFont('Tiresias', 16)
-    if game_obj.fps_show >= 1 then
+    if game.fps_show >= 1 then
         canvas:drawText(x + 2, y, fps_obj.total)
     end
-    if game_obj.fps_show >= 1 then
-        canvas:drawText(x + 50, y, game_obj.fps_max)
+    if game.fps_show >= 1 then
+        canvas:drawText(x + 50, y, game.fps_max)
     end
 end
 
 local function std_draw_clear(color)
     canvas:attrColor(color)
-    canvas:drawRect('fill', 0, 0, game_obj.width, game_obj.height)
+    canvas:drawRect('fill', 0, 0, game.width, game.height)
 end
 
 local function std_draw_color(color)
@@ -86,17 +92,17 @@ local function std_draw_line(x1, y1, x2, y2)
 end
 
 local function std_game_reset()
-    if game.callbacks.exit then
-        game.callbacks.exit(std, game_obj)
+    if application.callbacks.exit then
+        application.callbacks.exit(std, game)
     end
-    if game.callbacks.init then
-        game.callbacks.init(std, game_obj)
+    if application.callbacks.init then
+        application.callbacks.init(std, game)
     end
 end
 
 local function std_game_exit()
-    if game.callbacks.exit then
-        game.callbacks.exit(std, game_obj)
+    if application.callbacks.exit then
+        application.callbacks.exit(std, game)
     end
     event.post({class="ncl", type="stop"})
 end
@@ -105,7 +111,7 @@ local function event_loop(evt)
     if evt.class ~= 'key' then return end
     if not key_bindings[evt.key] then return end
 
-    -- https://github.com/TeleMidia/ginga/issues/190
+    --! @li https://github.com/TeleMidia/ginga/issues/190
     if #fixture190 == 0 and evt.key ~= 'ENTER' then
         fixture190 = evt.type
     end
@@ -119,32 +125,32 @@ end
 
 local function fixed_loop()
     -- internal clock 
-    game_obj.milis = event.uptime()
-    game_obj.fps = fps_obj.total
-    game_obj.dt = fps_obj.delta 
-    if not fps.counter(game_obj.fps_max, fps_obj, game_obj.milis) then
-        game_obj.fps_max = fps_dropper[game_obj.fps_max]
+    game.milis = event.uptime()
+    game.fps = fps_obj.total
+    game.dt = fps_obj.delta 
+    if not fps.counter(game.fps_max, fps_obj, game.milis) then
+        game.fps_max = fps_dropper[game.fps_max]
     end
 
     -- game loop
-    game.callbacks.loop(std, game_obj)
+    application.callbacks.loop(std, game)
     
     -- game render
     canvas:attrColor(0, 0, 0, 0)
     canvas:clear()
-    game.callbacks.draw(std, game_obj)
+    application.callbacks.draw(std, game)
     std_draw_fps(8,8)
     canvas:flush()
 
     -- internal loop
-    event.timer(fps_limiter[game_obj.fps_max], fixed_loop)
+    event.timer(fps_limiter[game.fps_max], fixed_loop)
 end
 
 local function setup(evt)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
     local w, h = canvas:attrSize()
-    std.math=math
-    std.math.random = mathstd.random
+    std.math=zeebo_math
+    std.math.random = math.random
     std.draw.clear=std_draw_clear
     std.draw.color=std_draw_color
     std.draw.rect=std_draw_rect
@@ -152,26 +158,15 @@ local function setup(evt)
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, nil, std_draw_line)
-    std.key.press.up=0
-    std.key.press.down=0
-    std.key.press.left=0
-    std.key.press.right=0
-    std.key.press.red=0
-    std.key.press.green=0
-    std.key.press.yellow=0
-    std.key.press.blue=0
-    std.key.press.enter=0
     std.game.reset=std_game_reset
     std.game.exit=std_game_exit
-    game_obj.width=w
-    game_obj.height=h
-    game_obj.milis=0
-    game_obj.fps=0
-    game_obj.fps_max = game.config and game.config.fps_max or 100
-    game_obj.fps_show = game.config and game.config.fps_max or 0
-    fps_obj.drop_time = game.config and game.config.fps_time or 1
-    fps_obj.drop_count = game.config and game.config.fps_drop or 2
-    game.callbacks.init(std, game_obj)
+    game.width=w
+    game.height=h
+    game.fps_max = application.config and application.config.fps_max or 100
+    game.fps_show = application.config and application.config.fps_max or 0
+    fps_obj.drop_time = application.config and application.config.fps_time or 1
+    fps_obj.drop_count = application.config and application.config.fps_drop or 2
+    application.callbacks.init(std, game)
     event.register(event_loop)
     event.timer(1, fixed_loop)
     event.unregister(setup)

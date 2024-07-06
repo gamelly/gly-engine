@@ -1,16 +1,18 @@
 local os = require('os')
-local args = require('src/shared/args')
+local zeebo_args = require('src/shared/args')
 
-local run = args.has(arg, 'run')
-local coverage = args.has(arg, 'coverage')
-local game = args.get(arg, 'game', './examples/pong')
-local core = args.get(arg, 'core', 'ginga')
-local screen = args.get(arg, 'screen', '1280x720')
-local command = args.param(arg, {'game', 'core', 'screen'}, 1, 'help')
+--! @cond
+local run = zeebo_args.has(arg, 'run')
+local coverage = zeebo_args.has(arg, 'coverage')
+local game = zeebo_args.get(arg, 'game', './examples/pong')
+local core = zeebo_args.get(arg, 'core', 'ginga')
+local screen = zeebo_args.get(arg, 'screen', '1280x720')
+local command = zeebo_args.param(arg, {'game', 'core', 'screen'}, 1, 'help')
 
 if command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
-    local ok = os.execute('lua '..coverage..' ./tests/*.lua')
+    local ok = os.execute('lua '..coverage..' ./tests/test_lib_common_math.lua')
+    local ok = ok and os.execute('lua '..coverage..' ./tests/test_shared_args.lua')
     if #coverage > 0 then
         os.execute('luacov src')
     end
@@ -27,8 +29,9 @@ elseif command == 'build' then
 
     -- move common lib
     os.execute('cp src/lib/common/*.lua dist')
+    os.execute('cp src/object/application.lua dist/src_object_application.lua')
     os.execute('cp src/object/game.lua dist/src_object_game.lua')
-    os.execute('cp src/object/keys.lua dist/src_object_keys.lua')
+    os.execute('cp src/object/std.lua dist/src_object_std.lua')
     os.execute('cp src/shared/*.lua dist')
 
     -- move engine
@@ -57,3 +60,5 @@ else
     print('command not found: '..command)
     os.exit(1)
 end
+
+--! @endcond
