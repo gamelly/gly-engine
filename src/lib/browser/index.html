@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lua Engine</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta name="theme-color" content="#000000"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <style>
+        *, *::after, *::before {
+            touch-action: none;
+            box-sizing: border-box;
+            border: 0;
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            height: 99vh;
+            display: flex;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            background-color: gray;
+        }
+        canvas {
+            margin: auto auto;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background-color: black;
+        }
+    </style>
+  </head>
+  <body>
+      <canvas id="gameCanvas" width="1280" height="720"></canvas>
+    <script type="module" src="./engine.js"></script>
+  </body>
+</html>

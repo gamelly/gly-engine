@@ -29,6 +29,13 @@ local core_list = {
         extras={
             'src/lib/ginga/main.ncl'
         }
+    },
+    browser={
+        src='src/lib/browser/main.lua',
+        extras={
+            'src/lib/browser/index.html',
+            'src/lib/browser/engine.js'
+        }
     }
 }
 
