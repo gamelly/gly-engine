@@ -1,3 +1,14 @@
+local function clear(src_path)
+    if os.execute('rm --version > /dev/null 2> /dev//null') then
+        os.execute('mkdir -p '..src_path)
+        os.execute('rm -Rf '..src_path..'/*')
+    else
+        src_path = src_path:gsub('/', '\\')
+        os.execute('mkdir '..src_path)
+        os.execute('rmdir /s /q '..src_path..'\\*')
+    end
+end
+
 local function move(src_in, dist_out)
     local src_file = io.open(src_in, "rb")
     local dist_file = io.open(dist_out, "wb")
@@ -85,10 +96,70 @@ local function build(src_in, dist_path)
     until not src_in
 end
 
+--! @short unify files
+--! @brief groups code into a single source
+--! @param[in] src_path folder with lua includes
+--! @param[in] src_file entry file
+--! @param[in] dest_file packaged file output
+--! @par Input
+--! @li @c lib_common_math.lua
+--! @code
+--! local function sum(a, b)
+--!     return a + b
+--! end
+--! 
+--! local P = {
+--!     sum = sum
+--! }
+--! 
+--! return P
+--! @endcode
+--!
+--! @li @c main.lua
+--! @code
+--! local os = require('os')
+--! local zeebo_math = require('lib_common_math')
+--! 
+--! print(zeebo_math.sum(1, 2))
+--! os.exit(0)
+--! @endcode
+--! 
+--! @par Output 
+--! @li @c main.lua
+--! @code
+--! local os = require('os')
+--! local lib_common_math = nil
+--! 
+--! local function main()
+--!     local zeebo_math = lib_common_math()
+--!     print(zeebo_math.sum(1, 2))
+--!     os.exit(0)
+--! end
+--! 
+--! lib_common_math = function()
+--!     local function sum(a, b)
+--!         return a + b
+--!     end
+--! 
+--!     local P = {
+--!         sum = sum
+--!     }
+--!     
+--!     return P
+--! end
+--! 
+--! main()
+--! @endcode
+local function bundler(src_path, src_file, dest_file)
+
+end
+
 local P = {
     move = move,
     moveLua = moveLua,
-    build = build
+    bundler = bundler,
+    build = build,
+    clear = clear
 }
 
 return P

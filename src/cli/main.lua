@@ -4,11 +4,13 @@ local zeebo_fs = require('src/cli/fs')
 
 --! @cond
 local run = zeebo_args.has(arg, 'run')
+local bundler = zeebo_args.has(arg, 'bundler')
 local coverage = zeebo_args.has(arg, 'coverage')
 local core = zeebo_args.get(arg, 'core', 'ginga')
+local dist = zeebo_args.get(arg, 'dist', './dist/')
 local screen = zeebo_args.get(arg, 'screen', '1280x720')
-local command = zeebo_args.param(arg, {'core', 'screen'}, 1, 'help')
-local game = zeebo_args.param(arg, {'core', 'screen'}, 2, '')
+local command = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 1, 'help')
+local game = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 2, '')
 
 local core_list = {
     repl={
@@ -36,6 +38,11 @@ if command == 'run' then
         os.exit(1)
     end
     os.exit(os.execute(core_list[core].exe) and 0 or 1)
+elseif command == 'clear' then
+    zeebo_fs.clear(dist)
+elseif command == 'bundler' then
+    local path, file = game:match("(.-)([^/\\]+)$")
+    zeebo_fs.bundler(path, file, dist..file)
 elseif command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
     local ok = os.execute('lua '..coverage..' ./tests/test_lib_common_math.lua')
@@ -48,13 +55,7 @@ elseif command == 'test-self' then
     end
 elseif command == 'build' then
     -- clean dist
-    if os.execute('rm --version > /dev/null 2> /dev/null') then
-        os.execute('mkdir -p ./dist/')
-        os.execute('rm -Rf ./dist/*')
-    else
-        os.execute('rmdir /s /q .\\dist\\*')
-        os.execute('mkdir .\\dist')
-    end
+    zeebo_fs.clear(dist)
     
     -- check core
     if not core_list[core] then
@@ -62,21 +63,35 @@ elseif command == 'build' then
         exit(1)
     end
     
+    -- pre bundler
+    if bundler then
+        bundler = '_bundler/'
+        zeebo_fs.clear(dist..bundler)
+    else
+        bundler = ''
+    end
+
     -- move game
     if game and #game > 0 then
-        zeebo_fs.move(game, 'dist/game.lua')
+        zeebo_fs.move(game, dist..'game.lua')
     end
 
     -- core move
     local index = 1
     local core = core_list[core]
-    zeebo_fs.build(core.src, './dist')
+    zeebo_fs.build(core.src, dist..bundler)
     if core.extras then
         while index <= #core.extras do
             local file = core.extras[index]
-            zeebo_fs.move(file, './dist/'..file:gsub('.*/', ''))
+            zeebo_fs.move(file, dist..file:gsub('.*/', ''))
             index = index + 1
         end
+    end
+
+    -- combine files
+    if #bundler > 0 then
+        zeebo_fs.bundler(dist..bundler, 'main.lua', dist..'main.lua')
+        zeebo_fs.clear(dist..bundler)
     end
 
     if run then
