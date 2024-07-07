@@ -14,7 +14,7 @@
 ### Love 2D :heart_decoration: :desktop_computer:
 
 ```bash
-$ ./cli.sh build --game ./examples/asteroids --core love --run
+$ ./cli.sh build ./examples/asteroids/game.lua --core love --run
 ```
 
 ### Ginga :brazil: :tv:
@@ -22,5 +22,5 @@ $ ./cli.sh build --game ./examples/asteroids --core love --run
  * :octocat: [telemidia/ginga](https://github.com/TeleMidia/ginga)
 
 ```bash
-$ ./cli.sh build --game ./examples/asteroids --core ginga --run
+$ ./cli.sh build ./examples/asteroids/game.lua --core ginga --run
 ```
