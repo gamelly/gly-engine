@@ -9,7 +9,6 @@
  * **Progressive "Television" Apps** _(PWA but is for Brazilian TVs)_
  * **Many testing tools** _(REPL, Unit Tests, [TAS](https://tasvideos.org/WelcomeToTASVideos#WhatIsATas) Tests)_
  * **Pure functions**
- * **No Tricks**
 
 ### Love 2D :heart_decoration: :desktop_computer:
 
@@ -24,3 +23,6 @@ $ ./cli.sh build ./examples/asteroids/game.lua --core love --run
 ```bash
 $ ./cli.sh build ./examples/asteroids/game.lua --core ginga --run
 ```
+
+---
+This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.
