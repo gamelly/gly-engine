@@ -39,11 +39,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         poly: () => {}
     }
 
+    const keys = [
+        ['KeyZ', 'red'],
+        ['KeyX', 'green'],
+        ['KeyC', 'yellow'],
+        ['KeyV', 'blue'],
+        ['Enter', 'enter'],
+        ['ArrowUp', 'up'],
+        ['ArrowDown', 'down'],
+        ['ArrowLeft', 'left'],
+        ['ArrowRight', 'right'],
+    ];
+
+    const keyHandler = (ev) => {
+        const key = keys.find(key => key[0] == ev.code)
+        engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown'))
+    }
+
     lua.global.set('game_lua', game_lua)
     lua.global.set('browser_canvas', canvas_std)
     const engine_callbacks = await lua.doString(engine_lua)
     
     engine_callbacks.init(1260, 720)
+    window.addEventListener('keydown', keyHandler)
+    window.addEventListener('keyup', keyHandler)
 
     const tick = () => {
         const milis = (new Date()).getMilliseconds()

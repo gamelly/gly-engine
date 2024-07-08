@@ -16,6 +16,10 @@ local function browser_draw()
     application.callbacks.draw(std, game)
 end
 
+local function browser_keyboard(key, value)
+    std.key.press[key] = value
+end
+
 local function browser_init(width, height)
     application = (load(game_lua))()
     std.math = zeebo_math
@@ -31,6 +35,7 @@ end
 local P = {
     init=browser_init,
     update=browser_update,
+    keyboard=browser_keyboard,
     draw=browser_draw
 }
 
