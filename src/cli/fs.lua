@@ -40,7 +40,7 @@ local function moveLua(src_in, dist_path, dist_file)
 
     if src_file and dist_file then
         repeat
-            local line = src_file:read('l')
+            local line = src_file:read()
             if line then
                 local line_require = { line:match(pattern) }
                 if line_require and #line_require > 0 then
@@ -159,7 +159,7 @@ local function bundler(src_path, src_file, dest_file)
     local main_after = ''
 
     repeat
-        local line = main_file:read('l')
+        local line = main_file:read()
         if line then
             local line_require = { line:match(pattern) }
 

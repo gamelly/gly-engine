@@ -1,7 +1,8 @@
-name: DOCS
+name: docs
 
 env:
   CLOUDFLARE_PROJECT_DOXYGEN: doxygen-engine
+  CLOUDFLARE_PROJECT_PONG: pong-engine
 
 on:
   workflow_dispatch:
@@ -28,4 +29,20 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ env.CLOUDFLARE_PROJECT_DOXYGEN }}
+          directory: html
+
+  pong:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: actions/checkout@master
+      - 
+        run: |
+          docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua ./cli.sh build --core html5 ./examples/pong/game.lua --dist ./html/
+      - 
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ env.CLOUDFLARE_PROJECT_PONG }}
           directory: html
