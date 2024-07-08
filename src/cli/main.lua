@@ -77,7 +77,7 @@ elseif command == 'build' then
     -- check core
     if not core_list[core] then
         print('this core cannot be build!')
-        exit(1)
+        os.exit(1)
     end
 
     -- force html5 to bundler

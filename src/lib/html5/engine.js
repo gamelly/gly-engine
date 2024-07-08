@@ -13,14 +13,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const canvas_element = document.querySelector('#gameCanvas')
     const canvas_ctx = canvas_element.getContext("2d")
     const canvas_std = {
-        clear: (color) => {},
+        clear: (color) => {
+            canvas_ctx.fillStyle = color,
+            canvas_ctx.fillRect(0, 0, canvas_element.width, canvas_element.height)
+        },
         color: (color) => {
             canvas_ctx.strokeStyle = color
             canvas_ctx.fillStyle = color
         },
-        rect: (mode, x, y, w, h) => canvas_ctx.fillRect(x, y, w, h),
+        line: (x1, y1, x2, y2) => {
+            canvas_ctx.beginPath()
+            canvas_ctx.moveTo(x1, y1)
+            canvas_ctx.lineTo(x2, y2)
+            canvas_ctx.stroke()
+        },
+        rect: (mode, x, y, w, h) => mode === 1?
+            canvas_ctx.strokeRect(x, y, w, h):
+            canvas_ctx.fillRect(x, y, w, h),
         font: (name, size) => {},
-        text: (x, y, text) => canvas_ctx.fillText(text, x, y),
+        text: (x, y, text) => {
+            const { width } = canvas_ctx.measureText(text)
+            canvas_ctx.fillText(text, x, y)
+            return width
+        },
         poly: () => {}
     }
 
