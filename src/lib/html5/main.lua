@@ -1,4 +1,4 @@
-local application = load(game_lua)
+local application = nil
 local math = require('math')
 local zeebo_fps = require('src/lib/common/fps')
 local zeebo_math = require('src/lib/common/math')
@@ -17,7 +17,7 @@ local function browser_draw()
 end
 
 local function browser_init(width, height)
-    application = application()
+    application = (load(game_lua))()
     std.math = zeebo_math
     std.math.random = math.random
     std.draw = browser_canvas

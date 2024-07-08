@@ -30,11 +30,21 @@ local core_list = {
             'src/lib/ginga/main.ncl'
         }
     },
-    browser={
-        src='src/lib/browser/main.lua',
+    ginga_html5={
+        src='src/lib/html5/main.lua',
+        post_exe='ginga dist/main.ncl -s '..screen,
         extras={
-            'src/lib/browser/index.html',
-            'src/lib/browser/engine.js'
+            'src/lib/ginga_html5/main.ncl',
+            'src/lib/html5/index.html',
+            'src/lib/html5/index.html',
+            'src/lib/html5/engine.js',
+        }
+    },
+    html5={
+        src='src/lib/html5/main.lua',
+        extras={
+            'src/lib/html5/index.html',
+            'src/lib/html5/engine.js'
         }
     }
 }
@@ -68,6 +78,11 @@ elseif command == 'build' then
     if not core_list[core] then
         print('this core cannot be build!')
         exit(1)
+    end
+
+    -- force html5 to bundler
+    if core:find('html5') then
+        bundler = true
     end
     
     -- pre bundler
