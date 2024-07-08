@@ -17,6 +17,7 @@ on:
 jobs:
   doxygen:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
       - 
         uses: actions/checkout@master
@@ -33,6 +34,7 @@ jobs:
 
   pong:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
       - 
         uses: actions/checkout@master
