@@ -7,7 +7,8 @@ local application_default = require('src/object/application')
 local game = require('src/object/game')
 local std = require('src/object/std')
 
-local function browser_update()
+local function browser_update(milis)
+    game.milis = milis
     application.callbacks.loop(std, game)
     return game.dt
 end

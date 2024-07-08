@@ -32,12 +32,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             canvas_ctx.fillRect(x, y, w, h),
         font: (name, size) => {},
         text: (x, y, text) => {
-            const { width } = canvas_ctx.measureText(text)
-            canvas_ctx.fillText(text, x, y)
+            const { width } = canvas_ctx.measureText(text || x)
+            x && y && canvas_ctx.fillText(text, x, y)
             return width
         },
         poly: () => {}
     }
+
+    lua.global.set('game_lua', game_lua)
+    lua.global.set('browser_canvas', canvas_std)
+    const engine_callbacks = await lua.doString(engine_lua)
+    engine_callbacks.init(1260, 720)
 
     setTimeout(() => {
         const keys = [
@@ -54,24 +59,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     
         const keyHandler = (ev) => {
             const key = keys.find(key => key[0] == ev.code)
-            engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown'))
+            key && engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown'))
         }
 
         window.addEventListener('keydown', keyHandler)
         window.addEventListener('keyup', keyHandler)
     }, 100)
-
-    lua.global.set('game_lua', game_lua)
-    lua.global.set('browser_canvas', canvas_std)
-    const engine_callbacks = await lua.doString(engine_lua)
-    engine_callbacks.init(1260, 720)
        
     const tick = () => {
-        const milis = (new Date()).getMilliseconds()
-        const delay = engine_callbacks.update(milis)
+        const now = new Date()
+        const milis = now.getTime()
+        engine_callbacks.update(milis)
         engine_callbacks.draw()
-        setTimeout(tick, delay)
+        window.requestAnimationFrame(tick)
     }
 
-    tick()
+    window.requestAnimationFrame(tick)
 })
