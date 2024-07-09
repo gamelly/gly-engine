@@ -24,5 +24,13 @@ $ ./cli.sh build ./examples/asteroids/game.lua --core love --run
 $ ./cli.sh build ./examples/asteroids/game.lua --core ginga --run
 ```
 
+### Browser :globe_with_meridians:
+
+Need a web server to work, use live server in your vscode for development and github/cloudflare pages for production.
+
+```bash
+$ ./cli.sh build ./examples/asteroids/game.lua --core html5
+```
+
 ---
 This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.
