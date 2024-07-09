@@ -53,15 +53,6 @@ local function std_draw_font(a,b)
     -- TODO: not must be called in update 
 end
 
-local function std_game_reset()
-    if application.callbacks.exit then
-        application.callbacks.exit(std, game)
-    end
-    if application.callbacks.init then
-        application.callbacks.init(std, game)
-    end
-end
-
 local function std_game_exit()
     if application.callbacks.exit then
         application.callbacks.exit(std, game)
@@ -121,7 +112,7 @@ function love.load(args)
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, love.graphics.polygon)
-    std.game.reset=std_game_reset
+    std.game.reset=decorators.reset(application.callbacks, std, game)
     std.game.exit=std_game_exit
     game.width=w
     game.height=h

@@ -25,6 +25,7 @@ local function browser_init(width, height)
     application = (load(game_lua))()
     std.math = zeebo_math
     std.math.random = math.random
+    std.game.reset=decorators.reset(application.callbacks, std, game)
     std.draw = browser_canvas
     game.width = width
     game.height = height

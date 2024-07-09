@@ -41,8 +41,7 @@ local function loop(std, game)
 end
 
 local function draw(std, game)
-    std.draw.color('black')
-    std.draw.rect('fill', 0, 0, game.width, game.height)
+    std.draw.clear('black')
     std.draw.color('white')
     std.draw.rect('fill', 4, game.player_pos, 8, game.player_size)
     std.draw.rect('fill', game.ball_pos_x, game.ball_pos_y, game.ball_size, game.ball_size)
@@ -52,7 +51,7 @@ local function draw(std, game)
 end
 
 local function exit(std, game)
-    game.highscore = std.math.clamp(game.highscore, game.score, game.highscore)
+    game.highscore = std.math.max(game.highscore, game.score)
 end
 
 local P = {
