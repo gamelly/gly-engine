@@ -62,7 +62,7 @@ end
 local function asteroid_nest(std, game, x, y, id)
     local index = 1
     while index < #game.asteroid_size do
-        if index ~= id then
+        if index ~= id  and game.asteroid_size[index] ~= -1 then
             local distance = std.math.dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             if (distance - 3) <= (game.asteroid_size[index] / 2) then
                 return true

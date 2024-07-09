@@ -1,9 +1,10 @@
 local math = require('math')
 local application = require('game')
-local zeebo_math = require('lib_math')
-local decorators = require('decorators')
-local game = require('src_object_game')
-local std = require('src_object_std')
+local zeebo_fps = require('src/lib/common/fps')
+local zeebo_math = require('src/lib/common/math')
+local decorators = require('src/lib/common/decorators')
+local game = require('src/object/game')
+local std = require('src/object/std')
 local fixture190 = ''
 
 --! @short nclua:canvas
@@ -33,7 +34,6 @@ local key_bindings={
 }
 
 -- FPS
-local fps = require('lib_fps')
 local fps_obj = {total=0,count=0,period=0,passed=0,delta=0,falls=0,drop=0}
 local fps_limiter = {[100]=1, [60]=10, [30]=30, [20]=40, [15]=60, [10]=90}
 local fps_dropper = {[100]=60, [60]=30, [30]=20, [20]=15, [15]=10, [10]=10}
@@ -91,15 +91,6 @@ local function std_draw_line(x1, y1, x2, y2)
     canvas:drawLine(x1, y1, x2, y2)
 end
 
-local function std_game_reset()
-    if application.callbacks.exit then
-        application.callbacks.exit(std, game)
-    end
-    if application.callbacks.init then
-        application.callbacks.init(std, game)
-    end
-end
-
 local function std_game_exit()
     if application.callbacks.exit then
         application.callbacks.exit(std, game)
@@ -128,7 +119,7 @@ local function fixed_loop()
     game.milis = event.uptime()
     game.fps = fps_obj.total
     game.dt = fps_obj.delta 
-    if not fps.counter(game.fps_max, fps_obj, game.milis) then
+    if not zeebo_fps.counter(game.fps_max, fps_obj, game.milis) then
         game.fps_max = fps_dropper[game.fps_max]
     end
 
@@ -158,7 +149,7 @@ local function setup(evt)
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, nil, std_draw_line)
-    std.game.reset=std_game_reset
+    std.game.reset=decorators.reset(application.callbacks, std, game)
     std.game.exit=std_game_exit
     game.width=w
     game.height=h

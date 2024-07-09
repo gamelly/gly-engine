@@ -1,4 +1,4 @@
---! @file src/lib/repl/core.lua
+--! @file src/lib/repl/main.lua
 --! @short Read Eval Print Loop
 --! @brief an interpreter to debuging the game via stdio.
 --! @par Extended Backus-Naur Form
@@ -8,11 +8,11 @@
 --! digit = { ? 0 - 9 ? }- ;
 --! exit = "?" ;
 --! @endebnf
-package.path=package.path..';dist/?.lua' -- TODO make more smarth solution
-local game = require('src_object_game')
-local std = require('src_object_std')
 local math = require('math')
-local zeebo_math = require('lib_math')
+local std = require('src/object/std')
+local game = require('src/object/game')
+local application_default = require('src/object/application')
+local zeebo_math = require('src/lib/common/math')
 
 local function line_skip_frames(line_src)
     local frames, line = line_src:match('(%d+)!(.*)')
@@ -65,20 +65,23 @@ local function main()
     local frames = 0
     local variable = ''
     local assignment = ''
-    local file_name = arg[1] or './dist/src_object_application.lua'
-    local file_src = io.open(file_name, "r")
-    local apploader = file_src and load(file_src:read('*all'))
+    local file_name = arg[1]
     local started = false
+    local application = application_default
 
-    if not file_src then
-        error('game not found!'..file_name)
-    end
-    if not apploader then
-        error('game error!')
+    if file_name then
+        local file_src = io.open(file_name, "r")
+        local apploader = file_src and load(file_src:read('*all'))
+        if not file_src then
+            error('game not found!'..file_name)
+        end
+        if not apploader then
+            error('game error!')
+        end
+        application = apploader()
     end
 
     -- init the game
-    application = apploader()
     std.math = zeebo_math
     std.math.random = math.random
     application.callbacks.init(std, game)

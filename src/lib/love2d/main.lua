@@ -1,10 +1,9 @@
 local os = require('os')
-local application = require('game')
-local zeebo_math = require('lib_math')
-local decorators = require('decorators')
-local zeebo_arg = require('args')
-local game = require('src_object_game')
-local std = require('src_object_std')
+local zeebo_math = require('src/lib/common/math')
+local decorators = require('src/lib/common/decorators')
+local zeebo_args = require('src/shared/args')
+local game = require('src/object/game')
+local std = require('src/object/std')
 local key_bindings = {
     up='up',
     left='left',
@@ -16,6 +15,8 @@ local key_bindings = {
     v='blue',
     ['return']='enter'
 }
+
+local application = nil
 
 local function std_draw_clear(color)
     love.graphics.setColor(0, 0, 0)
@@ -50,15 +51,6 @@ end
 
 local function std_draw_font(a,b)
     -- TODO: not must be called in update 
-end
-
-local function std_game_reset()
-    if application.callbacks.exit then
-        application.callbacks.exit(std, game)
-    end
-    if application.callbacks.init then
-        application.callbacks.init(std, game)
-    end
 end
 
 local function std_game_exit()
@@ -97,13 +89,20 @@ function love.resize(w, h)
 end
 
 function love.load(args)
-    local screen = zeebo_arg.get(args, 'screen')
     local w, h = love.graphics.getDimensions()
+    local cwd = love.filesystem.getSource()
+    local screen = zeebo_args.get(args, 'screen')
+    local game_file = zeebo_args.param(arg, {'screen'}, 2, cwd..'/game.lua')
+    application = loadfile(game_file)
+    if not application then
+        error('game not found!')
+    end
     if screen then
         w, h = screen:match('(%d+)x(%d+)')
         w, h = tonumber(w), tonumber(h)
         love.window.setMode(w, h, {resizable=true})
     end
+    application = application()
     std.math=zeebo_math
     std.math.random = love.math.random
     std.draw.clear=std_draw_clear
@@ -113,7 +112,7 @@ function love.load(args)
     std.draw.font=std_draw_font
     std.draw.line=std_draw_line
     std.draw.poly=decorators.poly(0, love.graphics.polygon)
-    std.game.reset=std_game_reset
+    std.game.reset=decorators.reset(application.callbacks, std, game)
     std.game.exit=std_game_exit
     game.width=w
     game.height=h
