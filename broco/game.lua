@@ -271,33 +271,33 @@ end
 
 local function renderBroco(std, game, posX, posY, broco)
     if broco == 1 then -- square
-        --std.draw.colorRgb(225, 215, 0) -- Gold #FFD700
-        std.draw.color('yellow')
+        std.draw.colorRgb(225, 215, 0) -- Gold #FFD700
+        --std.draw.color('yellow')
         std.draw.rect('fill', posX + 2, posY + 2, 36, 36)
     elseif broco == 2 then -- diamond
         local triangleUp =   {posX+2, posY+15, posX+30, posY+15, posX+16, posY+2}
         local triangleDown = {posX+2, posY+15, posX+30, posY+15, posX+16, posY+30}
         --local diamond = {posX+2, posY+15, posX+30, posY+15, posX+16, posY+2, posX+2, posY+15, posX+30, posY+15, posX+16, posY+30}
-        --std.draw.colorRgb(185, 242, 255) -- Diamond #B9F2FF
-        std.draw.color('white')
+        std.draw.colorRgb(185, 242, 255) -- Diamond #B9F2FF
+        --std.draw.color('white')
         std.draw.poly('fill', triangleUp)
         std.draw.poly('fill', triangleDown)
         --std.draw.poly('fill', diamond)
     elseif broco == 3 then -- triangle
         local triangle = {posX+2, posY+30, posX+30, posY+30, posX+16, posY+2}
-        --std.draw.colorRgb(64, 224, 208) -- Turquoise #40E0D0
-        std.draw.color('green')
+        std.draw.colorRgb(0, 208, 98) -- Emerald #00D062
+        --std.draw.color('green')
         std.draw.poly('fill', triangle)
     elseif broco == 4 then -- plus
-        --std.draw.colorRgb(61, 53, 75) -- Obsidian #3D354B
-        std.draw.color('red')
+        std.draw.colorRgb(61, 53, 75) -- Obsidian #3D354B
+        --std.draw.color('red')
         std.draw.rect('fill', posX+2, posY+10, 28, 12)
         std.draw.rect('fill', posX+10, posY+2, 12, 28)
     elseif broco == 5 then -- future use
-        std.draw.color('black')
+        std.draw.color('red')
         std.draw.rect('fill', posX + 2, posY + 2, 28, 28)
     elseif broco == 6 then -- future use
-        std.draw.color('black')
+        std.draw.color('green')
         std.draw.rect('fill', posX + 2, posY + 2, 28, 28)
     elseif broco == 7 then -- diamond, row/horizontal match
         std.draw.color('black')
@@ -318,14 +318,15 @@ local function draw(std, game)
         draw_menu(std, game)
     else 
         -- fill background
-        --std.draw.colorRgb(149, 165, 166)
-        std.draw.clear('black')
+        std.draw.colorRgb(66, 66, 66)
+        std.draw.rect('fill', 0, 0, game.width, game.height)
+        --std.draw.clear('black')
 
         -- draw highscore
-        --std.draw.colorRgb(192, 192, 192)
         startH = 40
         startV = 120
-        std.draw.color('white')
+        std.draw.colorRgb(192, 192, 192)
+        --std.draw.color('white')
         std.draw.rect('fill', startH , startV, 120, 80)
         std.draw.color('black')
         std.draw.text(startH, startV, 'HI-SCORE')
@@ -334,8 +335,8 @@ local function draw(std, game)
         -- draw broco count
         startH = 40
         startV = 280
-        --std.draw.colorRgb(192, 192, 192)
-        std.draw.color('white')
+        std.draw.colorRgb(192, 192, 192)
+        --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 280)
         std.draw.color('black')
         std.draw.text(startH, startV, 'BROCO COUNT')
@@ -356,13 +357,20 @@ local function draw(std, game)
         std.draw.color('black')
         std.draw.text(startH + 40, startV + 160, string.format("%05d", game.count.plus))
 
-        renderBroco(std, game, startH, startV + 200, 1) --square
+        renderBroco(std, game, startH, startV + 200, 5) --square
         std.draw.color('black')
         std.draw.text(startH + 40, startV + 200, string.format("%05d", game.count.squares))
 
-        renderBroco(std, game, startH, startV + 240, 1) --square
+        renderBroco(std, game, startH, startV + 240, 6) --square
         std.draw.color('black')
         std.draw.text(startH + 40, startV + 240, string.format("%05d", game.count.squares))
+
+        -- draw board background
+        startH = game.boardStartHorizontal
+        startV = game.boardStartVertical
+
+        std.draw.colorRgb(192, 192, 192)
+        std.draw.rect('fill', startH, startV, (game.boardHorSize[game.difficulty] * 40), (game.boardVerSize[game.difficulty] * 40))
 
         -- draw brocos
         local hor = 0
@@ -383,10 +391,10 @@ local function draw(std, game)
         end
 
         -- draw selected broco
-        --std.draw.colorRgb(192, 192, 192)
         startH = 680
         startV = 120
-        std.draw.color('white')
+        std.draw.colorRgb(192, 192, 192)
+        --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 160)
         std.draw.color('black')
         std.draw.text(startH, startV, 'SELECTED')
@@ -394,15 +402,15 @@ local function draw(std, game)
             renderBroco(std, game, startH+40, startV + 80, game.selected.broco)
             startH = game.boardStartHorizontal + (game.selected.h * 40)
             startV = game.boardStartVertical + (game.selected.v * 40)
-            std.draw.color('white')
+            std.draw.color('black')
             std.draw.rect('line', startH, startV, 40, 40)
         end
 
         startH = 680
         startV = 320
         -- draw score
-        --std.draw.colorRgb(192, 192, 192)
-        std.draw.color('white')
+        std.draw.colorRgb(192, 192, 192)
+        --std.draw.color('white')
         std.draw.rect('fill', startH , startV, 96, 64)
         std.draw.color('black')
         std.draw.text(startH, startV, '  SCORE')
@@ -411,7 +419,7 @@ local function draw(std, game)
         -- draw player
         startH = game.boardStartHorizontal + (game.playerPos.h * 40)
         startV = game.boardStartVertical + (game.playerPos.v * 40)
-        std.draw.color('white')
+        std.draw.color('black')
         std.draw.rect('line', startH, startV, 40, 40)
         
     end

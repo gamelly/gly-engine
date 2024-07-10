@@ -34,6 +34,13 @@ local function std_draw_color(color)
     love.graphics.setColor(colors[color][1], colors[color][2], colors[color][3])
 end
 
+local function std_draw_colorrgb(r,g,b)
+    r = zeebo_math.clamp(r, 0, 255)
+    g = zeebo_math.clamp(g, 0, 255)
+    b = zeebo_math.clamp(b, 0, 255)
+    love.graphics.setColor(love.math.colorFromBytes(r, g, b))
+end
+
 local function std_draw_rect(a,b,c,d,e,f)
     love.graphics.rectangle(a, b, c, d, e)
 end
@@ -107,6 +114,7 @@ function love.load(args)
     std.math.random = love.math.random
     std.draw.clear=std_draw_clear
     std.draw.color=std_draw_color
+    std.draw.colorRgb=std_draw_colorrgb
     std.draw.rect=std_draw_rect
     std.draw.text=std_draw_text
     std.draw.font=std_draw_font
