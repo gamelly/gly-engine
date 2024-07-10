@@ -27,7 +27,7 @@ local function init(std, game)
     local maxBrocos
     if game.difficulty == 1 then
         maxBrocos = 4
-    elseif game.difficulty == 1 then
+    elseif game.difficulty == 2 then
         maxBrocos = 5
     else
         maxBrocos = 6
@@ -56,6 +56,8 @@ local function init(std, game)
     game.count.diamonds = 0
     game.count.triangles = 0
     game.count.plus = 0
+    game.count.trapezoid = 0
+    game.count.star = 0
     
     game.loopCount = 0
     game.canReadInput = true
@@ -172,6 +174,10 @@ local function loop(std, game)
                         game.count.triangles = game.count.triangles + game.matches
                     elseif game.board[index] == 4 then
                         game.count.plus = game.count.plus + game.matches
+                    elseif game.board[index] == 5 then
+                        game.count.trapezoid = game.count.trapezoid + game.matches
+                    elseif game.board[index] == 6 then
+                        game.count.star = game.count.star + game.matches
                     end
                     
                     game.board[index + 2] = 7
@@ -217,6 +223,10 @@ local function loop(std, game)
                         game.count.triangles = game.count.triangles + game.matches
                     elseif game.board[index] == 4 then
                         game.count.plus = game.count.plus + game.matches
+                    elseif game.board[index] == 5 then
+                        game.count.trapezoid = game.count.trapezoid + game.matches
+                    elseif game.board[index] == 6 then
+                        game.count.star = game.count.star + game.matches
                     end
                     
                     game.board[index + (game.boardHorSize[game.difficulty] * 2)] = 8
@@ -272,39 +282,51 @@ end
 local function renderBroco(std, game, posX, posY, broco)
     if broco == 1 then -- square
         std.draw.colorRgb(225, 215, 0) -- Gold #FFD700
-        --std.draw.color('yellow')
         std.draw.rect('fill', posX + 2, posY + 2, 36, 36)
     elseif broco == 2 then -- diamond
-        local triangleUp =   {posX+2, posY+15, posX+30, posY+15, posX+16, posY+2}
-        local triangleDown = {posX+2, posY+15, posX+30, posY+15, posX+16, posY+30}
-        --local diamond = {posX+2, posY+15, posX+30, posY+15, posX+16, posY+2, posX+2, posY+15, posX+30, posY+15, posX+16, posY+30}
+        local diamond1 = {posX+19, posY+19, posX+2, posY+19, posX+19, posY+2}
+        local diamond2 = {posX+20, posY+19, posX+37, posY+19, posX+20, posY+2}
+        local diamond3 = {posX+20, posY+20, posX+37, posY+20, posX+20, posY+37}
+        local diamond4 = {posX+19, posY+20, posX+2, posY+20, posX+19, posY+37}
         std.draw.colorRgb(185, 242, 255) -- Diamond #B9F2FF
-        --std.draw.color('white')
-        std.draw.poly('fill', triangleUp)
-        std.draw.poly('fill', triangleDown)
-        --std.draw.poly('fill', diamond)
+        std.draw.poly('fill', diamond1)
+        std.draw.poly('fill', diamond2)
+        std.draw.poly('fill', diamond3)
+        std.draw.poly('fill', diamond4)
     elseif broco == 3 then -- triangle
-        local triangle = {posX+2, posY+30, posX+30, posY+30, posX+16, posY+2}
+        local triangleLeft = {posX+19, posY+2, posX+19, posY+37, posX+2, posY+37}
+        local triangleRight = {posX+20, posY+2, posX+20, posY+37, posX+37, posY+37}
         std.draw.colorRgb(0, 208, 98) -- Emerald #00D062
-        --std.draw.color('green')
-        std.draw.poly('fill', triangle)
+        std.draw.poly('fill', triangleLeft)
+        std.draw.poly('fill', triangleRight)
     elseif broco == 4 then -- plus
         std.draw.colorRgb(61, 53, 75) -- Obsidian #3D354B
-        --std.draw.color('red')
-        std.draw.rect('fill', posX+2, posY+10, 28, 12)
-        std.draw.rect('fill', posX+10, posY+2, 12, 28)
-    elseif broco == 5 then -- future use
-        std.draw.color('red')
-        std.draw.rect('fill', posX + 2, posY + 2, 28, 28)
-    elseif broco == 6 then -- future use
-        std.draw.color('green')
-        std.draw.rect('fill', posX + 2, posY + 2, 28, 28)
-    elseif broco == 7 then -- diamond, row/horizontal match
+        std.draw.rect('fill', posX+14, posY+2, 11, 35)
+        std.draw.rect('fill', posX+2, posY+14, 35, 11)
+    elseif broco == 5 then -- trapezoid
+        local trapezoid1 = {posX+12, posY+2, posX+12, posY+37, posX+2, posY+37}
+        local trapezoid2 = {posX+12, posY+2, posX+12, posY+37, posX+27, posY+2}
+        local trapezoid3 = {posX+27, posY+37, posX+27, posY+2, posX+12, posY+37}
+        local trapezoid4 = {posX+27, posY+37, posX+27, posY+2, posX+37, posY+37}
+        std.draw.colorRgb(23, 47, 93) -- Sapphire #172F5D
+        std.draw.poly('fill', trapezoid1)
+        std.draw.poly('fill', trapezoid2)
+        std.draw.poly('fill', trapezoid3)
+        std.draw.poly('fill', trapezoid4)
+    elseif broco == 6 then -- star
+        local star1 = {posX+2, posY+15, posX+20, posY+26, posX+37, posY+15}
+        local star2 = {posX+20, posY+2, posX+20, posY+26, posX+2, posY+37}
+        local star3 = {posX+20, posY+2, posX+20, posY+26, posX+37, posY+37}
+        std.draw.colorRgb(220, 20, 60) -- Crimson #DC143C
+        std.draw.poly('fill', star1)
+        std.draw.poly('fill', star2)
+        std.draw.poly('fill', star3)
+    elseif broco == 7 then -- square, row/horizontal match
         std.draw.color('black')
-        std.draw.rect('fill', posX + 2, posY + 2, 28, 28)
-    elseif broco == 8 then -- diamond, column/vertical match
+        std.draw.rect('fill', posX+2, posY+14, 35, 11)
+    elseif broco == 8 then -- square, column/vertical match
         std.draw.color('black')
-        std.draw.rect('fill', posX + 2, posY + 2, 28, 28)
+        std.draw.rect('fill', posX+14, posY+2, 11, 35)
     end
 end
 
@@ -312,15 +334,16 @@ local function draw(std, game)
     local startH = 0
     local startV = 0
 
+    -- fill background
+    std.draw.colorRgb(66, 66, 66)
+    std.draw.rect('fill', 0, 0, game.width, game.height)
+    --std.draw.clear('black')
+
     --draw_logo(std, game)
 
     if game.state == 0 then
         draw_menu(std, game)
     else 
-        -- fill background
-        std.draw.colorRgb(66, 66, 66)
-        std.draw.rect('fill', 0, 0, game.width, game.height)
-        --std.draw.clear('black')
 
         -- draw highscore
         startH = 40
@@ -334,10 +357,20 @@ local function draw(std, game)
 
         -- draw broco count
         startH = 40
-        startV = 280
+        startV = 240
+
+        local maxV = 280
+        if game.difficulty == 1 then
+            maxV = 200
+        elseif game.difficulty == 2 then
+            maxV = 240
+        else
+            maxV = 280
+        end
+
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
-        std.draw.rect('fill', startH, startV, 120, 280)
+        std.draw.rect('fill', startH, startV, 120, maxV)
         std.draw.color('black')
         std.draw.text(startH, startV, 'BROCO COUNT')
 
@@ -357,38 +390,55 @@ local function draw(std, game)
         std.draw.color('black')
         std.draw.text(startH + 40, startV + 160, string.format("%05d", game.count.plus))
 
-        renderBroco(std, game, startH, startV + 200, 5) --square
-        std.draw.color('black')
-        std.draw.text(startH + 40, startV + 200, string.format("%05d", game.count.squares))
+        if game.difficulty > 1 then
+            renderBroco(std, game, startH, startV + 200, 5) --square
+            std.draw.color('black')
+            std.draw.text(startH + 40, startV + 200, string.format("%05d", game.count.trapezoid))
 
-        renderBroco(std, game, startH, startV + 240, 6) --square
-        std.draw.color('black')
-        std.draw.text(startH + 40, startV + 240, string.format("%05d", game.count.squares))
+            if game.difficulty == 3 then
+                renderBroco(std, game, startH, startV + 240, 6) --square
+                std.draw.color('black')
+                std.draw.text(startH + 40, startV + 240, string.format("%05d", game.count.star))
+            end
+        end
 
-        -- draw board background
-        startH = game.boardStartHorizontal
-        startV = game.boardStartVertical
-
-        std.draw.colorRgb(192, 192, 192)
-        std.draw.rect('fill', startH, startV, (game.boardHorSize[game.difficulty] * 40), (game.boardVerSize[game.difficulty] * 40))
-
-        -- draw brocos
         local hor = 0
         local ver = 0
         local posH = 0
         local posV = 0
+
+        if game.difficulty == 1 then
+            startH = game.boardStartHorizontal + 80
+            startV = game.boardStartVertical
+        elseif game.difficulty == 2 then
+            startH = game.boardStartHorizontal + 40
+            startV = game.boardStartVertical
+        else
+            startH = game.boardStartHorizontal
+            startV = game.boardStartVertical
+        end
+
+        -- draw board background
+        std.draw.colorRgb(192, 192, 192)
+        std.draw.rect('fill', startH, startV, (game.boardHorSize[game.difficulty] * 40), (game.boardVerSize[game.difficulty] * 40))
+
+        -- draw brocos
         for i = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
-            posH = game.boardStartHorizontal + (hor * 40)
-            posV = game.boardStartVertical + (ver * 40)
-            
-            renderBroco(std, game, posH, posV, game.board[i])
-            
+            posH = startH + (hor * 40)
+            posV = startV + (ver * 40)
+            renderBroco(std, game, posH, posV, game.board[i])       
             hor = hor + 1
             if(hor >= game.boardHorSize[game.difficulty]) then
                 hor = 0
                 ver = ver + 1
             end
         end
+
+        -- draw player
+        startH = startH + (game.playerPos.h * 40)
+        startV = startV + (game.playerPos.v * 40)
+        std.draw.color('black')
+        std.draw.rect('line', startH, startV, 40, 40)
 
         -- draw selected broco
         startH = 680
@@ -402,6 +452,11 @@ local function draw(std, game)
             renderBroco(std, game, startH+40, startV + 80, game.selected.broco)
             startH = game.boardStartHorizontal + (game.selected.h * 40)
             startV = game.boardStartVertical + (game.selected.v * 40)
+            if game.difficulty == 1 then
+                startH = startH + 80
+            elseif game.difficulty == 1 then
+                startH = startH + 40
+            end
             std.draw.color('black')
             std.draw.rect('line', startH, startV, 40, 40)
         end
@@ -415,13 +470,7 @@ local function draw(std, game)
         std.draw.color('black')
         std.draw.text(startH, startV, '  SCORE')
         std.draw.text(startH, startV + 40, string.format("%07d", game.score))
-        
-        -- draw player
-        startH = game.boardStartHorizontal + (game.playerPos.h * 40)
-        startV = game.boardStartVertical + (game.playerPos.v * 40)
-        std.draw.color('black')
-        std.draw.rect('line', startH, startV, 40, 40)
-        
+          
     end
 end
 
