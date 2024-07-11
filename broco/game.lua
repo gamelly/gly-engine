@@ -6,10 +6,11 @@
 
 --! 0 --> 1
 --! 1 --> 2
+--! 1 --> 10
 --! 2 --> 3
 --! 3 --> 1
---! 1 --> ?
---! ? ->> 1
+--! 10 --> 0
+--! 10 --> 1
 
 local function init(std, game)
     game.state = 0
@@ -35,22 +36,25 @@ local function init(std, game)
     game.loopCount = 0
     game.canReadInput = true
     game.pause = false
+    game.destroy = false
 end
 
 local function init_board(std, game)
     game.score = 0
     game.diffOffset = 0
     local maxBrocos
+
     if game.difficulty == 1 then
         maxBrocos = 4
         game.diffOffset = 80
     elseif game.difficulty == 2 then
         maxBrocos = 5
         game.diffOffset = 40
-    else
+    elseif game.difficulty == 3 then
         maxBrocos = 6
         game.diffOffset = 0
     end
+    game.board = {}
     for cont = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
         game.board[cont] = std.math.random(1, maxBrocos)
     end
@@ -77,35 +81,39 @@ end
 
 local function menu_logic(std, game)
     if game.canReadInput then
-        if game.state == 0 then
-            if std.key.press.right == 1 and game.difficulty < 3 then
-                game.difficulty = game.difficulty + 1
-                game.canReadInput = false
-            end
-            if std.key.press.left == 1 and game.difficulty > 1 then
-                game.difficulty = game.difficulty - 1
-                game.canReadInput = false
-            end
-            if std.key.press.red == 1 or std.key.press.enter == 1 then
+        if std.key.press.right == 1 and game.difficulty < 3 then
+            game.difficulty = game.difficulty + 1
+            game.canReadInput = false
+        end
+        if std.key.press.left == 1 and game.difficulty > 1 then
+            game.difficulty = game.difficulty - 1
+            game.canReadInput = false
+        end
+        if std.key.press.red == 1 or std.key.press.enter == 1 then
+            init_board(std, game)
+            game.canReadInput = false
+        end
+    end
+end
+
+local function pause_logic(std, game)
+    if game.canReadInput then
+        if std.key.press.up == 1 and game.cursor > 0 then
+            game.cursor = game.cursor - 1
+            game.canReadInput = false
+        end
+        if std.key.press.down == 1 and game.cursor < 1 then
+            game.cursor = game.cursor + 1
+            game.canReadInput = false
+        end
+        if std.key.press.red == 1 then
+            if game.cursor == 1 then
+                game.destroy = true
                 init_board(std, game)
-                game.canReadInput = false
             end
-        elseif game.state == 10 then
-            if std.key.press.up == 1 and game.cursor > 0 then
-                game.cursor = game.cursor - 1
-                game.canReadInput = false
-            end
-            if std.key.press.down == 1 and game.cursor < 1 then
-                game.cursor = game.cursor + 1
-                game.canReadInput = false
-            end
-            if std.key.press.red == 1 then
-                if game.cursor == 0 then
-                    game.pause = false
-                    game.switchState = true
-                    game.canReadInput = false
-                end
-            end
+            game.pause = false
+            game.switchState = true
+            game.canReadInput = false
         end
     end
 end
@@ -297,7 +305,7 @@ local function remove_matched(std, game)
 end
 
 local function loop(std, game)
-    if game.state == 0 or game.state == 10 then
+    if game.state == 0 then
         menu_logic(std, game)
     elseif game.state == 1 then
         game_logic(std, game)
@@ -305,6 +313,8 @@ local function loop(std, game)
         check_matches(std, game)
     elseif game.state == 3 then
         remove_matched(std, game)
+    elseif game.state == 10 then
+        pause_logic(std, game)
     end
     if game.switchState then
         if game.state == 0 then
@@ -324,7 +334,13 @@ local function loop(std, game)
         elseif game.state == 3 then
             game.state = 1
         elseif game.state == 10 then
-            game.state = 2
+            if game.destroy then
+                game.cursor = 0
+                game.destroy = false
+                game.state = 0
+            else
+                game.state = 1
+            end
         end
         game.switchState = false
     end
@@ -333,7 +349,7 @@ local function loop(std, game)
     else
         game.loopCount = 1
     end
-    if (game.loopCount % 30) == 0 and game.canReadInput == false then
+    if (game.loopCount % 15) == 0 and game.canReadInput == false then
         game.canReadInput = true
     end
 end
@@ -392,13 +408,13 @@ end
 local function draw_menu(std, game)
     local menuBrocoLine = {1,2,3,4,5,6}
 
-    local h = game.width / 4
+    local h = game.width / 8
     local v = game.height / 8
 
     -- draw logo
     std.draw.colorRgb(192,192,192)
     std.draw.rect('fill', h, v, (40*14), 40)
-    std.draw.rect('fill', h+230, v+70, 100, 180)
+    std.draw.rect('fill', h+230, v+70, 100, 140)
 
     for i = 1, #menuBrocoLine do
         local newH = h + (40 * (i - 1))
@@ -416,26 +432,54 @@ local function draw_menu(std, game)
     v = v + 80
     h = h + 240
     std.draw.color('black')
-    if game.state == 10 then
-        std.draw.text(h+6, v+12,    ' Continuar ')
-        std.draw.text(h+6, v+40+12, ' Novo Jogo ')
-    elseif game.state == 0 then
-        std.draw.text(h+6, v+12, ' Novo Jogo ')
-        std.draw.text(h+6, v+40+12, 'Dificuldade')
-        if game.difficulty == 1 then
-            std.draw.text(h, v+80+12, '-> Fácil')
-        elseif game.difficulty == 2 then
-            std.draw.text(h, v+80+12, '<- Médio ->')
-        else
-            std.draw.text(h, v+80+12, '<- Difícil')
-        end
+    std.draw.text(h+6, v+12,    ' Novo Jogo ')
+    std.draw.text(h+6, v+40+12, 'Dificuldade')
+    if game.difficulty == 1 then
+        std.draw.text(h, v+80+12, '-> Fácil')
+    elseif game.difficulty == 2 then
+        std.draw.text(h, v+80+12, '<- Médio ->')
+    else
+        std.draw.text(h, v+80+12, '<- Difícil')
     end
+    
     std.draw.rect('line', h+2, v + (game.cursor * 40) + 10, 76, 20)
     std.draw.text(h, v+240, 'game.width ' .. game.width)
     std.draw.text(h, v+280, 'game.height ' .. game.height)
     std.draw.text(h, v+320, 'h ' .. h)
     std.draw.text(h, v+360, 'v ' .. v)
+end
 
+local function draw_pause(std, game)
+    local menuBrocoLine = {1,2,3,4,5,6}
+
+    local h = game.width / 4
+    local v = game.height / 8
+
+    -- draw logo
+    std.draw.colorRgb(192,192,192)
+    std.draw.rect('fill', h, v, (40*14), 40)
+    std.draw.rect('fill', h+230, v+70, 100, 100)
+
+    for i = 1, #menuBrocoLine do
+        local newH = h + (40 * (i - 1))
+        render_broco(std, game, newH, v, menuBrocoLine[i])
+    end
+    std.draw.color('black')
+    std.draw.text(h + 240 + 15, v+12, 'PAUSE')
+    local newH = (h + 320)
+    for i = 6, 1, -1 do
+        render_broco(std, game, newH, v, menuBrocoLine[i])
+        newH = newH + 40
+    end
+
+    -- draw menu
+    v = v + 80
+    h = h + 240
+    std.draw.color('black')
+    std.draw.text(h+6, v+12,    ' Continuar ')
+    std.draw.text(h+6, v+40+12, '   Menu   ')
+
+    std.draw.rect('line', h+2, v + (game.cursor * 40) + 10, 76, 20)
 
 end
 
@@ -450,9 +494,11 @@ local function draw(std, game)
 
     --draw_logo(std, game)
 
-    if game.state == 0 or game.state == 10 then
+    if game.state == 0 then
         draw_menu(std, game)
-    else 
+    elseif game.state == 10 then
+        draw_pause(std, game)
+    else
         -- draw highscore
         startH = 40
         startV = 120
@@ -552,11 +598,6 @@ local function draw(std, game)
             render_broco(std, game, startH+40, startV + 80, game.selected.broco)
             startH = game.boardStartHorizontal + game.diffOffset + (game.selected.h * 40)
             startV = game.boardStartVertical + (game.selected.v * 40)
-            if game.difficulty == 1 then
-                startH = startH + 80
-            elseif game.difficulty == 1 then
-                startH = startH + 40
-            end
             std.draw.color('black')
             std.draw.rect('line', startH, startV, 40, 40)
         end
