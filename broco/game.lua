@@ -405,6 +405,13 @@ local function render_broco(std, game, posX, posY, broco)
     end
 end
 
+local function draw_border(std, game, h, v, hSize, vSize, thick)
+    std.draw.rect('fill', h, v, hSize, thick)
+    std.draw.rect('fill', h, v + (vSize - thick), hSize, thick)
+    std.draw.rect('fill', h, v, thick, vSize)
+    std.draw.rect('fill', h + (hSize - thick), v, thick, vSize)
+end
+
 local function draw_menu(std, game)
     local menuBrocoLine = {1,2,3,4,5,6}
 
@@ -414,13 +421,13 @@ local function draw_menu(std, game)
     -- draw logo
     std.draw.colorRgb(192,192,192)
     std.draw.rect('fill', h, v, (40*14), 40)
-    std.draw.rect('fill', h+230, v+70, 100, 140)
 
     for i = 1, #menuBrocoLine do
         local newH = h + (40 * (i - 1))
         render_broco(std, game, newH, v, menuBrocoLine[i])
     end
     std.draw.color('black')
+    draw_border(std, game, h - 5, v - 5, (40*14) + 10, 40 + 10, 5)
     std.draw.text(h + 240 + 15, v+12, 'BROCOS')
     local newH = (h + 320)
     for i = 6, 1, -1 do
@@ -431,7 +438,10 @@ local function draw_menu(std, game)
     -- draw menu
     v = v + 80
     h = h + 240
+    std.draw.colorRgb(192,192,192)
+    std.draw.rect('fill', h - 10, v - 10, 100, 140)
     std.draw.color('black')
+    draw_border(std, game, h - 10, v - 10, 100, 140, 5)
     std.draw.text(h+6, v+12,    ' Novo Jogo ')
     std.draw.text(h+6, v+40+12, 'Dificuldade')
     if game.difficulty == 1 then
@@ -441,12 +451,11 @@ local function draw_menu(std, game)
     else
         std.draw.text(h, v+80+12, '<- Difícil')
     end
-    
     std.draw.rect('line', h+2, v + (game.cursor * 40) + 10, 76, 20)
-    std.draw.text(h, v+240, 'game.width ' .. game.width)
-    std.draw.text(h, v+280, 'game.height ' .. game.height)
-    std.draw.text(h, v+320, 'h ' .. h)
-    std.draw.text(h, v+360, 'v ' .. v)
+    --std.draw.text(h, v+240, 'game.width ' .. game.width)
+    --std.draw.text(h, v+280, 'game.height ' .. game.height)
+    --std.draw.text(h, v+320, 'h ' .. h)
+    --std.draw.text(h, v+360, 'v ' .. v)
 end
 
 local function draw_pause(std, game)
@@ -465,6 +474,7 @@ local function draw_pause(std, game)
         render_broco(std, game, newH, v, menuBrocoLine[i])
     end
     std.draw.color('black')
+    draw_border(std, game, h - 5, v - 5, (40*14) + 10, 40 + 10, 5)
     std.draw.text(h + 240 + 15, v+12, 'PAUSE')
     local newH = (h + 320)
     for i = 6, 1, -1 do
@@ -476,8 +486,9 @@ local function draw_pause(std, game)
     v = v + 80
     h = h + 240
     std.draw.color('black')
+    draw_border(std, game, h - 10, v - 10, 100, 100, 5)
     std.draw.text(h+6, v+12,    ' Continuar ')
-    std.draw.text(h+6, v+40+12, '   Menu   ')
+    std.draw.text(h+6, v+40+12, '    Menu   ')
 
     std.draw.rect('line', h+2, v + (game.cursor * 40) + 10, 76, 20)
 
@@ -504,15 +515,15 @@ local function draw(std, game)
         startV = 120
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
-        std.draw.rect('fill', startH , startV, 120, 80)
+        std.draw.rect('fill', startH, startV, 120, 80)
         std.draw.color('black')
-        std.draw.text(startH, startV, 'HI-SCORE')
-        std.draw.text(startH, startV + 40, string.format("%07d", game.highscore))
+        std.draw.text(startH + 30, startV + 15, 'HI-SCORE')
+        std.draw.text(startH + 30, startV + 40 + 5, string.format("%07d", game.highscore))
+        draw_border(std, game, startH, startV, 120, 80, 5)
 
         -- draw broco count
         startH = 40
         startV = 240
-
         local maxV = 280
         if game.difficulty == 1 then
             maxV = 200
@@ -521,53 +532,48 @@ local function draw(std, game)
         else
             maxV = 280
         end
-
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, maxV)
         std.draw.color('black')
-        std.draw.text(startH, startV, 'BROCO COUNT')
-
+        std.draw.text(startH + 16, startV + 15, 'BROCO COUNT')
+        draw_border(std, game, startH - 5, startV - 5, 120 + 10, maxV + 10, 5)
         render_broco(std, game, startH, startV + 40, 1) --square
         std.draw.color('black')
-        std.draw.text(startH + 40, startV + 40, string.format("%05d", game.count.squares))
-
+        std.draw.text(startH + 40 + 16, startV + 40 + 12, string.format("%05d", game.count.squares))
         render_broco(std, game, startH, startV + 80, 2) --diamond
         std.draw.color('black')
-        std.draw.text(startH + 40, startV + 80, string.format("%05d", game.count.diamonds))
-
+        std.draw.text(startH + 40 + 16, startV + 80 + 12, string.format("%05d", game.count.diamonds))
         render_broco(std, game, startH, startV + 120, 3) --triangle
         std.draw.color('black')
-        std.draw.text(startH + 40, startV + 120, string.format("%05d", game.count.triangles))
-
+        std.draw.text(startH + 40 + 16, startV + 120 + 12, string.format("%05d", game.count.triangles))
         render_broco(std, game, startH, startV + 160, 4) --plus
         std.draw.color('black')
-        std.draw.text(startH + 40, startV + 160, string.format("%05d", game.count.plus))
-
+        std.draw.text(startH + 40 + 16, startV + 160 + 12, string.format("%05d", game.count.plus))
         if game.difficulty > 1 then
             render_broco(std, game, startH, startV + 200, 5) --square
             std.draw.color('black')
-            std.draw.text(startH + 40, startV + 200, string.format("%05d", game.count.trapezoid))
-
+            std.draw.text(startH + 40 + 16, startV + 200 + 12, string.format("%05d", game.count.trapezoid))
             if game.difficulty == 3 then
                 render_broco(std, game, startH, startV + 240, 6) --square
                 std.draw.color('black')
-                std.draw.text(startH + 40, startV + 240, string.format("%05d", game.count.star))
+                std.draw.text(startH + 40 + 16, startV + 240 + 12, string.format("%05d", game.count.star))
             end
         end
 
+        -- draw board background
         local hor = 0
         local ver = 0
         local posH = 0
         local posV = 0
-
+        local hSize = game.boardHorSize[game.difficulty] * 40
+        local vSize = game.boardVerSize[game.difficulty] * 40
         startH = game.boardStartHorizontal + game.diffOffset
         startV = game.boardStartVertical
-
-        -- draw board background
         std.draw.colorRgb(192, 192, 192)
-        std.draw.rect('fill', startH, startV, (game.boardHorSize[game.difficulty] * 40), (game.boardVerSize[game.difficulty] * 40))
-
+        std.draw.rect('fill', startH - 20, startV - 20, hSize + 40, vSize + 40)
+        std.draw.color('black')
+        draw_border(std, game, startH - 20, startV - 20, hSize + 40, vSize + 40, 5)
         -- draw brocos
         for i = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
             posH = startH + (hor * 40)
@@ -586,31 +592,33 @@ local function draw(std, game)
         std.draw.color('black')
         std.draw.rect('line', startH, startV, 40, 40)
 
-        -- draw selected broco
+        -- draw score
         startH = 680
         startV = 120
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
+        std.draw.rect('fill', startH , startV, 120, 80)
+        std.draw.color('black')
+        std.draw.text(startH + 38, startV + 15, 'SCORE')
+        std.draw.text(startH + 30, startV + 40 + 5, string.format("%07d", game.score))
+        draw_border(std, game, startH, startV, 120, 80, 5)
+
+        -- draw selected broco
+        startH = 680
+        startV = 240
+        std.draw.colorRgb(192, 192, 192)
+        --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 160)
         std.draw.color('black')
-        std.draw.text(startH, startV, 'SELECTED')
+        std.draw.text(startH + 28, startV + 15, 'SELECTED')
+        draw_border(std, game, startH, startV, 120, 160, 5)
         if game.selected.broco > 0 then
             render_broco(std, game, startH+40, startV + 80, game.selected.broco)
             startH = game.boardStartHorizontal + game.diffOffset + (game.selected.h * 40)
             startV = game.boardStartVertical + (game.selected.v * 40)
-            std.draw.color('black')
+            std.draw.color('red')
             std.draw.rect('line', startH, startV, 40, 40)
         end
-
-        startH = 680
-        startV = 320
-        -- draw score
-        std.draw.colorRgb(192, 192, 192)
-        --std.draw.color('white')
-        std.draw.rect('fill', startH , startV, 96, 64)
-        std.draw.color('black')
-        std.draw.text(startH, startV, '  SCORE')
-        std.draw.text(startH, startV + 40, string.format("%07d", game.score))
           
     end
 end
