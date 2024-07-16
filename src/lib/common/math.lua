@@ -69,7 +69,7 @@ local function max(...)
     local value = nil
     local max_value = nil
     
-    if #args == 1 and type(args[1]) == "table" then
+    if #args == 1 then
         args = args[1]
     end
 
