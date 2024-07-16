@@ -13,6 +13,11 @@
 --! 10 --> 1
 
 local function init(std, game)
+    game.fixedHSize = 800
+    game.fixedVSize = 600
+    game.offsetH = 0
+    game.offsetV = 0
+
     game.state = 0
     game.switchState = false
     game.difficulty = 2 -- 1 easy, 2 normal, 3 hard
@@ -412,107 +417,110 @@ local function draw_border(std, game, h, v, hSize, vSize, thick)
     std.draw.rect('fill', h + (hSize - thick), v, thick, vSize)
 end
 
-local function draw_menu(std, game)
+local function draw_logo(std, game)
     local menuBrocoLine = {1,2,3,4,5,6}
+    local h = game.offsetH + 120
+    local v = game.offsetV + 40
 
-    local h = game.width / 8
-    local v = game.height / 8
-
-    -- draw logo
     std.draw.colorRgb(192,192,192)
-    std.draw.rect('fill', h, v, (40*14), 40)
+    std.draw.rect('fill', h, v, (40*15), 40)
 
     for i = 1, #menuBrocoLine do
         local newH = h + (40 * (i - 1))
         render_broco(std, game, newH, v, menuBrocoLine[i])
     end
     std.draw.color('black')
-    draw_border(std, game, h - 5, v - 5, (40*14) + 10, 40 + 10, 5)
-    std.draw.text(h + 240 + 15, v+12, 'BROCOS')
-    local newH = (h + 320)
+    draw_border(std, game, h - 5, v - 5, (40*15) + 10, 40 + 10, 5)
+    if game.state == 10 then
+        std.draw.text(h + 240 + 40, v+12, 'PAUSE')
+    else
+        std.draw.text(h + 240 + 35, v+12, 'BROCOS')
+    end
+    local newH = (h + 360)
     for i = 6, 1, -1 do
         render_broco(std, game, newH, v, menuBrocoLine[i])
         newH = newH + 40
     end
+end
 
-    -- draw menu
-    v = v + 80
-    h = h + 240
+local function draw_menu(std, game)
+    local h = game.offsetH + 360
+    local v = game.offsetV + 160
+
+    -- fill background
     std.draw.colorRgb(192,192,192)
-    std.draw.rect('fill', h - 10, v - 10, 100, 140)
+    std.draw.rect('fill', h - 10, v - 10, 140, 140)
+
+    --draw options
     std.draw.color('black')
-    draw_border(std, game, h - 10, v - 10, 100, 140, 5)
-    std.draw.text(h+6, v+12,    ' Novo Jogo ')
-    std.draw.text(h+6, v+40+12, 'Dificuldade')
+    draw_border(std, game, h - 10, v - 10, 140, 140, 5)
+    std.draw.text(h + 25, v + 12,      ' Novo Jogo ')
+    std.draw.text(h + 25, v + 40 + 12, 'Dificuldade')
     if game.difficulty == 1 then
-        std.draw.text(h, v+80+12, '-> Fácil')
+        std.draw.text(h + 45, v + 80 + 12, 'Fácil')
+        std.draw.text(h + 95, v + 80 + 12, '->')
     elseif game.difficulty == 2 then
-        std.draw.text(h, v+80+12, '<- Médio ->')
+        std.draw.text(h + 10, v + 80 + 12, '<-')
+        std.draw.text(h + 42, v + 80 + 12, 'Médio')
+        std.draw.text(h + 95, v + 80 + 12, '->')
     else
-        std.draw.text(h, v+80+12, '<- Difícil')
+        std.draw.text(h + 10, v + 80 + 12, '<-')
+        std.draw.text(h + 45, v + 80 + 12, 'Difícil')
     end
-    std.draw.rect('line', h+2, v + (game.cursor * 40) + 10, 76, 20)
-    --std.draw.text(h, v+240, 'game.width ' .. game.width)
-    --std.draw.text(h, v+280, 'game.height ' .. game.height)
-    --std.draw.text(h, v+320, 'h ' .. h)
-    --std.draw.text(h, v+360, 'v ' .. v)
+    std.draw.rect('line', h + 2, v + (game.cursor * 40) + 10, 116, 20)
 end
 
 local function draw_pause(std, game)
-    local menuBrocoLine = {1,2,3,4,5,6}
+    local h = game.offsetH + 360
+    local v = game.offsetV + 160
 
-    local h = game.width / 4
-    local v = game.height / 8
-
-    -- draw logo
+    -- fill background
     std.draw.colorRgb(192,192,192)
-    std.draw.rect('fill', h, v, (40*14), 40)
-    std.draw.rect('fill', h+230, v+70, 100, 100)
-
-    for i = 1, #menuBrocoLine do
-        local newH = h + (40 * (i - 1))
-        render_broco(std, game, newH, v, menuBrocoLine[i])
-    end
+    std.draw.rect('fill', h - 10, v - 10, 140, 100)
+    -- draw options
     std.draw.color('black')
-    draw_border(std, game, h - 5, v - 5, (40*14) + 10, 40 + 10, 5)
-    std.draw.text(h + 240 + 15, v+12, 'PAUSE')
-    local newH = (h + 320)
-    for i = 6, 1, -1 do
-        render_broco(std, game, newH, v, menuBrocoLine[i])
-        newH = newH + 40
-    end
+    draw_border(std, game, h - 10, v - 10, 140, 100, 5)
+    std.draw.text(h + 30, v + 12,      'Continuar')
+    std.draw.text(h + 32, v + 40 + 12, '   Menu  ')
 
-    -- draw menu
-    v = v + 80
-    h = h + 240
-    std.draw.color('black')
-    draw_border(std, game, h - 10, v - 10, 100, 100, 5)
-    std.draw.text(h+6, v+12,    ' Continuar ')
-    std.draw.text(h+6, v+40+12, '    Menu   ')
-
-    std.draw.rect('line', h+2, v + (game.cursor * 40) + 10, 76, 20)
-
+    std.draw.rect('line', h + 2, v + (game.cursor * 40) + 10, 116, 20)
 end
 
 local function draw(std, game)
     local startH = 0
     local startV = 0
 
+    if game.width > 800 then
+        game.offsetH = (game.width - game.fixedHSize) / 2
+    else
+        game.offsetH = -20
+    end
+    if game.height > 600 then
+        game.offsetV = (game.height - game.fixedVSize) / 2
+    else
+        game.offsetV = -20
+    end
+
     -- fill background
     std.draw.colorRgb(66, 66, 66)
     std.draw.rect('fill', 0, 0, game.width, game.height)
     --std.draw.clear('black')
 
-    --draw_logo(std, game)
+    -- draw logo
+    draw_logo(std, game)
 
+    -- draw main
     if game.state == 0 then
+        -- main menu
         draw_menu(std, game)
     elseif game.state == 10 then
+        -- pause menu
         draw_pause(std, game)
     else
+        -- game board
         -- draw highscore
-        startH = 40
-        startV = 120
+        startH = game.offsetH + 40
+        startV = game.offsetV + 120
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 80)
@@ -522,8 +530,8 @@ local function draw(std, game)
         draw_border(std, game, startH, startV, 120, 80, 5)
 
         -- draw broco count
-        startH = 40
-        startV = 240
+        startH = game.offsetH + 40
+        startV = game.offsetV + 240
         local maxV = 280
         if game.difficulty == 1 then
             maxV = 200
@@ -568,8 +576,8 @@ local function draw(std, game)
         local posV = 0
         local hSize = game.boardHorSize[game.difficulty] * 40
         local vSize = game.boardVerSize[game.difficulty] * 40
-        startH = game.boardStartHorizontal + game.diffOffset
-        startV = game.boardStartVertical
+        startH = game.offsetH + game.boardStartHorizontal + game.diffOffset
+        startV = game.offsetV + game.boardStartVertical
         std.draw.colorRgb(192, 192, 192)
         std.draw.rect('fill', startH - 20, startV - 20, hSize + 40, vSize + 40)
         std.draw.color('black')
@@ -593,8 +601,8 @@ local function draw(std, game)
         std.draw.rect('line', startH, startV, 40, 40)
 
         -- draw score
-        startH = 680
-        startV = 120
+        startH = game.offsetH + 680
+        startV = game.offsetV + 120
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
         std.draw.rect('fill', startH , startV, 120, 80)
@@ -604,8 +612,8 @@ local function draw(std, game)
         draw_border(std, game, startH, startV, 120, 80, 5)
 
         -- draw selected broco
-        startH = 680
-        startV = 240
+        startH = game.offsetH + 680
+        startV = game.offsetV + 240
         std.draw.colorRgb(192, 192, 192)
         --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 160)
@@ -614,13 +622,21 @@ local function draw(std, game)
         draw_border(std, game, startH, startV, 120, 160, 5)
         if game.selected.broco > 0 then
             render_broco(std, game, startH+40, startV + 80, game.selected.broco)
-            startH = game.boardStartHorizontal + game.diffOffset + (game.selected.h * 40)
-            startV = game.boardStartVertical + (game.selected.v * 40)
+            startH = game.offsetH + game.boardStartHorizontal + game.diffOffset + (game.selected.h * 40)
+            startV = game.offsetV + game.boardStartVertical + (game.selected.v * 40)
+            --startH = startH + game.diffOffset + (game.selected.h * 40)
+            --startV = startV + (game.selected.v * 40)
             std.draw.color('red')
             std.draw.rect('line', startH, startV, 40, 40)
         end
-          
     end
+
+    -- debug?
+    --std.draw.color('black')
+    --std.draw.text(0,0, 'game.width     ' .. game.width)
+    --std.draw.text(0,20,'game.offsetH   ' .. game.offsetH)
+    --std.draw.text(0,40,'game.height    ' .. game.height)
+    --std.draw.text(0,60,'game.offsetV   ' .. game.offsetV)
 end
 
 local function exit(std, game)
