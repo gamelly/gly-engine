@@ -30,11 +30,11 @@ local core_list = {
             'src/lib/ginga/main.ncl'
         }
     },
-    ginga_html5={
+    html5_ginga={
         src='src/lib/html5/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
         extras={
-            'src/lib/ginga_html5/main.ncl',
+            'src/lib/html5_ginga/main.ncl',
             'src/lib/html5/index.html',
             'src/lib/html5/index.html',
             'src/lib/html5/engine.js',
