@@ -154,7 +154,7 @@ local function setup(evt)
     game.width=w
     game.height=h
     game.fps_max = application.config and application.config.fps_max or 100
-    game.fps_show = application.config and application.config.fps_max or 0
+    game.fps_show = application.config and application.config.fps_show or 0
     fps_obj.drop_time = application.config and application.config.fps_time or 1
     fps_obj.drop_count = application.config and application.config.fps_drop or 2
     application.callbacks.init(std, game)
