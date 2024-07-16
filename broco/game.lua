@@ -1,14 +1,16 @@
 --! state 0 as "menu"
 --! state 1 as "game"
 --! state 2 as "check matches"
---! state 3 as "remove matched"
+--! state 3 as "show matches"
+--! state 4 as "remove matched"
 --! state 10 as "pause"
 
 --! 0 --> 1
 --! 1 --> 2
 --! 1 --> 10
 --! 2 --> 3
---! 3 --> 1
+--! 3 --> 4
+--! 4 --> 1
 --! 10 --> 0
 --! 10 --> 1
 
@@ -17,6 +19,10 @@ local function init(std, game)
     game.fixedVSize = 600
     game.offsetH = 0
     game.offsetV = 0
+    game.bgColor = {}
+    game.bgColor.r = 192
+    game.bgColor.g = 192
+    game.bgColor.b = 192
 
     game.state = 0
     game.switchState = false
@@ -37,6 +43,9 @@ local function init(std, game)
     game.basePoints = 10
     game.brocoMultiplier = {10, 5, 2} -- easy, normal, hard
     game.bingoMultiplier = {5, 3, 1}  -- easy, normal, hard
+
+    game.matchBoard = {}
+    game.matchBoardIndex = 1
     
     game.loopCount = 0
     game.canReadInput = true
@@ -205,10 +214,12 @@ local function check_matches(std, game)
             and game.board[index] == game.board[index + 2] then
                 if checkPosH < (limitH - 1) and game.board[index] == game.board[index + 3] then
                     game.matches = game.matches + 1
-                    game.board[index + 3] = 7
+                    --game.board[index + 3] = 7
+                    game.matchBoard[index + 3] = 7
                     if checkPosH < (limitH - 2) and game.board[index] == game.board[index + 4] then
                         game.matches = game.matches + 1
-                        game.board[index + 4] = 7
+                        --game.board[index + 4] = 7
+                        game.matchBoard[index + 4] = 7
                     end
                 end
 
@@ -231,11 +242,13 @@ local function check_matches(std, game)
                     game.count.star = game.count.star + game.matches
                 end
                 
-                game.board[index + 2] = 7
-                game.board[index + 1] = 7
-                game.board[index] = 7
+                --game.board[index + 2] = 7
+                --game.board[index + 1] = 7
+                --game.board[index] = 7
+                game.matchBoard[index + 2] = 7
+                game.matchBoard[index + 1] = 7
+                game.matchBoard[index] = 7
             end
-
             checkPosH = checkPosH + 1
         end
         checkPosH = 0
@@ -254,10 +267,12 @@ local function check_matches(std, game)
             and game.board[index] == game.board[index + (game.boardHorSize[game.difficulty] * 2)] then
                 if checkPosH < (limitV - 1) and game.board[index] == game.board[index + (game.boardHorSize[game.difficulty] * 3)] then
                     game.matches = game.matches + 1
-                    game.board[index + 3] = 8
+                    --game.board[index + 3] = 8
+                    game.matchBoard[index + 3] = 8
                     if checkPosH < (limitV - 2) and game.board[index] == game.board[index + (game.boardHorSize[game.difficulty] * 4)] then
                         game.matches = game.matches + 1
-                        game.board[index + 4] = 8
+                        --game.board[index + 4] = 8
+                        game.matchBoard[index + 4] = 8
                     end
                 end
 
@@ -280,16 +295,36 @@ local function check_matches(std, game)
                     game.count.star = game.count.star + game.matches
                 end
                 
-                game.board[index + (game.boardHorSize[game.difficulty] * 2)] = 8
-                game.board[index + game.boardHorSize[game.difficulty]] = 8
-                game.board[index] = 8
+                --game.board[index + (game.boardHorSize[game.difficulty] * 2)] = 8
+                --game.board[index + game.boardHorSize[game.difficulty]] = 8
+                --game.board[index] = 8
+                game.matchBoard[index + (game.boardHorSize[game.difficulty] * 2)] = 8
+                game.matchBoard[index + game.boardHorSize[game.difficulty]] = 8
+                game.matchBoard[index] = 8
             end
             checkPosV = checkPosV + 1
         end
         checkPosV = 0
         checkPosH = checkPosH + 1
     end
+    game.matches = 0
     game.switchState = true
+end
+
+local function show_matches(std, game)
+    --pass matched brocos
+    if game.matchBoard[game.matchBoardIndex] ~= nil then
+        game.board[game.matchBoardIndex] = game.matchBoard[game.matchBoardIndex]
+        game.matchBoard[game.matchBoardIndex] = nil
+        game.matches = game.matches + 1
+    end
+    if game.matchBoardIndex <= (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) then
+        game.matchBoardIndex = game.matchBoardIndex + 1
+    else
+        game.matches = 0
+        game.matchBoardIndex = 1
+        game.switchState = true
+    end
 end
 
 local function remove_matched(std, game)
@@ -317,6 +352,8 @@ local function loop(std, game)
     elseif game.state == 2 then
         check_matches(std, game)
     elseif game.state == 3 then
+        show_matches(std, game)
+    elseif game.state == 4 then
         remove_matched(std, game)
     elseif game.state == 10 then
         pause_logic(std, game)
@@ -337,6 +374,8 @@ local function loop(std, game)
                 game.state = 1
             end
         elseif game.state == 3 then
+            game.state = 4
+        elseif game.state == 4 then
             game.state = 1
         elseif game.state == 10 then
             if game.destroy then
@@ -354,7 +393,9 @@ local function loop(std, game)
     else
         game.loopCount = 1
     end
-    if (game.loopCount % 15) == 0 and game.canReadInput == false then
+    if  game.loopCount > 0
+    and game.loopCount % 15 == 0
+    and game.canReadInput == false then
         game.canReadInput = true
     end
 end
@@ -401,12 +442,20 @@ local function render_broco(std, game, posX, posY, broco)
         std.draw.poly('fill', star1)
         std.draw.poly('fill', star2)
         std.draw.poly('fill', star3)
-    elseif broco == 7 then -- square, row/horizontal match
+    elseif broco == 7 or broco == 8 then 
+        -- 7, cross, row/horizontal match
+        -- 8, cross, column/vertical match
+        local fill1 = {posX+6, posY+2, posX+20, posY+15, posX+33, posY+2}
+        local fill2 = {posX+38, posY+6, posX+24, posY+20, posX+38, posY+33}
+        local fill3 = {posX+33, posY+38, posX+19, posY+24, posX+6, posY+38}
+        local fill4 = {posX+2, posY+33, posX+15, posY+19, posX+2, posY+6}
         std.draw.color('black')
-        std.draw.rect('fill', posX+2, posY+14, 35, 11)
-    elseif broco == 8 then -- square, column/vertical match
-        std.draw.color('black')
-        std.draw.rect('fill', posX+14, posY+2, 11, 35)
+        std.draw.rect('fill', posX+2, posY+2, 36, 36)
+        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
+        std.draw.poly('fill', fill1)
+        std.draw.poly('fill', fill2)
+        std.draw.poly('fill', fill3)
+        std.draw.poly('fill', fill4)
     end
 end
 
@@ -422,7 +471,7 @@ local function draw_logo(std, game)
     local h = game.offsetH + 120
     local v = game.offsetV + 40
 
-    std.draw.colorRgb(192,192,192)
+    std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
     std.draw.rect('fill', h, v, (40*15), 40)
 
     for i = 1, #menuBrocoLine do
@@ -448,7 +497,7 @@ local function draw_menu(std, game)
     local v = game.offsetV + 160
 
     -- fill background
-    std.draw.colorRgb(192,192,192)
+    std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
     std.draw.rect('fill', h - 10, v - 10, 140, 140)
 
     --draw options
@@ -475,7 +524,7 @@ local function draw_pause(std, game)
     local v = game.offsetV + 160
 
     -- fill background
-    std.draw.colorRgb(192,192,192)
+    std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
     std.draw.rect('fill', h - 10, v - 10, 140, 100)
     -- draw options
     std.draw.color('black')
@@ -521,7 +570,7 @@ local function draw(std, game)
         -- draw highscore
         startH = game.offsetH + 40
         startV = game.offsetV + 120
-        std.draw.colorRgb(192, 192, 192)
+        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
         --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 80)
         std.draw.color('black')
@@ -540,7 +589,7 @@ local function draw(std, game)
         else
             maxV = 280
         end
-        std.draw.colorRgb(192, 192, 192)
+        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
         --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, maxV)
         std.draw.color('black')
@@ -578,7 +627,7 @@ local function draw(std, game)
         local vSize = game.boardVerSize[game.difficulty] * 40
         startH = game.offsetH + game.boardStartHorizontal + game.diffOffset
         startV = game.offsetV + game.boardStartVertical
-        std.draw.colorRgb(192, 192, 192)
+        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
         std.draw.rect('fill', startH - 20, startV - 20, hSize + 40, vSize + 40)
         std.draw.color('black')
         draw_border(std, game, startH - 20, startV - 20, hSize + 40, vSize + 40, 5)
@@ -603,7 +652,7 @@ local function draw(std, game)
         -- draw score
         startH = game.offsetH + 680
         startV = game.offsetV + 120
-        std.draw.colorRgb(192, 192, 192)
+        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
         --std.draw.color('white')
         std.draw.rect('fill', startH , startV, 120, 80)
         std.draw.color('black')
@@ -614,7 +663,7 @@ local function draw(std, game)
         -- draw selected broco
         startH = game.offsetH + 680
         startV = game.offsetV + 240
-        std.draw.colorRgb(192, 192, 192)
+        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
         --std.draw.color('white')
         std.draw.rect('fill', startH, startV, 120, 160)
         std.draw.color('black')
@@ -629,14 +678,19 @@ local function draw(std, game)
             std.draw.color('red')
             std.draw.rect('line', startH, startV, 40, 40)
         end
-    end
 
-    -- debug?
-    --std.draw.color('black')
-    --std.draw.text(0,0, 'game.width     ' .. game.width)
-    --std.draw.text(0,20,'game.offsetH   ' .. game.offsetH)
-    --std.draw.text(0,40,'game.height    ' .. game.height)
-    --std.draw.text(0,60,'game.offsetV   ' .. game.offsetV)
+        -- draw matches
+        if game.state == 3 then
+            startH = game.offsetH + 680
+            startV = game.offsetV + 440
+            std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
+            std.draw.rect('fill', startH, startV, 120, 80)
+            std.draw.color('black')
+            std.draw.text(startH + 30, startV + 15, 'MATCHES')
+            std.draw.text(startH + 48, startV + 40 + 5, string.format("%03d", game.matches))
+            draw_border(std, game, startH, startV, 120, 80, 5)
+        end
+    end
 end
 
 local function exit(std, game)
