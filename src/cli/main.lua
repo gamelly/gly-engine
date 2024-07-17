@@ -157,7 +157,7 @@ elseif command == 'build' then
     if run then
         if not core.post_exe then
             print('this core cannot be runned after build!')
-            exit(1)
+            os.exit(1)
         end
         os.exit(os.execute(core.post_exe) and 0 or 1)
     end
