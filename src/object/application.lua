@@ -4,7 +4,9 @@
 
 local P = {
     meta={
+        id='',
         title='',
+        company='',
         description='',
         version=''
     },
