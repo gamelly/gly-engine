@@ -35,9 +35,6 @@ local function std_draw_color(color)
 end
 
 local function std_draw_colorrgb(r,g,b)
-    r = zeebo_math.clamp(r, 0, 255)
-    g = zeebo_math.clamp(g, 0, 255)
-    b = zeebo_math.clamp(b, 0, 255)
     love.graphics.setColor(love.math.colorFromBytes(r, g, b))
 end
 

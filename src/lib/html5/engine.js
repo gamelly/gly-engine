@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             canvas_ctx.fillStyle = color,
             canvas_ctx.fillRect(0, 0, canvas_element.width, canvas_element.height)
         },
+        colorRgb: (r,g,b) => {
+            r = r.toString(16)
+            g = g.toString(16)
+            b = b.toString(16)
+            canvas_ctx.strokeStyle =  "#" + r + g + b
+            canvas_ctx.fillStyle = "#" + r + g + b
+        },
         color: (color) => {
             canvas_ctx.strokeStyle = color
             canvas_ctx.fillStyle = color
