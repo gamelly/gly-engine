@@ -34,6 +34,8 @@ local function init(std, game)
     game.boardStartVertical   = 120
     game.boardHorSize =  {7, 9, 11}  -- easy, normal, hard
     game.boardVerSize =  {8, 10, 12} -- easy, normal, hard
+    game.maxBrocos = {4, 5, 6}
+    game.diffOffset = {80, 40, 0}
 
     game.board = {}
     game.selected = {}
@@ -55,23 +57,11 @@ end
 
 local function init_board(std, game)
     game.score = 0
-    game.diffOffset = 0
-    local maxBrocos
-
-    if game.difficulty == 1 then
-        maxBrocos = 4
-        game.diffOffset = 80
-    elseif game.difficulty == 2 then
-        maxBrocos = 5
-        game.diffOffset = 40
-    elseif game.difficulty == 3 then
-        maxBrocos = 6
-        game.diffOffset = 0
-    end
     game.board = {}
     for cont = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
-        game.board[cont] = std.math.random(1, maxBrocos)
+        game.board[cont] = std.math.random(1, game.maxBrocos[game.difficulty])
     end
+    game.matchBoard = {}
     
     game.selected.broco = 0
     game.selected.h = 0
@@ -80,8 +70,8 @@ local function init_board(std, game)
     game.playerPos.h = 0
     game.playerPos.v = 0
 
-    game.bingo = 0
-    game.matches = 0
+    game.matchesHit = 0
+    game.matchesCount = 0
     
     game.count.squares = 0
     game.count.diamonds = 0
@@ -200,48 +190,45 @@ local function check_matches(std, game)
     local limitH = game.boardHorSize[game.difficulty] - 2
     local limitV = game.boardVerSize[game.difficulty] - 2
 
-    game.matches = 0
-    game.bingo = 0
+    game.matchesHit = 0
     --check rows
     while (checkPosV < game.boardVerSize[game.difficulty]) do
         while (checkPosH < limitH) do
+            game.matchesCount = 0
             index = (checkPosV * game.boardHorSize[game.difficulty]) + checkPosH + 1
-            game.matches = 0
-
             if game.board[index] > 0
             and game.board[index] < 7
             and game.board[index] == game.board[index + 1]
             and game.board[index] == game.board[index + 2] then
+                game.matchesHit = game.matchesHit + 1
+                game.matchesCount = game.matchesCount + 3
                 if checkPosH < (limitH - 1) and game.board[index] == game.board[index + 3] then
-                    game.matches = game.matches + 1
+                    game.matchesCount = game.matchesCount + 1
                     --game.board[index + 3] = 7
                     game.matchBoard[index + 3] = 7
                     if checkPosH < (limitH - 2) and game.board[index] == game.board[index + 4] then
-                        game.matches = game.matches + 1
+                        game.matchesCount = game.matchesCount + 1
                         --game.board[index + 4] = 7
                         game.matchBoard[index + 4] = 7
                     end
                 end
-
-                game.matches = game.matches + 3
-                game.bingo = game.bingo + 1
-                game.score = game.score + (game.matches * (game.basePoints * game.brocoMultiplier[game.difficulty]))
-                game.score = game.score + (game.bingo * game.bingoMultiplier[game.difficulty])
+                game.score = game.score + (game.matchesCount * (game.basePoints * game.brocoMultiplier[game.difficulty]))
+                game.score = game.score + (game.matchesHit * game.bingoMultiplier[game.difficulty])
                 
                 if game.board[index] == 1 then
-                    game.count.squares = game.count.squares + game.matches
+                    game.count.squares = game.count.squares + game.matchesCount
                 elseif game.board[index] == 2 then
-                    game.count.diamonds = game.count.diamonds + game.matches
+                    game.count.diamonds = game.count.diamonds + game.matchesCount
                 elseif game.board[index] == 3 then
-                    game.count.triangles = game.count.triangles + game.matches
+                    game.count.triangles = game.count.triangles + game.matchesCount
                 elseif game.board[index] == 4 then
-                    game.count.plus = game.count.plus + game.matches
+                    game.count.plus = game.count.plus + game.matchesCount
                 elseif game.board[index] == 5 then
-                    game.count.trapezoid = game.count.trapezoid + game.matches
+                    game.count.trapezoid = game.count.trapezoid + game.matchesCount
                 elseif game.board[index] == 6 then
-                    game.count.star = game.count.star + game.matches
+                    game.count.star = game.count.star + game.matchesCount
                 end
-                
+
                 --game.board[index + 2] = 7
                 --game.board[index + 1] = 7
                 --game.board[index] = 7
@@ -249,7 +236,11 @@ local function check_matches(std, game)
                 game.matchBoard[index + 1] = 7
                 game.matchBoard[index] = 7
             end
-            checkPosH = checkPosH + 1
+            if game.matchesCount == 0 then
+                checkPosH = checkPosH + 1
+            else
+                checkPosH = checkPosH + game.matchesCount
+            end
         end
         checkPosH = 0
         checkPosV = checkPosV + 1
@@ -260,54 +251,57 @@ local function check_matches(std, game)
     --check columns
     while (checkPosH < game.boardHorSize[game.difficulty]) do
         while (checkPosV < limitV) do
+            game.matchesCount = 0
             index = (checkPosV * game.boardHorSize[game.difficulty]) + checkPosH + 1
             if game.board[index] > 0
             and game.board[index] < 7
-            and game.board[index] == game.board[index + game.boardHorSize[game.difficulty]]
+            and game.board[index] == game.board[index + game.boardHorSize[game.difficulty] ]
             and game.board[index] == game.board[index + (game.boardHorSize[game.difficulty] * 2)] then
+                game.matchesHit = game.matchesHit + 1
+                game.matchesCount = game.matchesCount + 3
                 if checkPosH < (limitV - 1) and game.board[index] == game.board[index + (game.boardHorSize[game.difficulty] * 3)] then
-                    game.matches = game.matches + 1
+                    game.matchesCount = game.matchesCount + 1
                     --game.board[index + 3] = 8
-                    game.matchBoard[index + 3] = 8
+                    game.matchBoard[index + (game.boardHorSize[game.difficulty] * 3)] = 8
                     if checkPosH < (limitV - 2) and game.board[index] == game.board[index + (game.boardHorSize[game.difficulty] * 4)] then
-                        game.matches = game.matches + 1
+                        game.matchesCount = game.matchesCount + 1
                         --game.board[index + 4] = 8
-                        game.matchBoard[index + 4] = 8
+                        game.matchBoard[index + (game.boardHorSize[game.difficulty] * 4)] = 8
                     end
                 end
-
-                game.matches = game.matches + 3
-                game.bingo = game.bingo + 1
-                game.score = game.score + (game.matches * (game.basePoints * game.brocoMultiplier[game.difficulty]))
-                game.score = game.score + (game.bingo * game.bingoMultiplier[game.difficulty])
+                game.score = game.score + (game.matchesCount * (game.basePoints * game.brocoMultiplier[game.difficulty]))
+                game.score = game.score + (game.matchesHit * game.bingoMultiplier[game.difficulty])
 
                 if game.board[index] == 1 then
-                    game.count.squares = game.count.squares + game.matches
+                    game.count.squares = game.count.squares + game.matchesCount
                 elseif game.board[index] == 2 then
-                    game.count.diamonds = game.count.diamonds + game.matches
+                    game.count.diamonds = game.count.diamonds + game.matchesCount
                 elseif game.board[index] == 3 then
-                    game.count.triangles = game.count.triangles + game.matches
+                    game.count.triangles = game.count.triangles + game.matchesCount
                 elseif game.board[index] == 4 then
-                    game.count.plus = game.count.plus + game.matches
+                    game.count.plus = game.count.plus + game.matchesCount
                 elseif game.board[index] == 5 then
-                    game.count.trapezoid = game.count.trapezoid + game.matches
+                    game.count.trapezoid = game.count.trapezoid + game.matchesCount
                 elseif game.board[index] == 6 then
-                    game.count.star = game.count.star + game.matches
+                    game.count.star = game.count.star + game.matchesCount
                 end
                 
                 --game.board[index + (game.boardHorSize[game.difficulty] * 2)] = 8
-                --game.board[index + game.boardHorSize[game.difficulty]] = 8
+                --game.board[index + game.boardHorSize[game.difficulty] ] = 8
                 --game.board[index] = 8
                 game.matchBoard[index + (game.boardHorSize[game.difficulty] * 2)] = 8
                 game.matchBoard[index + game.boardHorSize[game.difficulty]] = 8
                 game.matchBoard[index] = 8
             end
-            checkPosV = checkPosV + 1
+            if game.matchesCount == 0 then
+                checkPosV = checkPosV + 1
+            else
+                checkPosV = checkPosV + game.matchesCount
+            end
         end
         checkPosV = 0
         checkPosH = checkPosH + 1
     end
-    game.matches = 0
     game.switchState = true
 end
 
@@ -316,29 +310,22 @@ local function show_matches(std, game)
     if game.matchBoard[game.matchBoardIndex] ~= nil then
         game.board[game.matchBoardIndex] = game.matchBoard[game.matchBoardIndex]
         game.matchBoard[game.matchBoardIndex] = nil
-        game.matches = game.matches + 1
+        game.matchesCount = game.matchesCount + 1
     end
     if game.matchBoardIndex <= (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) then
         game.matchBoardIndex = game.matchBoardIndex + 1
     else
-        game.matches = 0
         game.matchBoardIndex = 1
         game.switchState = true
+        game.matchBoard = {}
+        game.matchesCount = 0
     end
 end
 
 local function remove_matched(std, game)
-    local maxBrocos
-    if game.difficulty == 1 then
-        maxBrocos = 4
-    elseif game.difficulty == 1 then
-        maxBrocos = 5
-    else
-        maxBrocos = 6
-    end
     for cont = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
         if game.board[cont] >= 7 then
-            game.board[cont] = std.math.random(1, maxBrocos)
+            game.board[cont] = std.math.random(1, game.maxBrocos[game.difficulty])
         end
     end
     game.switchState = true
@@ -368,7 +355,8 @@ local function loop(std, game)
                 game.state = 2
             end
         elseif game.state == 2 then
-            if game.bingo > 0 then
+            if game.matchesHit > 0 then
+                game.matchesHit = 0
                 game.state = 3
             else
                 game.state = 1
@@ -625,11 +613,16 @@ local function draw(std, game)
         local posV = 0
         local hSize = game.boardHorSize[game.difficulty] * 40
         local vSize = game.boardVerSize[game.difficulty] * 40
-        startH = game.offsetH + game.boardStartHorizontal + game.diffOffset
+        startH = game.offsetH + game.boardStartHorizontal + game.diffOffset[game.difficulty]
         startV = game.offsetV + game.boardStartVertical
-        std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
-        std.draw.rect('fill', startH - 20, startV - 20, hSize + 40, vSize + 40)
-        std.draw.color('black')
+        if game.state == 3 then
+            std.draw.color('red')
+            std.draw.rect('fill', startH - 20, startV - 20, hSize + 40, vSize + 40)
+        else
+            std.draw.colorRgb(game.bgColor.r, game.bgColor.g, game.bgColor.b)
+            std.draw.rect('fill', startH - 20, startV - 20, hSize + 40, vSize + 40)
+            std.draw.color('black')
+        end
         draw_border(std, game, startH - 20, startV - 20, hSize + 40, vSize + 40, 5)
         -- draw brocos
         for i = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
@@ -671,10 +664,8 @@ local function draw(std, game)
         draw_border(std, game, startH, startV, 120, 160, 5)
         if game.selected.broco > 0 then
             render_broco(std, game, startH+40, startV + 80, game.selected.broco)
-            startH = game.offsetH + game.boardStartHorizontal + game.diffOffset + (game.selected.h * 40)
+            startH = game.offsetH + game.boardStartHorizontal + game.diffOffset[game.difficulty] + (game.selected.h * 40)
             startV = game.offsetV + game.boardStartVertical + (game.selected.v * 40)
-            --startH = startH + game.diffOffset + (game.selected.h * 40)
-            --startV = startV + (game.selected.v * 40)
             std.draw.color('red')
             std.draw.rect('line', startH, startV, 40, 40)
         end
@@ -687,10 +678,15 @@ local function draw(std, game)
             std.draw.rect('fill', startH, startV, 120, 80)
             std.draw.color('black')
             std.draw.text(startH + 30, startV + 15, 'MATCHES')
-            std.draw.text(startH + 48, startV + 40 + 5, string.format("%03d", game.matches))
+            std.draw.text(startH + 48, startV + 40 + 5, string.format("%03d", game.matchesCount))
             draw_border(std, game, startH, startV, 120, 80, 5)
         end
     end
+
+    std.draw.color('black')
+    std.draw.text(20, game.height - 60, 'Dificuldade: ' .. game.difficulty)
+    std.draw.text(20, game.height - 40, 'HorSize: ' .. game.boardHorSize[game.difficulty])
+    std.draw.text(20, game.height - 20, 'VerSize: ' .. game.boardVerSize[game.difficulty])
 end
 
 local function exit(std, game)
