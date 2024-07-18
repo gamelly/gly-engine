@@ -32,5 +32,26 @@ Need a web server to work, use live server in your vscode for development and gi
 $ ./cli.sh build ./examples/asteroids/game.lua --core html5
 ```
 
+Platform Support List
+=====================
+
+| core           | tier   | native | plataform |
+| :------------- | :----: | :----: | --------: |
+| ginga          | tier 1 | yes    | TV        |
+| love           | tier 1 | no     | Library   |
+| repl           | tier 1 | yes    | PC        |
+| curses         | tier ? | yes    | PC        |
+| html5          | tier 2 | no     | Browser   |
+| html5_webos    | tier 2 | no     | TV        |
+| html5_tizen    | tier 2 | no     | TV        |
+| html5_ginga    | tier ? | no     | TV        |
+| esp32          | tier ? | yes    | Embed     |
+| roblox         | tier ? | no     | Game      |
+| arkos          | tier ? | yes    | Console   |
+| odroid         | tier ? | yes    | Console   |
+| raylib         | tier ? | no     | Library   |
+| Nintendo GBA   | tier ? | yes    | Console   |
+| Nintendo WII   | tier ? | yes    | Console   |
+
 ---
 This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.
