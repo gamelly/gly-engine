@@ -88,10 +88,16 @@ elseif command == 'bundler' then
     zeebo_fs.bundler(path, file, dist..file)
 elseif command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
-    local ok = os.execute('lua '..coverage..' ./tests/test_lib_common_math.lua')
-    local ok = ok and os.execute('lua '..coverage..' ./tests/test_shared_args.lua')
+    local files = zeebo_fs.ls('./tests')
+    local index = 1
+    local ok = true
+    while index <= #files do
+        ok = ok and os.execute('lua '..coverage..' ./tests/'..files[index])
+        index = index + 1
+    end
     if #coverage > 0 then
         os.execute('luacov src')
+        os.execute('tail -n '..tostring(#files + 5)..' luacov.report.out')
     end
     if not ok then
         os.exit(1)
