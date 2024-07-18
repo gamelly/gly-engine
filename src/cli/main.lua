@@ -97,6 +97,7 @@ elseif command == 'test-self' then
     end
     if #coverage > 0 then
         os.execute('luacov src')
+        os.execute('tail -n '..tostring(#files + 5)..' luacov.report.out')
     end
     if not ok then
         os.exit(1)
