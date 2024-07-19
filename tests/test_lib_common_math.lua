@@ -17,6 +17,10 @@ function test_dis()
     luaunit.assertEquals(zeebo_math.dis(0, 0, 3, 4), 5)
 end
 
+function test_dis2()
+    luaunit.assertEquals(zeebo_math.dis2(0, 0, 3, 4), 25)
+end
+
 function test_abs()
     luaunit.assertEquals(zeebo_math.abs(-5), 5)
     luaunit.assertEquals(zeebo_math.abs(10), 10)
@@ -49,6 +53,13 @@ end
 function test_cycle()
     luaunit.assertEquals(zeebo_math.cycle(5, 10), 0.5)
     luaunit.assertEquals(zeebo_math.cycle(15, 10), 0.5)
+end
+
+function test_min()
+    luaunit.assertEquals(zeebo_math.min(1, 2, 3, 4, 5), 1)
+    luaunit.assertEquals(zeebo_math.min(10, -5, 3, 0), -5)
+    luaunit.assertEquals(zeebo_math.min(-1, -2, -3), -3)
+    luaunit.assertEquals(zeebo_math.min({1, 2, 3, 4, 5}), 1)
 end
 
 function test_max()
