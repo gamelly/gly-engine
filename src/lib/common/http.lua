@@ -1,27 +1,38 @@
-local zeebo_pipeline = require('std/lib/common/pipeline')
+local zeebo_pipeline = require('src/lib/common/pipeline')
 
 --! @defgroup std
 --! @{
 --! @defgroup http
 --! @{
 local function body(self, content)
+    self.body_content=content
     return self
 end
 
 local function param(self, name, value)
+    local index = #self.param_name_list + 1
+    self.param_name_list[index] = name
+    self.param_value_list[index] = value
     return self
 end
 
 local function success(self, handler_func)
+    self.success_handler = handler_func
     return self
 end
 
 local function failed(self, handler_func)
+    self.failed_handler = handler_func
+    return self
+end
+
+local function error(self, handler_func)
+    self.error_handler = handler_func
     return self
 end
 
 local function request(method, std, game, protocol_handler)
-    function (url)
+    return function (url)
         local http_object = {
             -- content
             url = url,
@@ -30,6 +41,7 @@ local function request(method, std, game, protocol_handler)
             param_value_list = {},
             success_handler = function () end,
             failed_handler = function () end,
+            error_handler = function () end,
             -- objects
             std = std,
             game = game,
@@ -38,12 +50,48 @@ local function request(method, std, game, protocol_handler)
             param = param,
             success = success,
             failed = failed,
+            error = error,
             pipe = zeebo_pipeline.pipe,
-            run = zeebo_pipeline.run
+            run = zeebo_pipeline.run,
             -- internal
-            protocol_handler = protocol_handler,
-            state = 1
+            protocol_handler = protocol_handler
         }
+
+        http_object.pipeline = {
+            -- eval
+            function()
+                http_object:protocol_handler()
+            end,
+            -- clean http
+            function ()
+                http_object.std.http.ok = nil
+                http_object.std.http.body = nil
+                http_object.std.http.status = nil
+            end,
+            -- clean gc
+            function()
+                http_object.url = nil
+                http_object.body_content = nil
+                http_object.param_name_list = nil
+                http_object.param_value_list = nil
+                http_object.success_handler = nil
+                http_object.failed_handler = nil
+                http_object.std = nil
+                http_object.game = nil
+                http_object.body = nil
+                http_object.param = nil
+                http_object.success = nil
+                http_object.failed = nil
+                http_object.pipe = nil
+                http_object.run = nil
+                http_object.pipeline = nil
+                http_object.before_pipeline = nil
+                http_object.protocol_handler = nil
+                http_object.state = nil
+            end
+        }
+
+        return http_object
     end
 end
 
@@ -56,12 +104,12 @@ local function install(std, game, protocol_handler)
         get=request('GET', std, game, protocol_handler),
         head=request('HEAD', std, game, protocol_handler),
         post=request('POST', std, game, protocol_handler),
-        put=request('PUT' std, game, protocol_handler),
+        put=request('PUT', std, game, protocol_handler),
         delete=request('DELETE', std, game, protocol_handler),
         patch=request('PATCH', std, game, protocol_handler)
     }
 
-    std.http = method
+    std.http = methods
 end
 --! @endcond
 

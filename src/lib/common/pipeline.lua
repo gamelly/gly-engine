@@ -6,7 +6,7 @@ end
 
 local function run(self)
     local index = 1
-    while index <= #self.pipeline do
+    while self.pipeline and index <= #self.pipeline do
         self.pipeline[index]()
         index = index + 1
     end
