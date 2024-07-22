@@ -470,6 +470,7 @@ end
 local P = {
     meta={
         title='AsteroidsTV',
+        author='RodrigoDornelles',
         description='similar to the original but with lasers because televisions may have limited hardware.',
         version='1.0.0'
     },

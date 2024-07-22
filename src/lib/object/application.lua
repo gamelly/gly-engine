@@ -6,6 +6,7 @@ local P = {
     meta={
         id='',
         title='',
+        author='',
         company='',
         description='',
         version=''

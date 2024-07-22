@@ -57,6 +57,7 @@ end
 local P = {
     meta={
         title='Ping Pong',
+        author='RodrigoDornelles',
         description='simple pong',
         version='1.0.0'
     },

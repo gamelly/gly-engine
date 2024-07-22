@@ -5,6 +5,7 @@ local function replace(src, meta, default)
         return (src
             :gsub('{{id}}', meta.id or default.id)
             :gsub('{{title}}', meta.title or default.title)
+            :gsub('{{author}}', meta.author or default.author)
             :gsub('{{company}}', meta.company or default.company)
             :gsub('{{version}}', meta.version or default.version)
             :gsub('{{description}}', meta.description or default.description)
