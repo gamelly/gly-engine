@@ -67,6 +67,16 @@ local core_list = {
             'src/engine/core/html5/index.html',
             'src/engine/core/html5/engine.js'
         }
+    },
+    nintendo_wii={
+        src='src/engine/core/love/main.lua',
+        pipeline={
+            zeebo_meta.late(game):file(dist..'meta.xml'):pipe()
+        },
+        extras={
+            'assets/icon128x48.png',
+            'src/engine/meta/nintendo_wii/meta.xml'
+        }
     }
 }
 

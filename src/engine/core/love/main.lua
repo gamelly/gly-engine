@@ -17,26 +17,39 @@ local key_bindings = {
     ['return']='enter'
 }
 
+local modes = {
+    [true] = {
+        [0] = true,
+        [1] = false
+    },
+    [false] = {
+        [0] = 'fill',
+        [1] = 'line'
+    }
+}
+
 local application = nil
 
 local function std_draw_color(color)
-    local R = bit.band(bit.rshift(color, 24), 0xFF)/255
-    local G = bit.band(bit.rshift(color, 16), 0xFF)/255
-    local B = bit.band(bit.rshift(color, 8), 0xFF)/255
-    local A = bit.band(bit.rshift(color, 0), 0xFF)/255
+    local DIV = love.wiimote and 1 or 255
+    local R = bit.band(bit.rshift(color, 24), 0xFF)/DIV
+    local G = bit.band(bit.rshift(color, 16), 0xFF)/DIV
+    local B = bit.band(bit.rshift(color, 8), 0xFF)/DIV
+    local A = bit.band(bit.rshift(color, 0), 0xFF)/DIV
     love.graphics.setColor(R, G, B, A)
 end
 
 local function std_draw_clear(color)
     std_draw_color(color)
-    love.graphics.rectangle('fill', 0, 0, game.width, game.height)
+    love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
 end
 
 local function std_draw_rect(a,b,c,d,e,f)
-    love.graphics.rectangle(a, b, c, d, e)
+    love.graphics.rectangle(modes[love.wiimote ~= nil][a], b, c, d, e)
 end
 
 local function std_draw_text(x, y, text)
+    if love.wiimote then return 32 end -- TODO support WII
     if x and y then
         love.graphics.print(text, x, y)
     end
@@ -88,10 +101,17 @@ end
 
 function love.load(args)
     local w, h = love.graphics.getDimensions()
-    local cwd = love.filesystem.getSource()
-    local screen = zeebo_args.get(args, 'screen')
-    local game_file = zeebo_args.param(arg, {'screen'}, 2, cwd..'/game.lua')
-    application = loadfile(game_file)
+    local screen = args and zeebo_args.get(args, 'screen')
+    if love.filesystem and love.filesystem.getSource then
+        local cwd = love.filesystem.getSource and love.filesystem.getSource()
+        local game_file = zeebo_args.param(arg, {'screen'}, 2, cwd..'/game.lua')
+        application = loadfile(game_file)
+        application = application and application()
+    end
+
+    if not application then
+        application = require('game')
+    end
     if not application then
         error('game not found!')
     end
@@ -100,7 +120,6 @@ function love.load(args)
         w, h = tonumber(w), tonumber(h)
         love.window.setMode(w, h, {resizable=true})
     end
-    application = application()
     std.color = color
     std.math=zeebo_math
     std.math.random = love.math.random
@@ -115,6 +134,8 @@ function love.load(args)
     std.game.exit=std_game_exit
     game.width=w
     game.height=h
-    love.window.setTitle(application.meta.title..' - '..application.meta.version)
+    if love.window and love.window.setTitle then
+        love.window.setTitle(application.meta.title..' - '..application.meta.version)
+    end
     application.callbacks.init(std, game)
 end
