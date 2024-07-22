@@ -1,5 +1,6 @@
 local os = require('os')
 local zeebo_math = require('src/lib/engine/math')
+local zeebo_module = require('src/lib/engine/module')
 local decorators = require('src/lib/engine/decorators')
 local zeebo_args = require('src/lib/common/args')
 local color = require('src/lib/object/color')
@@ -102,16 +103,9 @@ end
 function love.load(args)
     local w, h = love.graphics.getDimensions()
     local screen = args and zeebo_args.get(args, 'screen')
-    if love.filesystem and love.filesystem.getSource then
-        local cwd = love.filesystem.getSource and love.filesystem.getSource()
-        local game_file = zeebo_args.param(arg, {'screen'}, 2, cwd..'/game.lua')
-        application = loadfile(game_file)
-        application = application and application()
-    end
+    local game_title = zeebo_args.param(arg, {'screen'}, 2)
+    application = zeebo_module.loadgame(game_title)
 
-    if not application then
-        application = require('game')
-    end
     if not application then
         error('game not found!')
     end

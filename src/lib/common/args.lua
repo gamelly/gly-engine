@@ -6,6 +6,7 @@
 --! @retval default when not found
 --! @retval NULL when found and not set default
 local function shared_args_get(args, key, default)
+    if not args then return default end
     local index = 1
     local value = default    
     while index <= #args do
@@ -26,6 +27,7 @@ end
 --! @retval true when found
 --! @retval false when not found
 local function shared_args_has(args, key)
+    if not args then return false end
     local index = 1
     while index <= #args do
         local param = args[index]
@@ -47,6 +49,7 @@ end
 --! @retval default when not found
 --! @retval NULL when found and not set default
 local function shared_args_param(args, ignore_keys, position, default)
+    if not args then return default end
     local index = 1
     local count = 1
     local ignore_keys2 = {}
