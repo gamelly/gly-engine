@@ -1,8 +1,10 @@
 local math = require('math')
+local bit = require('bit32')
 local application = require('game')
 local zeebo_fps = require('src/lib/engine/fps')
 local zeebo_math = require('src/lib/engine/math')
 local decorators = require('src/lib/engine/decorators')
+local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 local fixture190 = ''
@@ -59,13 +61,17 @@ local function std_draw_fps(x, y)
     end
 end
 
-local function std_draw_clear(color)
-    canvas:attrColor(color)
-    canvas:drawRect('fill', 0, 0, game.width, game.height)
+local function std_draw_color(color)
+    local R = bit.band(bit.rshift(color, 24), 0xFF)
+    local G = bit.band(bit.rshift(color, 16), 0xFF)
+    local B = bit.band(bit.rshift(color, 8), 0xFF)
+    local A = bit.band(bit.rshift(color, 0), 0xFF)
+    canvas:attrColor(R, G, B, A)
 end
 
-local function std_draw_color(color)
-    canvas:attrColor(color)
+local function std_draw_clear(color)
+    std_draw_color(color)
+    canvas:drawRect('fill', 0, 0, game.width, game.height)
 end
 
 local function std_draw_rect(a,b,c,d,e,f)
@@ -140,6 +146,7 @@ end
 local function setup(evt)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
     local w, h = canvas:attrSize()
+    std.color=color
     std.math=zeebo_math
     std.math.random = math.random
     std.draw.clear=std_draw_clear

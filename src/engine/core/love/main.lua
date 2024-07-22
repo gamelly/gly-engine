@@ -2,6 +2,7 @@ local os = require('os')
 local zeebo_math = require('src/lib/engine/math')
 local decorators = require('src/lib/engine/decorators')
 local zeebo_args = require('src/lib/common/args')
+local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 local key_bindings = {
@@ -18,20 +19,17 @@ local key_bindings = {
 
 local application = nil
 
-local function std_draw_clear(color)
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle('fill', 0, 0, game.width, game.height)
+local function std_draw_color(color)
+    local R = bit.band(bit.rshift(color, 24), 0xFF)/255
+    local G = bit.band(bit.rshift(color, 16), 0xFF)/255
+    local B = bit.band(bit.rshift(color, 8), 0xFF)/255
+    local A = bit.band(bit.rshift(color, 0), 0xFF)/255
+    love.graphics.setColor(R, G, B, A)
 end
 
-local function std_draw_color(color)
-    local colors = {
-        black = {0, 0, 0},
-        white = {1, 1, 1},
-        yellow = {1, 1, 0},
-        green = {0, 1, 0},
-        red= {1, 0, 0}
-    }
-    love.graphics.setColor(colors[color][1], colors[color][2], colors[color][3])
+local function std_draw_clear(color)
+    std_draw_color(color)
+    love.graphics.rectangle('fill', 0, 0, game.width, game.height)
 end
 
 local function std_draw_rect(a,b,c,d,e,f)
@@ -103,6 +101,7 @@ function love.load(args)
         love.window.setMode(w, h, {resizable=true})
     end
     application = application()
+    std.color = color
     std.math=zeebo_math
     std.math.random = love.math.random
     std.draw.clear=std_draw_clear

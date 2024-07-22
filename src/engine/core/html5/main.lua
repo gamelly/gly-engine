@@ -4,6 +4,7 @@ local zeebo_fps = require('src/lib/engine/fps')
 local zeebo_math = require('src/lib/engine/math')
 local decorators = require('src/lib/engine/decorators')
 local application_default = require('src/lib/object/application')
+local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 
@@ -23,6 +24,7 @@ end
 
 local function browser_init(width, height)
     application = (load(game_lua))()
+    std.color = color
     std.math = zeebo_math
     std.math.random = math.random
     std.game.reset=decorators.reset(application.callbacks, std, game)

@@ -357,17 +357,17 @@ end
 local function draw_logo(std, game, height, anim)
     anim = anim or 0
     std.draw.font('sans', 32)
-    std.draw.color('white')
+    std.draw.color(std.color.white)
     local s1 = std.draw.text('AsteroidsTv')
     local s2 = std.draw.text('Tv')
     std.draw.text(game.width/2 - s1/2, height + anim, 'Asteroids')
-    std.draw.color('red')
+    std.draw.color(std.color.red)
     std.draw.text(game.width/2 + s1/2 - s2, height - anim, 'Tv')
     return s1
 end
 
 local function draw(std, game)
-    std.draw.clear('black')
+    std.draw.clear(std.color.black)
     local s = 0
     if game.state == 1 then
         local s2 = 0
@@ -375,7 +375,7 @@ local function draw(std, game)
         local graphics = game.graphics_fastest == 1 and 'rapido' or 'bonito'
         local s = draw_logo(std, game, h*2)
         std.draw.font('sans', 16)
-        std.draw.color('white')
+        std.draw.color(std.color.white)
         if game.player_pos_x ~= (game.width/2) then
             std.draw.text(game.width/2 - s, h*6, 'Continuar')
         end
@@ -387,7 +387,7 @@ local function draw(std, game)
         std.draw.text(game.width/2 - s, h*12, 'Creditos')
         std.draw.text(game.width/2 - s, h*13, 'Sair')
         std.draw.line(game.width/2 - s, (h*(5+game.menu)) + 24, game.width/2 + s, (h*(5+game.menu)) + 24)
-        std.draw.color('red')
+        std.draw.color(std.color.red)
         s2=std.draw.text(game.level)
         std.draw.text(game.width/2 + s - s2, h*8, game.level)
         s2=std.draw.text(game.imortal)
@@ -403,12 +403,12 @@ local function draw(std, game)
         local anim = math.cos(std.math.cycle(game.milis, 200) * math.pi*2)
         draw_logo(std, game, height, anim) 
         std.draw.font('sans', 16)
-        std.draw.color('white')
+        std.draw.color(std.color.white)
         std.draw.text(game.width/2 - w/2 + (anim*0.5), height*2, 'Rodrigo Dornelles')
         return
     end
     -- draw asteroids
-    std.draw.color('white')
+    std.draw.color(std.color.white)
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
@@ -428,20 +428,20 @@ local function draw(std, game)
         index = index + 1
     end
     -- draw player
-    std.draw.color('yellow')
+    std.draw.color(std.color.yellow)
     if game.state ~= 5 then
         std.draw.poly('fill', game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
     end
     -- laser bean
-    std.draw.color('green')
     if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
+        std.draw.color(std.color.green)
         std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2)
     end
     -- draw gui
     local w = game.width/16
-    std.draw.color('black')  
+    std.draw.color(std.color.black)  
     std.draw.rect('fill', 0, 0, game.width, 32)
-    std.draw.color('white')
+    std.draw.color(std.color.white)
     s=std.draw.text(8, 8, 'lifes:')
     std.draw.text(8+s, 8, game.lifes)
     s=std.draw.text(w*2, 8, 'level:')

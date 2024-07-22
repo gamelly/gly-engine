@@ -41,8 +41,8 @@ local function loop(std, game)
 end
 
 local function draw(std, game)
-    std.draw.clear('black')
-    std.draw.color('white')
+    std.draw.clear(std.color.black)
+    std.draw.color(std.color.white)
     std.draw.rect('fill', 4, game.player_pos, 8, game.player_size)
     std.draw.rect('fill', game.ball_pos_x, game.ball_pos_y, game.ball_size, game.ball_size)
     std.draw.font('Tiresias', 32)

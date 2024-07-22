@@ -14,12 +14,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const canvas_ctx = canvas_element.getContext("2d")
     const canvas_std = {
         clear: (color) => {
-            canvas_ctx.fillStyle = color,
+            canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
             canvas_ctx.fillRect(0, 0, canvas_element.width, canvas_element.height)
         },
         color: (color) => {
-            canvas_ctx.strokeStyle = color
-            canvas_ctx.fillStyle = color
+            const hex = '#' + color.toString(16).padStart(8, '0')
+            canvas_ctx.strokeStyle = hex
+            canvas_ctx.fillStyle = hex
         },
         line: (x1, y1, x2, y2) => {
             canvas_ctx.beginPath()
