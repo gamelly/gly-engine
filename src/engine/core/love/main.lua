@@ -1,9 +1,9 @@
 local os = require('os')
-local zeebo_math = require('src/lib/common/math')
-local decorators = require('src/lib/common/decorators')
-local zeebo_args = require('src/shared/args')
-local game = require('src/object/game')
-local std = require('src/object/std')
+local zeebo_math = require('src/lib/engine/math')
+local decorators = require('src/lib/engine/decorators')
+local zeebo_args = require('src/lib/common/args')
+local game = require('src/lib/object/game')
+local std = require('src/lib/object/std')
 local key_bindings = {
     up='up',
     left='left',

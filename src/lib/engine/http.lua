@@ -1,4 +1,4 @@
-local zeebo_pipeline = require('src/lib/common/pipeline')
+local zeebo_pipeline = require('src/lib/engine/pipeline')
 
 --! @defgroup std
 --! @{

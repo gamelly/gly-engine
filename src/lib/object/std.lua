@@ -1,4 +1,4 @@
---! @file src/object/std.lua
+--! @file src/lib/object/std.lua
 --! @short standard library object
 --! @brief can be used as mock
 

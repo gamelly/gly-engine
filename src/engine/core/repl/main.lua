@@ -9,10 +9,10 @@
 --! exit = "?" ;
 --! @endebnf
 local math = require('math')
-local std = require('src/object/std')
-local game = require('src/object/game')
-local application_default = require('src/object/application')
-local zeebo_math = require('src/lib/common/math')
+local std = require('src/lib/object/std')
+local game = require('src/lib/object/game')
+local application_default = require('src/lib/object/application')
+local zeebo_math = require('src/lib/engine/math')
 
 local function line_skip_frames(line_src)
     local frames, line = line_src:match('(%d+)!(.*)')

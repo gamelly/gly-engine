@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local zeebo_http = require('src/lib/common/http')
+local zeebo_http = require('src/lib/engine/http')
 local mock_http = require('mock/protocol_http')
 
 local std = {}

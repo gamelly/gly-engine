@@ -1,11 +1,11 @@
 local application = nil
 local math = require('math')
-local zeebo_fps = require('src/lib/common/fps')
-local zeebo_math = require('src/lib/common/math')
-local decorators = require('src/lib/common/decorators')
-local application_default = require('src/object/application')
-local game = require('src/object/game')
-local std = require('src/object/std')
+local zeebo_fps = require('src/lib/engine/fps')
+local zeebo_math = require('src/lib/engine/math')
+local decorators = require('src/lib/engine/decorators')
+local application_default = require('src/lib/object/application')
+local game = require('src/lib/object/game')
+local std = require('src/lib/object/std')
 
 local function browser_update(milis)
     game.milis = milis

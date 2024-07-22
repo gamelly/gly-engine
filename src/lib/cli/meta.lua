@@ -1,4 +1,4 @@
-local application_default = require('src/object/application')
+local application_default = require('src/lib/object/application')
 
 local function replace(src, meta, default)
     if src and #src > 0 then

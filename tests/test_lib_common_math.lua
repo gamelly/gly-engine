@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local zeebo_math = require('src/lib/common/math')
+local zeebo_math = require('src/lib/engine/math')
 
 function test_clamp()
     luaunit.assertEquals(zeebo_math.clamp(10, 1, 5), 5)

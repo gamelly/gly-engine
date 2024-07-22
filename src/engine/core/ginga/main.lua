@@ -1,10 +1,10 @@
 local math = require('math')
 local application = require('game')
-local zeebo_fps = require('src/lib/common/fps')
-local zeebo_math = require('src/lib/common/math')
-local decorators = require('src/lib/common/decorators')
-local game = require('src/object/game')
-local std = require('src/object/std')
+local zeebo_fps = require('src/lib/engine/fps')
+local zeebo_math = require('src/lib/engine/math')
+local decorators = require('src/lib/engine/decorators')
+local game = require('src/lib/object/game')
+local std = require('src/lib/object/std')
 local fixture190 = ''
 
 --! @short nclua:canvas

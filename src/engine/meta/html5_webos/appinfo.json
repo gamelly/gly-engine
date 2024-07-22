@@ -5,5 +5,5 @@
     "type": "web",
     "main": "index.html",
     "title": "{{title}}",
-    "icon": "icon.png"
+    "icon": "icon80x80.png"
 }
