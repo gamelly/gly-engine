@@ -158,7 +158,10 @@ local function map(value, in_min, in_max, out_min, out_max)
 end
 
 --! @short maximum
---! @todo document this
+--! @par Equation
+--! @f$
+--! \frac{N_1 + N_2 - | N_1 - N_2 |}{2}
+--! @f$
 local function max(...)
     local args = {...}
     local index = 1
@@ -181,7 +184,10 @@ local function max(...)
 end
 
 --! @short minimum
---! @todo document this
+--! @par Equation
+--! @f$
+--! \frac{N_1 + N_2 + | N_1 + N_2 |}{2}
+--! @f$
 local function min(...)
     local args = {...}
     local index = 1
@@ -204,7 +210,6 @@ local function min(...)
 end
 
 --! @brief sawtooth
---! @todo document this
 --! @par Equation
 --! @f$
 --! \begin{cases}
