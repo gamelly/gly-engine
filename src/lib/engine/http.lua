@@ -16,6 +16,13 @@ local function param(self, name, value)
     return self
 end
 
+local function header(self, name, value)
+    local index = #self.header_name_list + 1
+    self.header_name_list[index] = name
+    self.header_value_list[index] = value
+    return self
+end
+
 local function success(self, handler_func)
     self.success_handler = handler_func
     return self
@@ -38,6 +45,8 @@ local function request(method, std, game, protocol_handler)
             url = url,
             method = method,
             body_content = '',
+            header_name_list = {},
+            header_value_list = {},
             param_name_list = {},
             param_value_list = {},
             success_handler = function () end,
@@ -49,6 +58,7 @@ local function request(method, std, game, protocol_handler)
             -- functions
             body = body,
             param = param,
+            header = header,
             success = success,
             failed = failed,
             error = error,
@@ -76,6 +86,8 @@ local function request(method, std, game, protocol_handler)
                 http_object.body_content = nil
                 http_object.param_name_list = nil
                 http_object.param_value_list = nil
+                http_object.header_name_list = nil
+                http_object.header_value_list = nil
                 http_object.success_handler = nil
                 http_object.failed_handler = nil
                 http_object.std = nil
@@ -102,16 +114,15 @@ end
 
 --! @cond
 local function install(std, game, protocol_handler)
-    local methods = {
-        get=request('GET', std, game, protocol_handler),
-        head=request('HEAD', std, game, protocol_handler),
-        post=request('POST', std, game, protocol_handler),
-        put=request('PUT', std, game, protocol_handler),
-        delete=request('DELETE', std, game, protocol_handler),
-        patch=request('PATCH', std, game, protocol_handler)
-    }
-
-    std.http = methods
+    std = std or {}
+    std.http = std.http or {}
+    std.http.get=request('GET', std, game, protocol_handler)
+    std.http.head=request('HEAD', std, game, protocol_handler)
+    std.http.post=request('POST', std, game, protocol_handler)
+    std.http.put=request('PUT', std, game, protocol_handler)
+    std.http.delete=request('DELETE', std, game, protocol_handler)
+    std.http.patch=request('PATCH', std, game, protocol_handler)
+    return std.http
 end
 --! @endcond
 

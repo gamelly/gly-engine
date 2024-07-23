@@ -1,5 +1,4 @@
 local math = require('math')
-local bit = require('bit32')
 local application = require('game')
 local zeebo_fps = require('src/lib/engine/fps')
 local zeebo_math = require('src/lib/engine/math')
@@ -61,49 +60,6 @@ local function std_draw_fps(x, y)
     end
 end
 
-local function std_draw_color(color)
-    local R = bit.band(bit.rshift(color, 24), 0xFF)
-    local G = bit.band(bit.rshift(color, 16), 0xFF)
-    local B = bit.band(bit.rshift(color, 8), 0xFF)
-    local A = bit.band(bit.rshift(color, 0), 0xFF)
-    canvas:attrColor(R, G, B, A)
-end
-
-local function std_draw_clear(color)
-    std_draw_color(color)
-    canvas:drawRect('fill', 0, 0, game.width, game.height)
-end
-
-local function std_draw_rect(a,b,c,d,e,f)
-    if f and canvas.drawRoundRect then
-        canvas:drawRoundRect(a,b,c,d,e,f)
-        return
-    end
-    canvas:drawRect(a,b,c,d,e)
-end
-
-local function std_draw_text(x, y, text)
-    if x and y then
-        canvas:drawText(x, y, text)
-    end
-    return canvas:measureText(text or x)
-end
-
-local function std_draw_font(a,b)
-    canvas:attrFont(a,b)
-end
-
-local function std_draw_line(x1, y1, x2, y2)
-    canvas:drawLine(x1, y1, x2, y2)
-end
-
-local function std_game_exit()
-    if application.callbacks.exit then
-        application.callbacks.exit(std, game)
-    end
-    event.post({class="ncl", type="stop"})
-end
-
 local function event_loop(evt)
     if evt.class ~= 'key' then return end
     if not key_bindings[evt.key] then return end
@@ -145,26 +101,25 @@ end
 
 local function setup(evt)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
-    local w, h = canvas:attrSize()
-    std.color=color
-    std.math=zeebo_math
-    std.math.random = math.random
-    std.draw.clear=std_draw_clear
-    std.draw.color=std_draw_color
-    std.draw.rect=std_draw_rect
-    std.draw.text=std_draw_text
-    std.draw.font=std_draw_font
-    std.draw.line=std_draw_line
-    std.draw.poly=decorators.poly(0, nil, std_draw_line)
-    std.game.reset=decorators.reset(application.callbacks, std, game)
-    std.game.exit=std_game_exit
-    game.width=w
-    game.height=h
+    game.width, game.height = canvas:attrSize()
+
+    zeebo_module.require(std, game, application)
+        :package('@math', zeebo_math)
+        :package('@game', zeebo_game)
+        :package('@draw', zeebo_draw)
+        :package('@color', zeebo_color)
+        :package('math', zeebo_math.clib)
+        :package('random', zeebo_math.clib_random)
+        :package('http', zeebo_http, protocol_curl)
+        :package('http', zeebo_http, protocol_ginga)
+        :run()
+
     game.fps_max = application.config and application.config.fps_max or 100
     game.fps_show = application.config and application.config.fps_show or 0
     fps_obj.drop_time = application.config and application.config.fps_time or 1
     fps_obj.drop_count = application.config and application.config.fps_drop or 2
     application.callbacks.init(std, game)
+    
     event.register(event_loop)
     event.timer(1, fixed_loop)
     event.unregister(setup)

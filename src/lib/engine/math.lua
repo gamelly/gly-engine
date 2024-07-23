@@ -24,7 +24,7 @@ end
 --! value, & \text{if } value\_min \lt value \lt value\_max 
 --! \end{cases}
 --! @f$
---! @param[in] value The value to clamp.
+--! @param[in] value The value to clamstd.math.
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
 local function clamp(value, value_min, value_max)
@@ -43,7 +43,7 @@ end
 --! @f$
 --! (value - value\_min) \mod (value\_max - value\_min + 1) + value\_min
 --! @f$
---! @param[in] value The value to clamp.
+--! @param[in] value The value to clamstd.math.
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
 local function clamp2(value, value_min, value_max)
@@ -233,19 +233,37 @@ end
 --! @}
 --! @}
 
+local function install(std)
+    std = std or {}
+    std.math = std.math or {}
+    std.math.abs=abs
+    std.math.clamp=clamp
+    std.math.clamp2=clamp2
+    std.math.cycle=cycle
+    std.math.dir=dir
+    std.math.dis=dis
+    std.math.dis2=dis2
+    std.math.lerp=lerp
+    std.math.map=map
+    std.math.max=max
+    std.math.min=min
+    std.math.saw=saw
+    return std.math
+end
+
+local function install_clib_random(std)
+    local math = require('math')
+    std = std or {}
+    std.math = std.math or {}
+    std.math.random = math.random
+    return std.math
+end
+
 local P = {
-    abs=abs,
-    clamp=clamp,
-    clamp2=clamp2,
-    cycle=cycle,
-    dir=dir,
-    dis=dis,
-    dis2=dis2,
-    lerp=lerp,
-    map=map,
-    max=max,
-    min=min,
-    saw=saw
+    install = install,
+    clib_random = {
+        install = install_clib_random
+    }
 }
 
 return P;

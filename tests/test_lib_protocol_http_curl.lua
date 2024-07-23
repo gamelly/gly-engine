@@ -3,15 +3,15 @@ local mock_io = require('mock/io')
 local protocol_http = require('src/lib/protocol/http_curl')
 
 io.popen = mock_io.open({
-    ['curl -L --silent --insecure -w "%{http_code}" -X GET pudim.com.br'] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X GET pudim.com.br'] = {
         read=function () return 'i love pudim!\n200' end,
         close=function () return true, nil end
     },
-    ['curl -L --silent --insecure -w "%{http_code}" -X POST pudim.com.br'] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.br'] = {
         read=function () return 'method not allowed!\n403' end,
         close=function () return true, nil end
     },
-    ['curl -L --silent --insecure -w "%{http_code}" --HEAD '] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" --HEAD '] = {
         read=function () return '' end,
         close=function () return false, 'no URL specified!' end
     },
