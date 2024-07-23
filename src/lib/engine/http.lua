@@ -36,6 +36,7 @@ local function request(method, std, game, protocol_handler)
         local http_object = {
             -- content
             url = url,
+            method = method,
             body_content = '',
             param_name_list = {},
             param_value_list = {},
@@ -66,6 +67,7 @@ local function request(method, std, game, protocol_handler)
             function ()
                 http_object.std.http.ok = nil
                 http_object.std.http.body = nil
+                http_object.std.http.error = nil
                 http_object.std.http.status = nil
             end,
             -- clean gc
