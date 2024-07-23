@@ -1,5 +1,6 @@
 local os = require('os')
 local zeebo_args = require('src/shared/args')
+local zeebo_meta = require('src/cli/meta')
 local zeebo_fs = require('src/cli/fs')
 
 --! @cond
@@ -30,11 +31,28 @@ local core_list = {
             'src/lib/ginga/main.ncl'
         }
     },
-    ginga_html5={
+    html5_webos={
+        src='src/lib/html5/main.lua',
+        post_exe='webos24 $(pwd)/dist',
+        pipeline={
+            zeebo_meta.late(game):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
+        },
+        extras={
+            'src/lib/html5_webos/appinfo.json',
+            'src/lib/html5_webos/icon.png',
+            'src/lib/html5/index.html',
+            'src/lib/html5/index.html',
+            'src/lib/html5/engine.js',
+        }
+    },
+    html5_ginga={
         src='src/lib/html5/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
+        pipeline={
+            zeebo_meta.late(game):file(dist..'index.html'):pipe()
+        },
         extras={
-            'src/lib/ginga_html5/main.ncl',
+            'src/lib/html5_ginga/main.ncl',
             'src/lib/html5/index.html',
             'src/lib/html5/index.html',
             'src/lib/html5/engine.js',
@@ -42,6 +60,9 @@ local core_list = {
     },
     html5={
         src='src/lib/html5/main.lua',
+        pipeline={
+            zeebo_meta.late(game):file(dist..'index.html'):pipe()
+        },
         extras={
             'src/lib/html5/index.html',
             'src/lib/html5/engine.js'
@@ -57,15 +78,26 @@ if command == 'run' then
     os.exit(os.execute(core_list[core].exe) and 0 or 1)
 elseif command == 'clear' then
     zeebo_fs.clear(dist)
+elseif command == 'meta' then
+    if core == 'ginga' then
+        core = '{{title}} {{version}}'
+    end
+    zeebo_meta.current(game):stdout(core):run()
 elseif command == 'bundler' then
     local path, file = game:match("(.-)([^/\\]+)$")
     zeebo_fs.bundler(path, file, dist..file)
 elseif command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
-    local ok = os.execute('lua '..coverage..' ./tests/test_lib_common_math.lua')
-    local ok = ok and os.execute('lua '..coverage..' ./tests/test_shared_args.lua')
+    local files = zeebo_fs.ls('./tests')
+    local index = 1
+    local ok = true
+    while index <= #files do
+        ok = ok and os.execute('lua '..coverage..' ./tests/'..files[index])
+        index = index + 1
+    end
     if #coverage > 0 then
         os.execute('luacov src')
+        os.execute('tail -n '..tostring(#files + 5)..' luacov.report.out')
     end
     if not ok then
         os.exit(1)
@@ -116,10 +148,22 @@ elseif command == 'build' then
         zeebo_fs.clear(dist..bundler)
     end
 
+    -- post process
+    if core.pipeline then
+        local index = 1
+        while index <= #core.pipeline do
+            local eval = core.pipeline[index]
+            while type(eval) == 'function' do
+                eval = eval()
+            end
+            index = index + 1
+        end
+    end
+
     if run then
         if not core.post_exe then
             print('this core cannot be runned after build!')
-            exit(1)
+            os.exit(1)
         end
         os.exit(os.execute(core.post_exe) and 0 or 1)
     end
