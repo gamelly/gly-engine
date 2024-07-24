@@ -1,6 +1,11 @@
 local decorators = require('src/lib/engine/decorators')
 local bit = require('bit32')
 
+--! @cond
+local canvas = nil
+local game = nil
+--! @endcond
+
 local function color(c)
     local R = bit.band(bit.rshift(c, 24), 0xFF)
     local G = bit.band(bit.rshift(c, 16), 0xFF)
@@ -14,12 +19,8 @@ local function clear(c)
     canvas:drawRect('fill', 0, 0, game.width, game.height)
 end
 
-local function rect(a,b,c,d,e,f)
-    if f and canvas.drawRoundRect then
-        canvas:drawRoundRect(a,b,c,d,e,f)
-        return
-    end
-    canvas:drawRect(a,b,c,d,e)
+local function rect(mode, x, y, width, height)
+    canvas:drawRect(mode == 0 and 'fill' or 'frame', x, y, width, height)
 end
 
 local function text(x, y, text)
@@ -37,7 +38,9 @@ local function line(x1, y1, x2, y2)
     canvas:drawLine(x1, y1, x2, y2)
 end
 
-local function install(std)
+local function install(std, lgame, application, ginga)
+    canvas = ginga.canvas
+    game = lgame
     std = std or {}
     std.draw = std.draw or {}
     std.draw.clear=clear
@@ -49,3 +52,9 @@ local function install(std)
     std.draw.poly=decorators.poly(0, nil, line)
     return std.draw
 end
+
+local P = {
+    install=install
+}
+
+return P
