@@ -24,6 +24,7 @@ local function install(evt)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
     local application = zeebo_module.loadgame()
     local polygons = {
+        repeats={true, true},
         line=canvas.drawLine,
         object=canvas
     }

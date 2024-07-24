@@ -1,3 +1,10 @@
+local function decorator_poo(object, func)
+    if not object or not func then return func end
+    return function(a, b, c, d)
+        return func(object, a, b, c, d)
+    end
+end
+
 local function decorator_line(func_draw_line)
     return function(mode, verts)
         local index = 4
@@ -5,19 +12,21 @@ local function decorator_line(func_draw_line)
             func_draw_line(verts[index - 3], verts[index - 2], verts[index - 1], verts[index])
             index = index + 2
         end
-        if mode <= 1 then 
-            func_draw_line(verts[1], verts[2], verts[#verts -1], verts[#verts])
-        end
     end
 end
 
-local function decorator_poly(func_draw_poly, std, modes)    
+local function decorator_poly(func_draw_poly, std, modes, repeats)    
     return function (engine_mode, verts, x, y, scale, angle, ox, oy)
         if #verts < 6 or #verts % 2 ~= 0 then return end
         local mode = modes and modes[engine_mode + 1] or engine_mode
         local rotated = std.math.cos and angle and angle ~= 0
         ox = ox or 0
         oy = oy or ox or 0
+        
+        if repeats and repeats[engine_mode + 1] then
+            verts[#verts + 1] = verts[1]
+            verts[#verts + 1] = verts[2]
+        end
         
         if x and y and not rotated then
             local index = 1
@@ -52,25 +61,12 @@ local function decorator_poly(func_draw_poly, std, modes)
     end
 end
 
-local function install(std, game, application, poly)
-    local draw_poly = poly.poly
-    local draw_line = poly.line
-    if poly.object and draw_line then
-        draw_line = function(a, b, c, d)
-            poly.line(poly.object, a, b, c, d)
-        end
-    end
-    if poly.object and draw_poly then
-        draw_poly = function(a, b)
-            poly.line(poly.object, a, b)
-        end
-    end
-    if not draw_poly then
-        draw_poly = decorator_line(draw_line)
-    end
+local function install(std, game, application, config)
+    local draw_line = decorator_poo(config.object, config.line)
+    local draw_poly = decorator_poo(config.object, config.poly) or decorator_line(draw_line)
     std = std or {}
     std.draw = std.draw or {}
-    std.draw.poly = decorator_poly(draw_poly, std, poly.modes)
+    std.draw.poly = decorator_poly(draw_poly, std, config.modes, config.repeats)
     return {poly=std.draw.poly}
 end
 
