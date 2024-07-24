@@ -38,11 +38,13 @@ local function package(self, module_name, module, custom)
     end
 
     self.pipeline[#self.pipeline + 1] = function ()
+        if not self.list_exist(name) then return end
+        if not system and not self.lib_required[name] then return end
+        
         local try_install = function()
             module.install(self.std, self.game, self.application, custom)
         end
         
-        if not self.list_exist(name) then return end
         if not pcall(try_install) then return end
         
         if system then
