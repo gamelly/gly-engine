@@ -440,7 +440,7 @@ local function draw(std, game)
     -- draw gui
     local w = game.width/16
     std.draw.color(std.color.black)  
-    std.draw.rect('fill', 0, 0, game.width, 32)
+    std.draw.rect(0, 0, 0, game.width, 32)
     std.draw.color(std.color.white)
     s=std.draw.text(8, 8, 'lifes:')
     std.draw.text(8+s, 8, game.lifes)

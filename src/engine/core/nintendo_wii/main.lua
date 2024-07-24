@@ -12,17 +12,9 @@ local std = require('src/lib/object/std')
 
 function love.load(args)
     local w, h = love.graphics.getDimensions()
-    local screen = args and zeebo_args.get(args, 'screen')
-    local game_title = zeebo_args.param(arg, {'screen'}, 2)
-    local application = zeebo_module.loadgame(game_title)
-
+    local application = zeebo_module.loadgame()
     if not application then
         error('game not found!')
-    end
-    if screen then
-        w, h = screen:match('(%d+)x(%d+)')
-        w, h = tonumber(w), tonumber(h)
-        love.window.setMode(w, h, {resizable=true})
     end
     color.install(std)
     zeebo_keys.install(std)
@@ -33,6 +25,5 @@ function love.load(args)
     std.draw.poly=decorators.poly(0, love.graphics.polygon)
     game.width=w
     game.height=h
-    love.window.setTitle(application.meta.title..' - '..application.meta.version)
     application.callbacks.init(std, game)
 end

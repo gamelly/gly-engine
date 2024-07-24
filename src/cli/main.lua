@@ -69,7 +69,7 @@ local core_list = {
         }
     },
     nintendo_wii={
-        src='src/engine/core/love/main.lua',
+        src='src/engine/core/nintendo_wii/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'meta.xml'):pipe()
         },
