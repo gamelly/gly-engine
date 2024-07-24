@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const canvas_element = document.querySelector('#gameCanvas')
     const canvas_ctx = canvas_element.getContext("2d")
+    const canvas_close = [
+        () => canvas_ctx.fill(),
+        () => {
+            canvas_ctx.closePath()
+            canvas_ctx.stroke()
+        },
+        () => canvas_ctx.stroke()
+    ]
     const canvas_std = {
         clear: (color) => {
             canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
@@ -52,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 index = index + 2;
             }
-            canvas_ctx.stroke()
+            canvas_close[mode]()
         }
     }
 

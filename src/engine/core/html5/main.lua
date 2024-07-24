@@ -1,8 +1,7 @@
 local application = nil
-local math = require('math')
-local zeebo_fps = require('src/lib/engine/fps')
-local zeebo_math = require('src/lib/engine/math')
-local decorators = require('src/lib/engine/decorators')
+local engine_math = require('src/lib/engine/math')
+local engine_color = require('src/lib/object/color')
+local engine_math = require('src/lib/engine/math')
 local application_default = require('src/lib/object/application')
 local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
@@ -24,10 +23,10 @@ end
 
 local function browser_init(width, height)
     application = (load(game_lua))()
-    std.color = color
-    std.math = zeebo_math
-    std.math.random = math.random
-    std.game.reset=decorators.reset(application.callbacks, std, game)
+    engine_math.install(std, game, application)
+    engine_color.install(std, game, application)
+    engine_math.clib.install(std, game, application)
+    engine_math.clib_random.install(std, game, application)
     std.draw = browser_canvas
     game.width = width
     game.height = height
