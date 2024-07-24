@@ -4,6 +4,7 @@ local engine_math = require('src/lib/engine/math')
 local engine_color = require('src/lib/object/color')
 local engine_draw = require('src/engine/core/ginga/draw')
 local engine_ginga = require('src/engine/core/ginga/event')
+local engine_draw_poly = require('src/lib/engine/draw_poly')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 
@@ -22,17 +23,23 @@ _ENV = nil
 local function install(evt)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
     local application = zeebo_module.loadgame()
+    local polygons = {
+        line=canvas.drawLine,
+        object=canvas
+    }
     local ginga = {
         canvas=canvas,
         event=event
     }
 
+    --engine_draw_poly.install(std, game, application, polygons)
     zeebo_module.require(std, game, application)
         :package('@fps', engine_fps)
         :package('@math', engine_math)
         :package('@color', engine_color)
         :package('@draw', engine_draw, ginga)
         :package('@ginga', engine_ginga, ginga)
+        :package('@draw_poly', engine_draw_poly, polygons)
         :package('math', engine_math.clib)
         :package('random', engine_math.clib_random)
         :run()

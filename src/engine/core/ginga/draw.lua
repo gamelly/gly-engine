@@ -1,4 +1,3 @@
-local decorators = require('src/lib/engine/decorators')
 local bit = require('bit32')
 
 --! @cond
@@ -49,7 +48,6 @@ local function install(std, lgame, application, ginga)
     std.draw.text=text
     std.draw.font=font
     std.draw.line=line
-    std.draw.poly=decorators.poly(0, nil, line)
     return std.draw
 end
 

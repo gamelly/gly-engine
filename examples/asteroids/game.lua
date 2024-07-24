@@ -169,10 +169,10 @@ local function init(std, game)
     game.asteroid_spd_y = {}
     game.asteroid_size = {}
     -- polys
-    game.asteroid_large = {27, 0, 27, 15, 15, 12, 0, 30, 18, 39, 9, 48, 15, 60, 30, 66, 48, 66, 57, 57, 60, 51, 66, 42, 66, 33, 54, 12, 27, 0}
-    game.asteroid_mid = {6, 0, 0, 21, 9, 33, 9, 48, 24, 51, 36, 45, 48, 42, 36, 12, 48, 3, 18, 0, 6, 0}
-    game.asteroid_small = {3, 0, 0, 3, 3, 9, 3, 12, 0, 18, 6, 21, 12, 21, 18, 18, 21, 15, 21, 3, 12, 3, 9, 6, 3, 0}
-    game.asteroid_mini = {6, 0, 6, 6, 0, 6, 0, 12, 3, 18, 6, 18, 6, 15, 15, 15, 18, 9, 12, 6, 12, 0, 6, 0}
+    game.asteroid_large = {27, 0, 27, 15, 15, 12, 0, 30, 18, 39, 9, 48, 15, 60, 30, 66, 48, 66, 57, 57, 60, 51, 66, 42, 66, 33, 54, 12}
+    game.asteroid_mid = {6, 0, 0, 21, 9, 33, 9, 48, 24, 51, 36, 45, 48, 42, 36, 12, 48, 3, 18, 0}
+    game.asteroid_small = {3, 0, 0, 3, 3, 9, 3, 12, 0, 18, 6, 21, 12, 21, 18, 18, 21, 15, 21, 3, 12, 3, 9, 6}
+    game.asteroid_mini = {6, 0, 6, 6, 0, 6, 0, 12, 3, 18, 6, 18, 6, 15, 15, 15, 18, 9, 12, 6, 12, 0}
     game.spaceship = {-2,3, 0,-2, 2,3}
     -- sizes
     game.asteroid_large_size = std.math.max(game.asteroid_large)
@@ -412,15 +412,15 @@ local function draw(std, game)
         if game.asteroid_size[index] ~= -1 then
             if game.graphics_fastest == 1 then
                 local s = game.asteroid_size[index]
-                std.draw.rect('fill', game.asteroid_pos_x[index] - s/2,  game.asteroid_pos_y[index] - s/2, s, s)
+                std.draw.rect(1, game.asteroid_pos_x[index] - s/2,  game.asteroid_pos_y[index] - s/2, s, s)
             elseif game.asteroid_size[index] == game.asteroid_large_size then
-                std.draw.poly('fill', game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+                std.draw.poly(1, game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             elseif game.asteroid_size[index] == game.asteroid_mid_size then
-                std.draw.poly('fill', game.asteroid_mid, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+                std.draw.poly(1, game.asteroid_mid, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             elseif game.asteroid_size[index] == game.asteroid_small_size then
-                std.draw.poly('fill', game.asteroid_small, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+                std.draw.poly(1, game.asteroid_small, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             else
-                std.draw.poly('fill', game.asteroid_mini, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
+                std.draw.poly(1, game.asteroid_mini, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             end
         end
         index = index + 1
@@ -428,7 +428,7 @@ local function draw(std, game)
     -- draw player
     std.draw.color(std.color.yellow)
     if game.state ~= 5 then
-        std.draw.poly('fill', game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
+        std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
     end
     -- laser bean
     if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
