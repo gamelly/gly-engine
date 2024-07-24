@@ -38,6 +38,10 @@ local function error(self, handler_func)
     return self
 end
 
+--! @}
+--! @}
+
+--! @cond
 local function request(method, std, game, application, protocol_handler)
     local callback_handler = application and application.callbacks and application.callback_handler.http
 
@@ -128,11 +132,8 @@ local function request(method, std, game, application, protocol_handler)
         return http_object
     end
 end
+--! @endcond
 
---! @}
---! @}
-
---! @cond
 local function install(std, game, application, protocol_handler)
     std = std or {}
     std.http = std.http or {}
@@ -144,7 +145,6 @@ local function install(std, game, application, protocol_handler)
     std.http.patch=request('PATCH', std, game, application, protocol_handler)
     return std.http
 end
---! @endcond
 
 local P = {
     install=install
