@@ -10,25 +10,24 @@ local function http_handler(self)
         index = index + 1
     end
 
-    local handle = io.popen(cmd..protocol..headers..self.url)
+    local handle = io and io.popen and io.popen(cmd..protocol..headers..self.url)
 
     if handle then
         local stdout = handle:read("*a")
         local ok, stderr = handle:close()
         local index = stdout:find("[^\n]*$") or 1
         local status = tonumber(stdout:sub(index))
-        self.std.http.error = not ok and stderr
-        self.std.http.body = stdout:sub(1, index - 1)
-        self.std.http.status = ok and status or nil
-        self.std.http.ok = ok and status and 200 <= status and status < 300
-    end
-
-    if self.std.http.ok then
-        self.success_handler(self.std, self.game)
-    elseif self.std.http.error or not self.std.http.status then
-        self.error_handler(self.std, self.game)
-    else
-        self.failed_handler(self.std, self.game)
+        if not ok then
+            self.std.http.ok = false
+            self.std.http.error = stderr or stdout or 'unknown error!'
+        else
+            self.std.http.ok = 200 <= status and status < 300
+            self.std.http.body = stdout:sub(1, index - 1)
+            self.std.http.status = status
+        end        
+    else 
+        self.std.http.ok = false
+        self.std.http.error = 'failed to spawn process!'
     end
 end
 

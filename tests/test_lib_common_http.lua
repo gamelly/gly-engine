@@ -70,7 +70,7 @@ function test_http_head_error()
 
     luaunit.assertEquals(ok, false)
     luaunit.assertEquals(status, -1)
-    luaunit.assertEquals(message, 'URL not set')
+    luaunit.assertEquals(message, 'URL not set!')
 end
 
 function test_http_get_201()

@@ -2,7 +2,7 @@ local luaunit = require('luaunit')
 local mock_io = require('mock/io')
 local protocol_http = require('src/lib/protocol/http_curl')
 
-io.popen = mock_io.open({
+local mock_popen = mock_io.open({
     ['curl -L --silent --insecure -w "\n%{http_code}" -X GET pudim.com.br'] = {
         read=function () return 'i love pudim!\n200' end,
         close=function () return true, nil end
@@ -18,57 +18,67 @@ io.popen = mock_io.open({
 })
 
 function test_http_get_200()
-    local ok, status, body, h = false, 0, nil, nil
+    local std = {http={}}
+    io.popen = mock_popen
     
     protocol_http.handler({
-        std = {http={}},
+        std = std,
         url = 'pudim.com.br',
-        method = 'GET',
-        success_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.body, 1 end,
-        failed_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.body, 2 end,
-        error_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.error, 3 end
+        method = 'GET'
     })
 
-    luaunit.assertEquals(h, 1)
-    luaunit.assertEquals(ok, true)
-    luaunit.assertEquals(status, 200)
-    luaunit.assertEquals(body, 'i love pudim!\n')
+    luaunit.assertEquals(std.http.ok, true)
+    luaunit.assertEquals(std.http.error, nil)
+    luaunit.assertEquals(std.http.status, 200)
+    luaunit.assertEquals(std.http.body, 'i love pudim!\n')
 end
 
 function test_http_post_403()
-    local ok, status, body, h = false, 0, nil, nil
+    local std = {http={}}
+    io.popen = mock_popen
     
     protocol_http.handler({
-        std = {http={}},
+        std = std,
         url = 'pudim.com.br',
-        method = 'POST',
-        success_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.body, 1 end,
-        failed_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.body, 2 end,
-        error_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.error, 3 end
+        method = 'POST'
     })
 
-    luaunit.assertEquals(h, 2)
-    luaunit.assertEquals(ok, false)
-    luaunit.assertEquals(status, 403)
-    luaunit.assertEquals(body, 'method not allowed!\n')
+    luaunit.assertEquals(std.http.ok, false)
+    luaunit.assertEquals(std.http.error, nil)
+    luaunit.assertEquals(std.http.status, 403)
+    luaunit.assertEquals(std.http.body, 'method not allowed!\n')
 end
 
 function test_http_head_error()
-    local ok, status, body, h = false, 0, nil, nil
+    local std = {http={}}
+    io.popen = mock_popen
     
     protocol_http.handler({
-        std = {http={}},
+        std = std,
         url = '',
-        method = 'HEAD',
-        success_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.body, 1 end,
-        failed_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.body, 2 end,
-        error_handler = function(std) ok, status, body, h = std.http.ok, std.http.status, std.http.error, 3 end
+        method = 'HEAD'
     })
 
-    luaunit.assertEquals(h, 3)
-    luaunit.assertEquals(ok, false)
-    luaunit.assertEquals(status, nil)
-    luaunit.assertEquals(body, 'no URL specified!')
+    luaunit.assertEquals(std.http.ok, false)
+    luaunit.assertEquals(std.http.error, 'no URL specified!')
+    luaunit.assertEquals(std.http.status, nil)
+    luaunit.assertEquals(std.http.body, nil)
+end
+
+function test_http_popen_error()
+    local std = {http={}}
+    io.popen = nil
+    
+    protocol_http.handler({
+        std = std,
+        url = 'pudim.com.br',
+        method = 'GET'
+    })
+
+    luaunit.assertEquals(std.http.ok, false)
+    luaunit.assertEquals(std.http.error, 'failed to spawn process!')
+    luaunit.assertEquals(std.http.status, nil)
+    luaunit.assertEquals(std.http.body, nil)
 end
 
 os.exit(luaunit.LuaUnit.run())

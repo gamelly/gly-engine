@@ -17,18 +17,9 @@ local function http_handler(requests)
         self.std.http.error = nil
 
         if not self.url then
-            self.std.http.error = 'URL not set'
-            self.error_handler(self.std, self.game)
+            self.std.http.error = 'URL not set!'
         elseif not request then
-            self.std.http.status = 404
-            self.failed_handler(self.std, self.game)      
-        elseif request.ok == true then
-            self.success_handler(self.std, self.game)
-        elseif request.ok == false then
-            self.failed_handler(self.std, self.game)
-        else
-            self.std.http.error = 'unknown OK'
-            self.error_handler(self.std, self.game)
+            self.std.http.status = 404    
         end
     end
 end
