@@ -43,7 +43,7 @@ end
 
 --! @cond
 local function request(method, std, game, application, protocol_handler)
-    local callback_handler = application and application.callbacks and application.callback_handler.http
+    local callback_handler = application and application.callbacks and application.callbacks.http
 
     if not callback_handler then
         callback_handler = function() end
@@ -134,7 +134,8 @@ local function request(method, std, game, application, protocol_handler)
 end
 --! @endcond
 
-local function install(std, game, application, protocol_handler)
+local function install(std, game, application, protocol)
+    local protocol_handler = protocol.handler
     std = std or {}
     std.http = std.http or {}
     std.http.get=request('GET', std, game, application, protocol_handler)

@@ -1,11 +1,10 @@
 local function init(std, game)
     game.text = 'loading....'
-    std.http.get('api.github.com/zen')
-        :header('X-GitHub-Api-Version', '2022-11-28')
-        :success(function()
-            game.text = std.http.body
-        end)
-        :run()
+    std.http.get('api.github.com/zen'):header('X-GitHub-Api-Version', '2022-11-28'):run()
+end
+
+local function http(std, game)
+    game.text = std.http.body or std.http.error
 end
 
 local function draw(std, game)
@@ -17,6 +16,7 @@ end
 local P = {
     meta={
         title='Github Zen',
+        version='1.0.0'
     },
     config={
         require='http'
@@ -24,8 +24,7 @@ local P = {
     callbacks={
         init=init,
         draw=draw,
-        loop=function() end,
-        exit=function() end
+        http=http
     }
 }
 

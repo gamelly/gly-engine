@@ -27,7 +27,7 @@ local http_handler = mock_http.requests({
     }
 })
 
-zeebo_http.install(std, nil, nil, http_handler)
+zeebo_http.install(std, nil, nil, {handler=http_handler})
 
 function test_http_head_200()
     local status = 0

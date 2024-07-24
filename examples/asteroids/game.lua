@@ -26,8 +26,6 @@
 --! 8 -> 4: resume
 --! @enduml
 
-local math = require('math')
-
 local function intersect_line_circle(x1, y1, x2, y2, h, k, raio)
     local m = (y2 - y1) / (x2 - x1)
     local c = y1 - m * x1
@@ -76,10 +74,10 @@ end
 local function asteroids_rain(std, game)
     local index = 1
     local attemps = 1
-    local n1 = 0.5 * math.min(game.level/3, 1)
-    local n2 = 1.0 * math.min(game.level/3, 1)
-    local n3 = 2.0 * math.min(game.level/3, 1)
-    local n4 = 2.5 * math.min(game.level/3, 1)
+    local n1 = 0.5 * std.math.min(game.level/3, 1)
+    local n2 = 1.0 * std.math.min(game.level/3, 1)
+    local n3 = 2.0 * std.math.min(game.level/3, 1)
+    local n4 = 2.5 * std.math.min(game.level/3, 1)
     local hspeed = {-n1, 0, 0, 0, 0, 0, n1}
     local vspeed = {-n4, -n3, -n2, n2, n3, n4}
     local middle_left = game.width/4
@@ -125,8 +123,8 @@ local function asteroid_destroy(std, game, id)
         game.asteroid_size[asteroids + index] = size
         game.asteroid_pos_x[asteroids + index] = game.asteroid_pos_x[id]
         game.asteroid_pos_y[asteroids + index] = game.asteroid_pos_y[id]
-        game.asteroid_spd_x[asteroids + index] = hspeed[std.math.random(1, #hspeed)] * math.min(game.level/5, 1)
-        game.asteroid_spd_y[asteroids + index] = vspeed[std.math.random(1, #vspeed)] * math.min(game.level/5, 1)
+        game.asteroid_spd_x[asteroids + index] = hspeed[std.math.random(1, #hspeed)] * std.math.min(game.level/5, 1)
+        game.asteroid_spd_y[asteroids + index] = vspeed[std.math.random(1, #vspeed)] * std.math.min(game.level/5, 1)
         index = index + 1
     end
 
@@ -233,7 +231,7 @@ local function loop(std, game)
         game.state = 1
     end
     -- player move
-    game.player_angle = std.math.cycle(game.player_angle + (std.key.press.right - std.key.press.left) * 0.1, math.pi * 2) * math.pi * 2
+    game.player_angle = std.math.cycle(game.player_angle + (std.key.press.right - std.key.press.left) * 0.1, std.math.pi * 2) * std.math.pi * 2
     game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * game.dt)
     game.player_pos_y = game.player_pos_y + (game.player_spd_y/16 * game.dt)
     if std.key.press.up == 0 and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
@@ -241,10 +239,10 @@ local function loop(std, game)
         game.player_spd_y = 0
     end
     if std.key.press.up == 1 then
-        game.player_spd_x = game.player_spd_x + (game.boost * math.cos(game.player_angle - math.pi/2))
-        game.player_spd_y = game.player_spd_y + (game.boost * math.sin(game.player_angle - math.pi/2))
-        local max_spd_x = std.math.abs(game.speed_max * math.cos(game.player_angle - math.pi/2))
-        local max_spd_y = std.math.abs(game.speed_max * math.sin(game.player_angle - math.pi/2))
+        game.player_spd_x = game.player_spd_x + (game.boost * std.math.cos(game.player_angle - std.math.pi/2))
+        game.player_spd_y = game.player_spd_y + (game.boost * std.math.sin(game.player_angle - std.math.pi/2))
+        local max_spd_x = std.math.abs(game.speed_max * std.math.cos(game.player_angle - std.math.pi/2))
+        local max_spd_y = std.math.abs(game.speed_max * std.math.sin(game.player_angle - std.math.pi/2))
         game.player_spd_x = std.math.clamp(game.player_spd_x, -max_spd_x, max_spd_x) 
         game.player_spd_y = std.math.clamp(game.player_spd_y, -max_spd_y, max_spd_y)
     end
@@ -274,8 +272,8 @@ local function loop(std, game)
     if not game.laser_enabled and game.state == 4 and (std.key.press.red == 1 or std.key.press.enter == 1) then
         local index = 1
         local asteroids = #game.asteroid_size
-        local sin = math.cos(game.player_angle - math.pi/2)
-        local cos = math.sin(game.player_angle - math.pi/2)
+        local sin = std.math.cos(game.player_angle - std.math.pi/2)
+        local cos = std.math.sin(game.player_angle - std.math.pi/2)
         local laser_fake_x = game.player_pos_x - (game.laser_distance_fire * sin * 2)
         local laser_fake_y = game.player_pos_y - (game.laser_distance_fire * cos * 2)
         game.laser_pos_x2 = game.player_pos_x + (game.laser_distance_fire * sin)
@@ -400,7 +398,7 @@ local function draw(std, game)
     elseif game.state == 2 then
         local height = game.height/4
         local w = std.draw.text('Rodrigo Dornelles')
-        local anim = math.cos(std.math.cycle(game.milis, 200) * math.pi*2)
+        local anim = std.math.cos(std.math.cycle(game.milis, 200) * std.math.pi*2)
         draw_logo(std, game, height, anim) 
         std.draw.font('sans', 16)
         std.draw.color(std.color.white)
@@ -475,6 +473,7 @@ local P = {
         version='1.0.0'
     },
     config = {
+        require = 'math random',
         fps_drop = 5,
         fps_time = 5
     },
