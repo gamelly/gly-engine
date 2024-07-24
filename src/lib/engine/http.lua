@@ -113,7 +113,7 @@ end
 --! @}
 
 --! @cond
-local function install(std, game, protocol_handler)
+local function install(std, game, application, protocol_handler)
     std = std or {}
     std.http = std.http or {}
     std.http.get=request('GET', std, game, protocol_handler)
