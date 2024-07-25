@@ -1,6 +1,6 @@
 --! @defgroup std
 --! @{
---! @defgroup math
+--! @defgroup game
 --! @{
 
 local function reset(self)

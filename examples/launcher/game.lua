@@ -87,7 +87,8 @@ end
 
 local P = {
     meta={
-        title='Multi Games',
+        title='Launcher Games',
+        description='a online multi game list',
         author='Rodrigo Dornelles',
         version='1.0.0'
     },

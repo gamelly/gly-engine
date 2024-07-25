@@ -26,6 +26,19 @@
 --! 8 -> 4: resume
 --! @enduml
 
+--! @cond
+local function draw_logo(std, game, height, anim)
+    anim = anim or 0
+    std.draw.font('sans', 32)
+    std.draw.color(std.color.white)
+    local s1 = std.draw.text('AsteroidsTv')
+    local s2 = std.draw.text('Tv')
+    std.draw.text(game.width/2 - s1/2, height + anim, 'Asteroids')
+    std.draw.color(std.color.red)
+    std.draw.text(game.width/2 + s1/2 - s2, height - anim, 'Tv')
+    return s1
+end
+
 local function intersect_line_circle(x1, y1, x2, y2, h, k, raio)
     local m = (y2 - y1) / (x2 - x1)
     local c = y1 - m * x1
@@ -130,6 +143,7 @@ local function asteroid_destroy(std, game, id)
 
     return score
 end
+--! @endcond
 
 local function init(std, game)
     -- game
@@ -350,18 +364,6 @@ local function loop(std, game)
             game.level = 1
         end
     end
-end
-
-local function draw_logo(std, game, height, anim)
-    anim = anim or 0
-    std.draw.font('sans', 32)
-    std.draw.color(std.color.white)
-    local s1 = std.draw.text('AsteroidsTv')
-    local s2 = std.draw.text('Tv')
-    std.draw.text(game.width/2 - s1/2, height + anim, 'Asteroids')
-    std.draw.color(std.color.red)
-    std.draw.text(game.width/2 + s1/2 - s2, height - anim, 'Tv')
-    return s1
 end
 
 local function draw(std, game)

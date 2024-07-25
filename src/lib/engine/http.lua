@@ -3,6 +3,7 @@ local zeebo_pipeline = require('src/lib/engine/pipeline')
 --! @defgroup std
 --! @{
 --! @defgroup http
+--! @pre require @c http
 --! @{
 local function body(self, content)
     self.body_content=content

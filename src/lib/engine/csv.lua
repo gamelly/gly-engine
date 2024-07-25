@@ -1,3 +1,7 @@
+--! @defgroup std
+--! @{
+
+--! @pre require: @c csv
 local function csv(in_str, out_table)
     local index1 = 1
     local headers = {}
@@ -33,6 +37,8 @@ local function csv(in_str, out_table)
         index2 = index2 + 1
     until not line
 end
+
+--! @}
 
 local function install(std)
     std = std or {}

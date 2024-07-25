@@ -87,6 +87,15 @@ end
 --! @retval -1 less than alpha
 --! @retval 0 when in alpha
 --! @retval 1 greater than alpha
+--! @par Example
+--! @code
+--! local sprites = {
+--!   [-1] = game.spr_player_left,
+--!   [1] = game.spr_player_right,
+--!   [0] = game.player_sprite
+--! }
+--! game.player_sprite = sprites[std.math.dir(game.player_speed_x)]
+--! @endcode
 local function dir(value, alpha)
     alpha = alpha or 0
     if value < -alpha then
