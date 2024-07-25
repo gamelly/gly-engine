@@ -64,7 +64,7 @@ local function fixed_loop()
     canvas:clear()
     application.callbacks.draw(std, game)
     if game.fps_show and game.fps_show >= 0 and std.draw.fps then
-        std.draw.fps(2, 8, 8)
+        std.draw.fps(game.fps_show, 8, 8)
     end
     canvas:flush()
 

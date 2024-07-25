@@ -57,6 +57,9 @@ local function install(std, game, application)
     if love then
         love.draw = function()
             application.callbacks.draw(std, game)
+            if std.draw.fps then
+                std.draw.fps(game.fps_show, 8, 8)
+            end
         end
         love.resize = function(w, h)
             game.width, game.height = w, h

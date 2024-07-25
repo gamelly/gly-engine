@@ -1,6 +1,7 @@
 local os = require('os')
 local zeebo_module = require('src/lib/engine/module')
 local zeebo_args = require('src/lib/common/args')
+local engine_fps = require('src/lib/engine/fps')
 local engine_game = require('src/lib/engine/game')
 local engine_math = require('src/lib/engine/math')
 local engine_draw = require('src/engine/core/love/draw')
@@ -34,6 +35,7 @@ function love.load(args)
     end
     
     zeebo_module.require(std, game, application)
+        :package('@fps', engine_fps)
         :package('@game', engine_game, love.event.quit)
         :package('@math', engine_math)
         :package('@draw', engine_draw)
@@ -48,6 +50,8 @@ function love.load(args)
         :run()
 
     game.width, game.height = w, h
+    game.fps_max = application.config and application.config.fps_max or 100
+    game.fps_show = application.config and application.config.fps_show or 0
     love.window.setTitle(application.meta.title..' - '..application.meta.version)
     application.callbacks.init(std, game)
 end
