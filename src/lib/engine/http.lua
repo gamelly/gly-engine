@@ -82,7 +82,13 @@ local function request(method, std, game, application, protocol_handler)
         http_object.pipeline = {
             -- eval
             function()
-                http_object:protocol_handler()
+                local response = http_object:protocol_handler()
+                if response and #response > 0 then
+                    http_object.std.http.ok = response[1]
+                    http_object.std.http.body = response[2]
+                    http_object.std.http.status = response[3]
+                    http_object.std.http.error = response[4]
+                end
             end,
             -- callbacks
             function()
