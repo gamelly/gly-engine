@@ -1,4 +1,8 @@
 local function init(std, game)
+    if game.multi_state == 4 then
+        game.application.callbacks.init(std, game)
+        return
+    end
     local registry = 'gist.githubusercontent.com/RodrigoDornelles/7ee1ac926b76442d6c303c3a291037c4/raw/c3597529459e487eadccd8597fb1dc72e5034096/games.csv'
     game.multi_text = 'booting...'
     game.multi_state = 1
@@ -18,7 +22,12 @@ local function http(std, game)
         game.application = game.application and game.application()
         if game.application then
             game.multi_state = 4
+            std.game.exit = function()
+                game.multi_menu_time = game.milis
+                game.multi_state = 2
+            end
             game.application.callbacks.init(std, game)
+            game.menu_time = game.milis
         end
     else
         game.multi_state = 1
@@ -70,6 +79,12 @@ local function draw(std, game)
     end
 end
 
+local function exit(std, game)
+    if game.multi_state == 4 then
+        game.application.callbacks.exit(std, game)
+    end
+end
+
 local P = {
     meta={
         title='Multi Games',
@@ -83,7 +98,8 @@ local P = {
         init=init,
         loop=loop,
         draw=draw,
-        http=http
+        http=http,
+        exit=exit
     }
 }
 

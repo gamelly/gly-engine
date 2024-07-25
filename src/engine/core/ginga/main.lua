@@ -1,6 +1,7 @@
 local zeebo_module = require('src/lib/engine/module')
 local engine_fps = require('src/lib/engine/fps')
 local engine_math = require('src/lib/engine/math')
+local engine_game = require('src/lib/engine/game')
 local engine_color = require('src/lib/object/color')
 local engine_draw = require('src/engine/core/ginga/draw')
 local engine_ginga = require('src/engine/core/ginga/event')
@@ -33,10 +34,10 @@ local function install(evt)
         event=event
     }
 
-    --engine_draw_poly.install(std, game, application, polygons)
     zeebo_module.require(std, game, application)
         :package('@fps', engine_fps)
         :package('@math', engine_math)
+        :package('@game', engine_game)
         :package('@color', engine_color)
         :package('@draw', engine_draw, ginga)
         :package('@ginga', engine_ginga, ginga)

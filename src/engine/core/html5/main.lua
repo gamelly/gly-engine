@@ -1,5 +1,6 @@
 local application = nil
 local zeebo_module = require('src/lib/engine/module')
+local engine_game = require('src/lib/engine/game')
 local engine_math = require('src/lib/engine/math')
 local engine_color = require('src/lib/object/color')
 local engine_math = require('src/lib/engine/math')
@@ -29,6 +30,7 @@ end
 local function browser_init(width, height)
     application = (load(game_lua))()
     zeebo_module.require(std, game, application)
+        :package('@game', engine_game)
         :package('@math', engine_math)
         :package('@color', engine_color)
         :package('math', engine_math.clib)
