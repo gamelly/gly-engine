@@ -49,6 +49,10 @@ local function std_draw_colorrgb(r,g,b)
     love.graphics.setColor(love.math.colorFromBytes(r, g, b))
 end
 
+local function std_draw_colorrgb(r,g,b)
+    love.graphics.setColor(love.math.colorFromBytes(r, g, b))
+end
+
 local function std_draw_rect(a,b,c,d,e,f)
     love.graphics.rectangle(modes[love.wiimote ~= nil][a], b, c, d, e)
 end
