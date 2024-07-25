@@ -22,8 +22,9 @@ local function rect(a,b,c,d,e,f)
     love.graphics.rectangle(modes[love.wiimote ~= nil][a], b, c, d, e)
 end
 
+--! @todo support WII
 local function text(x, y, text)
-    if love.wiimote then return 32 end -- TODO support WII
+    if love.wiimote then return 32 end
     if x and y then
         love.graphics.print(text, x, y)
     end
@@ -34,8 +35,9 @@ local function line(x1, y1, x2, y2)
     love.graphics.line(x1, y1, x2, y2)
 end
 
-local function font(a,b)
-    -- TODO: not must be called in update 
+--! @todo implement it!
+local function font(a, b)
+
 end
 
 local function install(std, game, application)

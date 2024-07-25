@@ -43,7 +43,7 @@ end
 local function install(std)
     std = std or {}
     std.csv = csv
-    return std.csv
+    return {csv=csv}
 end
 
 local P = {

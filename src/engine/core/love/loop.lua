@@ -8,7 +8,15 @@ local function install(std, game, application)
     end
 
     if love then
-        love.update = update
+        if love.update then
+            local old_update = love.update
+            love.update = function(dt)
+                old_update(dt)
+                update(dt)
+            end
+        else
+            love.update = update
+        end
     end
 
     return {update=update}
