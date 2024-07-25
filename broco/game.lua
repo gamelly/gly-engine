@@ -714,7 +714,7 @@ end
 local P = {
     meta={
         title='Brocos',
-        description='brocos',
+        description='Simple tile matching game',
         version='1.0.0'
     },
     callbacks={
