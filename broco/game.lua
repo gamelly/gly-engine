@@ -103,9 +103,21 @@ local function menu_logic(std, game)
             game.difficulty = game.difficulty - 1
             game.canReadInput = false
         end
-        if std.key.press.red == 1 or std.key.press.enter == 1 then
-            init_board(std, game)
+        if std.key.press.up == 1 and game.cursor > 0 then
+            game.cursor = game.cursor - 1
             game.canReadInput = false
+        end
+        if std.key.press.down == 1 and game.cursor < 1 then
+            game.cursor = game.cursor + 1
+            game.canReadInput = false
+        end
+        if std.key.press.red == 1 or std.key.press.enter == 1 then
+            if game.cursor == 0 then
+                init_board(std, game)
+                game.canReadInput = false
+            else
+                std.game.exit()
+            end
         end
     end
 end
@@ -116,14 +128,17 @@ local function pause_logic(std, game)
             game.cursor = game.cursor - 1
             game.canReadInput = false
         end
-        if std.key.press.down == 1 and game.cursor < 1 then
+        if std.key.press.down == 1 and game.cursor < 2 then
             game.cursor = game.cursor + 1
             game.canReadInput = false
         end
         if std.key.press.red == 1 then
             if game.cursor == 1 then
                 game.destroy = true
+                game.cursor = 0
                 init_board(std, game)
+            elseif game.cursor == 2 then
+                std.game.exit()
             end
             game.pause = false
             game.switchState = true
@@ -508,23 +523,24 @@ local function draw_menu(std, game)
 
     -- fill background
     std.draw.color(colorTable.backgroundBoard)
-    std.draw.rect(0, h - 10, v - 10, 140, 140)
+    std.draw.rect(0, h - 10, v - 10, 140, 180)
 
     --draw options
     std.draw.color(std.color.black)
-    draw_border(std, game, h - 10, v - 10, 140, 140, 5)
+    draw_border(std, game, h - 10, v - 10, 140, 180, 5)
     std.draw.text(h + 25, v + 12,      ' Novo Jogo ')
-    std.draw.text(h + 25, v + 40 + 12, 'Dificuldade')
+    std.draw.text(h + 32, v + 40 + 12, '    Sair   ')
+    std.draw.text(h + 25, v + 80 + 12, 'Dificuldade')
     if game.difficulty == 1 then
-        std.draw.text(h + 45, v + 80 + 12, 'Fácil')
-        std.draw.text(h + 95, v + 80 + 12, '->')
+        std.draw.text(h + 45, v + 120 + 12, 'Fácil')
+        std.draw.text(h + 95, v + 120 + 12, '->')
     elseif game.difficulty == 2 then
-        std.draw.text(h + 10, v + 80 + 12, '<-')
-        std.draw.text(h + 42, v + 80 + 12, 'Médio')
-        std.draw.text(h + 95, v + 80 + 12, '->')
+        std.draw.text(h + 10, v + 120 + 12, '<-')
+        std.draw.text(h + 42, v + 120 + 12, 'Médio')
+        std.draw.text(h + 95, v + 120 + 12, '->')
     else
-        std.draw.text(h + 10, v + 80 + 12, '<-')
-        std.draw.text(h + 45, v + 80 + 12, 'Difícil')
+        std.draw.text(h + 10, v + 120 + 12, '<-')
+        std.draw.text(h + 45, v + 120 + 12, 'Difícil')
     end
     std.draw.rect(1, h + 2, v + (game.cursor * 40) + 10, 116, 20)
 end
@@ -535,12 +551,13 @@ local function draw_pause(std, game)
 
     -- fill background
     std.draw.color(colorTable.backgroundBoard)
-    std.draw.rect(0, h - 10, v - 10, 140, 100)
+    std.draw.rect(0, h - 10, v - 10, 140, 140)
     -- draw options
     std.draw.color(std.color.black)
-    draw_border(std, game, h - 10, v - 10, 140, 100, 5)
+    draw_border(std, game, h - 10, v - 10, 140, 140, 5)
     std.draw.text(h + 30, v + 12,      'Continuar')
     std.draw.text(h + 32, v + 40 + 12, '   Menu  ')
+    std.draw.text(h + 32, v + 80 + 12, '   Sair  ')
 
     std.draw.rect(1, h + 2, v + (game.cursor * 40) + 10, 116, 20)
 end
