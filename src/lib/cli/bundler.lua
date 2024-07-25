@@ -86,6 +86,7 @@ local function build(src_path, src_filename, dest)
                     line = line:gsub('^%s*', '')
                     line = line:gsub('*%s$', '')
                     line = line:gsub('^%-%-$', '')
+                    line = line:gsub('^_ENV = nil$', '')
                     line = line:gsub('%s*%-%-([^\'\"%[%]].*)$', '')
                 end
 
