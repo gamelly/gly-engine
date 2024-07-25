@@ -17,13 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
             canvas_ctx.fillRect(0, 0, canvas_element.width, canvas_element.height)
         },
-        colorRgb: (r,g,b) => {
-            r = r.toString(16)
-            g = g.toString(16)
-            b = b.toString(16)
-            canvas_ctx.strokeStyle =  "#" + r + g + b
-            canvas_ctx.fillStyle = "#" + r + g + b
-        },
         color: (color) => {
             const hex = '#' + color.toString(16).padStart(8, '0')
             canvas_ctx.strokeStyle = hex
