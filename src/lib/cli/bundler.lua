@@ -58,6 +58,7 @@ local function build(src_path, src_filename, dest)
     local src_in = src_path..src_filename
     local src_file = io.open(src_in, 'r')
     local dest_file = io.open(dest, 'w')
+    local relative_path = src_path:gsub('[%w_-]+', '..')
     local deps_imported = {}
     local deps_var_name = {}
     local deps_module_path = {}
@@ -71,16 +72,12 @@ local function build(src_path, src_filename, dest)
 
     repeat
         if from == 'system' then
-            main_before = main_before..'local '..lib_var..' = require(\''..lib_module..'\')\n'
+            main_before = 'local '..lib_var..' = require(\''..lib_module..'\')\n'..main_before
         end
         if src_file then
             if from == 'lib' then
-                local replace = '%-%-'..lib_module..lib_var..'%-%-'
-                local import = 'local '..lib_var..' = '..lib_name..'()'
                 main_before = main_before..'local '..lib_name..' = nil\n'
                 main_after = main_after..lib_name..' = function()\n'
-                main_after = main_after:gsub(replace, import)
-                main_content = main_content:gsub(replace, import)
             end
             repeat
                 local line = src_file:read()
@@ -88,7 +85,7 @@ local function build(src_path, src_filename, dest)
                     line = line:gsub('\n', '')
                     line = line:gsub('^%s*', '')
                     line = line:gsub('*%s$', '')
-                    line = line:gsub('%-%-', '')
+                    line = line:gsub('^%-%-$', '')
                     line = line:gsub('%s*%-%-([^\'\"%[%]].*)$', '')
                 end
 
@@ -126,15 +123,32 @@ local function build(src_path, src_filename, dest)
             lib_var = deps_var_name[index]
             local lib =  lib_module and lib_var and lib_module..lib_var
             if lib and not deps_imported[lib] then
-                deps_imported[lib] = true
-                src_in = src_path..lib_module
-                src_file = io.open(src_in..'.lua', 'r') or io.open(lib_module..'.lua')
                 lib_name = lib_module:gsub('/', '_')
+                src_in = src_path..lib_module..'.lua'
+                src_file = io.open(src_in, 'r') or io.open(lib_module..'.lua')
+                src_file = src_file or io.open(src_path..relative_path..lib_module..'.lua')
                 from = src_file and 'lib' or 'system'
+                deps_imported[lib] = from
             end
             index = index + 1
         end
     until not src_in
+
+    index = 1
+    while index <= #deps_var_name do
+        lib_module = deps_module_path[index]
+        lib_name = lib_module:gsub('/', '_')
+        lib_var = deps_var_name[index]
+        local lib = lib_module and lib_var and lib_module..lib_var
+        if lib and deps_imported[lib] then
+            local search = '%-%-'..lib_module..lib_var..'%-%-\n'
+            local replace = 'local '..lib_var..' = '..lib_name..'()\n'
+            local replacer = deps_imported[lib] == 'system' and '' or replace
+            main_after = main_after:gsub(search, replacer)
+            main_content = main_content:gsub(search, replacer)
+        end
+        index = index + 1
+    end
 
     do
         main_content = 'local function main()\n'..main_content..'end\n'
