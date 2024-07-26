@@ -425,18 +425,18 @@ local function render_broco(std, game, posX, posY, broco)
         local diamond3 = {posX+20, posY+20, posX+37, posY+20, posX+20, posY+37}
         local diamond4 = {posX+19, posY+20, posX+2, posY+20, posX+19, posY+37}
         std.draw.color(colorTable.diamond)
-        std.draw.poly('fill', diamond1)
-        std.draw.poly('fill', diamond2)
-        std.draw.poly('fill', diamond3)
-        std.draw.poly('fill', diamond4)
+        std.draw.poly(0, diamond1)
+        std.draw.poly(0, diamond2)
+        std.draw.poly(0, diamond3)
+        std.draw.poly(0, diamond4)
         std.draw.color(std.color.black)
         std.draw.text(posX, posY, '2')
     elseif broco == 3 then -- triangle
         local triangleLeft = {posX+19, posY+2, posX+19, posY+37, posX+2, posY+37}
         local triangleRight = {posX+20, posY+2, posX+20, posY+37, posX+37, posY+37}
         std.draw.color(colorTable.emerald)
-        std.draw.poly('fill', triangleLeft)
-        std.draw.poly('fill', triangleRight)
+        std.draw.poly(0, triangleLeft)
+        std.draw.poly(0, triangleRight)
         std.draw.color(std.color.black)
         std.draw.text(posX, posY, '3')
     elseif broco == 4 then -- plus
@@ -451,10 +451,10 @@ local function render_broco(std, game, posX, posY, broco)
         local trapezoid3 = {posX+27, posY+37, posX+27, posY+2, posX+12, posY+37}
         local trapezoid4 = {posX+27, posY+37, posX+27, posY+2, posX+37, posY+37}
         std.draw.color(colorTable.sapphire)
-        std.draw.poly('fill', trapezoid1)
-        std.draw.poly('fill', trapezoid2)
-        std.draw.poly('fill', trapezoid3)
-        std.draw.poly('fill', trapezoid4)
+        std.draw.poly(0, trapezoid1)
+        std.draw.poly(0, trapezoid2)
+        std.draw.poly(0, trapezoid3)
+        std.draw.poly(0, trapezoid4)
         std.draw.color(std.color.black)
         std.draw.text(posX, posY, '5')
     elseif broco == 6 then -- star
@@ -462,9 +462,9 @@ local function render_broco(std, game, posX, posY, broco)
         local star2 = {posX+20, posY+2, posX+20, posY+26, posX+2, posY+37}
         local star3 = {posX+20, posY+2, posX+20, posY+26, posX+37, posY+37}
         std.draw.color(colorTable.crimson)
-        std.draw.poly('fill', star1)
-        std.draw.poly('fill', star2)
-        std.draw.poly('fill', star3)
+        std.draw.poly(0, star1)
+        std.draw.poly(0, star2)
+        std.draw.poly(0, star3)
         std.draw.color(std.color.black)
         std.draw.text(posX, posY, '6')
     elseif broco == 7 or broco == 8 then 
@@ -477,10 +477,10 @@ local function render_broco(std, game, posX, posY, broco)
         std.draw.color(std.color.black)
         std.draw.rect(0, posX+2, posY+2, 36, 36)
         std.draw.color(colorTable.backgroundAlternate)
-        std.draw.poly('fill', fill1)
-        std.draw.poly('fill', fill2)
-        std.draw.poly('fill', fill3)
-        std.draw.poly('fill', fill4)
+        std.draw.poly(0, fill1)
+        std.draw.poly(0, fill2)
+        std.draw.poly(0, fill3)
+        std.draw.poly(0, fill4)
     end
 end
 
@@ -734,8 +734,12 @@ end
 local P = {
     meta={
         title='Brocos',
+        author='diegofs01',
         description='Simple tile matching game',
         version='1.0.0'
+    },
+    config={
+        require = 'math random'
     },
     callbacks={
         init=init,
