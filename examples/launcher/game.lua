@@ -3,13 +3,12 @@ local function init(std, game)
         game.application.callbacks.init(std, game)
         return
     end
-    local registry = 'gist.githubusercontent.com/RodrigoDornelles/7ee1ac926b76442d6c303c3a291037c4/raw/21a0faddde47cee6e268c4fc03c20a211c434dfc/games.csv'
     game.multi_text = 'booting...'
     game.multi_state = 1
     game.multi_menu = 1
     game.multi_menu_time = game.milis
     game.multi_list = {}
-    std.http.get(registry):run()
+    std.http.get('gh.dornelles.me', '/games.csv'):run()
 end
 
 local function http(std, game)
@@ -31,7 +30,7 @@ local function http(std, game)
         end
     else
         game.multi_state = 1
-        game.multi_text = std.http.body or std.http.error
+        game.multi_text = std.http.body or std.http.error or '<empty>'
     end
 end
 

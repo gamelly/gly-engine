@@ -50,10 +50,11 @@ local function request(method, std, game, application, protocol_handler)
         callback_handler = function() end
     end
 
-    return function (url)
+    return function (url, uri)
         local self = {
             -- content
             url = url,
+            uri = uri,
             method = method,
             body_content = '',
             header_name_list = {},
@@ -67,6 +68,7 @@ local function request(method, std, game, application, protocol_handler)
             -- objects
             std = std,
             game = game,
+            application = application,
             -- functions
             body = body,
             param = param,
@@ -128,6 +130,7 @@ local function request(method, std, game, application, protocol_handler)
                 self.failed_handler = nil
                 self.std = nil
                 self.game = nil
+                self.application = nil
                 self.body = nil
                 self.param = nil
                 self.success = nil
@@ -157,6 +160,12 @@ local function install(std, game, application, protocol)
     std.http.put=request('PUT', std, game, application, protocol_handler)
     std.http.delete=request('DELETE', std, game, application, protocol_handler)
     std.http.patch=request('PATCH', std, game, application, protocol_handler)
+
+    
+    if protocol.install then
+        protocol.install(std, game, application)
+    end
+
     return std.http
 end
 

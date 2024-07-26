@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const browser_protocol_http =  {
         handler: (self) => {
             self.promise()
-            fetch(`http://${self.url}`)
+            fetch(`http://${self.url}${self.uri}`)
             .then((response) => {
                 self.set('ok', response.ok)
                 self.set('status', response.status)
