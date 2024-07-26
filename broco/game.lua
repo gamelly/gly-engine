@@ -54,7 +54,7 @@ local function init(std, game)
 
     game.basePoints = 10
     game.brocoMultiplier = {10, 5, 2} -- easy, normal, hard
-    game.bingoMultiplier = {5, 3, 1}  -- easy, normal, hard
+    game.hitMultiplier = {5, 3, 1}  -- easy, normal, hard
 
     game.matchBoard = {}
     game.matchBoardIndex = 1
@@ -238,7 +238,7 @@ local function check_matches(std, game)
                     end
                 end
                 game.score = game.score + (game.matchesCount * (game.basePoints * game.brocoMultiplier[game.difficulty]))
-                game.score = game.score + (game.matchesHit * game.bingoMultiplier[game.difficulty])
+                game.score = game.score + (game.matchesHit * game.hitMultiplier[game.difficulty])
                 
                 if game.board[index] == 1 then
                     game.count.squares = game.count.squares + game.matchesCount
@@ -295,7 +295,7 @@ local function check_matches(std, game)
                     end
                 end
                 game.score = game.score + (game.matchesCount * (game.basePoints * game.brocoMultiplier[game.difficulty]))
-                game.score = game.score + (game.matchesHit * game.bingoMultiplier[game.difficulty])
+                game.score = game.score + (game.matchesHit * game.hitMultiplier[game.difficulty])
 
                 if game.board[index] == 1 then
                     game.count.squares = game.count.squares + game.matchesCount
@@ -417,46 +417,44 @@ local function render_broco(std, game, posX, posY, broco)
     if broco == 1 then -- square
         std.draw.color(colorTable.gold)
         std.draw.rect(0, posX + 2, posY + 2, 36, 36)
-        std.draw.color(std.color.black)
-        std.draw.text(posX, posY, '1')
+        --std.draw.color(std.color.black)
+        --std.draw.text(posX, posY, '1')
     elseif broco == 2 then -- diamond
-        local diamond1 = {posX+19, posY+19, posX+2, posY+19, posX+19, posY+2}
-        local diamond2 = {posX+20, posY+19, posX+37, posY+19, posX+20, posY+2}
-        local diamond3 = {posX+20, posY+20, posX+37, posY+20, posX+20, posY+37}
-        local diamond4 = {posX+19, posY+20, posX+2, posY+20, posX+19, posY+37}
+        local diamond1 = {posX+19, posY+2, posX+2, posY+19, posX+37, posY+19}
+        local diamond2 = {posX+20, posY+2, posX+2, posY+19, posX+37, posY+19}
+        local diamond3 = {posX+20, posY+37, posX+2, posY+19, posX+37, posY+20}
+        local diamond4 = {posX+19, posY+37, posX+2, posY+20, posX+37, posY+19}
         std.draw.color(colorTable.diamond)
         std.draw.poly(0, diamond1)
         std.draw.poly(0, diamond2)
         std.draw.poly(0, diamond3)
         std.draw.poly(0, diamond4)
-        std.draw.color(std.color.black)
-        std.draw.text(posX, posY, '2')
+        --std.draw.color(std.color.black)
+        --std.draw.text(posX, posY, '2')
     elseif broco == 3 then -- triangle
         local triangleLeft = {posX+19, posY+2, posX+19, posY+37, posX+2, posY+37}
         local triangleRight = {posX+20, posY+2, posX+20, posY+37, posX+37, posY+37}
         std.draw.color(colorTable.emerald)
         std.draw.poly(0, triangleLeft)
         std.draw.poly(0, triangleRight)
-        std.draw.color(std.color.black)
-        std.draw.text(posX, posY, '3')
+        std.draw.rect(0, posX+19, posY+2, 2, 36)
+        --std.draw.color(std.color.black)
+        --std.draw.text(posX, posY, '3')
     elseif broco == 4 then -- plus
         std.draw.color(colorTable.obsidian)
         std.draw.rect(0, posX+14, posY+2, 11, 35)
         std.draw.rect(0, posX+2, posY+14, 35, 11)
-        std.draw.color(std.color.black)
-        std.draw.text(posX, posY, '4')
+        --std.draw.color(std.color.black)
+        --std.draw.text(posX, posY, '4')
     elseif broco == 5 then -- trapezoid
-        local trapezoid1 = {posX+12, posY+2, posX+12, posY+37, posX+2, posY+37}
-        local trapezoid2 = {posX+12, posY+2, posX+12, posY+37, posX+27, posY+2}
-        local trapezoid3 = {posX+27, posY+37, posX+27, posY+2, posX+12, posY+37}
-        local trapezoid4 = {posX+27, posY+37, posX+27, posY+2, posX+37, posY+37}
+        local trapezoid1 = {posX+10, posY+2, posX+20, posY+37, posX+2, posY+37}
+        local trapezoid2 = {posX+29, posY+2, posX+19, posY+37, posX+37, posY+37}
         std.draw.color(colorTable.sapphire)
         std.draw.poly(0, trapezoid1)
         std.draw.poly(0, trapezoid2)
-        std.draw.poly(0, trapezoid3)
-        std.draw.poly(0, trapezoid4)
-        std.draw.color(std.color.black)
-        std.draw.text(posX, posY, '5')
+        std.draw.rect(0, posX+10, posY+2, 19, 35)
+        --std.draw.color(std.color.black)
+        --std.draw.text(posX, posY, '5')
     elseif broco == 6 then -- star
         local star1 = {posX+2, posY+15, posX+20, posY+26, posX+37, posY+15}
         local star2 = {posX+20, posY+2, posX+20, posY+26, posX+2, posY+37}
@@ -465,8 +463,8 @@ local function render_broco(std, game, posX, posY, broco)
         std.draw.poly(0, star1)
         std.draw.poly(0, star2)
         std.draw.poly(0, star3)
-        std.draw.color(std.color.black)
-        std.draw.text(posX, posY, '6')
+        --std.draw.color(std.color.black)
+        --std.draw.text(posX, posY, '6')
     elseif broco == 7 or broco == 8 then 
         -- 7, cross, row/horizontal match
         -- 8, cross, column/vertical match
