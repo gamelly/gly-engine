@@ -3,7 +3,6 @@ local zeebo_http = require('src/lib/engine/http')
 local mock_http = require('mock/protocol_http')
 
 local std = {}
-local game = {}
 
 local http_handler = mock_http.requests({
     ['example.com/status200'] = {
@@ -28,7 +27,7 @@ local http_handler = mock_http.requests({
     }
 })
 
-zeebo_http.install(std, game, http_handler)
+zeebo_http.install(std, nil, nil, {handler=http_handler})
 
 function test_http_head_200()
     local status = 0
@@ -71,7 +70,7 @@ function test_http_head_error()
 
     luaunit.assertEquals(ok, false)
     luaunit.assertEquals(status, -1)
-    luaunit.assertEquals(message, 'URL not set')
+    luaunit.assertEquals(message, 'URL not set!')
 end
 
 function test_http_get_201()

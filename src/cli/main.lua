@@ -1,4 +1,5 @@
 local os = require('os')
+local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_args = require('src/lib/common/args')
 local zeebo_meta = require('src/lib/cli/meta')
 local zeebo_fs = require('src/lib/cli/fs')
@@ -69,7 +70,7 @@ local core_list = {
         }
     },
     nintendo_wii={
-        src='src/engine/core/love/main.lua',
+        src='src/engine/core/nintendo_wii/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'meta.xml'):pipe()
         },
@@ -86,7 +87,7 @@ if command == 'run' then
         os.exit(1)
     end
     os.exit(os.execute(core_list[core].exe) and 0 or 1)
-elseif command == 'clear' then
+elseif command == 'clear' or command == 'clean' then
     zeebo_fs.clear(dist)
 elseif command == 'meta' then
     if core == 'ginga' then
@@ -95,7 +96,7 @@ elseif command == 'meta' then
     zeebo_meta.current(game):stdout(core):run()
 elseif command == 'bundler' then
     local path, file = game:match("(.-)([^/\\]+)$")
-    zeebo_fs.bundler(path, file, dist..file)
+    zeebo_bundler.build(path, file, dist..file)
 elseif command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
     local files = zeebo_fs.ls('./tests')
@@ -154,7 +155,7 @@ elseif command == 'build' then
 
     -- combine files
     if #bundler > 0 then
-        zeebo_fs.bundler(dist..bundler, 'main.lua', dist..'main.lua')
+        zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
         zeebo_fs.clear(dist..bundler)
     end
 

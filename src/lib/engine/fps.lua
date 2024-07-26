@@ -28,8 +28,53 @@ local function fps_counter(fps_limit, fps_obj, uptime)
     return true
 end
 
+local function fps(std, game, show, x, y)
+    local s = 4
+    std.draw.color(0xFFFF00FF)
+    if show >= 1 then
+        std.draw.rect(0, x, y, 40, 24)
+    end
+    if show >= 2 then
+       std.draw.rect(0, x + 48, y, 40, 24)
+    end
+    if show >= 3 then
+        std.draw.rect(0, x + 96, y, 40, 24)
+     end
+    std.draw.color(0x000000FF)
+    std.draw.font('Tiresias', 16)
+    if show >= 3 then
+        local fps = std.math.floor and std.math.floor((1/game.dt) * 1000) or '--'
+        std.draw.text(x + s, y, fps)
+        s = s + 46
+    end
+    if show >= 1 then
+        std.draw.text(x + s, y, game.fps)
+        s = s + 46
+    end
+    if show >= 2 then
+        std.draw.text(x + s, y, game.fps_max)
+        s = s + 46
+    end
+end
+
+local function install(std, game, application)
+    std = std or {}
+    std.draw = std.draw or {}
+    application = application or {}
+    application.internal = application.internal or {}
+    application.internal.fps_counter=fps_counter
+    std.draw.fps = function(show, x, y)
+        fps(std, game, show, x, y)
+    end
+    
+    return {
+        counter=fps_counter,
+        draw=std.draw.fps
+    }
+end
+
 local P = {
-    counter=fps_counter
+    install=install
 }
 
 return P

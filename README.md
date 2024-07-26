@@ -50,7 +50,7 @@ Platform Support List
 | raylib          | tier ? | Library   |
 | nintendo_gba    | tier ? | Console   |
 | nintendo_3ds    | tier ? | Console   |
-| nintendo_wii    | tier ? | Console   |
+| nintendo_wii    | tier 4 | Console   |
 | nintendo_wiiu   | tier ? | Console   |
 | nintendo_switch | tier ? | Console   |
 

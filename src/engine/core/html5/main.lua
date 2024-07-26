@@ -1,8 +1,11 @@
 local application = nil
-local math = require('math')
-local zeebo_fps = require('src/lib/engine/fps')
-local zeebo_math = require('src/lib/engine/math')
-local decorators = require('src/lib/engine/decorators')
+local zeebo_module = require('src/lib/engine/module')
+local engine_game = require('src/lib/engine/game')
+local engine_math = require('src/lib/engine/math')
+local engine_color = require('src/lib/object/color')
+local engine_math = require('src/lib/engine/math')
+local engine_http = require('src/lib/engine/http')
+local engine_csv = require('src/lib/engine/csv')
 local application_default = require('src/lib/object/application')
 local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
@@ -10,7 +13,9 @@ local std = require('src/lib/object/std')
 
 local function browser_update(milis)
     game.milis = milis
-    application.callbacks.loop(std, game)
+    if application.callbacks.loop then
+        application.callbacks.loop(std, game)
+    end
     return game.dt
 end
 
@@ -24,10 +29,16 @@ end
 
 local function browser_init(width, height)
     application = (load(game_lua))()
-    std.color = color
-    std.math = zeebo_math
-    std.math.random = math.random
-    std.game.reset=decorators.reset(application.callbacks, std, game)
+    zeebo_module.require(std, game, application)
+        :package('@game', engine_game)
+        :package('@math', engine_math)
+        :package('@color', engine_color)
+        :package('math', engine_math.clib)
+        :package('random', engine_math.clib_random)
+        :package('http', engine_http, browser_protocol_http)
+        :package('csv', engine_csv)
+        :run()
+
     std.draw = browser_canvas
     game.width = width
     game.height = height

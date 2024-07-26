@@ -24,7 +24,7 @@ end
 --! value, & \text{if } value\_min \lt value \lt value\_max 
 --! \end{cases}
 --! @f$
---! @param[in] value The value to clamp.
+--! @param[in] value The value to clamstd.math.
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
 local function clamp(value, value_min, value_max)
@@ -43,7 +43,7 @@ end
 --! @f$
 --! (value - value\_min) \mod (value\_max - value\_min + 1) + value\_min
 --! @f$
---! @param[in] value The value to clamp.
+--! @param[in] value The value to clamstd.math.
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
 local function clamp2(value, value_min, value_max)
@@ -87,6 +87,15 @@ end
 --! @retval -1 less than alpha
 --! @retval 0 when in alpha
 --! @retval 1 greater than alpha
+--! @par Example
+--! @code
+--! local sprites = {
+--!   [-1] = game.spr_player_left,
+--!   [1] = game.spr_player_right,
+--!   [0] = game.player_sprite
+--! }
+--! game.player_sprite = sprites[std.math.dir(game.player_speed_x)]
+--! @endcode
 local function dir(value, alpha)
     alpha = alpha or 0
     if value < -alpha then
@@ -233,19 +242,72 @@ end
 --! @}
 --! @}
 
+local function install(std)
+    std = std or {}
+    std.math = std.math or {}
+    std.math.abs=abs
+    std.math.clamp=clamp
+    std.math.clamp2=clamp2
+    std.math.cycle=cycle
+    std.math.dir=dir
+    std.math.dis=dis
+    std.math.dis2=dis2
+    std.math.lerp=lerp
+    std.math.map=map
+    std.math.max=max
+    std.math.min=min
+    std.math.saw=saw
+    return std.math
+end
+
+local function install_clib(std)
+    local math = require('math')
+    std = std or {}
+    std.math = std.math or {}
+    std.math.acos=math.acos
+    std.math.asin=math.asin
+    std.math.atan=math.atan
+    std.math.atan2=math.atan2
+    std.math.ceil=math.ceil
+    std.math.cos=math.cos
+    std.math.cosh=math.cosh
+    std.math.deg=math.deg
+    std.math.exp=math.exp
+    std.math.floor=math.floor
+    std.math.fmod=math.fmod
+    std.math.frexp=math.frexp
+    std.math.huge=math.huge
+    std.math.ldexp=math.ldexp
+    std.math.log=math.log
+    std.math.log10=math.log10
+    std.math.modf=math.modf
+    std.math.pi=math.pi
+    std.math.pow=math.pow
+    std.math.rad=math.rad
+    std.math.sin=math.sin
+    std.math.sinh=math.sinh
+    std.math.sqrt=math.sqrt
+    std.math.tan=math.tan
+    std.math.tanh=math.tanh
+    return std.math
+end
+
+local function install_clib_random(std)
+    local math = require('math')
+    std = std or {}
+    std.math = std.math or {}
+    std.math.random = math.random
+    return std.math
+end
+
 local P = {
-    abs=abs,
-    clamp=clamp,
-    clamp2=clamp2,
-    cycle=cycle,
-    dir=dir,
-    dis=dis,
-    dis2=dis2,
-    lerp=lerp,
-    map=map,
-    max=max,
-    min=min,
-    saw=saw
+    install = install,
+    clib = {
+        install = install_clib
+    },
+    clib_random = {
+        install = install_clib_random
+    }
 }
 
 return P;

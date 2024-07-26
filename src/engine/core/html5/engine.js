@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const canvas_element = document.querySelector('#gameCanvas')
     const canvas_ctx = canvas_element.getContext("2d")
+    const canvas_close = [
+        () => canvas_ctx.fill(),
+        () => {
+            canvas_ctx.closePath()
+            canvas_ctx.stroke()
+        },
+        () => canvas_ctx.stroke()
+    ]
     const canvas_std = {
         clear: (color) => {
             canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
@@ -52,12 +60,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 index = index + 2;
             }
-            canvas_ctx.stroke()
+            canvas_close[mode]()
+        }
+    }
+    const browser_protocol_http =  {
+        handler: (self) => {
+            try {
+                const url = `http://${self.url}`
+                const xhr = new XMLHttpRequest()
+                xhr.open('GET', url, false)
+                xhr.send(null)
+                const ok = 200 <= xhr.status && xhr.status < 300
+                return [ok, xhr.responseText, xhr.status]
+            }
+            catch (e) {
+                return [false, '', 0, `${e}`]
+            } 
         }
     }
 
     lua.global.set('game_lua', game_lua)
     lua.global.set('browser_canvas', canvas_std)
+    lua.global.set('browser_protocol_http', browser_protocol_http)
     const engine_callbacks = await lua.doString(engine_lua)
     engine_callbacks.init(1260, 720)
 

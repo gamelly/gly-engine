@@ -32,32 +32,39 @@ local magenta = 0xFF00FFFF
 --! @}
 --! @}
 
+local function install(std)
+    std = std or {}
+    std.color = std.color or {}
+    std.color.white = white
+    std.color.lightgray = lightgray
+    std.color.gray = gray
+    std.color.darkgray = darkgray
+    std.color.yellow = yellow
+    std.color.gold = gold
+    std.color.orange = orange
+    std.color.pink = pink
+    std.color.red = red
+    std.color.maroon = maroon
+    std.color.green = green
+    std.color.lime = lime
+    std.color.darkgreen = darkgreen
+    std.color.skyblue = skyblue
+    std.color.blue = blue
+    std.color.darkblue = darkblue
+    std.color.purple = purple
+    std.color.violet = violet
+    std.color.darkpurple = darkpurple
+    std.color.beige = beige
+    std.color.brown = brown
+    std.color.darkbrown = darkbrown
+    std.color.black = black
+    std.color.blank = blank
+    std.color.magenta = magenta
+    return std.color
+end
+
 local P = {
-    white = white,
-    lightgray = lightgray,
-    gray = gray,
-    darkgray = darkgray,
-    yellow = yellow,
-    gold = gold,
-    orange = orange,
-    pink = pink,
-    red = red,
-    maroon = maroon,
-    green = green,
-    lime = lime,
-    darkgreen = darkgreen,
-    skyblue = skyblue,
-    blue = blue,
-    darkblue = darkblue,
-    purple = purple,
-    violet = violet,
-    darkpurple = darkpurple,
-    beige = beige,
-    brown = brown,
-    darkbrown = darkbrown,
-    black = black,
-    blank = blank,
-    magenta = magenta,
+    install = install
 }
 
 return P
