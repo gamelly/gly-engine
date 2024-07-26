@@ -28,48 +28,37 @@ local function fps_counter(fps_limit, fps_obj, uptime)
     return true
 end
 
-local function fps(std, game, show, x, y)
-    local s = 4
-    std.draw.color(0xFFFF00FF)
-    if show >= 1 then
-        std.draw.rect(0, x, y, 40, 24)
-    end
-    if show >= 2 then
-       std.draw.rect(0, x + 48, y, 40, 24)
-    end
-    if show >= 3 then
-        std.draw.rect(0, x + 96, y, 40, 24)
-     end
-    std.draw.color(0x000000FF)
-    std.draw.font('Tiresias', 16)
-    if show >= 3 then
-        local fps = std.math.floor and std.math.floor((1/game.dt) * 1000) or '--'
-        std.draw.text(x + s, y, fps)
-        s = s + 46
-    end
-    if show >= 1 then
-        std.draw.text(x + s, y, game.fps)
-        s = s + 46
-    end
-    if show >= 2 then
-        std.draw.text(x + s, y, game.fps_max)
-        s = s + 46
-    end
-end
-
-local function install(std, game, application)
+local function install(std, game, application, config_fps)
+    local index = 1
     std = std or {}
-    std.draw = std.draw or {}
     application = application or {}
     application.internal = application.internal or {}
-    application.internal.fps_counter=fps_counter
-    std.draw.fps = function(show, x, y)
-        fps(std, game, show, x, y)
+    config_fps.inverse_list = {}
+
+    local fps_obj = {total=0,count=0,period=0,passed=0,delta=0,falls=0,drop=0}
+    fps_obj.drop_time=application.config and application.config.fps_time or 1
+    fps_obj.drop_count=application.config and application.config.fps_drop or 2
+
+    while index <= #config_fps.list do
+        config_fps.inverse_list[config_fps.list[index]] = index
+        index = index + 1
     end
-    
+
+    application.internal.fps_controler=function(milis)
+        local index = config_fps.inverse_list[game.fps_max]
+        game.milis = event.uptime()
+        game.fps = fps_obj.total
+        game.dt = fps_obj.delta 
+        if not fps_counter(game.fps_max, fps_obj, game.milis) then
+            if index < #config_fps.list then
+                game.fps_max = config_fps.list[index + 1]
+            end
+        end
+        return config_fps.time[index]
+    end
+
     return {
-        counter=fps_counter,
-        draw=std.draw.fps
+        fps_controler = fps_controler
     }
 end
 
