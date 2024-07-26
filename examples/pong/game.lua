@@ -41,10 +41,10 @@ local function loop(std, game)
 end
 
 local function draw(std, game)
-    std.draw.clear('black')
-    std.draw.color('white')
-    std.draw.rect('fill', 4, game.player_pos, 8, game.player_size)
-    std.draw.rect('fill', game.ball_pos_x, game.ball_pos_y, game.ball_size, game.ball_size)
+    std.draw.clear(std.color.black)
+    std.draw.color(std.color.white)
+    std.draw.rect(0, 4, game.player_pos, 8, game.player_size)
+    std.draw.rect(0, game.ball_pos_x, game.ball_pos_y, game.ball_size, game.ball_size)
     std.draw.font('Tiresias', 32)
     std.draw.text(game.width/4, 16, game.score)
     std.draw.text(game.width/4 * 3, 16, game.highscore)
@@ -57,6 +57,7 @@ end
 local P = {
     meta={
         title='Ping Pong',
+        author='RodrigoDornelles',
         description='simple pong',
         version='1.0.0'
     },

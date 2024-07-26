@@ -1,9 +1,0 @@
-{
-    "id": "{{id}}",
-    "version": "{{version}}",
-    "vendor": "{{company}}",
-    "type": "web",
-    "main": "index.html",
-    "title": "{{title}}",
-    "icon": "icon.png"
-}

@@ -1,5 +1,7 @@
 local luaunit = require('luaunit')
-local zeebo_math = require('src/lib/common/math')
+local engine_math = require('src/lib/engine/math')
+
+local zeebo_math = engine_math.install()
 
 function test_clamp()
     luaunit.assertEquals(zeebo_math.clamp(10, 1, 5), 5)
@@ -67,6 +69,16 @@ function test_max()
     luaunit.assertEquals(zeebo_math.max(10, -5, 3, 0), 10)
     luaunit.assertEquals(zeebo_math.max(-1, -2, -3), -1)
     luaunit.assertEquals(zeebo_math.max({1, 2, 3, 4, 5}), 5)
+end
+
+function test_install_math_clib()
+    local math_clib = engine_math.clib.install()
+    luaunit.assertIsFunction(math_clib.pow)
+end
+
+function test_install_math_clib_random()
+    local math_clib = engine_math.clib_random.install()
+    luaunit.assertIsFunction(math_clib.random)
 end
 
 os.exit(luaunit.LuaUnit.run())

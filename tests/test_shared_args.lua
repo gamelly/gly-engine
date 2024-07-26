@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local zeebo_args = require('src/shared/args')
+local zeebo_args = require('src/lib/common/args')
 
 function test_shared_args_get_basic()
     local args = {'--option', 'value'}

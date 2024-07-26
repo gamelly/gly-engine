@@ -1,7 +1,8 @@
 local os = require('os')
-local zeebo_args = require('src/shared/args')
-local zeebo_meta = require('src/cli/meta')
-local zeebo_fs = require('src/cli/fs')
+local zeebo_bundler = require('src/lib/cli/bundler')
+local zeebo_args = require('src/lib/common/args')
+local zeebo_meta = require('src/lib/cli/meta')
+local zeebo_fs = require('src/lib/cli/fs')
 
 --! @cond
 local run = zeebo_args.has(arg, 'run')
@@ -15,57 +16,67 @@ local game = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 2, '')
 
 local core_list = {
     repl={
-        src='src/lib/repl/main.lua',
-        exe='lua src/lib/repl/main.lua '..game,
+        src='src/engine/core/repl/main.lua',
+        exe='lua src/engine/core/repl/main.lua '..game,
         post_exe='lua dist/main.lua'
     },
     love={
-        src='src/lib/love2d/main.lua',
-        exe='love src/lib/love2d --screen '..screen..' '..game,
+        src='src/engine/core/love/main.lua',
+        exe='love src/engine/core/love --screen '..screen..' '..game,
         post_exe='love dist --screen '..screen
     },
     ginga={
-        src='src/lib/ginga/main.lua',
+        src='src/engine/core/ginga/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
         extras={
-            'src/lib/ginga/main.ncl'
+            'src/engine/core/ginga/main.ncl'
         }
     },
     html5_webos={
-        src='src/lib/html5/main.lua',
+        src='src/engine/core/html5/main.lua',
         post_exe='webos24 $(pwd)/dist',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
         },
         extras={
-            'src/lib/html5_webos/appinfo.json',
-            'src/lib/html5_webos/icon.png',
-            'src/lib/html5/index.html',
-            'src/lib/html5/index.html',
-            'src/lib/html5/engine.js',
+            'src/engine/meta/html5_webos/appinfo.json',
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/engine.js',
+            'assets/icon80x80.png'
         }
     },
     html5_ginga={
-        src='src/lib/html5/main.lua',
+        src='src/engine/core/html5/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):pipe()
         },
         extras={
-            'src/lib/html5_ginga/main.ncl',
-            'src/lib/html5/index.html',
-            'src/lib/html5/index.html',
-            'src/lib/html5/engine.js',
+            'src/engine/meta/html5_ginga/main.ncl',
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/engine.js',
         }
     },
     html5={
-        src='src/lib/html5/main.lua',
+        src='src/engine/core/html5/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):pipe()
         },
         extras={
-            'src/lib/html5/index.html',
-            'src/lib/html5/engine.js'
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/engine.js'
+        }
+    },
+    nintendo_wii={
+        src='src/engine/core/nintendo_wii/main.lua',
+        pipeline={
+            zeebo_meta.late(game):file(dist..'meta.xml'):pipe()
+        },
+        extras={
+            'assets/icon128x48.png',
+            'src/engine/meta/nintendo_wii/meta.xml'
         }
     }
 }
@@ -76,7 +87,7 @@ if command == 'run' then
         os.exit(1)
     end
     os.exit(os.execute(core_list[core].exe) and 0 or 1)
-elseif command == 'clear' then
+elseif command == 'clear' or command == 'clean' then
     zeebo_fs.clear(dist)
 elseif command == 'meta' then
     if core == 'ginga' then
@@ -85,7 +96,7 @@ elseif command == 'meta' then
     zeebo_meta.current(game):stdout(core):run()
 elseif command == 'bundler' then
     local path, file = game:match("(.-)([^/\\]+)$")
-    zeebo_fs.bundler(path, file, dist..file)
+    zeebo_bundler.build(path, file, dist..file)
 elseif command == 'test-self' then
     coverage = coverage and '-lluacov' or ''
     local files = zeebo_fs.ls('./tests')
@@ -144,7 +155,7 @@ elseif command == 'build' then
 
     -- combine files
     if #bundler > 0 then
-        zeebo_fs.bundler(dist..bundler, 'main.lua', dist..'main.lua')
+        zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
         zeebo_fs.clear(dist..bundler)
     end
 

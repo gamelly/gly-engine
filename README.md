@@ -35,23 +35,24 @@ $ ./cli.sh build ./examples/asteroids/game.lua --core html5
 Platform Support List
 =====================
 
-| core           | tier   | native | plataform |
-| :------------- | :----: | :----: | --------: |
-| ginga          | tier 1 | yes    | TV        |
-| love           | tier 1 | no     | Library   |
-| repl           | tier 1 | yes    | PC        |
-| curses         | tier ? | yes    | PC        |
-| html5          | tier 2 | no     | Browser   |
-| html5_webos    | tier 2 | no     | TV        |
-| html5_tizen    | tier 2 | no     | TV        |
-| html5_ginga    | tier ? | no     | TV        |
-| esp32          | tier ? | yes    | Embed     |
-| roblox         | tier ? | no     | Game      |
-| arkos          | tier ? | yes    | Console   |
-| odroid         | tier ? | yes    | Console   |
-| raylib         | tier ? | no     | Library   |
-| Nintendo GBA   | tier ? | yes    | Console   |
-| Nintendo WII   | tier ? | yes    | Console   |
+| core            | tier   | plataform |
+| :-------------- | :----: | :-------- |
+| ginga           | tier 1 | TV        |
+| love            | tier 1 | Library   |
+| repl            | tier 1 | PC        |
+| curses          | tier ? | PC        |
+| html5           | tier 2 | Browser   |
+| html5_webos     | tier 2 | TV        |
+| html5_tizen     | tier ? | TV        |
+| html5_ginga     | tier ? | TV        |
+| esp32           | tier ? | Embed     |
+| roblox          | tier ? | Game      |
+| raylib          | tier ? | Library   |
+| nintendo_gba    | tier ? | Console   |
+| nintendo_3ds    | tier ? | Console   |
+| nintendo_wii    | tier 4 | Console   |
+| nintendo_wiiu   | tier ? | Console   |
+| nintendo_switch | tier ? | Console   |
 
 ---
 This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.
