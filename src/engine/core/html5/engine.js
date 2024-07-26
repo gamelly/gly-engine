@@ -65,17 +65,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const browser_protocol_http =  {
         handler: (self) => {
-            try {
-                const url = `http://${self.url}`
-                const xhr = new XMLHttpRequest()
-                xhr.open('GET', url, false)
-                xhr.send(null)
-                const ok = 200 <= xhr.status && xhr.status < 300
-                return [ok, xhr.responseText, xhr.status]
-            }
-            catch (e) {
-                return [false, '', 0, `${e}`]
-            } 
+            self.promise()
+            fetch(`http://${self.url}`)
+            .then((response) => {
+                self.set('ok', response.ok)
+                self.set('status', response.status)
+                return response.text()
+            })
+            .then((content) => {
+                self.set('body', content)
+                self.resolve()
+            })
+            .catch((error) => {
+                self.set('ok', false)
+                self.set('error', `${error}`)
+                self.resolve()
+            })
         }
     }
 

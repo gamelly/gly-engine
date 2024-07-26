@@ -1,4 +1,4 @@
-local zeebo_pipeline = require('src/lib/engine/pipeline')
+local zeebo_pipeline = require('src/lib/util/pipeline')
 
 --! @short safe load game
 --! @brief search by game in filesystem / lua modules

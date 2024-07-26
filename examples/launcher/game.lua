@@ -3,7 +3,7 @@ local function init(std, game)
         game.application.callbacks.init(std, game)
         return
     end
-    local registry = 'gist.githubusercontent.com/RodrigoDornelles/7ee1ac926b76442d6c303c3a291037c4/raw/c3597529459e487eadccd8597fb1dc72e5034096/games.csv'
+    local registry = 'gist.githubusercontent.com/RodrigoDornelles/7ee1ac926b76442d6c303c3a291037c4/raw/21a0faddde47cee6e268c4fc03c20a211c434dfc/games.csv'
     game.multi_text = 'booting...'
     game.multi_state = 1
     game.multi_menu = 1
