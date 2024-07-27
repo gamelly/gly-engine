@@ -1,7 +1,6 @@
 --! @file src/lib/protocol/http_ginga.lua
 --! @li https://www.rfc-editor.org/rfc/rfc2616
 --! @todo support redirects 3xx
---! @todo tell https not supported in 3xx
 
 local function http_connect(self, evt, http)
     local request = 'GET '..self.uri..' HTTP/1.0\r\n'
@@ -23,23 +22,35 @@ local function http_connect(self, evt, http)
 end
 
 local function http_headers(self, evt, http)
-    local header = http.data:sub(1, http.header_pos -1)
-    local status = header:match('^HTTP/%d.%d (%d+) %w*')
-    local size = header:match('Content%-Length: (%d+)')
+    http.header = http.data:sub(1, http.header_pos -1)
+    local status = http.header:match('^HTTP/%d.%d (%d+) %w*')
+    local size = http.header:match('Content%-Length: (%d+)')
     http.content_size = tonumber(size)
     http.status = tonumber(status)
 end
 
-local function http_error(self, message)
+local function http_redirect(self, evt, http)
+    local protocol, url, uri =  http.header:match('Location: (%w+)://([^/]+)(.*)')
+    if protocol == 'https' then
+        self.set('ok', false)
+        self.set('error', 'HTTPS is not supported!')
+    else
+        self.set('ok', false)
+        self.set('error', 'redirect not implemented!')
+    end
+    self.resolve()
+end
+
+local function http_error(self, evt, http)
     self.set('ok', false)
-    self.set('error', message or 'unknown error')
+    self.set('error', evt.error or 'unknown error')
     self.resolve()
 end
 
 local function http_data_fast(self, evt, http)
     local status = evt.value:match('^HTTP/%d.%d (%d+) %w*')
     if not status then
-        http_error(self, evt.value)
+        http_error(self, {error=evt.value}, http)
     else
         status = tonumber(status)
         self.set('status', status)
@@ -61,6 +72,9 @@ local function http_data(self, evt, http)
         if http.header_pos then
             http_headers(self, evt, http)
         end
+        if 300 <= http.status and http.status <= 400 then
+            http_redirect(self, evt, http)
+        end
     end
 
     if http.header_pos and (#http.data - http.header_pos) >= http.content_size then
@@ -74,15 +88,18 @@ end
 
 local function http_disconnect(self, evt, http)
     local body = http.data:sub(http.header_pos + 4, #http.data)
-    self.set('ok', 200 <= http.status and http.status < 300)
-    self.set('status', http.status)
-    self.set('body', body)
-    http.data = nil
-    http.status = nil
-    http.object = nil
-    http.header_pos = nil
-    http.content_size = nil
-    self.resolve()
+    if self.resolve then
+        self.set('ok', 200 <= http.status and http.status < 300)
+        self.set('status', http.status)
+        self.set('body', body)
+        http.data = nil
+        http.header = nil
+        http.status = nil
+        http.object = nil
+        http.header_pos = nil
+        http.content_size = nil
+        self.resolve()
+    end
 end
 
 local function http_handler(self)
@@ -106,7 +123,7 @@ local function event_loop(std, game, application, evt)
     local self = internal_http.object
 
     if evt.error then
-        http_error(self, evt.error)
+        http_error(self, evt, internal_http)
     else
         local index = 'http_'..evt.type..self.speed
         application.internal.http.callbacks[index](self, evt, internal_http)
