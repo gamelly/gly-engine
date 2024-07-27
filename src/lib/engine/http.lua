@@ -5,6 +5,14 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @defgroup http
 --! @pre require @c http
 --! @{
+
+--! @short reduced response
+--! @brief disconnect when receiving status
+local function fast(self)
+    self.speed = '_fast'
+    return self
+end
+
 local function body(self, content)
     self.body_content=content
     return self
@@ -51,10 +59,15 @@ local function request(method, std, game, application, protocol_handler)
     end
 
     return function (url, uri)
+        if not uri then
+            url, uri = url:match('^([^/]+)(.*)$')
+        end
+
         local self = {
             -- content
             url = url,
             uri = uri,
+            speed = '',
             method = method,
             body_content = '',
             header_name_list = {},
@@ -70,6 +83,7 @@ local function request(method, std, game, application, protocol_handler)
             game = game,
             application = application,
             -- functions
+            fast = fast,
             body = body,
             param = param,
             header = header,

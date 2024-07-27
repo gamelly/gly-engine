@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             .then((response) => {
                 self.set('ok', response.ok)
                 self.set('status', response.status)
-                return response.text()
+                return self.speed.lengh? response.text(): ''
             })
             .then((content) => {
                 self.set('body', content)
