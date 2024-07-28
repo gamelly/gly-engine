@@ -540,6 +540,11 @@ local function draw_menu(std, game)
         std.draw.text(h + 10, v + 120 + 12, '<-')
         std.draw.text(h + 45, v + 120 + 12, 'Difícil')
     end
+    local hor = game.boardHorSize[game.difficulty]
+    local ver = game.boardVerSize[game.difficulty]
+    local mul = game.brocoMultiplier[game.difficulty]
+    local comb = '(' .. hor .. 'x' .. ver .. ', ' .. mul .. 'x points' .. ')'
+    std.draw.text(h + 5, v + 120 + 30, comb)
     std.draw.rect(1, h + 2, v + (game.cursor * 40) + 10, 116, 20)
 end
 
@@ -719,10 +724,6 @@ local function draw(std, game)
             draw_border(std, game, startH, startV, 120, 80, 5)
         end
     end
-
-    std.draw.color(std.color.black)
-    std.draw.text(20, game.height - 60, 'width:  ' .. game.width)
-    std.draw.text(20, game.height - 40, 'height: ' .. game.height)
 end
 
 local function exit(std, game)
