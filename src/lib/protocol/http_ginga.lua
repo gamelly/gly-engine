@@ -50,7 +50,7 @@ end
 local function http_data_fast(self, evt, http)
     local status = evt.value:match('^HTTP/%d.%d (%d+) %w*')
     if not status then
-        http_error(self, {error=evt.value}, http)
+        http.callbacks.http_error(self, {error=evt.value}, http)
     else
         status = tonumber(status)
         self.set('status', status)
@@ -70,10 +70,10 @@ local function http_data(self, evt, http)
     if not http.header_pos then
         http.header_pos = http.data:find('\r\n\r\n')
         if http.header_pos then
-            http_headers(self, evt, http)
+            http.callbacks.http_headers(self, evt, http)
         end
         if 300 <= http.status and http.status <= 400 then
-            http_redirect(self, evt, http)
+            http.callbacks.http_redirect(self, evt, http)
         end
     end
 
@@ -103,18 +103,26 @@ local function http_disconnect(self, evt, http)
 end
 
 local function http_handler(self)
-    local host, port_str = self.url:match("^(.-):?(%d*)$")
+    local protocol, location = self.url:match('(%w*)://?(.*)')
+    local url, uri = (location or self.url):match('^([^/]+)(.*)$')
+    local host, port_str = url:match("^(.-):?(%d*)$")
     local port = tonumber(port_str and #port_str > 0 or 80)
 
-    event.post({
-        class = 'tcp',
-        type  = 'connect',
-        host  = host,
-        port  = port
-    })
-
+    self.url = url
+    self.uri = uri or '/'
     self.application.internal.http.object = self
-    self.promise()
+
+    if protocol ~= 'http' and location then
+        application.internal.http.callbacks.http_error(self, {error='HTTPS is not supported!'})
+    else
+        self.promise()
+        event.post({
+            class = 'tcp',
+            type  = 'connect',
+            host  = host,
+            port  = port
+        })
+    end
 end
 
 local function event_loop(std, game, application, evt)
@@ -123,7 +131,7 @@ local function event_loop(std, game, application, evt)
     local self = internal_http.object
 
     if evt.error then
-        http_error(self, evt, internal_http)
+        application.internal.http.callbacks.http_error(self, evt, internal_http)
     else
         local index = 'http_'..evt.type..self.speed
         application.internal.http.callbacks[index](self, evt, internal_http)
@@ -137,8 +145,11 @@ local function install(std, game, application)
         http_connect_fast=http_connect,
         http_data_fast=http_data_fast,
         http_disconnect=http_disconnect,
+        http_redirect=http_redirect,
         http_connect=http_connect,
-        http_data=http_data,
+        http_headers=http_headers,
+        http_error=http_error,
+        http_data=http_data
     }
 
     local index = #application.internal.event_loop + 1
@@ -146,9 +157,7 @@ local function install(std, game, application)
         event_loop(std, game, application, evt)    
     end
 
-    return {
-        loop=application.internal.event_loop[index]
-    }
+    return http_handler
 end
 
 local P = {

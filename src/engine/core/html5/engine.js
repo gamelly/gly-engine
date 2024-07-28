@@ -66,11 +66,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const browser_protocol_http =  {
         handler: (self) => {
             self.promise()
-            fetch(`http://${self.url}${self.uri}`)
+            fetch(self.url)
             .then((response) => {
                 self.set('ok', response.ok)
                 self.set('status', response.status)
-                return self.speed.lengh? response.text(): ''
+                return response.text()
             })
             .then((content) => {
                 self.set('body', content)

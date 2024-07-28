@@ -5,14 +5,18 @@ local function pipe(self)
 end
 
 local function stop(self)
-    self.pipeline2 = self.pipeline
-    self.pipeline = nil
+    if self.pipeline and not self.pipeline2 then
+        self.pipeline2 = self.pipeline
+        self.pipeline = nil
+    end
 end
 
 local function resume(self)
-    self.pipeline = self.pipeline2
-    self.pipeline2 = nil
-    self:run()
+    if not self.pipeline and self.pipeline2 then
+        self.pipeline = self.pipeline2
+        self.pipeline2 = nil
+        self:run()
+    end
 end
 
 local function run(self)

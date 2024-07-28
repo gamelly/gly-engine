@@ -10,7 +10,7 @@ local function http_handler(self)
         index = index + 1
     end
 
-    local handle = io and io.popen and io.popen(cmd..protocol..headers..self.url..self.uri)
+    local handle = io and io.popen and io.popen(cmd..protocol..headers..self.url)
 
     if handle then
         local stdout = handle:read("*a")

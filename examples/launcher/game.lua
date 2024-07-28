@@ -8,7 +8,7 @@ local function init(std, game)
     game.multi_menu = 1
     game.multi_menu_time = game.milis
     game.multi_list = {}
-    std.http.get('gh.dornelles.me', '/games.csv'):run()
+    std.http.get('http://gh.dornelles.me/games.csv'):run()
 end
 
 local function http(std, game)
@@ -38,7 +38,7 @@ local function loop(std, game)
     if game.multi_state == 2 then
         local key = std.key.press.down - std.key.press.up
         if key ~= 0 and game.milis > game.multi_menu_time + 250 then
-            game.multi_menu = std.math.clamp2(game.multi_menu + key, 1, 2)
+            game.multi_menu = std.math.clamp2(game.multi_menu + key, 1, #game.multi_list)
             game.multi_menu_time = game.milis
         end
         if std.key.press.enter == 1 and game.milis > game.multi_menu_time + 250 then

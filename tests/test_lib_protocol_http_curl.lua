@@ -7,7 +7,7 @@ local mock_popen = mock_io.open({
         read=function () return 'i love pudim!\n200' end,
         close=function () return true, nil end
     },
-    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.br'] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST -H "Authorization: bearer secret" pudim.com.br'] = {
         read=function () return 'method not allowed!\n403' end,
         close=function () return true, nil end
     },
@@ -39,6 +39,8 @@ function test_http_post_403()
     
     protocol_http.handler({
         std = std,
+        header_name_list = {'Authorization'},
+        header_value_list = {'bearer secret'},
         url = 'pudim.com.br',
         method = 'POST'
     })

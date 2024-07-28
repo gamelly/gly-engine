@@ -58,15 +58,10 @@ local function request(method, std, game, application, protocol_handler)
         callback_handler = function() end
     end
 
-    return function (url, uri)
-        if not uri then
-            url, uri = url:match('^([^/]+)(.*)$')
-        end
-
+    return function (url)
         local self = {
             -- content
             url = url,
-            uri = uri,
             speed = '',
             method = method,
             body_content = '',
