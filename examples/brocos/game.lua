@@ -454,7 +454,9 @@ local function render_broco(std, game, posX, posY, broco)
     end
 end
 
-local function draw_border(std, game, h, v, hSize, vSize, thick)
+local function draw_border(std, game, h, v, hSize, vSize, thick, color)
+    color = color or std.color.black
+    std.draw.color(color)
     std.draw.rect(0, h, v, hSize, thick)
     std.draw.rect(0, h, v + (vSize - thick), hSize, thick)
     std.draw.rect(0, h, v, thick, vSize)
@@ -473,7 +475,6 @@ local function draw_logo(std, game)
         local newH = h + (40 * (i - 1))
         render_broco(std, game, newH, v, menuBrocoLine[i])
     end
-    std.draw.color(std.color.black)
     draw_border(std, game, h - 5, v - 5, (40*15) + 10, 40 + 10, 5)
     if game.state == 10 then
         std.draw.text(h + 240 + 40, v+12, 'PAUSE')
@@ -496,7 +497,6 @@ local function draw_menu(std, game)
     std.draw.rect(0, h - 10, v - 10, 140, 180)
 
     --draw options
-    std.draw.color(std.color.black)
     draw_border(std, game, h - 10, v - 10, 140, 180, 5)
     std.draw.text(h + 25, v + 12,      ' Novo Jogo ')
     std.draw.text(h + 32, v + 40 + 12, '    Sair   ')
@@ -528,7 +528,6 @@ local function draw_pause(std, game)
     std.draw.color(colorTable.backgroundBoard)
     std.draw.rect(0, h - 10, v - 10, 140, 140)
     -- draw options
-    std.draw.color(std.color.black)
     draw_border(std, game, h - 10, v - 10, 140, 140, 5)
     std.draw.text(h + 30, v + 12,      'Continuar')
     std.draw.text(h + 32, v + 40 + 12, '   Menu  ')
@@ -632,12 +631,12 @@ local function draw(std, game)
         if game.state == 3 then
             std.draw.color(colorTable.backgroundAlternate)
             std.draw.rect(0, startH - 20, startV - 20, hSize + 40, vSize + 40)
+            draw_border(std, game, startH - 20, startV - 20, hSize + 40, vSize + 40, 5, colorTable.cyan)
         else
             std.draw.color(colorTable.backgroundBoard)
             std.draw.rect(0, startH - 20, startV - 20, hSize + 40, vSize + 40)
-            std.draw.color(std.color.black)
+            draw_border(std, game, startH - 20, startV - 20, hSize + 40, vSize + 40, 5)
         end
-        draw_border(std, game, startH - 20, startV - 20, hSize + 40, vSize + 40, 5)
         -- draw brocos
         for i = 1, (game.boardHorSize[game.difficulty] * game.boardVerSize[game.difficulty]) do
             posH = startH + (hor * 40)
