@@ -40,7 +40,16 @@
 --! @enduml
 
 local function next_state(game, new_state)
+    if game._state ~= new_state then
+        print(game._state, new_state)
+    end
     if game._state + 1 == new_state then
+        game._state = new_state
+    end
+    if game._state == 2 and new_state == 9 then
+        game._state = new_state
+    end
+    if game._state == 5 and new_state == 9 then
         game._state = new_state
     end
     if game._state == 8 and new_state == 4 then
@@ -72,8 +81,9 @@ local function init(std, game)
         end
     end
     if game._state == 7 then
-        local ok, message = pcall(game._app.callbacks.init, std, game)
-        halt_state(ok, message)
+        halt_state(game)(function() 
+            game._app.callbacks.init(std, game)
+        end)
     end    
 end
 
@@ -83,12 +93,12 @@ local function http(std, game)
             error(std.http.error)
         end
         if not std.http.ok then
-            game._state = 9
+            next_state(game, 9)
             game._status = std.http.status
             game._error = std.http.body
         end
         if std.http.body and #std.http.body == 0 then
-            game._state = 9
+            next_state(game, 9)
             game._status = std.http.status
             game._error = '<empty>'
         end
@@ -104,8 +114,8 @@ end
 local function loop(std, game)
     if game._state == 1 then
         halt_state(game)(function() 
-            std.http.get('http://gh.dornelles.me/games.csv'):run()
             next_state(game, 2)
+            std.http.get('http://gh.dornelles.me/games.csv'):run()
         end)
     elseif game._state == 2 and #game._csv > 0 then
         next_state(game, 3)
@@ -124,8 +134,8 @@ local function loop(std, game)
             end
             if std.key.press.enter == 1 and game.milis > game._menu_time + 250 then
                 game._menu_time = game.milis
-                std.http.get(game._list[game._menu].raw_url):run()
                 next_state(game, 5)
+                std.http.get(game._list[game._menu].raw_url):run()
             end
         end)
     elseif game._state == 5 and #game._source > 0 then
