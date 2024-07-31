@@ -39,6 +39,7 @@
 --! 9 --> [*]
 --! @enduml
 
+--! @cond
 local function next_state(game, new_state)
     if game._state ~= new_state then
         print(game._state, new_state)
@@ -66,6 +67,7 @@ local function halt_state(game)
         end
     end
 end
+--! @endcond
 
 local function init(std, game)
     if not game._state then
