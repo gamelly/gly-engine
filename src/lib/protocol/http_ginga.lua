@@ -97,6 +97,7 @@ local function http_data(self)
         end
         if 300 <= self.p_status and self.p_status < 400 then
             self.application.internal.http.callbacks.http_redirect(self)
+            return
         end
     end
 
@@ -190,8 +191,10 @@ local function context_pull(evt, contexts)
         contexts.by_host[host][index] = nil
         return self
     elseif connection and contexts.by_connection[connection] then
+        print(connection, evt.error, evt.value)
         local self = contexts.by_connection[connection]
         if evt.error then
+            print('error')
             self.evt = {type = 'error', error = evt.error}
             contexts.by_connection[connection] = nil
             return self
@@ -226,6 +229,7 @@ local function install(std, game, application)
         by_host={},
         by_connection={}
     }
+    application.internal = application.internal or {}
     application.internal.http = {}
     application.internal.http.context = {
         push = function(self) context_push(self, contexts) end,
@@ -245,6 +249,7 @@ local function install(std, game, application)
         http_data=http_data
     }
 
+    application.internal.event_loop = application.internal.event_loop or {}
     local index = #application.internal.event_loop + 1
     application.internal.event_loop[index] = function (evt)
         event_loop(std, game, application, evt)    
