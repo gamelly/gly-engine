@@ -41,9 +41,6 @@
 
 --! @cond
 local function next_state(game, new_state)
-    if game._state ~= new_state then
-        print(game._state, new_state)
-    end
     if game._state + 1 == new_state then
         game._state = new_state
     end
@@ -71,7 +68,7 @@ end
 
 local function init(std, game)
     if not game._state then
-        game._state = 1
+        game._state = 0
         game._menu = 1
         game._csv = ''
         game._list = {}
@@ -114,7 +111,9 @@ local function http(std, game)
 end
 
 local function loop(std, game)
-    if game._state == 1 then
+    if game._state == 0 then
+       next_state(game, 1) 
+    elseif game._state == 1 then
         halt_state(game)(function() 
             next_state(game, 2)
             std.http.get('http://gh.dornelles.me/games.csv'):run()

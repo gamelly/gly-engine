@@ -47,7 +47,7 @@ local function fixed_loop()
     event.timer(delay, fixed_loop)
 end
 
-local function install(evt)
+local function install(evt, gamefile)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
     local ginga = {
         canvas=canvas,
@@ -63,7 +63,7 @@ local function install(evt)
         time={1, 10, 30, 40, 60, 90}
     }
 
-    application = zeebo_module.loadgame()
+    application = zeebo_module.loadgame(gamefile)
     if not application then
         error('game not loaded!')
     end
@@ -99,3 +99,4 @@ local function install(evt)
 end
 
 event.register(install)
+return install
