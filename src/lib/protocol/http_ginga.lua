@@ -155,7 +155,7 @@ local function http_handler(self)
     local protocol, location = self.url:match('(%w*)://?(.*)')
     local url, uri = (location or self.url):match('^([^/]+)(.*)$')
     local host, port_str = url:match("^(.-):?(%d*)$")
-    local port = tonumber(port_str and #port_str > 0 or 80)
+    local port = tonumber(port_str and #port_str > 0 and port_str or 80)
 
     self.p_url = url
     self.p_uri = uri or '/'
@@ -191,6 +191,7 @@ end
 local function context_pull(evt, contexts)
     local host = evt.host
     local connection = evt.connection
+    local index = host and contexts.by_host[host] and #contexts.by_host[host]
 
     if evt.type == 'connect' and host and contexts.by_host[host] then
         local index = #contexts.by_host[host]
@@ -203,6 +204,22 @@ local function context_pull(evt, contexts)
         self.evt = evt
         contexts.by_connection[connection] = self
         contexts.by_host[host][index] = nil
+        return self
+    elseif evt.type == 'disconnect' then
+        local self = {speed=''}
+        if host and index and contexts.by_host[host][index] then
+            self = contexts.by_host[host][index]
+            contexts.by_host[host][index] = nil
+        end
+        if connection and contexts.by_connection[connection] then
+            self = contexts.by_connection[connection]
+            contexts.by_connection[connection] = nil
+        end
+        if evt.error then
+            self.evt = {type = 'error', error = evt.error}
+        else
+            self.evt = evt
+        end
         return self
     elseif connection and contexts.by_connection[connection] then
         local self = contexts.by_connection[connection]

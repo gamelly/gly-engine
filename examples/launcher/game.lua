@@ -143,8 +143,7 @@ local function loop(std, game)
         next_state(game, 6)
     elseif game._state == 6 then
         halt_state(game)(function()
-            game._app = load(game._source)
-            game._app = game._app()
+            game._app = std.game.load(game._source)
             game._app.callbacks.init(std, game)
             game._source = ''
             next_state(game, 7)
@@ -240,7 +239,7 @@ local P = {
         version='1.0.0'
     },
     config={
-        require='http random math csv'
+        require='http random math csv load'
     },
     callbacks={
         init=init,
