@@ -1,7 +1,12 @@
 --! @file src/lib/protocol/http_ginga.lua
 --! @li https://www.rfc-editor.org/rfc/rfc2616
+--!
 --! @todo support redirects 3xx
---! @param contexts
+--! @todo support custom user-agent
+--! @todo support request headers
+--! @todo support URI params
+--!
+--! @par Contexts
 --! @startjson
 --! {
 --!    "by_host": {
@@ -30,6 +35,7 @@
 --! }
 --! @endjson
 
+--! @param [in/out] self
 local function http_connect(self)
     local request = 'GET '..self.p_uri..' HTTP/1.0\r\n'
         ..'Host: '..self.p_host..'\r\n'
@@ -47,12 +53,14 @@ local function http_connect(self)
     })
 end
 
+--! @param [in/out] self
 local function http_headers(self)
     self.p_header = self.p_data:sub(1, self.p_header_pos -1)
     self.p_status = tonumber(self.p_header:match('^HTTP/%d.%d (%d+) %w*'))
     self.p_content_size = tonumber(self.p_header:match('Content%-Length: (%d+)'))
 end
 
+--! @param [in/out] self
 local function http_redirect(self)
     local protocol, url, uri =  self.p_header:match('Location: (%w+)://([^/]+)(.*)')
     if protocol == 'https' and self.p_host == url then
@@ -64,12 +72,14 @@ local function http_redirect(self)
     end
 end
 
+--! @param [in/out] self
 local function http_error(self)
     self.set('ok', false)
     self.set('error', self.evt and self.evt.error or 'unknown error')
     self.resolve()
 end
 
+--! @param [in/out] self
 local function http_data_fast(self)
     local evt = self.evt
     local status = self.evt.value:match('^HTTP/%d.%d (%d+) %w*')
@@ -87,6 +97,7 @@ local function http_data_fast(self)
     })
 end
 
+--! @param [in/out] self
 local function http_data(self)
     self.p_data = self.p_data..self.evt.value
 
@@ -113,6 +124,7 @@ local function http_data(self)
     end
 end
 
+--! @param [in/out] self
 local function http_resolve(self)
     local body = ''
     if #self.speed == 0 then
@@ -133,10 +145,12 @@ local function http_resolve(self)
     self.resolve()
 end
 
+--! @param [in/out] self
 local function http_disconnect(self)
 
 end
 
+--! @param [in/out] self
 local function http_handler(self)
     local protocol, location = self.url:match('(%w*)://?(.*)')
     local url, uri = (location or self.url):match('^([^/]+)(.*)$')
@@ -191,10 +205,8 @@ local function context_pull(evt, contexts)
         contexts.by_host[host][index] = nil
         return self
     elseif connection and contexts.by_connection[connection] then
-        print(connection, evt.error, evt.value)
         local self = contexts.by_connection[connection]
         if evt.error then
-            print('error')
             self.evt = {type = 'error', error = evt.error}
             contexts.by_connection[connection] = nil
             return self
