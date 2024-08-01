@@ -1,3 +1,5 @@
+local http_util = require('src/lib/util/http')
+
 --! @file src/lib/protocol/http_ginga.lua
 --! @li https://www.rfc-editor.org/rfc/rfc2616
 --!
@@ -37,7 +39,7 @@
 
 --! @param [in/out] self
 local function http_connect(self)
-    local request = 'GET '..self.p_uri..' HTTP/1.0\r\n'
+    local request = 'GET '..self.p_uri..' HTTP/1.1\r\n'
         ..'Host: '..self.p_host..'\r\n'
         ..'User-Agent: Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)\r\n'
         ..'Cache-Control: max-age=0\r\n'
@@ -106,7 +108,7 @@ local function http_data(self)
         if self.p_header_pos then
             self.application.internal.http.callbacks.http_headers(self)
         end
-        if 300 <= self.p_status and self.p_status < 400 then
+        if http_util.is_redirect(self.p_status) then
             self.application.internal.http.callbacks.http_redirect(self)
             return
         end
@@ -127,10 +129,10 @@ end
 --! @param [in/out] self
 local function http_resolve(self)
     local body = ''
-    if #self.speed == 0 then
+    if self.speed ~= '_fast' then
         body = self.p_data:sub(self.p_header_pos + 4, #self.p_data)
     end
-    self.set('ok', 200 <= self.p_status and self.p_status < 300)
+    self.set('ok', http_util.is_ok(self.p_status))
     self.set('status', self.p_status)
     self.set('body', body)
     self.evt = nil
@@ -143,11 +145,6 @@ local function http_resolve(self)
     self.p_header_pos = nil
     self.p_data = nil
     self.resolve()
-end
-
---! @param [in/out] self
-local function http_disconnect(self)
-
 end
 
 --! @param [in/out] self
@@ -189,48 +186,35 @@ end
 
 --! @param [in] evt
 local function context_pull(evt, contexts)
+    local self = nil
     local host = evt.host
     local connection = evt.connection
     local index = host and contexts.by_host[host] and #contexts.by_host[host]
 
-    if evt.type == 'connect' and host and contexts.by_host[host] then
-        local index = #contexts.by_host[host]
-        local self = contexts.by_host[host][index]
-        if evt.error then
-            self.evt = {type = 'error', error = evt.error}
-            contexts.by_host[host][index] = nil
-            return self
-        end
-        self.evt = evt
-        contexts.by_connection[connection] = self
-        contexts.by_host[host][index] = nil
-        return self
-    elseif evt.type == 'disconnect' then
-        local self = {speed=''}
-        if host and index and contexts.by_host[host][index] then
-            self = contexts.by_host[host][index]
+    if evt.type == 'connect' and host and index and contexts.by_host[host][index] then
+        self = contexts.by_host[host][index]
+        if connection then
+            contexts.by_connection[connection] = self
             contexts.by_host[host][index] = nil
         end
-        if connection and contexts.by_connection[connection] then
-            self = contexts.by_connection[connection]
-            contexts.by_connection[connection] = nil
-        end
-        if evt.error then
-            self.evt = {type = 'error', error = evt.error}
-        else
-            self.evt = evt
-        end
-        return self
     elseif connection and contexts.by_connection[connection] then
-        local self = contexts.by_connection[connection]
-        if evt.error then
-            self.evt = {type = 'error', error = evt.error}
-            contexts.by_connection[connection] = nil
-            return self
-        end
-        self.evt = evt
-        return self
+        self = contexts.by_connection[connection]  
     end
+
+    if self then
+        self.evt = evt
+        if evt.error then
+            self.speed='_error'
+            if connection and contexts.by_connection[connection] then
+                contexts.by_connection[connection] = nil
+            end
+            if host and index and contexts.by_host[host][index] then
+                contexts.by_host[host][index] = nil
+            end
+        end
+    end
+
+    return self
 end
 
 --! @param [in] evt
@@ -266,16 +250,20 @@ local function install(std, game, application)
         remove = function (evt) context_remove(evt, contexts) end
     }
     application.internal.http.callbacks = {
-        http_disconnect_fast=http_disconnect,
+        -- error
+        http_connect_error=http_error,
+        http_data_error=http_error,
+        -- fast
         http_connect_fast=http_connect,
         http_data_fast=http_data_fast,
-        http_disconnect=http_disconnect,
-        http_redirect=http_redirect,
+        -- http
         http_connect=http_connect,
+        http_data=http_data,
+        -- extra
+        http_redirect=http_redirect,
         http_headers=http_headers,
         http_resolve=http_resolve,
-        http_error=http_error,
-        http_data=http_data
+        http_error=http_error
     }
 
     application.internal.event_loop = application.internal.event_loop or {}
