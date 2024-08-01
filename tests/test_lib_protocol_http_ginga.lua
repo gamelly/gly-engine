@@ -95,6 +95,117 @@ function test_http_get_200()
     luaunit.assertEquals(response.error, nil)
 end
 
+function test_http_simultaneous_requests()
+    local response1 = {}
+    local http1 = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://pudim.com.br/chocolate',
+        set = function(key, value)
+            response1[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+    local response2 = {}
+    local http2 = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://pudim.com.br/doce-de-leite',
+        set = function(key, value)
+            response2[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+    local response3 = {}
+    local http3 = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://pudim.com.br/leite-condesado',
+        set = function(key, value)
+            response3[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+
+    http_handler(http1)
+    http_handler(http2)
+    http_handler(http3)
+
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='pudim.com.br',
+        connection=3
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='pudim.com.br',
+        connection=2
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 200 OK\r\nContent-Length: 28\r\n\r\namo',
+        connection=2
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='pudim.com.br',
+        connection=1
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 200 OK\r\nContent-Length: 23\r\n\r\namo',
+        connection=1
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value=' pudim de ',
+        connection=1
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value=' pudim de doce de leite!',
+        connection=2
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 200 OK\r\nContent-Length: 19\r\n\r\namo pudim de leite!',
+        connection=3
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='chocolate!',
+        connection=1
+    })
+
+    luaunit.assertEquals(response1.body, 'amo pudim de chocolate!')
+    luaunit.assertEquals(response2.body, 'amo pudim de doce de leite!')
+    luaunit.assertEquals(response3.body, 'amo pudim de leite!')
+end
+
 function test_http_error_http()
     local response = {}
     local http = {
