@@ -82,6 +82,9 @@ local core_list = {
 }
 
 if command == 'run' then
+    if not zeebo_args.get(arg, 'core') then
+        core = 'love'
+    end
     if not core_list[core] or not core_list[core].exe then
         print('this core cannot be runned!')
         os.exit(1)
