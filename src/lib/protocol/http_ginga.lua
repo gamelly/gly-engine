@@ -43,6 +43,7 @@ local function http_connect(self)
         ..'Host: '..self.p_host..'\r\n'
         ..'User-Agent: Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)\r\n'
         ..'Cache-Control: max-age=0\r\n'
+        ..'Accept: */*\r\n'
         ..'Content-Length: '..tostring(#self.body_content)..'\r\n'
         ..'Connection: close\r\n\r\n'
         ..self.body_content..'\r\n\r\n'
@@ -64,13 +65,42 @@ end
 
 --! @param [in/out] self
 local function http_redirect(self)
-    local protocol, url, uri =  self.p_header:match('Location: (%w+)://([^/]+)(.*)')
+    local protocol, location = self.p_header:match('Location: (%w+)://([^%s]*)')
+    local url, uri = (location or self.url):match('^([^/]+)(.*)$')
+    local host, port_str = url:match("^(.-):?(%d*)$")
+    local redirects =  self.p_redirects + 1
+    local port = tonumber(port_str and #port_str > 0 and port_str or 80)
+    
     if protocol == 'https' and self.p_host == url then
         self.evt.error = 'HTTPS is not supported!'
         self.application.internal.http.callbacks.http_error(self)
-    else
-        self.evt.error = 'redirect not implemented!'
+    elseif self.p_redirects > 5 then
+        self.evt.error = 'Too Many Redirects!'
         self.application.internal.http.callbacks.http_error(self)
+    else
+        event.post({
+            class      = 'tcp',
+            type       = 'disconnect',
+            connection =  self.evt.connection,
+        })
+
+        self.application.internal.http.context.remove(self.evt)
+        self.application.internal.http.callbacks.http_clear(self)
+
+        self.p_url = url
+        self.p_uri = uri or '/'
+        self.p_host = host
+        self.p_data = ''
+        self.p_redirects = redirects
+
+        self.application.internal.http.context.push(self)
+
+        event.post({
+            class = 'tcp',
+            type  = 'connect',
+            host  = host,
+            port  = port
+        })
     end
 end
 
@@ -135,6 +165,11 @@ local function http_resolve(self)
     self.set('ok', http_util.is_ok(self.p_status))
     self.set('status', self.p_status)
     self.set('body', body)
+    self.application.internal.http.callbacks.http_clear(self)
+    self.resolve()
+end
+
+local function http_clear(self)
     self.evt = nil
     self.p_url = nil
     self.p_uri = nil
@@ -144,7 +179,7 @@ local function http_resolve(self)
     self.p_header = nil
     self.p_header_pos = nil
     self.p_data = nil
-    self.resolve()
+    self.p_redirects = nil
 end
 
 --! @param [in/out] self
@@ -158,6 +193,7 @@ local function http_handler(self)
     self.p_uri = uri or '/'
     self.p_host = host
     self.p_data = ''
+    self.p_redirects = 0
 
     if protocol ~= 'http' and location then
         self.evt = { error = 'HTTPS is not supported!' }
@@ -263,7 +299,8 @@ local function install(std, game, application)
         http_redirect=http_redirect,
         http_headers=http_headers,
         http_resolve=http_resolve,
-        http_error=http_error
+        http_error=http_error,
+        http_clear=http_clear,
     }
 
     application.internal.event_loop = application.internal.event_loop or {}

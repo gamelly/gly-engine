@@ -95,6 +95,56 @@ function test_http_get_200()
     luaunit.assertEquals(response.error, nil)
 end
 
+function test_http_redirect_300()
+    local response = {}
+    local http = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://pudim.com',
+        set = function(key, value)
+            response[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+
+    http_handler(http)
+
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='pudim.com',
+        connection=1
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 300 Redirect\r\nLocation: http://pudim.com.br\r\n\r\n',
+        connection=1
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='pudim.com.br',
+        connection=2
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\neu amo pudim!',
+        connection=2
+    })
+    
+    luaunit.assertEquals(response.ok, true)
+    luaunit.assertEquals(response.status, 200)
+    luaunit.assertEquals(response.body, 'eu amo pudim!')
+    luaunit.assertEquals(response.error, nil)
+end
+
 function test_http_simultaneous_requests()
     local response1 = {}
     local http1 = {
@@ -268,6 +318,45 @@ function test_http_error_https_redirect()
     luaunit.assertEquals(response.error, 'HTTPS is not supported!')
 end
 
+function test_http_error_too_many_redirect()
+    local response = {}
+    local http = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://pudim.com.br/',
+        set = function(key, value)
+            response[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+
+    http_handler(http)
+
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='pudim.com.br',
+        connection=1
+    })
+    http.p_redirects = 50
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 300 Redirect\r\nLocation: http://pudim.com.br/\r\n\r\n',
+        connection=1
+    })
+    
+    luaunit.assertEquals(response.ok, false)
+    luaunit.assertEquals(response.status, nil)
+    luaunit.assertEquals(response.body, nil)
+    luaunit.assertEquals(response.error, 'Too Many Redirects!')
+end
+
 function test_http_fast_empty_status_error()
     local response = {}
     local http = {
@@ -374,44 +463,6 @@ function test_http_data_error()
     luaunit.assertEquals(response.status, nil)
     luaunit.assertEquals(response.body, nil)
     luaunit.assertEquals(response.error, 'some data error')
-end
-
-function test_http_error_not_implemented_redirect()
-    local response = {}
-    local http = {
-        std=std,
-        game=game,
-        application=application,
-        speed='',
-        method='GET',
-        body_content='',
-        url='http://pudim.com.br/',
-        set = function(key, value)
-            response[key] = value
-        end,
-        promise = function() end,
-        resolve = function() end
-    }
-
-    http_handler(http)
-
-    application.internal.event_loop[1]({
-        class='tcp',
-        type='connect',
-        host='pudim.com.br',
-        connection=1
-    })
-    application.internal.event_loop[1]({
-        class='tcp',
-        type='data',
-        value='HTTP/1.1 300 Redirect\r\nLocation: http://amo.pudim.com.br\r\n\r\n',
-        connection=1
-    })
-    
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'redirect not implemented!')
 end
 
 os.exit(luaunit.LuaUnit.run())
