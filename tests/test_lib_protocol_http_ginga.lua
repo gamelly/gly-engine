@@ -3,6 +3,7 @@ local protocol_http = require('src/lib/protocol/http_ginga')
 
 local application = {}
 local http_handler = protocol_http.install({}, {}, application)
+application.internal.http.dns_state = 2
 event = {
     post=function() end
 }
@@ -25,6 +26,7 @@ function test_http_fast_post_201()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -63,6 +65,7 @@ function test_http_get_200()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -113,6 +116,7 @@ function test_http_redirect_300()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -126,6 +130,7 @@ function test_http_redirect_300()
         value='HTTP/1.1 300 Redirect\r\nLocation: http://pudim.com.br\r\n\r\n',
         connection=1
     })
+    application.internal.fixed_loop[1]()
     application.internal.event_loop[1]({
         class='tcp',
         type='connect',
@@ -192,9 +197,13 @@ function test_http_simultaneous_requests()
         resolve = function() end
     }
 
-    http_handler(http1)
-    http_handler(http2)
+
     http_handler(http3)
+    http_handler(http2)
+    http_handler(http1)
+    application.internal.fixed_loop[1]()
+    application.internal.fixed_loop[1]()
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -273,6 +282,7 @@ function test_http_error_http()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
     
     luaunit.assertEquals(response.ok, false)
     luaunit.assertEquals(response.status, nil)
@@ -298,6 +308,7 @@ function test_http_error_https_redirect()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -336,6 +347,7 @@ function test_http_error_too_many_redirect()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -375,6 +387,7 @@ function test_http_fast_empty_status_error()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -413,6 +426,7 @@ function test_http_dns_error()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',
@@ -445,6 +459,7 @@ function test_http_data_error()
     }
 
     http_handler(http)
+    application.internal.fixed_loop[1]()
 
     application.internal.event_loop[1]({
         class='tcp',

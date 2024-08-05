@@ -2,16 +2,55 @@ local http_util = require('src/lib/util/http')
 
 --! @file src/lib/protocol/http_ginga.lua
 --! @li https://www.rfc-editor.org/rfc/rfc2616
---!
---! @todo support redirects 3xx
+--! 
 --! @todo support custom user-agent
+--!
 --! @todo support request headers
+--!
 --! @todo support URI params
+--!
+--! @par Compare
+--! | feature/support | this module     | manoel campos  |
+--! | :-              | :-:             | :-:            |
+--! | Samsung TVs     | yes             | no             |
+--! | Redirect 3xx    | yes             | no             |
+--! | HTTPS protocol  | handler error   | no             |
+--! | Timeout request | yes             | no             |
+--! | DNS Resolving   | yes             | no             |
+--! | multi-request   | yes, event loop | yes, corotines |
+--!
+--! @note @b Samsung Tvs have connections blocked when host is not cached in DNS
+--!
+--! @par Finite State Machine
+--! @startuml
+--! hide empty description
+--! state 0 as "no requests"
+--! state 1 as "DNS resolving": first request
+--! state 2 as "DNS disabled"
+--! state 3 as "DNS Idle"
+--! state 4 as "DNS resolving"
+--! 
+--! [*] -> 0
+--! 0 -> 1
+--! 1 -> 2
+--! 1 -> 3
+--! 3 -> 4
+--! 4 -> 3
+--! 2 -> [*]
+--! @enduml
 --!
 --! @par Contexts
 --! @startjson
 --! {
+--!    "by_dns": {
+--!       "google.com": "8.8.8.8"
+--!    },
 --!    "by_host": {
+--!       "8.8.8.8": [
+--!         {
+--!          "url": "google.com/search?q=pudim.com.br" 
+--!         }
+--!       ],
 --!       "pudim.com.br": [
 --!         {
 --!          "url": "pudim.com.br/"
@@ -37,7 +76,7 @@ local http_util = require('src/lib/util/http')
 --! }
 --! @endjson
 
---! @param [in/out] self
+--! @cond
 local function http_connect(self)
     local request = 'GET '..self.p_uri..' HTTP/1.1\r\n'
         ..'Host: '..self.p_host..'\r\n'
@@ -55,15 +94,17 @@ local function http_connect(self)
         value      = request,
     })
 end
+--! @endcond
 
---! @param [in/out] self
+--! @cond
 local function http_headers(self)
     self.p_header = self.p_data:sub(1, self.p_header_pos -1)
     self.p_status = tonumber(self.p_header:match('^HTTP/%d.%d (%d+) %w*'))
     self.p_content_size = tonumber(self.p_header:match('Content%-Length: (%d+)'))
 end
+--! @endcond
 
---! @param [in/out] self
+--! @cond
 local function http_redirect(self)
     local protocol, location = self.p_header:match('Location: (%w+)://([^%s]*)')
     local url, uri = (location or self.url):match('^([^/]+)(.*)$')
@@ -78,6 +119,8 @@ local function http_redirect(self)
         self.evt.error = 'Too Many Redirects!'
         self.application.internal.http.callbacks.http_error(self)
     else
+        local index = #self.application.internal.http.queue + 1
+
         event.post({
             class      = 'tcp',
             type       = 'disconnect',
@@ -90,28 +133,24 @@ local function http_redirect(self)
         self.p_url = url
         self.p_uri = uri or '/'
         self.p_host = host
+        self.p_port = port
         self.p_data = ''
         self.p_redirects = redirects
 
-        self.application.internal.http.context.push(self)
-
-        event.post({
-            class = 'tcp',
-            type  = 'connect',
-            host  = host,
-            port  = port
-        })
+        self.application.internal.http.queue[index] = self
     end
 end
+--! @endcond
 
---! @param [in/out] self
+--! @cond
 local function http_error(self)
     self.set('ok', false)
     self.set('error', self.evt and self.evt.error or 'unknown error')
     self.resolve()
 end
+--! @endcond
 
---! @param [in/out] self
+--! @cond
 local function http_data_fast(self)
     local evt = self.evt
     local status = self.evt.value:match('^HTTP/%d.%d (%d+) %w*')
@@ -128,8 +167,9 @@ local function http_data_fast(self)
         connection =  evt.connection,
     })
 end
+--! @endcond
 
---! @param [in/out] self
+--! @cond
 local function http_data(self)
     self.p_data = self.p_data..self.evt.value
 
@@ -155,8 +195,9 @@ local function http_data(self)
         })
     end
 end
+--! @endcond
 
---! @param [in/out] self
+--! @cond
 local function http_resolve(self)
     local body = ''
     if self.speed ~= '_fast' then
@@ -168,12 +209,15 @@ local function http_resolve(self)
     self.application.internal.http.callbacks.http_clear(self)
     self.resolve()
 end
+--! @endcond
 
+--! @cond
 local function http_clear(self)
     self.evt = nil
     self.p_url = nil
     self.p_uri = nil
     self.p_host = nil
+    self.p_port = nil
     self.p_status = nil
     self.p_content_size = nil
     self.p_header = nil
@@ -181,8 +225,9 @@ local function http_clear(self)
     self.p_data = nil
     self.p_redirects = nil
 end
+--! @endcond
 
---! @param [in/out] self
+--! @short create request
 local function http_handler(self)
     local protocol, location = self.url:match('(%w*)://?(.*)')
     local url, uri = (location or self.url):match('^([^/]+)(.*)$')
@@ -192,6 +237,7 @@ local function http_handler(self)
     self.p_url = url
     self.p_uri = uri or '/'
     self.p_host = host
+    self.p_port = port
     self.p_data = ''
     self.p_redirects = 0
 
@@ -199,18 +245,13 @@ local function http_handler(self)
         self.evt = { error = 'HTTPS is not supported!' }
         self.application.internal.http.callbacks.http_error(self)
     else
-        self.application.internal.http.context.push(self)
+        local index = #self.application.internal.http.queue + 1
+        self.application.internal.http.queue[index] = self
         self.promise()
-        event.post({
-            class = 'tcp',
-            type  = 'connect',
-            host  = host,
-            port  = port
-        })
     end
 end
 
---! @param [in] self
+--! @cond
 local function context_push(self, contexts)
     local host = self.p_host
     if not contexts.by_host[host] then
@@ -219,8 +260,9 @@ local function context_push(self, contexts)
     local index = #contexts.by_host[host] + 1
     contexts.by_host[host][index] = self
 end
+--! @endcond
 
---! @param [in] evt
+--! @cond
 local function context_pull(evt, contexts)
     local self = nil
     local host = evt.host
@@ -252,8 +294,9 @@ local function context_pull(evt, contexts)
 
     return self
 end
+--! @endcond
 
---! @param [in] evt
+--! @cond
 local function context_remove(evt, contexts)
     local connection = evt.connection
 
@@ -261,30 +304,73 @@ local function context_remove(evt, contexts)
         contexts.by_connection[connection] = nil
     end
 end
+--! @endcond
 
+--! @short dequeue request
+--! @param [in] std
+--! @param [in] game
+--! @param [in, out] application
+--! @brief This code may seem confusing, but it was the simplest I thought,
+--! analyze the finite state machine to understand better.
+local function fixed_loop(std, game, application)
+    local state = application.internal.http.dns_state
+    local index = #application.internal.http.queue
+    while index >= 1 and state ~= 1 and state ~= 4 do
+        if state ~= 2 then
+            state = state + 1
+            application.internal.http.state = state
+        end
+
+        local self = application.internal.http.queue[index]
+        self.application.internal.http.context.push(self)
+        event.post({
+            class = 'tcp',
+            type  = 'connect',
+            host  = self.p_host,
+            port  = self.p_port
+        })
+
+        application.internal.http.queue[index] = nil
+        index = index - 1
+    end
+end
+
+--! @short resolve request
 local function event_loop(std, game, application, evt)
     if evt.class ~= 'tcp' then return end
 
     local self = application.internal.http.context.pull(evt)
 
+    local value = tostring(evt.value)
+    local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:sub(1, (value:find('\n') or 30) - 2)
+    --game._debug = debug..'\r\n\r\n'..game._debug
+
     if self then
         local index = 'http_'..self.evt.type..self.speed
+        --game._debug = index..'\r\n'..game._debug
         application.internal.http.callbacks[index](self)
     end
 end
 
 local function install(std, game, application)
     local contexts = {
+        by_dns={},
         by_host={},
         by_connection={}
     }
-    application.internal = application.internal or {}
+
+    application.internal = application.internal or {}    
+    application.internal.event_loop = application.internal.event_loop or {}
+    application.internal.fixed_loop = application.internal.fixed_loop or {}
     application.internal.http = {}
+    application.internal.http.dns_state = 0
+    application.internal.http.queue = {}
     application.internal.http.context = {
         push = function(self) context_push(self, contexts) end,
         pull = function(evt) return context_pull(evt, contexts) end,
         remove = function (evt) context_remove(evt, contexts) end
     }
+
     application.internal.http.callbacks = {
         -- error
         http_connect_error=http_error,
@@ -303,10 +389,12 @@ local function install(std, game, application)
         http_clear=http_clear,
     }
 
-    application.internal.event_loop = application.internal.event_loop or {}
-    local index = #application.internal.event_loop + 1
-    application.internal.event_loop[index] = function (evt)
+    application.internal.event_loop[#application.internal.event_loop + 1] = function (evt)
         event_loop(std, game, application, evt)    
+    end
+    
+    application.internal.fixed_loop[#application.internal.fixed_loop + 1] = function ()
+        fixed_loop(std, game, application)    
     end
 
     return http_handler
