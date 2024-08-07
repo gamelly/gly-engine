@@ -1,6 +1,6 @@
-local http_util = require('src/lib/util/http')
-
 --! @file src/lib/protocol/http_ginga.lua
+--! @short HTTP ginga module
+--! 
 --! @li https://www.rfc-editor.org/rfc/rfc2616
 --! 
 --! @todo support custom user-agent
@@ -42,6 +42,7 @@ local http_util = require('src/lib/util/http')
 --! @par Contexts
 --! @startjson
 --! {
+--!    "resolve": "8.8.8.8",
 --!    "by_dns": {
 --!       "google.com": "8.8.8.8"
 --!    },
@@ -75,6 +76,7 @@ local http_util = require('src/lib/util/http')
 --!    }
 --! }
 --! @endjson
+local http_util = require('src/lib/util/http')
 
 --! @cond
 local function http_connect(self)
@@ -92,6 +94,22 @@ local function http_connect(self)
         type       = 'data',
         connection = self.evt.connection,
         value      = request,
+    })
+end
+--! @endcond
+
+--! @cond
+local function http_connect_dns(self)
+    if self.p_host == self.evt.host then
+        self.application.internal.dns_state = 2
+    else
+        self.application.internal.http.context.dns(self)
+        self.application.internal.http.dns_state = 3
+    end
+    event.post({
+        class      = 'tcp',
+        type       = 'disconnect',
+        connection =  self.evt.connection,
     })
 end
 --! @endcond
@@ -132,6 +150,7 @@ local function http_redirect(self)
 
         self.p_url = url
         self.p_uri = uri or '/'
+        self.p_ip = host
         self.p_host = host
         self.p_port = port
         self.p_data = ''
@@ -236,6 +255,7 @@ local function http_handler(self)
 
     self.p_url = url
     self.p_uri = uri or '/'
+    self.p_ip = host
     self.p_host = host
     self.p_port = port
     self.p_data = ''
@@ -252,8 +272,23 @@ local function http_handler(self)
 end
 
 --! @cond
+local function context_dns(self, contexts)
+    if self.p_host and self.p_ip and self.p_host ~= self.p_ip then
+        contexts.by_dns[self.p_host] = self.p_ip
+        return true
+    elseif contexts.by_dns[self.p_host] then
+        self.p_ip = contexts.by_dns[self.p_host]
+        return true
+    else
+        contexts.dns_resolve = self
+        return false
+    end
+end
+--! @endcond
+
+--! @cond
 local function context_push(self, contexts)
-    local host = self.p_host
+    local host = self.p_ip
     if not contexts.by_host[host] then
         contexts.by_host[host] = {}
     end
@@ -265,11 +300,20 @@ end
 --! @cond
 local function context_pull(evt, contexts)
     local self = nil
-    local host = evt.host
     local connection = evt.connection
+    local host = (evt.host and contexts.by_dns[evt.dns]) or evt.host
     local index = host and contexts.by_host[host] and #contexts.by_host[host]
-
-    if evt.type == 'connect' and host and index and contexts.by_host[host][index] then
+    
+    if host and contexts.dns_resolve then
+        self = {
+            speed = '_dns',
+            type = 'connect',
+            application = contexts.dns_resolve.application,
+            p_host = contexts.dns_resolve.p_host,
+            p_ip = host
+        }
+        contexts.dns_resolve = nil
+    elseif evt.type == 'connect' and host and index and contexts.by_host[host][index] then
         self = contexts.by_host[host][index]
         if connection then
             contexts.by_connection[connection] = self
@@ -316,21 +360,31 @@ local function fixed_loop(std, game, application)
     local state = application.internal.http.dns_state
     local index = #application.internal.http.queue
     while index >= 1 and state ~= 1 and state ~= 4 do
-        if state ~= 2 then
-            state = state + 1
-            application.internal.http.state = state
+        local self = application.internal.http.queue[index]
+
+        if state == 0 then
+            self.application.internal.http.context.dns(self)
+            state = 1
+        elseif state == 2 then
+            self.application.internal.http.context.push(self)
+            application.internal.http.queue[index] = nil
+        elseif state == 3 then
+            if self.application.internal.http.context.dns(self) then
+                application.internal.http.context.push(self)
+                application.internal.http.queue[index] = nil
+            else
+                state = 4
+            end
         end
 
-        local self = application.internal.http.queue[index]
-        self.application.internal.http.context.push(self)
         event.post({
             class = 'tcp',
             type  = 'connect',
-            host  = self.p_host,
+            host  = self.p_ip,
             port  = self.p_port
         })
 
-        application.internal.http.queue[index] = nil
+        application.internal.http.dns_state = state
         index = index - 1
     end
 end
@@ -366,12 +420,15 @@ local function install(std, game, application)
     application.internal.http.dns_state = 0
     application.internal.http.queue = {}
     application.internal.http.context = {
+        dns = function(self) return context_dns(self, contexts) end,
         push = function(self) context_push(self, contexts) end,
         pull = function(evt) return context_pull(evt, contexts) end,
         remove = function (evt) context_remove(evt, contexts) end
     }
 
     application.internal.http.callbacks = {
+        -- dns 
+        http_connect_dns=http_connect_dns,
         -- error
         http_connect_error=http_error,
         http_data_error=http_error,

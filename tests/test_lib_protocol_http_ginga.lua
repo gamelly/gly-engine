@@ -265,6 +265,102 @@ function test_http_simultaneous_requests()
     luaunit.assertEquals(response3.body, 'amo pudim de leite!')
 end
 
+function test_http_get_200_samsung()
+    local response = {}
+    local http = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://google.com',
+        set = function(key, value)
+            response[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+
+    http_handler(http)
+    application.internal.http.dns_state = 3
+    application.internal.fixed_loop[1]()
+
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='8.8.8.8',
+        connection=1
+    })
+    application.internal.fixed_loop[1]()
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='8.8.8.8',
+        connection=2
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\ngoogle it!',
+        connection=2
+    })
+    application.internal.http.dns_state = 2
+
+    luaunit.assertEquals(response.ok, true)
+    luaunit.assertEquals(response.status, 200)
+    luaunit.assertEquals(response.body, 'google it!')
+    luaunit.assertEquals(response.error, nil)    
+end
+
+function test_http_get_200_samsung_first_time()
+    local response = {}
+    local http = {
+        std=std,
+        game=game,
+        application=application,
+        speed='',
+        method='GET',
+        body_content='',
+        url='http://bing.com',
+        set = function(key, value)
+            response[key] = value
+        end,
+        promise = function() end,
+        resolve = function() end
+    }
+
+    http_handler(http)
+    application.internal.http.dns_state = 0
+    application.internal.fixed_loop[1]()
+
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='1.1.1.1',
+        connection=1
+    })
+    application.internal.fixed_loop[1]()
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='connect',
+        host='1.1.1.1',
+        connection=2
+    })
+    application.internal.event_loop[1]({
+        class='tcp',
+        type='data',
+        value='HTTP/1.1 200 OK\r\nContent-Length: 8\r\n\r\nbing it!',
+        connection=2
+    })
+    application.internal.http.dns_state = 2
+
+    luaunit.assertEquals(response.ok, true)
+    luaunit.assertEquals(response.status, 200)
+    luaunit.assertEquals(response.body, 'bing it!')
+    luaunit.assertEquals(response.error, nil)    
+end
+
 function test_http_error_http()
     local response = {}
     local http = {
