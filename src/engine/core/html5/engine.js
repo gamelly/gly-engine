@@ -90,8 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         canvas_element.width = body_element.clientWidth
     }
     else {
-        const ratio = body_element.clientHeight / body_element.clientWidth
-        canvas_element.height = Math.floor(body_element.clientWidth / ratio)
+        canvas_element.height = Math.floor(body_element.clientHeight / 2)
         canvas_element.width = body_element.clientWidth
     }
 
