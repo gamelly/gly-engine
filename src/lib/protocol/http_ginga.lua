@@ -1,13 +1,7 @@
 --! @file src/lib/protocol/http_ginga.lua
 --! @short HTTP ginga module
 --! 
---! @li https://www.rfc-editor.org/rfc/rfc2616
---! 
---! @todo support custom user-agent
---!
---! @todo support request headers
---!
---! @todo support URI params
+--! @li @b specification: https://www.rfc-editor.org/rfc/rfc2616
 --!
 --! @par Compare
 --! | feature/support | this module     | manoel campos  |
