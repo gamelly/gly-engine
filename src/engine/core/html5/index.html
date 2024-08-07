@@ -20,23 +20,24 @@
             margin: 0;
         }
         body {
-            height: 99vh;
+            height: 99.998vh;
             display: flex;
             overflow: hidden;
             justify-content: center;
-            align-items: center;
+            align-items: start;
             background-color: gray;
         }
         canvas {
-            margin: auto auto;
+            width: 100vw;
+            height: 100vmin;
             image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            background-color: black;
         }
     </style>
   </head>
   <body>
-    <canvas id="gameCanvas" width="1280" height="720"></canvas>
+    <main>
+      <canvas id="gameCanvas"></canvas>
+    </main>
     <script type="module" src="./engine.js"></script>
   </body>
 </html>
