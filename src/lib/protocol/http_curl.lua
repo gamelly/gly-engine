@@ -1,16 +1,23 @@
+--! @todo support Body content in post
+local http_util = require('src/lib/util/http')
+
 local function http_handler(self)
     local index = 1
     local cmd = 'curl -L --silent --insecure -w "\n%{http_code}" '
     local protocol = self.method == 'HEAD' and '--HEAD' or '-X '..self.method
+    local params = http_util.url_search_param(self.param_list, self.param_dict)
     
     local headers, index = ' ', 1
-    while self.header_name_list and index <= #self.header_name_list do
-        headers = headers..'-H "'..self.header_name_list[index]..': '
-        headers = headers..self.header_value_list[index]..'" '
+
+    while self.header_list and index <= #self.header_list do
+        local header = self.header_list[index]
+        headers = headers..'-H "'..header..': '
+        headers = headers..self.header_dict[self.header_list[index]]..'" '
         index = index + 1
     end
 
-    local handle = io and io.popen and io.popen(cmd..protocol..headers..self.url)
+ 
+    local handle = io and io.popen and io.popen(cmd..protocol..headers..self.url..params)
 
     if handle then
         local stdout = handle:read("*a")

@@ -7,8 +7,12 @@ local mock_popen = mock_io.open({
         read=function () return 'i love pudim!\n200' end,
         close=function () return true, nil end
     },
-    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.br'] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST -H "Authorization: bearer secret" pudim.com.br'] = {
         read=function () return 'method not allowed!\n403' end,
+        close=function () return true, nil end
+    },
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.brz&z=zoom'] = {
+        read=function () return 'me too!\n201' end,
         close=function () return true, nil end
     },
     ['curl -L --silent --insecure -w "\n%{http_code}" --HEAD '] = {
@@ -33,12 +37,36 @@ function test_http_get_200()
     luaunit.assertEquals(std.http.body, 'i love pudim!\n')
 end
 
+function test_http_post_201()
+    local std = {http={}}
+    io.popen = mock_popen
+    
+    protocol_http.handler({
+        std = std,
+        param_list = {'foo', 'bar', 'z'},
+        param_dict = {
+            ['foo'] = 'zig',
+            ['bar'] = 'zag',
+            ['z'] = 'zoom'
+        },
+        url = 'pudim.com.br',
+        method = 'POST'
+    })
+
+    luaunit.assertEquals(std.http.ok, true)
+    luaunit.assertEquals(std.http.error, nil)
+    luaunit.assertEquals(std.http.status, 201)
+    luaunit.assertEquals(std.http.body, 'me too!\n')
+end
+
 function test_http_post_403()
     local std = {http={}}
     io.popen = mock_popen
     
     protocol_http.handler({
         std = std,
+        header_list = {'Authorization'},
+        header_dict = {['Authorization'] = 'bearer secret'},
         url = 'pudim.com.br',
         method = 'POST'
     })

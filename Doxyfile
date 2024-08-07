@@ -30,6 +30,8 @@ EXTENSION_MAPPING      = .lua=C++
 INPUT                  = README.md SUPPORT.md src examples
 USE_MDFILE_AS_MAINPAGE = README.md
 MARKDOWN_ID_STYLE      = GITHUB
+ALIASES               += startjson=@startuml{json}
+ALIASES               += endjson=@enduml
 ALIASES               += startebnf=@startuml{ebnf}
 ALIASES               += endebnf=@enduml
 # Theme: https://jothepro.github.io/doxygen-awesome-css/

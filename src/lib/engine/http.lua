@@ -1,26 +1,34 @@
-local zeebo_pipeline = require('src/lib/engine/pipeline')
+local zeebo_pipeline = require('src/lib/util/pipeline')
 
 --! @defgroup std
 --! @{
 --! @defgroup http
 --! @pre require @c http
 --! @{
+
+--! @short reduced response
+--! @brief disconnect when receiving status
+local function fast(self)
+    self.speed = '_fast'
+    return self
+end
+
 local function body(self, content)
     self.body_content=content
     return self
 end
 
 local function param(self, name, value)
-    local index = #self.param_name_list + 1
-    self.param_name_list[index] = name
-    self.param_value_list[index] = value
+    local index = #self.param_list + 1
+    self.param_list[index] = name
+    self.param_dict[name] = value
     return self
 end
 
 local function header(self, name, value)
-    local index = #self.header_name_list + 1
-    self.header_name_list[index] = name
-    self.header_value_list[index] = value
+    local index = #self.header_list + 1
+    self.header_list[index] = name
+    self.header_dict[name] = value
     return self
 end
 
@@ -51,15 +59,16 @@ local function request(method, std, game, application, protocol_handler)
     end
 
     return function (url)
-        local http_object = {
+        local self = {
             -- content
             url = url,
+            speed = '',
             method = method,
             body_content = '',
-            header_name_list = {},
-            header_value_list = {},
-            param_name_list = {},
-            param_value_list = {},
+            header_list = {},
+            header_dict = {},
+            param_list = {},
+            param_dict = {},
             callback_handler = callback_handler,
             success_handler = function () end,
             failed_handler = function () end,
@@ -67,76 +76,98 @@ local function request(method, std, game, application, protocol_handler)
             -- objects
             std = std,
             game = game,
+            application = application,
             -- functions
+            fast = fast,
             body = body,
             param = param,
             header = header,
             success = success,
             failed = failed,
             error = error,
-            pipe = zeebo_pipeline.pipe,
             run = zeebo_pipeline.run,
             -- internal
             protocol_handler = protocol_handler
         }
 
-        http_object.pipeline = {
+        self.promise = function()
+            zeebo_pipeline.stop(self)
+        end
+
+        self.resolve = function()
+            zeebo_pipeline.resume(self)
+        end
+
+        self.set = function (key, value)
+            self.std.http[key] = value
+        end
+
+        self.pipeline = {
             -- eval
             function()
-                local response = http_object:protocol_handler()
-                if response and #response > 0 then
-                    http_object.std.http.ok = response[1]
-                    http_object.std.http.body = response[2]
-                    http_object.std.http.status = response[3]
-                    http_object.std.http.error = response[4]
-                end
+                local response = self:protocol_handler()
             end,
             -- callbacks
             function()
                 -- global handler
-                http_object.callback_handler(http_object.std, http_object.game)
+                self.callback_handler(self.std, self.game)
                 -- local handlers
-                if http_object.std.http.ok then
-                    http_object.success_handler(http_object.std, http_object.game)
-                elseif http_object.std.http.error or not http_object.std.http.status then
-                    http_object.error_handler(http_object.std, http_object.game)
+                if self.std.http.ok then
+                    self.success_handler(self.std, self.game)
+                elseif self.std.http.error or not self.std.http.status then
+                    self.error_handler(self.std, self.game)
                 else
-                    http_object.failed_handler(http_object.std, http_object.game)
+                    self.failed_handler(self.std, self.game)
                 end
             end,
             -- clean http
             function ()
-                http_object.std.http.ok = nil
-                http_object.std.http.body = nil
-                http_object.std.http.error = nil
-                http_object.std.http.status = nil
+                self.std.http.ok = nil
+                self.std.http.body = nil
+                self.std.http.error = nil
+                self.std.http.status = nil
+            end,
+            -- clean lists
+            function()
+                local index = 1
+                while index <= #self.param_list do
+                    self.param_dict[self.param_list[index]] = nil
+                    index = index + 1
+                end
+                index = 1
+                while index <= #self.header_list do
+                    self.header_dict[self.header_list[index]] = nil
+                    index = index + 1
+                end
             end,
             -- clean gc
             function()
-                http_object.url = nil
-                http_object.body_content = nil
-                http_object.param_name_list = nil
-                http_object.param_value_list = nil
-                http_object.header_name_list = nil
-                http_object.header_value_list = nil
-                http_object.success_handler = nil
-                http_object.failed_handler = nil
-                http_object.std = nil
-                http_object.game = nil
-                http_object.body = nil
-                http_object.param = nil
-                http_object.success = nil
-                http_object.failed = nil
-                http_object.pipe = nil
-                http_object.run = nil
-                http_object.pipeline = nil
-                http_object.before_pipeline = nil
-                http_object.protocol_handler = nil
-                http_object.state = nil
+                self.url = nil
+                self.body_content = nil
+                self.param_list = nil
+                self.param_dict = nil
+                self.header_list = nil
+                self.header_dict = nil
+                self.success_handler = nil
+                self.failed_handler = nil
+                self.std = nil
+                self.game = nil
+                self.application = nil
+                self.body = nil
+                self.param = nil
+                self.success = nil
+                self.failed = nil
+                self.run = nil
+                self.set = nil
+                self.promise = nil
+                self.resolve = nil
+                self.protocol_handler = nil
+                self.state = nil
+                zeebo_pipeline.clear(self)
             end
         }
 
-        return http_object
+        return self
     end
 end
 --! @endcond
@@ -151,6 +182,11 @@ local function install(std, game, application, protocol)
     std.http.put=request('PUT', std, game, application, protocol_handler)
     std.http.delete=request('DELETE', std, game, application, protocol_handler)
     std.http.patch=request('PATCH', std, game, application, protocol_handler)
+    
+    if protocol.install then
+        protocol.install(std, game, application)
+    end
+
     return std.http
 end
 

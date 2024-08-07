@@ -1,25 +1,34 @@
-local zeebo_pipeline = require('src/lib/engine/pipeline')
+local zeebo_pipeline = require('src/lib/util/pipeline')
 
 --! @short safe load game
 --! @brief search by game in filesystem / lua modules
 --! @li https://love2d.org/wiki/love.filesystem.getSource
 local function loadgame(game_file)
     local cwd = '.'
-    local application = nil
+    local application = type(game_file) == 'function' and game_file
     local game_title = game_file and game_file:gsub('%.lua$', '') or 'game'
-    
-    if love and love.filesystem and love.filesystem.getSource then
-        cwd = love.filesystem.getSource()
-    end
-    if loadfile then
-        application = loadfile(cwd..'/'..game_title..'.lua')
-    end
-    if not application and pcall and require then
-        local ok, app = pcall(require, game_title)
+
+
+    if not application and game_file and game_file:find('\n') then
+        local ok, app = pcall(load, game_file)
+        if not ok then
+            ok, app = pcall(loadstring, game_file)
+        end
         application = ok and app
+    else
+        if love and love.filesystem and love.filesystem.getSource then
+            cwd = love.filesystem.getSource()
+        end
+        if not application then
+            application = loadfile(cwd..'/'..game_title..'.lua')
+        end
+        if not application then
+            local ok, app = pcall(require, game_title)
+            application = ok and app
+        end
     end
 
-    if type(application) == 'function' then
+    while application and type(application) == 'function' do
         application = application()
     end
 
@@ -114,7 +123,14 @@ local function require(std, game, application)
     return self
 end
 
+local function install(std, game, application, exit_func)
+    std.game = std.game or {}
+    std.game.load = loadgame
+    return {load=loadgame}
+end
+
 local P = {
+    load={install=install},
     loadgame = loadgame,
     require = require
 }

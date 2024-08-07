@@ -1,19 +1,459 @@
---! @todo implement ginga http protocol
-local function http_handler(self)
-    tcp.execute(function ()
-        local uri, port = self.url:find("^(.-):?(%d*)$")
-        tcp.connect(uri, tonumber(port or 80))
-        tcp.send('get /')
+--! @file src/lib/protocol/http_ginga.lua
+--! @short HTTP ginga module
+--! 
+--! @li @b specification: https://www.rfc-editor.org/rfc/rfc2616
+--!
+--! @par Compare
+--! | feature/support | this module     | manoel campos  |
+--! | :-              | :-:             | :-:            |
+--! | Samsung TVs     | yes             | no             |
+--! | Redirect 3xx    | yes             | no             |
+--! | HTTPS protocol  | handler error   | no             |
+--! | Timeout request | yes             | no             |
+--! | DNS Resolving   | yes             | no             |
+--! | multi-request   | yes, event loop | yes, corotines |
+--!
+--! @note @b Samsung Tvs have connections blocked when host is not cached in DNS
+--!
+--! @par Finite State Machine
+--! @startuml
+--! hide empty description
+--! state 0 as "no requests"
+--! state 1 as "DNS resolving": first request
+--! state 2 as "DNS disabled"
+--! state 3 as "DNS Idle"
+--! state 4 as "DNS resolving"
+--! 
+--! [*] -> 0
+--! 0 -> 1
+--! 1 -> 2
+--! 1 -> 3
+--! 3 -> 4
+--! 4 -> 3
+--! 2 -> [*]
+--! @enduml
+--!
+--! @par Contexts
+--! @startjson
+--! {
+--!    "resolve": "8.8.8.8",
+--!    "by_dns": {
+--!       "google.com": "8.8.8.8"
+--!    },
+--!    "by_host": {
+--!       "8.8.8.8": [
+--!         {
+--!          "url": "google.com/search?q=pudim.com.br" 
+--!         }
+--!       ],
+--!       "pudim.com.br": [
+--!         {
+--!          "url": "pudim.com.br/"
+--!         }
+--!       ],
+--!       "example.com": [
+--!         {
+--!          "url": "example.com/foo"
+--!         },
+--!         {
+--!          "url": "example.com/bar"
+--!         }
+--!       ]
+--!    },
+--!    "by_connection": {
+--!      "connector.id.1" : {
+--!         "url": "example.com/zig"
+--!      },
+--!      "connector.id.2" : {
+--!         "url": "example.com/zag"
+--!      }
+--!    }
+--! }
+--! @endjson
+local http_util = require('src/lib/util/http')
 
-        self.std.http.ok = ok and 200 <= status and status < 300
-        self.std.http.error = not ok and stderr
-        self.std.http.status = status
-        self.std.http.body = body
-    end)
+--! @cond
+local function http_connect(self)
+    local params = http_util.url_search_param(self.param_list, self.param_dict)
+    local headers = http_util.headers(self.header_list, self.header_dict, {
+        'Host', self.p_host..params, false,
+        'Accept', '*/*', true,
+        'Cache-Control', 'max-age=0', false,
+        'User-Agent', 'Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)', true,
+        'Content-Length', tostring(#self.body_content), false,
+        'Connection', 'close', false
+    })
+    local request = 'GET '..self.p_uri..' HTTP/1.1\r\n'..headers..'\r\n'..self.body_content..'\r\n\r\n'
+
+    event.post({
+        class      = 'tcp',
+        type       = 'data',
+        connection = self.evt.connection,
+        value      = request,
+    })
+end
+--! @endcond
+
+--! @cond
+local function http_connect_dns(self)
+    if self.p_host == self.evt.host then
+        self.application.internal.http.dns_state = 2
+    else
+        self.application.internal.http.context.dns(self)
+        self.application.internal.http.dns_state = 3
+    end
+    event.post({
+        class      = 'tcp',
+        type       = 'disconnect',
+        connection =  self.evt.connection,
+    })
+end
+--! @endcond
+
+--! @cond
+local function http_headers(self)
+    self.p_header = self.p_data:sub(1, self.p_header_pos -1)
+    self.p_status = tonumber(self.p_header:match('^HTTP/%d.%d (%d+) %w*'))
+    self.p_content_size = tonumber(self.p_header:match('Content%-Length: (%d+)'))
+end
+--! @endcond
+
+--! @cond
+local function http_redirect(self)
+    local protocol, location = self.p_header:match('Location: (%w+)://([^%s]*)')
+    local url, uri = (location or self.url):match('^([^/]+)(.*)$')
+    local host, port_str = url:match("^(.-):?(%d*)$")
+    local redirects =  self.p_redirects + 1
+    local port = tonumber(port_str and #port_str > 0 and port_str or 80)
+    
+    if protocol == 'https' and self.p_host == url then
+        self.evt.error = 'HTTPS is not supported!'
+        self.application.internal.http.callbacks.http_error(self)
+    elseif self.p_redirects > 5 then
+        self.evt.error = 'Too Many Redirects!'
+        self.application.internal.http.callbacks.http_error(self)
+    else
+        local index = #self.application.internal.http.queue + 1
+
+        event.post({
+            class      = 'tcp',
+            type       = 'disconnect',
+            connection =  self.evt.connection,
+        })
+
+        self.application.internal.http.context.remove(self.evt)
+        self.application.internal.http.callbacks.http_clear(self)
+
+        self.p_url = url
+        self.p_uri = uri or '/'
+        self.p_ip = host
+        self.p_host = host
+        self.p_port = port
+        self.p_data = ''
+        self.p_redirects = redirects
+
+        self.application.internal.http.queue[index] = self
+    end
+end
+--! @endcond
+
+--! @cond
+local function http_error(self)
+    self.set('ok', false)
+    self.set('error', self.evt and self.evt.error or 'unknown error')
+    self.resolve()
+end
+--! @endcond
+
+--! @cond
+local function http_data_fast(self)
+    local evt = self.evt
+    local status = self.evt.value:match('^HTTP/%d.%d (%d+) %w*')
+    if not status then
+        self.evt = {error = self.evt.value}
+        self.application.internal.http.callbacks.http_error(self)
+    else
+        self.p_status = tonumber(status)
+        self.application.internal.http.callbacks.http_resolve(self)
+    end
+    event.post({
+        class      = 'tcp',
+        type       = 'disconnect',
+        connection =  evt.connection,
+    })
+end
+--! @endcond
+
+--! @cond
+local function http_data(self)
+    self.p_data = self.p_data..self.evt.value
+
+    if not self.p_header_pos then
+        self.p_header_pos = self.p_data:find('\r\n\r\n')
+        if self.p_header_pos then
+            self.application.internal.http.callbacks.http_headers(self)
+        end
+        if http_util.is_redirect(self.p_status) then
+            self.application.internal.http.callbacks.http_redirect(self)
+            return
+        end
+    end
+
+    if self.p_header_pos and (#self.p_data - self.p_header_pos) >= self.p_content_size then
+        local evt = self.evt
+        self.application.internal.http.context.remove(self.evt)
+        self.application.internal.http.callbacks.http_resolve(self)
+        event.post({
+            class      = 'tcp',
+            type       = 'disconnect',
+            connection =  evt.connection,
+        })
+    end
+end
+--! @endcond
+
+--! @cond
+local function http_resolve(self)
+    local body = ''
+    if self.speed ~= '_fast' then
+        body = self.p_data:sub(self.p_header_pos + 4, #self.p_data)
+    end
+    self.set('ok', http_util.is_ok(self.p_status))
+    self.set('status', self.p_status)
+    self.set('body', body)
+    self.application.internal.http.callbacks.http_clear(self)
+    self.resolve()
+end
+--! @endcond
+
+--! @cond
+local function http_clear(self)
+    self.evt = nil
+    self.p_url = nil
+    self.p_uri = nil
+    self.p_host = nil
+    self.p_port = nil
+    self.p_status = nil
+    self.p_content_size = nil
+    self.p_header = nil
+    self.p_header_pos = nil
+    self.p_data = nil
+    self.p_redirects = nil
+end
+--! @endcond
+
+--! @short create request
+local function http_handler(self)
+    local protocol, location = self.url:match('(%w*)://?(.*)')
+    local url, uri = (location or self.url):match('^([^/]+)(.*)$')
+    local host, port_str = url:match("^(.-):?(%d*)$")
+    local port = tonumber(port_str and #port_str > 0 and port_str or 80)
+
+    self.p_url = url
+    self.p_uri = uri or '/'
+    self.p_ip = host
+    self.p_host = host
+    self.p_port = port
+    self.p_data = ''
+    self.p_redirects = 0
+
+    if protocol ~= 'http' and location then
+        self.evt = { error = 'HTTPS is not supported!' }
+        self.application.internal.http.callbacks.http_error(self)
+    else
+        local index = #self.application.internal.http.queue + 1
+        self.application.internal.http.queue[index] = self
+        self.promise()
+    end
+end
+
+--! @cond
+local function context_dns(self, contexts)
+    if self.p_host and self.p_ip and self.p_host ~= self.p_ip then
+        contexts.by_dns[self.p_host] = self.p_ip
+        return true
+    elseif contexts.by_dns[self.p_host] then
+        self.p_ip = contexts.by_dns[self.p_host]
+        return true
+    else
+        contexts.dns_resolve = self
+        return false
+    end
+end
+--! @endcond
+
+--! @cond
+local function context_push(self, contexts)
+    local host = self.p_ip
+    if not contexts.by_host[host] then
+        contexts.by_host[host] = {}
+    end
+    local index = #contexts.by_host[host] + 1
+    contexts.by_host[host][index] = self
+end
+--! @endcond
+
+--! @cond
+local function context_pull(evt, contexts)
+    local self = nil
+    local connection = evt.connection
+    local host = (evt.host and contexts.by_dns[evt.dns]) or evt.host
+    local index = host and contexts.by_host[host] and #contexts.by_host[host]
+    
+    if host and contexts.dns_resolve then
+        self = {
+            speed = '_dns',
+            type = 'connect',
+            application = contexts.dns_resolve.application,
+            p_host = contexts.dns_resolve.p_host,
+            p_ip = host
+        }
+        contexts.dns_resolve = nil
+    elseif evt.type == 'connect' and host and index and contexts.by_host[host][index] then
+        self = contexts.by_host[host][index]
+        if connection then
+            contexts.by_connection[connection] = self
+            contexts.by_host[host][index] = nil
+        end
+    elseif connection and contexts.by_connection[connection] then
+        self = contexts.by_connection[connection]  
+    end
+
+    if self then
+        self.evt = evt
+        if evt.error then
+            self.speed='_error'
+            if connection and contexts.by_connection[connection] then
+                contexts.by_connection[connection] = nil
+            end
+            if host and index and contexts.by_host[host][index] then
+                contexts.by_host[host][index] = nil
+            end
+        end
+    end
+
+    return self
+end
+--! @endcond
+
+--! @cond
+local function context_remove(evt, contexts)
+    local connection = evt.connection
+
+    if connection then
+        contexts.by_connection[connection] = nil
+    end
+end
+--! @endcond
+
+--! @short dequeue request
+--! @param [in] std
+--! @param [in] game
+--! @param [in, out] application
+--! @brief This code may seem confusing, but it was the simplest I thought,
+--! analyze the finite state machine to understand better.
+local function fixed_loop(std, game, application)
+    local state = application.internal.http.dns_state
+    local index = #application.internal.http.queue
+    while index >= 1 and state ~= 1 and state ~= 4 do
+        local self = application.internal.http.queue[index]
+
+        if state == 0 then
+            self.application.internal.http.context.dns(self)
+            state = 1
+        elseif state == 2 then
+            self.application.internal.http.context.push(self)
+            application.internal.http.queue[index] = nil
+        elseif state == 3 then
+            if self.application.internal.http.context.dns(self) then
+                application.internal.http.context.push(self)
+                application.internal.http.queue[index] = nil
+            else
+                state = 4
+            end
+        end
+
+        event.post({
+            class = 'tcp',
+            type  = 'connect',
+            host  = self.p_ip,
+            port  = self.p_port
+        })
+
+        application.internal.http.dns_state = state
+        index = index - 1
+    end
+end
+
+--! @short resolve request
+local function event_loop(std, game, application, evt)
+    if evt.class ~= 'tcp' then return end
+
+    local self = application.internal.http.context.pull(evt)
+
+    local value = tostring(evt.value)
+    local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:sub(1, (value:find('\n') or 30) - 2)
+
+    if self then
+        local index = 'http_'..self.evt.type..self.speed
+        application.internal.http.callbacks[index](self)
+    end
+end
+
+local function install(std, game, application)
+    local contexts = {
+        by_dns={},
+        by_host={},
+        by_connection={}
+    }
+
+    application.internal = application.internal or {}    
+    application.internal.event_loop = application.internal.event_loop or {}
+    application.internal.fixed_loop = application.internal.fixed_loop or {}
+    application.internal.http = {}
+    application.internal.http.dns_state = 0
+    application.internal.http.queue = {}
+    application.internal.http.context = {
+        dns = function(self) return context_dns(self, contexts) end,
+        push = function(self) context_push(self, contexts) end,
+        pull = function(evt) return context_pull(evt, contexts) end,
+        remove = function (evt) context_remove(evt, contexts) end
+    }
+
+    application.internal.http.callbacks = {
+        -- dns 
+        http_connect_dns=http_connect_dns,
+        -- error
+        http_connect_error=http_error,
+        http_data_error=http_error,
+        -- fast
+        http_connect_fast=http_connect,
+        http_data_fast=http_data_fast,
+        -- http
+        http_connect=http_connect,
+        http_data=http_data,
+        -- extra
+        http_redirect=http_redirect,
+        http_headers=http_headers,
+        http_resolve=http_resolve,
+        http_error=http_error,
+        http_clear=http_clear,
+    }
+
+    application.internal.event_loop[#application.internal.event_loop + 1] = function (evt)
+        event_loop(std, game, application, evt)    
+    end
+    
+    application.internal.fixed_loop[#application.internal.fixed_loop + 1] = function ()
+        fixed_loop(std, game, application)    
+    end
+
+    return http_handler
 end
 
 local P = {
-    handler = http_handler
+    handler = http_handler,
+    install = install
 }
 
 return P

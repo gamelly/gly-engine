@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const engine_lua = await engine_response.text()
     const game_lua = await game_response.text()
 
+    const body_element = document.querySelector('body')
     const canvas_element = document.querySelector('#gameCanvas')
     const canvas_ctx = canvas_element.getContext("2d")
     const canvas_close = [
@@ -65,25 +66,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const browser_protocol_http =  {
         handler: (self) => {
-            try {
-                const url = `http://${self.url}`
-                const xhr = new XMLHttpRequest()
-                xhr.open('GET', url, false)
-                xhr.send(null)
-                const ok = 200 <= xhr.status && xhr.status < 300
-                return [ok, xhr.responseText, xhr.status]
-            }
-            catch (e) {
-                return [false, '', 0, `${e}`]
-            } 
+           const method = self.method
+           const headers = new Headers(self.headers_dict)
+           const params = new URLSearchParams(self.params_dict)
+           const url = `${self.url}` + '?' + params.toString()
+           const body = ['HEAD', 'GET'].includes(method)? null: self.body_content
+           self.promise()
+           fetch(url, {
+                body: body,
+                method: method,
+                headers: headers
+            })
+            .then((response) => {
+                self.set('ok', response.ok)
+                self.set('status', response.status)
+                return response.text()
+            })
+            .then((content) => {
+                self.set('body', content)
+                self.resolve()
+            })
+            .catch((error) => {
+                self.set('ok', false)
+                self.set('error', `${error}`)
+                self.resolve()
+            })
         }
+    }
+
+    if (body_element.clientWidth > body_element.clientHeight) {
+        canvas_element.height = body_element.clientHeight
+        canvas_element.width = body_element.clientWidth
+    }
+    else {
+        canvas_element.height = Math.floor(body_element.clientHeight / 2)
+        canvas_element.width = body_element.clientWidth
     }
 
     lua.global.set('game_lua', game_lua)
     lua.global.set('browser_canvas', canvas_std)
     lua.global.set('browser_protocol_http', browser_protocol_http)
     const engine_callbacks = await lua.doString(engine_lua)
-    engine_callbacks.init(1260, 720)
+    engine_callbacks.init(canvas_element.width, canvas_element.height)
 
     setTimeout(() => {
         const keys = [
