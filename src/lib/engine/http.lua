@@ -19,16 +19,16 @@ local function body(self, content)
 end
 
 local function param(self, name, value)
-    local index = #self.param_name_list + 1
-    self.param_name_list[index] = name
-    self.param_value_list[index] = value
+    local index = #self.param_list + 1
+    self.param_list[index] = name
+    self.param_dict[name] = value
     return self
 end
 
 local function header(self, name, value)
-    local index = #self.header_name_list + 1
-    self.header_name_list[index] = name
-    self.header_value_list[index] = value
+    local index = #self.header_list + 1
+    self.header_list[index] = name
+    self.header_dict[name] = value
     return self
 end
 
@@ -65,10 +65,10 @@ local function request(method, std, game, application, protocol_handler)
             speed = '',
             method = method,
             body_content = '',
-            header_name_list = {},
-            header_value_list = {},
-            param_name_list = {},
-            param_value_list = {},
+            header_list = {},
+            header_dict = {},
+            param_list = {},
+            param_dict = {},
             callback_handler = callback_handler,
             success_handler = function () end,
             failed_handler = function () end,
@@ -127,14 +127,27 @@ local function request(method, std, game, application, protocol_handler)
                 self.std.http.error = nil
                 self.std.http.status = nil
             end,
+            -- clean lists
+            function()
+                local index = 1
+                while index <= #self.param_list do
+                    self.param_dict[self.param_list[index]] = nil
+                    index = index + 1
+                end
+                index = 1
+                while index <= #self.header_list do
+                    self.header_dict[self.header_list[index]] = nil
+                    index = index + 1
+                end
+            end,
             -- clean gc
             function()
                 self.url = nil
                 self.body_content = nil
-                self.param_name_list = nil
-                self.param_value_list = nil
-                self.header_name_list = nil
-                self.header_value_list = nil
+                self.param_list = nil
+                self.param_dict = nil
+                self.header_list = nil
+                self.header_dict = nil
                 self.success_handler = nil
                 self.failed_handler = nil
                 self.std = nil
@@ -169,7 +182,6 @@ local function install(std, game, application, protocol)
     std.http.put=request('PUT', std, game, application, protocol_handler)
     std.http.delete=request('DELETE', std, game, application, protocol_handler)
     std.http.patch=request('PATCH', std, game, application, protocol_handler)
-
     
     if protocol.install then
         protocol.install(std, game, application)

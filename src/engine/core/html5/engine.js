@@ -66,8 +66,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const browser_protocol_http =  {
         handler: (self) => {
-            self.promise()
-            fetch(self.url)
+           const method = self.method
+           const headers = new Headers(self.headers_dict)
+           const params = new URLSearchParams(self.params_dict)
+           const url = `${self.url}` + '?' + params.toString()
+           const body = ['HEAD', 'GET'].includes(method)? null: self.body_content
+           self.promise()
+           fetch(url, {
+                body: body,
+                method: method,
+                headers: headers
+            })
             .then((response) => {
                 self.set('ok', response.ok)
                 self.set('status', response.status)

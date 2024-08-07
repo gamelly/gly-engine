@@ -80,14 +80,16 @@ local http_util = require('src/lib/util/http')
 
 --! @cond
 local function http_connect(self)
-    local request = 'GET '..self.p_uri..' HTTP/1.1\r\n'
-        ..'Host: '..self.p_host..'\r\n'
-        ..'User-Agent: Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)\r\n'
-        ..'Cache-Control: max-age=0\r\n'
-        ..'Accept: */*\r\n'
-        ..'Content-Length: '..tostring(#self.body_content)..'\r\n'
-        ..'Connection: close\r\n\r\n'
-        ..self.body_content..'\r\n\r\n'
+    local params = http_util.url_search_param(self.param_list, self.param_dict)
+    local headers = http_util.headers(self.header_list, self.header_dict, {
+        'Host', self.p_host..params, false,
+        'Accept', '*/*', true,
+        'Cache-Control', 'max-age=0', false,
+        'User-Agent', 'Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)', true,
+        'Content-Length', tostring(#self.body_content), false,
+        'Connection', 'close', false
+    })
+    local request = 'GET '..self.p_uri..' HTTP/1.1\r\n'..headers..'\r\n'..self.body_content..'\r\n\r\n'
 
     event.post({
         class      = 'tcp',
@@ -101,7 +103,7 @@ end
 --! @cond
 local function http_connect_dns(self)
     if self.p_host == self.evt.host then
-        self.application.internal.dns_state = 2
+        self.application.internal.http.dns_state = 2
     else
         self.application.internal.http.context.dns(self)
         self.application.internal.http.dns_state = 3
@@ -397,11 +399,9 @@ local function event_loop(std, game, application, evt)
 
     local value = tostring(evt.value)
     local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:sub(1, (value:find('\n') or 30) - 2)
-    --game._debug = debug..'\r\n\r\n'..game._debug
 
     if self then
         local index = 'http_'..self.evt.type..self.speed
-        --game._debug = index..'\r\n'..game._debug
         application.internal.http.callbacks[index](self)
     end
 end
