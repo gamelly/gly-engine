@@ -46,6 +46,21 @@ local core_list = {
             'assets/icon80x80.png'
         }
     },
+    html5_tizen={
+        src='src/engine/core/html5/main.lua',
+        pipeline={
+            zeebo_meta.late(game):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
+            function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
+        },
+        extras={
+            'src/engine/meta/html5_tizen/config.xml',
+            'src/engine/meta/html5_tizen/.tproject',
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/index.html',
+            'src/engine/core/html5/engine.js',
+            'assets/icon80x80.png'
+        }
+    },
     html5_ginga={
         src='src/engine/core/html5/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
