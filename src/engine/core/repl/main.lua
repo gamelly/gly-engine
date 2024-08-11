@@ -8,11 +8,17 @@
 --! digit = { ? 0 - 9 ? }- ;
 --! exit = "?" ;
 --! @endebnf
-local math = require('math')
-local std = require('src/lib/object/std')
-local game = require('src/lib/object/game')
+local zeebo_module = require('src/lib/engine/module')
+local engine_game = require('src/lib/engine/game')
+local engine_math = require('src/lib/engine/math')
+local engine_color = require('src/lib/object/color')
+local engine_math = require('src/lib/engine/math')
+local engine_http = require('src/lib/engine/http')
+local engine_csv = require('src/lib/engine/csv')
 local application_default = require('src/lib/object/application')
-local zeebo_math = require('src/lib/engine/math')
+local color = require('src/lib/object/color')
+local game = require('src/lib/object/game')
+local std = require('src/lib/object/std')
 
 local function line_skip_frames(line_src)
     local frames, line = line_src:match('(%d+)!(.*)')
@@ -61,36 +67,30 @@ local function evaluate(var, assign, std, game, application)
 end
 
 local function main()
-    local line = nil
     local frames = 0
     local variable = ''
     local assignment = ''
-    local file_name = arg[1]
     local started = false
-    local application = application_default
-
-    if file_name then
-        local file_src = io.open(file_name, "r")
-        local apploader = file_src and load(file_src:read('*all'))
-        if not file_src then
-            error('game not found!'..file_name)
-        end
-        if not apploader then
-            error('game error!')
-        end
-        application = apploader()
-    end
+    local application = zeebo_module.loadgame(arg[1]) or application_default
 
     -- init the game
-    std.math = zeebo_math
-    std.math.random = math.random
+    zeebo_module.require(std, game, application)
+        :package('@game', engine_game)
+        :package('@math', engine_math)
+        :package('@color', engine_color)
+        :package('@load', zeebo_module.load)
+        :package('@math', engine_math.clib)
+        :package('@random', engine_math.clib_random)
+        :package('@csv', engine_csv)
+        :run()
+    
     application.callbacks.init(std, game)
 
     while true do
         local index = 1
-        line = io.read()
+        local ok, line = pcall(io.read)
 
-        if line == nil or line == '?' then
+        if not ok or line == nil or line == '?' then
             break
         end
 
