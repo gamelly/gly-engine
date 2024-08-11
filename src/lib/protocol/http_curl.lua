@@ -3,8 +3,8 @@ local http_util = require('src/lib/util/http')
 
 local function http_handler(self)
     local index = 1
-    local cmd = 'curl -L --silent --insecure -w "\n%{http_code}" '
-    local protocol = self.method == 'HEAD' and '--HEAD' or '-X '..self.method
+    local cmd = 'curl -L \x2D\x2Dsilent \x2D\x2Dinsecure -w "\n%{http_code}" '
+    local protocol = self.method == 'HEAD' and '\x2D\x2DHEAD' or '-X '..self.method
     local params = http_util.url_search_param(self.param_list, self.param_dict)
     
     local headers, index = ' ', 1
