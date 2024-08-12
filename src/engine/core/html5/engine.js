@@ -111,6 +111,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     setTimeout(() => {
         const keys = [
+            [403, 'red'],
+            [404, 'green'],
+            [405, 'yellow'],
+            [406, 'blue'],
             ['KeyZ', 'red'],
             ['KeyX', 'green'],
             ['KeyC', 'yellow'],
@@ -122,10 +126,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             ['ArrowRight', 'right'],
         ];
     
-        const keyHandler = (ev) => {
-            const key = keys.find(key => key[0] == ev.code)
-            key && engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown'))
-        }
+        const keyHandler = (ev) => keys
+            .filter(key => [ev.code, ev.keyCode].includes(key[0]))
+            .map(key => engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown')))
 
         window.addEventListener('keydown', keyHandler)
         window.addEventListener('keyup', keyHandler)
