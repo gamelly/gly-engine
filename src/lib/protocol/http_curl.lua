@@ -1,10 +1,9 @@
---! @todo support Body content in post
 local http_util = require('src/lib/util/http')
 
 local function http_handler(self)
     local index = 1
     local cmd = 'curl -L \x2D\x2Dsilent \x2D\x2Dinsecure -w "\n%{http_code}" '
-    local protocol = self.method == 'HEAD' and '\x2D\x2DHEAD' or '-X '..self.method
+    local protocol = self.method == 'HEAD' and '\x2D\x2DHEAD' or '-X ' .. self.method
     local params = http_util.url_search_param(self.param_list, self.param_dict)
     
     local headers, index = ' ', 1
@@ -16,8 +15,12 @@ local function http_handler(self)
         index = index + 1
     end
 
- 
-    local handle = io and io.popen and io.popen(cmd..protocol..headers..self.url..params)
+    local body = ''
+    if self.method == 'POST' and self.body_content then
+        body = '-d \''..self.body_content..'\' '
+    end
+
+    local handle = io and io.popen and io.popen(cmd..protocol..headers..body..self.url..params)
 
     if handle then
         local stdout = handle:read("*a")
