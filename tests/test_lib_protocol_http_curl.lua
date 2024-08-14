@@ -19,6 +19,10 @@ local mock_popen = mock_io.open({
         read=function () return '' end,
         close=function () return false, 'no URL specified!' end
     },
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST -d \'UPPERCASE_CONTENT\' pudim.com.br'] = {
+        read=function () return 'uppercase_content\n201' end,
+        close=function () return true, nil end
+    },
 })
 
 function test_http_get_200()
@@ -107,6 +111,23 @@ function test_http_popen_error()
     luaunit.assertEquals(std.http.error, 'failed to spawn process!')
     luaunit.assertEquals(std.http.status, nil)
     luaunit.assertEquals(std.http.body, nil)
+end
+
+function test_http_post_with_body()
+    local std = {http={}}
+    io.popen = mock_popen
+    
+    protocol_http.handler({
+        std = std,
+        url = 'pudim.com.br',
+        method = 'POST',
+        body_content = 'UPPERCASE_CONTENT'
+    })
+
+    luaunit.assertEquals(std.http.ok, true)
+    luaunit.assertEquals(std.http.error, nil)
+    luaunit.assertEquals(std.http.status, 201)
+    luaunit.assertEquals(std.http.body, 'uppercase_content')
 end
 
 os.exit(luaunit.LuaUnit.run())
