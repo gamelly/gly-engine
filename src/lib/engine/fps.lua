@@ -1,29 +1,29 @@
-local function fps_counter(fps_limit, fps_obj, uptime)
-    if uptime >= fps_obj.period + 1000 then
-        fps_obj.period = uptime
-        fps_obj.total = fps_obj.count
-        fps_obj.count = 0
+local function fps_counter(fps_limit, fps_tracker, current_time)
+    if current_time >= fps_tracker.last_check + 1000 then
+        fps_tracker.last_check = current_time
+        fps_tracker.total_fps = fps_tracker.frame_count
+        fps_tracker.frame_count = 0
 
-        if fps_obj.drop_count == 0 then
+        if fps_tracker.drop_count == 0 then
             return true
         end
 
-        if fps_obj.total + fps_obj.drop_count > fps_limit then
-            fps_obj.falls = 0
+        if fps_tracker.total_fps + fps_tracker.drop_count > fps_limit then
+            fps_tracker.fall_streak = 0
             return true
         end
 
-        fps_obj.falls = fps_obj.falls + 1
+        fps_tracker.fall_streak = fps_tracker.fall_streak + 1
         
-        if fps_obj.drop_time < fps_obj.falls then
-            fps_obj.falls = 0
+        if fps_tracker.fall_streak >= fps_tracker.allowed_falls then
+            fps_tracker.fall_streak = 0
             return false
         end
     end
     
-    fps_obj.count = fps_obj.count + 1
-    fps_obj.delta = uptime - fps_obj.passed
-    fps_obj.passed = uptime
+    fps_tracker.frame_count = fps_tracker.frame_count + 1
+    fps_tracker.time_delta = current_time - fps_tracker.last_frame_time
+    fps_tracker.last_frame_time = current_time
 
     return true
 end
