@@ -43,7 +43,7 @@ Platform Support List
 | curses          | tier ? | PC        |
 | html5           | tier 2 | Browser   |
 | html5_webos     | tier 2 | TV        |
-| html5_tizen     | tier ? | TV        |
+| html5_tizen     | tier 3 | TV        |
 | html5_ginga     | tier ? | TV        |
 | esp32           | tier ? | Embed     |
 | roblox          | tier ? | Game      |
@@ -53,6 +53,6 @@ Platform Support List
 | nintendo_wii    | tier 4 | Console   |
 | nintendo_wiiu   | tier ? | Console   |
 | nintendo_switch | tier ? | Console   |
-
+| playstation_2   | tier ? | Console   |
 ---
 This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.

@@ -1,7 +1,7 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Engine"
-PROJECT_NUMBER         = 0.0.2
+PROJECT_NUMBER         = 0.0.4
 PROJECT_BRIEF          = "Game engine in lua"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = .
@@ -30,6 +30,8 @@ EXTENSION_MAPPING      = .lua=C++
 INPUT                  = README.md SUPPORT.md src examples
 USE_MDFILE_AS_MAINPAGE = README.md
 MARKDOWN_ID_STYLE      = GITHUB
+ALIASES               += startjson=@startuml{json}
+ALIASES               += endjson=@enduml
 ALIASES               += startebnf=@startuml{ebnf}
 ALIASES               += endebnf=@enduml
 # Theme: https://jothepro.github.io/doxygen-awesome-css/

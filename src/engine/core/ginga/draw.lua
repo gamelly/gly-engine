@@ -1,4 +1,4 @@
-local bit = require('bit32')
+local math = require('math')
 
 --! @cond
 local canvas = nil
@@ -6,10 +6,10 @@ local game = nil
 --! @endcond
 
 local function color(c)
-    local R = bit.band(bit.rshift(c, 24), 0xFF)
-    local G = bit.band(bit.rshift(c, 16), 0xFF)
-    local B = bit.band(bit.rshift(c, 8), 0xFF)
-    local A = bit.band(bit.rshift(c, 0), 0xFF)
+    local R = math.floor(c/0x1000000)
+    local G = math.floor(c/0x10000) - (R * 0x100)
+    local B = math.floor(c/0x100) - (R * 0x10000) - (G * 0x100)
+    local A = c - (R * 0x1000000) - (G * 0x10000) - (B * 0x100)
     canvas:attrColor(R, G, B, A)
 end
 
@@ -48,6 +48,16 @@ local function install(std, lgame, application, ginga)
     std.draw.text=text
     std.draw.font=font
     std.draw.line=line
+    local index = #application.internal.fixed_loop + 1
+    application.internal.fixed_loop[index] = function ()
+        canvas:attrColor(0, 0, 0, 0)
+        canvas:clear()
+        application.callbacks.draw(std, game)
+        if game.fps_show and game.fps_show >= 0 and std.draw.fps then
+            std.draw.fps(game.fps_show, 8, 8)
+        end
+        canvas:flush()
+    end
     return std.draw
 end
 
