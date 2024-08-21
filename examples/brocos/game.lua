@@ -420,37 +420,37 @@ local function render_broco(std, game, posX, posY, broco)
     if broco == 1 then -- square
         local square = {0,0,39,0,39,39,0,39}
         std.draw.color(colorTable.gold)
-        std.draw.poly(0, square, posX, posY, 0.9)
+        std.draw.poly(1, square, posX, posY, 0.9)
     elseif broco == 2 then -- diamond
         local diamond = {19,0,20,0,39,19,39,20,20,39,19,39,0,20,0,19}
         std.draw.color(colorTable.diamond)
-        std.draw.poly(0, diamond, posX, posY, 0.9)
+        std.draw.poly(1, diamond, posX, posY, 0.9)
     elseif broco == 3 then -- triangle
         local triangle = {0,39,19,0,20,0,39,39}
         std.draw.color(colorTable.emerald)
-        std.draw.poly(0, triangle, posX, posY, 0.9)
+        std.draw.poly(1, triangle, posX, posY, 0.9)
     elseif broco == 4 then -- plus
         local plusV = {15,0,24,0,24,39,15,39}
         local plusH = {0,24,0,15,39,15,39,24}
         std.draw.color(colorTable.obsidian)
-        std.draw.poly(0, plusV, posX, posY, 0.9)
-        std.draw.poly(0, plusH, posX, posY, 0.9)
+        std.draw.poly(1, plusV, posX, posY, 0.9)
+        std.draw.poly(1, plusH, posX, posY, 0.9)
     elseif broco == 5 then -- trapezoid
         local trapezoid = {0,39,39,39,28,0,11,0}
         std.draw.color(colorTable.sapphire)
-        std.draw.poly(0, trapezoid, posX, posY, 0.9)
+        std.draw.poly(1, trapezoid, posX, posY, 0.9)
     elseif broco == 6 then -- star
         local star = {19,26,0,39,20,0,20,26,39,39,19,0,19,26,0,13,39,13,20,26}
         std.draw.color(colorTable.crimson)
-        std.draw.poly(0, star, posX, posY, 1)
+        std.draw.poly(1, star, posX, posY, 0.9)
     elseif broco == 7 or broco == 8 then 
         -- 7, cross, row/horizontal match
         -- 8, cross, column/vertical match
         local cross1 = {0,39,0,35,35,0,39,0,39,4,4,39}
         local cross2 = {0,0,4,0,39,35,39,39,35,39,0,4}
         std.draw.color(colorTable.cyan)
-        std.draw.poly(0, cross1, posX, posY, 0.9)
-        std.draw.poly(0, cross2, posX, posY, 0.9)
+        std.draw.poly(1, cross1, posX, posY, 0.9)
+        std.draw.poly(1, cross2, posX, posY, 0.9)
     end
 end
 
