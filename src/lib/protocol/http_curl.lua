@@ -32,7 +32,7 @@ local function http_handler(self)
             self.std.http.error = stderr or stdout or 'unknown error!'
         else
             self.std.http.ok = 200 <= status and status < 300
-            self.std.http.body = stdout:sub(1, index - 1)
+            self.std.http.body = stdout:sub(1, index - 2)
             self.std.http.status = status
         end        
     else 
