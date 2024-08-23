@@ -30,5 +30,7 @@ jobs:
     -
       run: |
         ./cli.sh test-self --coverage
-    - run: |
+    - 
+      if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+      run: |
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
