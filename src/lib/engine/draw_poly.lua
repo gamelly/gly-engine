@@ -66,7 +66,7 @@ local function install(std, game, application, config)
     local draw_poly = decorator_poo(config.object, config.poly) or decorator_line(draw_line)
     std = std or {}
     std.draw = std.draw or {}
-    std.draw.poly = decorator_poly(draw_poly, std, config.modes, config.repeats)
+    std.draw.poly = config.poly2 or decorator_poly(draw_poly, std, config.modes, config.repeats)
     return {poly=std.draw.poly}
 end
 

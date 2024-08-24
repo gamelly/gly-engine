@@ -32,8 +32,11 @@ local core_list = {
             'src/engine/core/ginga/main.ncl'
         }
     },
+    native={
+        src='src/engine/core/native/main.lua',
+    },
     html5_webos={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         post_exe='webos24 $(pwd)/dist',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
@@ -47,7 +50,7 @@ local core_list = {
         }
     },
     html5_tizen={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
             function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
@@ -62,7 +65,7 @@ local core_list = {
         }
     },
     html5_ginga={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):pipe()
@@ -75,7 +78,7 @@ local core_list = {
         }
     },
     html5={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):pipe()
         },
