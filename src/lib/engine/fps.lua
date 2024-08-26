@@ -35,8 +35,8 @@ local function install(std, game, application, config_fps)
     application.internal = application.internal or {}
     config_fps.inverse_list = {}
 
-    local fps_obj = {total=0,count=0,period=0,passed=0,delta=0,falls=0,drop=0}
-    fps_obj.drop_time=application.config and application.config.fps_time or 1
+    local fps_obj = {total_fps=0,frame_count=0,last_check=0,last_frame_time=0,time_delta=0,fall_streak=0,drop=0}
+    fps_obj.allowed_falls=application.config and application.config.fps_time or 1
     fps_obj.drop_count=application.config and application.config.fps_drop or 2
 
     while index <= #config_fps.list do
@@ -47,8 +47,8 @@ local function install(std, game, application, config_fps)
     application.internal.fps_controler=function(milis)
         local index = config_fps.inverse_list[game.fps_max]
         game.milis = event.uptime()
-        game.fps = fps_obj.total
-        game.dt = fps_obj.delta 
+        game.fps = fps_obj.total_fps
+        game.dt = fps_obj.time_delta 
         if not fps_counter(game.fps_max, fps_obj, game.milis) then
             if index < #config_fps.list then
                 game.fps_max = config_fps.list[index + 1]
