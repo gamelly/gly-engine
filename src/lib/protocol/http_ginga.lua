@@ -75,7 +75,7 @@ local http_util = require('src/lib/util/http')
 --! @cond
 local function http_connect(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
-    local headers = http_util.headers(self.header_list, self.header_dict, {
+    local headers = http_util.create_request(self.header_list, self.header_dict, {
         'Host', self.p_host..params, false,
         'Accept', '*/*', true,
         'Cache-Control', 'max-age=0', false,

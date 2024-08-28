@@ -22,7 +22,7 @@ local function url_search_param(param_list, param_dict)
 end
 
 --! @todo document this function
-local function headers(header_list, header_dict, config)
+local function create_request(header_list, header_dict, config)
     local headers = ''
 
     if not header_list or not header_dict then
@@ -57,5 +57,5 @@ return {
     is_ok=is_ok,
     is_redirect=is_redirect,
     url_search_param=url_search_param,
-    headers=headers
+    create_request=create_request
 }
