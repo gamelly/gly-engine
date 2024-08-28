@@ -10,12 +10,13 @@ local function url_search_param(param_list, param_dict)
     local index, params = 1, ''
     while param_list and param_dict and index <= #param_list do
         local param = param_list[index]
+        local value = param_dict[param]
         if #params == 0 then
-            params = param..'?'
+            params = params..'?'
         else
-            params = param..'&'
+            params = params..'&'
         end
-        params = params..param..'='..param_dict[param_list[index]]
+        params = params..param..'='..(value or '')
         index = index + 1
     end
     return params
