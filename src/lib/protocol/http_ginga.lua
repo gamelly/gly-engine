@@ -114,7 +114,7 @@ end
 local function http_headers(self)
     self.p_header = self.p_data:sub(1, self.p_header_pos -1)
     self.p_status = tonumber(self.p_header:match('^HTTP/%d.%d (%d+) %w*'))
-    self.p_content_size = tonumber(self.p_header:match('Content%-Length: (%d+)'))
+    self.p_content_size = tonumber(self.p_header:match('Content%-Length: (%d+)') or 0)
 end
 --! @endcond
 
