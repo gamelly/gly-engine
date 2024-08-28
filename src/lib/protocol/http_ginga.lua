@@ -76,14 +76,14 @@ local http_util = require('src/lib/util/http')
 local function http_connect(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
     local headers = http_util.headers(self.header_list, self.header_dict, {
-        'Host', self.p_host..params, false,
+        'Host', self.p_host, false,
         'Accept', '*/*', true,
         'Cache-Control', 'max-age=0', false,
         'User-Agent', 'Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)', true,
         'Content-Length', tostring(#self.body_content), false,
         'Connection', 'close', false
     })
-    local request = 'GET '..self.p_uri..' HTTP/1.1\r\n'..headers..'\r\n'..self.body_content..'\r\n\r\n'
+    local request = 'GET '..self.p_uri..params..' HTTP/1.1\r\n'..headers..'\r\n'..self.body_content..'\r\n\r\n'
 
     event.post({
         class      = 'tcp',
