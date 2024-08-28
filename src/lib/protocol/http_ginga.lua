@@ -246,8 +246,8 @@ end
 local function http_handler(self)
     local protocol, location = self.url:match('(%w*)://?(.*)')
     local url, uri = (location or self.url):match('^([^/]+)(.*)$')
-    local host, port_str = url:match("^(.-):?(%d*)$")
-    local port = tonumber(port_str and #port_str > 0 and port_str or 80)
+    local host, port_str = url:match("^([%w%.]+)([:0-9]*)$") 
+    local port = tonumber((port_str and #port_str > 0 and port_str:sub(2, #port_str)) or 80)
 
     self.p_url = url
     self.p_uri = uri or '/'
