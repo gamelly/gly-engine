@@ -20,8 +20,18 @@ local function http_handler(self)
         body = '-d \''..self.body_content..'\' '
     end
 
-    local handle = io and io.popen and io.popen(cmd..protocol..headers..body..self.url..params)
+    local function toCurlCommand()
+        local curlCommand = cmd..protocol..headers..body..self.url..params
+        
+        local function cleanup()
+            -- closure
+        end
 
+        return curlCommand, cleanup
+    end
+
+    local handle = io and io.popen and io.popen(toCurlCommand())
+    
     if handle then
         local stdout = handle:read("*a")
         local ok, stderr = handle:close()
