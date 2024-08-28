@@ -11,7 +11,7 @@ local mock_popen = mock_io.open({
         read=function () return 'method not allowed!\n403' end,
         close=function () return true, nil end
     },
-    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.brz&z=zoom'] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.br?foo=zig&bar=zag&z=zoom'] = {
         read=function () return 'me too!\n201' end,
         close=function () return true, nil end
     },

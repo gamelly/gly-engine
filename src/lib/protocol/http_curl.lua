@@ -16,7 +16,7 @@ local function http_handler(self)
     end
 
     local body = ''
-    if self.method == 'POST' and self.body_content then
+    if self.method == 'POST' and self.body_content and #self.body_content > 0 then
         body = '-d \''..self.body_content..'\' '
     end
 
