@@ -4,9 +4,9 @@
 --! @{
 
 local white = 0xFFFFFFFF
-local lightgray = 0xC8CCCCCC
-local gray = 0x828282CC
-local darkgray = 0x505050CC
+local lightgray = 0xC8CCCCFF
+local gray = 0x828282FF
+local darkgray = 0x505050FF
 local yellow = 0xFDF900FF
 local gold = 0xFFCB00FF
 local orange = 0xFFA100FF
