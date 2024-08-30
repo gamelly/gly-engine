@@ -199,6 +199,32 @@ elseif command == 'build' then
         end
         os.exit(os.execute(core.post_exe) and 0 or 1)
     end
+elseif command == "help" then
+    local error_message = "Command not found.\n" ..
+    "Available commands:\n" ..
+    "- run: Executes the specified core. If no core is specified, defaults to 'love'.\n" ..
+    "- clear | clean: Clears the specified distribution directory.\n" ..
+    "- meta: Displays metadata for the current game.\n" ..
+    "- bundler: Builds the game using the bundler.\n" ..
+    "- test-self: Runs tests located in the './tests' directory.\n" ..
+    "- build: Builds the game and prepares it for distribution.\n" ..
+    "\n" ..
+    "Available cores:\n" ..
+    "- repl: Runs the REPL core.\n" ..
+    "- love: Runs the Love2D core.\n" ..
+    "- ginga: Runs the Ginga core.\n" ..
+    "- html5_webos: Builds for HTML5 on WebOS.\n" ..
+    "- html5_tizen: Builds for HTML5 on Tizen.\n" ..
+    "- html5_ginga: Runs the Ginga core for HTML5.\n" ..
+    "- html5: Runs the standard HTML5 core.\n" ..
+    "- nintendo_wii: Builds for the Nintendo Wii.\n" ..
+    "\n" ..
+    "Usage:\n" ..
+    "- To run a command, use: ./cli.sh <command> <game_path> --core <core_name> [options]\n" ..
+    "- For example: ./cli.sh build ./examples/asteroids/game.lua --core ginga"
+
+    print(error_message)
+    os.exit(1)
 else
     print('command not found: '..command)
     os.exit(1)
