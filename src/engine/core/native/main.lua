@@ -25,12 +25,19 @@ function native_callback_draw()
     native_draw_flush()
 end
 
+function native_callback_resize(width, height)
+    game.width = width
+    game.height = height
+end
+
 function native_callback_keyboard(key, value)
     std.key.press[key] = value
 end
 
 function native_callback_init(width, height, game_lua)
     local polygon = {
+        repeats=native_dict_poly_repeats,
+        modes=native_dict_poly_modes,
         poly2=native_draw_poly2,
         poly=native_draw_poly,
         line=native_draw_line
