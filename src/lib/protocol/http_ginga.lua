@@ -71,6 +71,7 @@
 --! }
 --! @endjson
 local http_util = require('src/lib/util/http')
+local lua_util = require('src/lib/util/lua')
 
 --! @cond
 local function http_connect(self)
@@ -79,6 +80,7 @@ local function http_connect(self)
         .add_imutable_header('Host', self.p_host)
         .add_imutable_header('Cache-Control', 'max-age=0')
         .add_mutable_header('Accept', '*/*')
+        .add_mutable_header('Accept-Charset', 'utf-8', lua_util.has_support_utf8())
         .add_mutable_header('Accept-Charset', 'windows-1252, cp1252')
         .add_mutable_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)')
         .add_custom_headers(self.header_list, self.header_dict)
