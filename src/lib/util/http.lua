@@ -22,41 +22,86 @@ local function url_search_param(param_list, param_dict)
     return params
 end
 
---! @todo document this function
-local function headers(header_list, header_dict, config)
-    local headers = ''
+local function create_request(method, uri)
+    local self = {
+        body_content = '',
+        header_list = {},
+        header_dict = {},
+        header_imutable = {}
+    }
 
-    if not header_list or not header_dict then
-        header_list = {}
-        header_dict = {}
+    self.add_body_content = function (body)
+        self.body_content = self.body_content..body
+        return self
     end
 
-    local index = 1
-    while index <= #config do
-        local header = config[index]
-        local default = config[index + 1]
-        local mutable = config[index + 2]
-        local value = default
-        if mutable then
-            value = header_dict[header] or default
+    self.add_imutable_header = function (header, value, cond)
+        if cond == false then return self end
+        if self.header_imutable[header] == nil then
+            self.header_list[#self.header_list + 1] = header
+            self.header_dict[header] = value
+        elseif self.header_imutable[header] == false then
+            self.header_dict[header] = value
         end
-        headers = headers..header..': '..value..'\r\n'
-        index = index + 3
+        self.header_imutable[header] = true
+        return self
     end
 
-    local index = 1
-    while index <= #header_list do
-        local header = header_list[index]
-        headers = headers..header..': '..header_dict[header]..'\r\n'
-        index = index + 1
+    self.add_mutable_header = function (header, value, cond)
+        if cond == false then return self end
+        if self.header_imutable[header] == nil then
+            self.header_list[#self.header_list + 1] = header
+            self.header_imutable[header] = false
+            self.header_dict[header] = value
+        end
+        return self
     end
 
-    return headers
+    self.add_custom_headers = function(header_list, header_dict)
+        local index = 1
+        while header_list and #header_list >= index do
+            local header = header_list[index]
+            local value = header_dict[header]
+
+            if self.header_imutable[header] == nil then
+                self.header_list[#self.header_list + 1] = header
+                self.header_imutable[header] = false
+                self.header_dict[header] = value
+            elseif self.header_imutable[header] == false then
+                self.header_dict[header] = value
+            end
+
+            index = index + 1
+        end
+        return self
+    end
+
+    self.to_http_protocol = function ()
+        local index = 1
+        local request = method..' '..uri..' HTTP/1.1\r\n'
+        
+        while index <= #self.header_list do
+            local header = self.header_list[index]
+            local value = self.header_dict[header]
+            request = request..header..': '..value..'\r\n'
+            index = index + 1
+        end
+        
+        request = request..'\r\n'
+
+        if method ~= 'GET' and method ~= 'HEAD' and #self.body_content > 0 then
+            request = request..self.body_content..'\r\n\r\n'
+        end
+        self = nil
+        return request
+    end
+
+    return self
 end
 
 return {
     is_ok=is_ok,
     is_redirect=is_redirect,
     url_search_param=url_search_param,
-    headers=headers
+    create_request=create_request
 }
