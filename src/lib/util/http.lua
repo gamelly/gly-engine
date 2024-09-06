@@ -31,7 +31,7 @@ local function create_request(method, uri)
     }
 
     self.add_body_content = function (body)
-        self.body_content = self.body_content..body
+        self.body_content = self.body_content..(body or '')
         return self
     end
 
@@ -92,6 +92,33 @@ local function create_request(method, uri)
         if method ~= 'GET' and method ~= 'HEAD' and #self.body_content > 0 then
             request = request..self.body_content..'\r\n\r\n'
         end
+        self = nil
+        return request, function() end
+    end
+
+    self.to_curl_cmd = function ()
+        local index = 1
+        local request = 'curl -L \x2D\x2Dsilent \x2D\x2Dinsecure -w "\n%{http_code}" '
+
+        if method == 'HEAD' then
+            request = request..'\x2D\x2DHEAD '
+        else
+            request = request..'-X '..method..' '
+        end
+        
+        while index <= #self.header_list do
+            local header = self.header_list[index]
+            local value = self.header_dict[header]
+            request = request..'-H "'..header..': '..value..'" '
+            index = index + 1
+        end
+
+        if method ~= 'GET' and method ~= 'HEAD' and #self.body_content > 0 then
+            request = request..'-d \''..self.body_content..'\' '
+        end
+
+        request = request..uri
+
         self = nil
         return request, function() end
     end
