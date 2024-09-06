@@ -75,7 +75,7 @@ local http_util = require('src/lib/util/http')
 --! @cond
 local function http_connect(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
-    local request = http_util.create_request(self.method, self.p_uri..params)
+    local request, cleanup = http_util.create_request(self.method, self.p_uri..params)
         .add_imutable_header('Host', self.p_host)
         .add_imutable_header('Cache-Control', 'max-age=0')
         .add_mutable_header('Accept', '*/*')
@@ -93,6 +93,8 @@ local function http_connect(self)
         connection = self.evt.connection,
         value      = request,
     })
+
+    cleanup()
 end
 --! @endcond
 

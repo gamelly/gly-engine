@@ -93,7 +93,7 @@ local function create_request(method, uri)
             request = request..self.body_content..'\r\n\r\n'
         end
         self = nil
-        return request
+        return request, function() end
     end
 
     return self
