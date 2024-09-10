@@ -49,22 +49,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         x && y && canvas_ctx.fillText(text, x, y)
         return width
     })
-    lua.global.set('native_draw_poly2', (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
-        let index = 0
-        canvas_ctx.beginPath()
-        while (index < verts.length) {
-            const px = verts[index];
-            const py = verts[index + 1];
-            const xx = x + ((ox - px) * -scale * Math.cos(angle)) - ((ox - py) * -scale * Math.sin(angle));
-            const yy = y + ((oy - px) * -scale * Math.sin(angle)) + ((oy - py) * -scale * Math.cos(angle));
-            if (index < 2) {
-                canvas_ctx.moveTo(xx, yy)
-            } else {
-                canvas_ctx.lineTo(xx, yy)
+    lua.global.set('native_dict_poly', {
+        poly2: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
+            let index = 0
+            canvas_ctx.beginPath()
+            while (index < verts.length) {
+                const px = verts[index];
+                const py = verts[index + 1];
+                const xx = x + ((ox - px) * -scale * Math.cos(angle)) - ((ox - py) * -scale * Math.sin(angle));
+                const yy = y + ((oy - px) * -scale * Math.sin(angle)) + ((oy - py) * -scale * Math.cos(angle));
+                if (index < 2) {
+                    canvas_ctx.moveTo(xx, yy)
+                } else {
+                    canvas_ctx.lineTo(xx, yy)
+                }
+                index = index + 2;
             }
-            index = index + 2;
+            canvas_close[mode]()
         }
-        canvas_close[mode]()
     })
     lua.global.set('native_dict_http', {
         handler: (self) => {

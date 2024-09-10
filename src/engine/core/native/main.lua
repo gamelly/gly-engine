@@ -35,21 +35,14 @@ function native_callback_keyboard(key, value)
 end
 
 function native_callback_init(width, height, game_lua)
-    local polygon = {
-        repeats=native_dict_poly_repeats,
-        modes=native_dict_poly_modes,
-        poly2=native_draw_poly2,
-        poly=native_draw_poly,
-        line=native_draw_line
-    }
-
     application = zeebo_module.loadgame(game_lua)
+    
     zeebo_module.require(std, game, application)
         :package('@game', engine_game)
         :package('@math', engine_math)
         :package('@color', engine_color)
         :package('@draw_fps', engine_draw_fps)
-        :package('@draw_poly', engine_draw_poly, polygon)
+        :package('@draw_poly', engine_draw_poly, native_dict_poly)
         :package('load', zeebo_module.load)
         :package('math', engine_math.clib)
         :package('random', engine_math.clib_random)
