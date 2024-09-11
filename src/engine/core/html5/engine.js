@@ -97,6 +97,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             })
         }
     })
+    lua.global.set('native_dict_json', {
+        encode: JSON.stringify,
+        decode: JSON.parse
+    })
 
     if (body_element.clientWidth > body_element.clientHeight) {
         canvas_element.height = body_element.clientHeight

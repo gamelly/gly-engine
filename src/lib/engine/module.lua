@@ -55,7 +55,7 @@ local function package(self, module_name, module, custom)
         if not system and not self.lib_required[name] then return end
         
         local try_install = function()
-            module.install(self.std, self.game, self.application, custom)
+            module.install(self.std, self.game, self.application, custom, module_name)
         end
         
         if not pcall(try_install) then return end
