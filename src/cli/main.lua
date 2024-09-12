@@ -200,8 +200,7 @@ elseif command == 'build' then
         os.exit(os.execute(core.post_exe) and 0 or 1)
     end
 elseif command == "help" then
-    local error_message = "Command not found.\n" ..
-    "Available commands:\n" ..
+    local help_message = "Available commands:\n" ..
     "- run: Executes the specified core. If no core is specified, defaults to 'love'.\n" ..
     "- clear | clean: Clears the specified distribution directory.\n" ..
     "- meta: Displays metadata for the current game.\n" ..
@@ -222,9 +221,7 @@ elseif command == "help" then
     "Usage:\n" ..
     "- To run a command, use: ./cli.sh <command> <game_path> --core <core_name> [options]\n" ..
     "- For example: ./cli.sh build ./examples/asteroids/game.lua --core ginga"
-
-    print(error_message)
-    os.exit(1)
+    print(help_message)
 else
     print('command not found: '..command)
     os.exit(1)
