@@ -32,8 +32,11 @@ local core_list = {
             'src/engine/core/ginga/main.ncl'
         }
     },
+    native={
+        src='src/engine/core/native/main.lua',
+    },
     html5_webos={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         post_exe='webos24 $(pwd)/dist',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
@@ -47,7 +50,7 @@ local core_list = {
         }
     },
     html5_tizen={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
             function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
@@ -62,7 +65,7 @@ local core_list = {
         }
     },
     html5_ginga={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):pipe()
@@ -75,7 +78,7 @@ local core_list = {
         }
     },
     html5={
-        src='src/engine/core/html5/main.lua',
+        src='src/engine/core/native/main.lua',
         pipeline={
             zeebo_meta.late(game):file(dist..'index.html'):pipe()
         },
@@ -196,6 +199,29 @@ elseif command == 'build' then
         end
         os.exit(os.execute(core.post_exe) and 0 or 1)
     end
+elseif command == "help" then
+    local help_message = "Available commands:\n" ..
+    "- run: Executes the specified core. If no core is specified, defaults to 'love'.\n" ..
+    "- clear | clean: Clears the specified distribution directory.\n" ..
+    "- meta: Displays metadata for the current game.\n" ..
+    "- bundler: Builds the game using the bundler.\n" ..
+    "- test-self: Runs tests located in the './tests' directory.\n" ..
+    "- build: Builds the game and prepares it for distribution.\n" ..
+    "\n" ..
+    "Available cores:\n" ..
+    "- repl: Runs the REPL core.\n" ..
+    "- love: Runs the Love2D core.\n" ..
+    "- ginga: Runs the Ginga core.\n" ..
+    "- html5_webos: Builds for HTML5 on WebOS.\n" ..
+    "- html5_tizen: Builds for HTML5 on Tizen.\n" ..
+    "- html5_ginga: Runs the Ginga core for HTML5.\n" ..
+    "- html5: Runs the standard HTML5 core.\n" ..
+    "- nintendo_wii: Builds for the Nintendo Wii.\n" ..
+    "\n" ..
+    "Usage:\n" ..
+    "- To run a command, use: ./cli.sh <command> <game_path> --core <core_name> [options]\n" ..
+    "- For example: ./cli.sh build ./examples/asteroids/game.lua --core ginga"
+    print(help_message)
 else
     print('command not found: '..command)
     os.exit(1)

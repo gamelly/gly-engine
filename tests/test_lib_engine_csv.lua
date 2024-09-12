@@ -1,7 +1,8 @@
 local luaunit = require('luaunit')
-local engine_csv = require('src/lib/engine/csv')
+local encoder = require('src/lib/engine/encoder')
+local csv = require('src/third_party/csv/rodrigodornelles')
 
-zeebo_csv = engine_csv.install()
+local std = encoder.install(nil, nil, nil, csv, 'csv')
 
 function test_simple_csv()
     local result = {}
@@ -19,7 +20,7 @@ function test_simple_csv()
         }
     }
 
-    zeebo_csv.csv(content, result)
+    std.csv.decode(content, result)
     luaunit.assertEquals(result, expected)
 end
 

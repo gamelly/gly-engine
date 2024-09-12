@@ -21,32 +21,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
         () => canvas_ctx.stroke()
     ]
-    const canvas_std = {
-        clear: (color) => {
-            canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
-            canvas_ctx.fillRect(0, 0, canvas_element.width, canvas_element.height)
-        },
-        color: (color) => {
-            const hex = '#' + color.toString(16).padStart(8, '0')
-            canvas_ctx.strokeStyle = hex
-            canvas_ctx.fillStyle = hex
-        },
-        line: (x1, y1, x2, y2) => {
-            canvas_ctx.beginPath()
-            canvas_ctx.moveTo(x1, y1)
-            canvas_ctx.lineTo(x2, y2)
-            canvas_ctx.stroke()
-        },
-        rect: (mode, x, y, w, h) => mode === 1?
-            canvas_ctx.strokeRect(x, y, w, h):
-            canvas_ctx.fillRect(x, y, w, h),
-        font: (name, size) => {},
-        text: (x, y, text) => {
-            const { width } = canvas_ctx.measureText(text || x)
-            x && y && canvas_ctx.fillText(text, x, y)
-            return width
-        },
-        poly: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
+
+    lua.global.set('native_draw_start', () => {})
+    lua.global.set('native_draw_flush', () => {})
+    lua.global.set('native_draw_clear', (color) => {
+        canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
+        canvas_ctx.fillRect(0, 0, canvas_element.width, canvas_element.height)
+    })
+    lua.global.set('native_draw_color', (color) => {
+        const hex = '#' + color.toString(16).padStart(8, '0')
+        canvas_ctx.strokeStyle = hex
+        canvas_ctx.fillStyle = hex
+    })
+    lua.global.set('native_draw_line', (x1, y1, x2, y2) => {
+        canvas_ctx.beginPath()
+        canvas_ctx.moveTo(x1, y1)
+        canvas_ctx.lineTo(x2, y2)
+        canvas_ctx.stroke()
+    })
+    lua.global.set('native_draw_rect', (mode, x, y, w, h) => mode === 1?
+        canvas_ctx.strokeRect(x, y, w, h):
+        canvas_ctx.fillRect(x, y, w, h)
+    )
+    lua.global.set('native_draw_font', (name, size) => {})
+    lua.global.set('native_draw_text', (x, y, text) => {
+        const { width } = canvas_ctx.measureText(text || x)
+        x && y && canvas_ctx.fillText(text, x, y)
+        return width
+    })
+    lua.global.set('native_dict_poly', {
+        poly2: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
             let index = 0
             canvas_ctx.beginPath()
             while (index < verts.length) {
@@ -63,8 +67,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             canvas_close[mode]()
         }
-    }
-    const browser_protocol_http =  {
+    })
+    lua.global.set('native_dict_http', {
         handler: (self) => {
            const method = self.method
            const headers = new Headers(self.headers_dict)
@@ -92,7 +96,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 self.resolve()
             })
         }
-    }
+    })
+    lua.global.set('native_dict_json', {
+        encode: JSON.stringify,
+        decode: JSON.parse
+    })
 
     if (body_element.clientWidth > body_element.clientHeight) {
         canvas_element.height = body_element.clientHeight
@@ -103,14 +111,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         canvas_element.width = body_element.clientWidth
     }
 
-    lua.global.set('game_lua', game_lua)
-    lua.global.set('browser_canvas', canvas_std)
-    lua.global.set('browser_protocol_http', browser_protocol_http)
-    const engine_callbacks = await lua.doString(engine_lua)
-    engine_callbacks.init(canvas_element.width, canvas_element.height)
+    await lua.doString(engine_lua)
+    const engine_callbacks = {
+        init: lua.global.get('native_callback_init'),
+        update: lua.global.get('native_callback_loop'),
+        draw: lua.global.get('native_callback_draw'),
+        keyboard: lua.global.get('native_callback_keyboard'),
+    }
+    engine_callbacks.init(canvas_element.width, canvas_element.height, game_lua)
 
     setTimeout(() => {
         const keys = [
+            [403, 'red'],
+            [404, 'green'],
+            [405, 'yellow'],
+            [406, 'blue'],
             ['KeyZ', 'red'],
             ['KeyX', 'green'],
             ['KeyC', 'yellow'],
@@ -122,10 +137,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             ['ArrowRight', 'right'],
         ];
     
-        const keyHandler = (ev) => {
-            const key = keys.find(key => key[0] == ev.code)
-            key && engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown'))
-        }
+        const keyHandler = (ev) => keys
+            .filter(key => [ev.code, ev.keyCode].includes(key[0]))
+            .map(key => engine_callbacks.keyboard(key[1], Number(ev.type === 'keydown')))
 
         window.addEventListener('keydown', keyHandler)
         window.addEventListener('keyup', keyHandler)
@@ -139,5 +153,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.requestAnimationFrame(tick)
     }
 
-    window.requestAnimationFrame(tick)
+    tick()
 })

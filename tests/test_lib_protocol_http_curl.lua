@@ -11,7 +11,7 @@ local mock_popen = mock_io.open({
         read=function () return 'method not allowed!\n403' end,
         close=function () return true, nil end
     },
-    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.brz&z=zoom'] = {
+    ['curl -L --silent --insecure -w "\n%{http_code}" -X POST pudim.com.br?foo=zig&bar=zag&z=zoom'] = {
         read=function () return 'me too!\n201' end,
         close=function () return true, nil end
     },
@@ -38,7 +38,7 @@ function test_http_get_200()
     luaunit.assertEquals(std.http.ok, true)
     luaunit.assertEquals(std.http.error, nil)
     luaunit.assertEquals(std.http.status, 200)
-    luaunit.assertEquals(std.http.body, 'i love pudim!\n')
+    luaunit.assertEquals(std.http.body, 'i love pudim!')
 end
 
 function test_http_post_201()
@@ -60,7 +60,7 @@ function test_http_post_201()
     luaunit.assertEquals(std.http.ok, true)
     luaunit.assertEquals(std.http.error, nil)
     luaunit.assertEquals(std.http.status, 201)
-    luaunit.assertEquals(std.http.body, 'me too!\n')
+    luaunit.assertEquals(std.http.body, 'me too!')
 end
 
 function test_http_post_403()
@@ -78,7 +78,7 @@ function test_http_post_403()
     luaunit.assertEquals(std.http.ok, false)
     luaunit.assertEquals(std.http.error, nil)
     luaunit.assertEquals(std.http.status, 403)
-    luaunit.assertEquals(std.http.body, 'method not allowed!\n')
+    luaunit.assertEquals(std.http.body, 'method not allowed!')
 end
 
 function test_http_head_error()

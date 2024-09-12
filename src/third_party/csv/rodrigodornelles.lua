@@ -1,8 +1,4 @@
---! @defgroup std
---! @{
-
---! @pre require: @c csv
-local function csv(in_str, out_table)
+local function decode(in_str, out_table)
     local index1 = 1
     local headers = {}
     local pattern = '[^,]+'
@@ -38,16 +34,9 @@ local function csv(in_str, out_table)
     until not line
 end
 
---! @}
-
-local function install(std)
-    std = std or {}
-    std.csv = csv
-    return {csv=csv}
-end
-
 local P = {
-    install=install
+    decode=decode,
+    encode=function() error('not implemented!') end
 }
 
 return P

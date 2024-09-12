@@ -122,7 +122,7 @@ local function loop(std, game)
         next_state(game, 3)
     elseif game._state == 3 then
         halt_state(game)(function() 
-            std.csv(game._csv, game._list)
+            std.csv.decode(game._csv, game._list)
             game._csv = ''
             next_state(game, 4)
         end)
@@ -181,18 +181,18 @@ local function draw(std, game)
         std.draw.color(std.color.white)
         std.draw.text(8, 8, 'parsing csv...')
     elseif game._state == 4 then
-        local s = 0
-        std.draw.clear(std.color.darkgray)
+        std.draw.clear(0x333333FF)
         std.draw.color(std.color.white)
+        std.draw.font('Tiresias', 12)
         local index = 1
         while index <= #game._list do
             std.draw.text(16, 8 + (index * 14), game._list[index].title)
-            std.draw.text(100, 8 + (index * 14), game._list[index].version)
-            s=std.math.max(std.draw.text(200, 8 + (index * 12), game._list[index].author), s)
+            std.draw.text(200, 8 + (index * 14), game._list[index].version)
+            std.draw.text(300, 8 + (index * 14), game._list[index].author)
             index = index + 1
         end
         std.draw.color(std.color.red)
-        std.draw.rect(1, 16, 5 + (game._menu * 16), 200 + s, 14)
+        std.draw.rect(1, 16, 9 + (game._menu * 14), game.width - 32, 16)
     elseif game._state == 5 then
         std.draw.clear(std.color.blue)
         std.draw.color(std.color.white)

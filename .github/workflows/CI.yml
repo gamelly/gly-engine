@@ -20,7 +20,7 @@ jobs:
     - 
       uses: leafo/gh-actions-lua@v10
       with:
-        luaVersion: "5.1.5"
+        luaVersion: "5.4.7"
     -
       uses: leafo/gh-actions-luarocks@v4
     -
@@ -30,5 +30,7 @@ jobs:
     -
       run: |
         ./cli.sh test-self --coverage
-    - run: |
+    - 
+      if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+      run: |
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}

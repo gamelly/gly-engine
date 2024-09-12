@@ -4,6 +4,10 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @brief search by game in filesystem / lua modules
 --! @li https://love2d.org/wiki/love.filesystem.getSource
 local function loadgame(game_file)
+    if type(game_file) == 'table' then
+        return game_file
+    end
+    
     local cwd = '.'
     local application = type(game_file) == 'function' and game_file
     local game_title = game_file and game_file:gsub('%.lua$', '') or 'game'
@@ -51,7 +55,7 @@ local function package(self, module_name, module, custom)
         if not system and not self.lib_required[name] then return end
         
         local try_install = function()
-            module.install(self.std, self.game, self.application, custom)
+            module.install(self.std, self.game, self.application, custom, module_name)
         end
         
         if not pcall(try_install) then return end

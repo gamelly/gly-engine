@@ -25,6 +25,7 @@ jobs:
         run: |
           docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua doxygen
       - 
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -42,6 +43,7 @@ jobs:
         run: |
           docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua ./cli.sh build --core html5 ./examples/pong/game.lua --dist ./html/
       - 
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
