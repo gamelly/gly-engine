@@ -13,6 +13,7 @@ local engine_draw_fps = require('src/lib/engine/draw_fps')
 local engine_draw_poly = require('src/lib/engine/draw_poly')
 local protocol_curl_love = require('src/lib/protocol/http_curl_love')
 local library_csv = require('src/third_party/csv/rodrigodornelles')
+local library_json = require('src/third_party/json/rxi')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 
@@ -49,6 +50,7 @@ function love.load(args)
         :package('random', engine_math.clib_random)
         :package('http', engine_http, protocol_curl_love)
         :package('csv', engine_encoder, library_csv)
+        :package('json', engine_encoder, library_json)
         :run()
 
     game.width, game.height = w, h
