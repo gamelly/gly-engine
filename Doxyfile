@@ -34,6 +34,8 @@ ALIASES               += startjson=@startuml{json}
 ALIASES               += endjson=@enduml
 ALIASES               += startebnf=@startuml{ebnf}
 ALIASES               += endebnf=@enduml
+ALIASES               += startsalt=@startuml{salt}
+ALIASES               += endsalt=@enduml
 # Theme: https://jothepro.github.io/doxygen-awesome-css/
 GENERATE_TREEVIEW      = YES
 DISABLE_INDEX          = NO

@@ -25,10 +25,14 @@ end
 --! @todo support WII
 local function text(x, y, text)
     if love.wiimote then return 32 end
+    local font = love.graphics.getFont()
+    local n = select(2, (text or x):gsub('\n', '')) + 1
+    local w = love.graphics.getFont():getWidth(text or x)
+    local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
     if x and y then
         love.graphics.print(text, x, y)
     end
-    return love.graphics.getFont():getWidth(text or x)
+    return w, h
 end
 
 local function line(x1, y1, x2, y2)
