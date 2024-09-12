@@ -122,7 +122,7 @@ local function loop(std, game)
         next_state(game, 3)
     elseif game._state == 3 then
         halt_state(game)(function() 
-            std.csv(game._csv, game._list)
+            std.csv.decode(game._csv, game._list)
             game._csv = ''
             next_state(game, 4)
         end)
