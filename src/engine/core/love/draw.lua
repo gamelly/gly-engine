@@ -28,7 +28,7 @@ local function text(x, y, text)
     local font = love.graphics.getFont()
     local t = text and tostring(text) or tostring(x)
     local n = select(2, t:gsub('\n', '')) + 1
-    local w = love.graphics.getFont():getWidth(t)
+    local w = font:getWidth(t)
     local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
     if x and y then
         love.graphics.print(t, x, y)

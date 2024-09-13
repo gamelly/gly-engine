@@ -118,7 +118,7 @@ local function require(std, game, application)
     repeat
         local lib = next_library()
         if lib then
-            local name, optional = lib:match('(%w+)([?]?)')
+            local name, optional = lib:match('([%w%.]+)([?]?)')
             self.list_append(name)
             if optional and #optional > 0 then
                 self.lib_optional[name] = true

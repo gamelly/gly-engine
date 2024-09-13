@@ -171,39 +171,16 @@ end
 --! @}
 
 --! @cond
-local function draw(std, game)
-    if std.dialog.id == nil then return end
-    local dialog = std.dialog.list[std.dialog.id]
-
-    if dialog.style == style_msgbox then
-        local w1, h1 = std.draw.text(dialog.title)
-        local w2, h2 = std.draw.text(dialog.info)
-        local w3, h3 = std.draw.text(dialog.button1)
-        local wmax = std.math.max(w1, w2, w3) + 16
-        local hmax = h1 + h2 + h3
-        local algins = {[-1]= 0, [0]= -(wmax/2), [1]= -wmax}
-        local align = algins[dialog.align]
-        std.draw.color(std.color.darkgray)
-        std.draw.rect(0, dialog.x + align, dialog.y, wmax, hmax)
-
-        std.draw.color(std.color.red)
-        std.draw.rect(1, dialog.x + align, dialog.y, wmax, hmax)
-        std.draw.line(dialog.x + align, dialog.y + h1, dialog.x + align + wmax, dialog.y + h1)
-
-        std.draw.color(std.color.white)
-        std.draw.text(dialog.x + 8 + align, dialog.y, dialog.title)
-        std.draw.text(dialog.x + 8 + align, dialog.y + h1, dialog.info)
-        std.draw.text(dialog.x + 8 + align, dialog.y + h1 + h2, dialog.button1)
-    end
-end
 
 local function loop(std, game)
 
 end
 
-local function install(std, game, application)
-    std = std or {}
-    application = application or {}
+local function install(self)
+    local std = self and self.std or {}
+    local game = self and self.game or {}
+    local event = self and self.event or {}
+    local application = self and self.application or {}
     application.callbacks = application.callbacks or {}
     std.dialog = {
         -- styles
@@ -224,19 +201,6 @@ local function install(std, game, application)
         show = function(dialog_id) return show(std, game, dialog_id) end,
         index = function(dialog_id) return index(std, game, dialog_id) end
     }
-
-    if love then
-        local old_update = love.update
-        love.update = function(dt)
-            old_update(dt)
-            loop(std, game)
-        end
-        local old_draw = love.draw
-        love.draw = function()
-            old_draw()
-            draw(std, game)
-        end
-    end
 end
 
 local P = {
