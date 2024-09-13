@@ -40,9 +40,16 @@ local function line(x1, y1, x2, y2)
     love.graphics.line(x1, y1, x2, y2)
 end
 
---! @todo implement it!
-local function font(a, b)
-
+local function font(name, size)
+    if type(name) == 'number' and not size then
+        size = name
+        name = 'Tiresias'
+    end
+    local index = 'font_'..tostring(name)..tostring(size)
+    if not _G[index] then
+        _G[index] = love.graphics.newFont(size)
+    end
+    love.graphics.setFont(_G[index])
 end
 
 local function install(self)

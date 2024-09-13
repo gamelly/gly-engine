@@ -32,7 +32,7 @@ local function install(self)
             local key, index = key_bindings[real_key], 1
 
             while key and index <= #event.key do
-                event.key[index](real_key, 0)
+                event.key[index](key, 0)
                 index = index + 1
             end
         end
