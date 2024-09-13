@@ -172,9 +172,12 @@ local function request(method, std, game, application, protocol_handler)
 end
 --! @endcond
 
-local function install(std, game, application, protocol)
+local function install(self, protocol)
+    local std = self and self.std or {}
+    local game = self and self.game or {}
+    local application = self and self.application or {}
     local protocol_handler = protocol.handler
-    std = std or {}
+    
     std.http = std.http or {}
     std.http.get=request('GET', std, game, application, protocol_handler)
     std.http.head=request('HEAD', std, game, application, protocol_handler)
@@ -184,7 +187,7 @@ local function install(std, game, application, protocol)
     std.http.patch=request('PATCH', std, game, application, protocol_handler)
     
     if protocol.install then
-        protocol.install(std, game, application)
+        protocol.install(self)
     end
 
     return std.http

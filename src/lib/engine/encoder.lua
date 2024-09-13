@@ -1,9 +1,11 @@
-local function install(std, game, application, library, name)
-    std = std or {}
+local function install(self, library, name)
+    local std = self and self.std or {}
+
     std[name] = {
         encode=library.encode,
         decode=library.decode
     }
+    
     return {[name]=std[name]}
 end
 

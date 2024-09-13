@@ -29,17 +29,24 @@ end
 --! @}
 
 --! @cond
-local function install(std, game, application, exit_func)
+local function install(self, exit_func)
+    local std = self and self.std or {}
+    local game = self and self.game or {}
+    local application = self and self.application or {}
+
     std = std or {}
     std.game = std.game or {}
+    
     local app = {
         callbacks=application.callbacks,
         exit=exit_func,
         std=std,
         game=game
     }
+
     std.game.reset = reset(app)
     std.game.exit = exit(app)
+
     return std.game
 end
 --! @endcond

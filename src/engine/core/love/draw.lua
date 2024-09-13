@@ -26,11 +26,12 @@ end
 local function text(x, y, text)
     if love.wiimote then return 32 end
     local font = love.graphics.getFont()
-    local n = select(2, (text or x):gsub('\n', '')) + 1
-    local w = love.graphics.getFont():getWidth(text or x)
+    local t = text and tostring(text) or tostring(x)
+    local n = select(2, t:gsub('\n', '')) + 1
+    local w = love.graphics.getFont():getWidth(t)
     local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
     if x and y then
-        love.graphics.print(text, x, y)
+        love.graphics.print(t, x, y)
     end
     return w, h
 end
@@ -44,35 +45,47 @@ local function font(a, b)
 
 end
 
-local function install(std, game, application)
-    std = std or {}
-    std.draw = std.draw or {}
+local function install(self)
+    local std = self and self.std or {}
+    local game = self and self.game or {}
+    local event = self and self.event or {}
+    local application = self and self.application or {}
+    event.draw = event.draw or {}
     application.callbacks.draw = application.callbacks.draw or function() end
-    
-    std.draw.clear = function(c)
-        color(c)
-        love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
-    end
-    
+
     std.draw.color=color
     std.draw.rect=rect
     std.draw.text=text
     std.draw.line=line
     std.draw.font=font
 
+    std.draw.clear = function(c)
+        color(c)
+        love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
+    end
+
+    event.draw[#event.draw + 1] = function()
+        application.callbacks.draw(std, game)
+    end
+
     if love then
         love.draw = function()
-            application.callbacks.draw(std, game)
-            if std.draw.fps then
-                std.draw.fps(game.fps_show, 8, 8)
+            local index = 1
+            while index <= #event.draw do
+                event.draw[index](std, game)
+                index = index + 1
             end
         end
         love.resize = function(w, h)
+            local index = 1
             game.width, game.height = w, h
         end
     end
 
-    return std.draw
+    return {
+        event={event=event.draw},
+        std={draw=std.draw}
+    }
 end
 
 local P = {

@@ -55,7 +55,7 @@ local function package(self, module_name, module, custom)
         if not system and not self.lib_required[name] then return end
         
         local try_install = function()
-            module.install(self.std, self.game, self.application, custom, module_name)
+            module.install(self.root, custom, module_name)
         end
         
         if not pcall(try_install) then return end
@@ -74,9 +74,13 @@ local function require(std, game, application)
     local application_require = application.config and application.config.require or ''
     local next_library = application_require:gmatch('%S+')
     local self = {
-        std = std,
-        game = game,
-        application = application,
+        root = {
+            std=std,
+            game=game,
+            event={},
+            internal={},
+            application=application
+        },
         list = {},
         lib_optional = {},
         lib_required = {},

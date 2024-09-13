@@ -28,10 +28,13 @@ local function fps_counter(fps_limit, fps_tracker, current_time)
     return true
 end
 
-local function install(std, game, application, config_fps)
+local function install(self, config_fps)
+    local std = self and self.std or {}
+    local game = self and self.game or {}
+    local application = self and self.application or {}
+
     local index = 1
-    std = std or {}
-    application = application or {}
+    
     application.internal = application.internal or {}
     config_fps.inverse_list = {}
 

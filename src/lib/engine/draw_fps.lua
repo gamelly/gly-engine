@@ -27,8 +27,10 @@ local function fps(self, show, x, y)
     end
 end
 
-local function install(std, game, application)
-    std = std or {}
+local function install(self, application)
+    local std = self and self.std or {}
+    local game = self and self.game or {}
+    
     std.draw = std.draw or {}
     std.draw.fps = function(show, x, y)
         fps({std=std, game=game}, show, x, y)

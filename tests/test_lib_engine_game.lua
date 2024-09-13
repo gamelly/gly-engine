@@ -18,7 +18,7 @@ function test_game_reset()
         }
     }
 
-    zeebo_game = engine_game.install({}, {}, application)
+    zeebo_game = engine_game.install({application=application})
     zeebo_game.reset()
 
     luaunit.assertEquals(exit, 1)
@@ -37,7 +37,7 @@ function test_game_exit()
         }
     }
 
-    zeebo_game = engine_game.install({}, {}, application, application.callbacks.exit)
+    zeebo_game = engine_game.install({application=application}, application.callbacks.exit)
     zeebo_game.exit()
 
     luaunit.assertEquals(exit, 2)
