@@ -134,11 +134,6 @@ local style_invisiblelist = 8
 local function create(std, game, options)
     std.dialog.count = std.dialog.count + 1
 
-    --if type(info) == 'number' and style ~= style_invisiblelist then
-    --    error('info must be integer only in case of style_invisiblelist.')
-    --elseif type(info) ~= 'string' then
-    --    error('info must be string')
-    --end
     std.dialog.list[std.dialog.count] = {
         align = options.align or 0,
         x = options.x or (game.width/2),
@@ -147,7 +142,9 @@ local function create(std, game, options)
         title=options.caption,
         info=options.info,
         button1=options.button1,
-        button2=options.button2
+        button2=options.button2,
+        confirm=options.success,
+        cancel=options.cancel
     }
 
     return std.dialog.count
@@ -156,6 +153,7 @@ end
 --! @hideparam std
 --! @hideparam game
 local function show(std, game, dialog_id)
+    if not std.dialog.list[dialog_id] then return end
     std.dialog.item = 1
     std.dialog.id = dialog_id
     std.dialog.ttl = game.milis
@@ -172,8 +170,29 @@ end
 
 --! @cond
 
-local function loop(std, game)
+local function key(std, game, application)
+    if not std.dialog.id then return end
+    local dialog_style = std.dialog.list[std.dialog.id].style
+    local handler_func = application.callbacks.dialog or function() end
 
+    local key_button = std.key.press.enter
+    local key_y = std.key.press.down - std.key.press.up
+    local key_x = std.key.press.left - std.key.press.right
+    
+    if dialog_style == std.dialog.style_msgbox then        
+        
+    elseif dialog_style == std.dialog.style_list then        
+        std.dialog.item = std.math.clamp(std.dialog.item + key_y, 1, 4)
+    end
+
+    if key_button ~= 0 then
+        std.dialog.response = key == 1
+        handler_func(std, game)
+        std.dialog.response = nil
+        if std.dialog.ttl ~= game.milis then
+            std.dialog.id = nil
+        end
+    end
 end
 
 local function install(self)
@@ -201,6 +220,10 @@ local function install(self)
         show = function(dialog_id) return show(std, game, dialog_id) end,
         index = function(dialog_id) return index(std, game, dialog_id) end
     }
+
+    event.key[#event.key + 1] = function()
+        key(std, game, application)
+    end
 end
 
 local P = {
