@@ -45,9 +45,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     )
     lua.global.set('native_draw_font', (name, size) => {})
     lua.global.set('native_draw_text', (x, y, text) => {
-        const { width } = canvas_ctx.measureText(text || x)
+        const { width, height } = canvas_ctx.measureText(text || x)
         x && y && canvas_ctx.fillText(text, x, y)
-        return width
+        lua.cmodule.lua_pushnumber(lua, width)
+        lua.cmodule.lua_pushnumber(lua, height)
     })
     lua.global.set('native_dict_poly', {
         poly2: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {

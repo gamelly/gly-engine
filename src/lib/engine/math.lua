@@ -242,8 +242,8 @@ end
 --! @}
 --! @}
 
-local function install(self)
-    local std = self and self.std or {}
+local function install(std)
+    std = std or {}
     std.math = std.math or {}
     std.math.abs=abs
     std.math.clamp=clamp
@@ -260,8 +260,8 @@ local function install(self)
     return std.math
 end
 
-local function install_clib(self)
-    local std = self and self.std or {}
+local function install_clib(std)
+    std = std or {}
     local math = require('math')
     std.math = std.math or {}
     std.math.acos=math.acos
@@ -292,8 +292,8 @@ local function install_clib(self)
     return std.math
 end
 
-local function install_clib_random(self)
-    local std = self and self.std or {}
+local function install_clib_random(std)
+    std = std or {}
     local math = require('math')
     std = std or {}
     std.math = std.math or {}

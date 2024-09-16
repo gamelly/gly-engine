@@ -29,11 +29,7 @@ end
 --! @}
 
 --! @cond
-local function install(self, exit_func)
-    local std = self and self.std or {}
-    local game = self and self.game or {}
-    local application = self and self.application or {}
-
+local function install(std, game, application, exit_func)
     std = std or {}
     std.game = std.game or {}
     

@@ -55,6 +55,12 @@ function love.load(args)
         :package('json', engine_encoder, library_json)
         :package('dialog', engine_dialog)
         :package('dialog.draw', engine_draw_dialog)
+        :register(function(listener)
+            love.update = listener('loop')
+            love.draw = listener('draw')
+            love.keypressed = listener('keydown')
+            love.keyreleased = listener('keyup')
+        end)
         :run()
 
     game.width, game.height = w, h

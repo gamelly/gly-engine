@@ -52,12 +52,7 @@ local function font(name, size)
     love.graphics.setFont(_G[index])
 end
 
-local function install(self)
-    local std = self and self.std or {}
-    local game = self and self.game or {}
-    local event = self and self.event or {}
-    local application = self and self.application or {}
-    event.draw = event.draw or {}
+local function install(std, game, application)
     application.callbacks.draw = application.callbacks.draw or function() end
 
     std.draw.color=color
@@ -71,26 +66,12 @@ local function install(self)
         love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
     end
 
-    event.draw[#event.draw + 1] = function()
+    local event_draw = function()
         application.callbacks.draw(std, game)
     end
 
-    if love then
-        love.draw = function()
-            local index = 1
-            while index <= #event.draw do
-                event.draw[index](std, game)
-                index = index + 1
-            end
-        end
-        love.resize = function(w, h)
-            local index = 1
-            game.width, game.height = w, h
-        end
-    end
-
     return {
-        event={event=event.draw},
+        event={draw=event_draw},
         std={draw=std.draw}
     }
 end

@@ -32,8 +32,8 @@ local magenta = 0xFF00FFFF
 --! @}
 --! @}
 
-local function install(self)
-    local std = self and self.std or {}
+local function install(std)
+    std = std or {}
     std.color = std.color or {}
     std.color.white = white
     std.color.lightgray = lightgray

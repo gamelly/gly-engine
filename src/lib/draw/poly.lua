@@ -61,9 +61,7 @@ local function decorator_poly(func_draw_poly, std, modes, repeats)
     end
 end
 
-local function install(self, config)
-    local std = self.std
-
+local function install(std, game, application, config)
     local draw_line = decorator_poo(config.object, config.line)
     local draw_poly = decorator_poo(config.object, config.poly) or decorator_line(draw_line)
 

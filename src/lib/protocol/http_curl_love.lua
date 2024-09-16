@@ -49,22 +49,23 @@ local function http_callback(self)
     end
 end
 
-local function install(self)
-    self.application.callbacks.loop = self.application.callbacks.loop or function () end
-    self.application.internal = self.application.internal or {}
-    self.application.internal.http = {queue = {}}
+local function install(std, game, application)
+    application.internal = application.internal or {}
+    application.internal.http = {queue = {}}
 
-    self.event.loop[#self.event.loop + 1] =function()
+    local event_loop = function()
         local index = 1
-        while index <= #self.application.internal.http.queue do
-            if http_callback(self.application.internal.http.queue[index]) then
-                table.remove(self.application.internal.http.queue, index)
+        while index <= #application.internal.http.queue do
+            if http_callback(application.internal.http.queue[index]) then
+                table.remove(application.internal.http.queue, index)
             end
             index = index + 1
         end
     end
 
-    return {event={loop=self.event.loop}}
+    return {
+        event={loop=event_loop}
+    }
 end
 
 local P = {

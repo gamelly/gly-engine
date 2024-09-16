@@ -57,14 +57,14 @@ local function draw(std, game)
     end
 end
 
-local function install(self)
-    local std = self and self.std or {}
-    local game = self and self.game or {}
-    local event = self and self.event or {}
-    local application = self and self.application or {}
-    event.draw[#event.draw + 1] = function()
+local function install(std, game)
+    local event_draw = function()
         draw(std, game)
     end
+
+    return {
+        event={draw=event_draw}
+    }
 end
 
 local P = {

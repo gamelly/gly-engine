@@ -10,35 +10,27 @@ local key_bindings = {
     v='blue',
 }
 
-local function install(self)
-    local std = self and self.std or {}
-    local event = self and self.event or {}
-
-    event.key = event.key or {}
-    event.key[#event.key + 1] = function(key, value)
-        std.key.press[key] = value
+local function keydown(std, game, application, real_key)
+    local key = key_bindings[real_key]
+    if key then
+        std.key.press[key] = 1
     end
+end
 
-    if love and not love.keypressed and not love.keyreleased then
-        love.keypressed = function(real_key)
-            local key, index = key_bindings[real_key], 1
-
-            while key and index <= #event.key do
-                event.key[index](key, 1)
-                index = index + 1
-            end
-        end
-        love.keyreleased = function(real_key)
-            local key, index = key_bindings[real_key], 1
-
-            while key and index <= #event.key do
-                event.key[index](key, 0)
-                index = index + 1
-            end
-        end
+local function keyup(std, game, application, real_key)
+    local key = key_bindings[real_key]
+    if key then
+        std.key.press[key] = 0
     end
+end
 
-    return {}
+local function install(std, game, application)
+    return {
+        event={
+            keydown=keydown,
+            keyup=keyup
+        }
+    }
 end
 
 local P = {

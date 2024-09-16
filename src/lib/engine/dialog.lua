@@ -195,11 +195,7 @@ local function key(std, game, application)
     end
 end
 
-local function install(self)
-    local std = self and self.std or {}
-    local game = self and self.game or {}
-    local event = self and self.event or {}
-    local application = self and self.application or {}
+local function install(std, game, application)
     application.callbacks = application.callbacks or {}
     std.dialog = {
         -- styles
@@ -221,9 +217,13 @@ local function install(self)
         index = function(dialog_id) return index(std, game, dialog_id) end
     }
 
-    event.key[#event.key + 1] = function()
+    local event_keydown = function()
         key(std, game, application)
     end
+
+    return {
+        event={keydown=event_keydown}
+    }
 end
 
 local P = {

@@ -27,18 +27,22 @@ local function fps(self, show, x, y)
     end
 end
 
-local function install(self, application)
-    local std = self and self.std or {}
-    local game = self and self.game or {}
-    
+local function install(std, game, application)
+    std = std or {}    
     std.draw = std.draw or {}
     std.draw.fps = function(show, x, y)
         fps({std=std, game=game}, show, x, y)
     end
+
+    local event_draw = function()
+        if game.fps_show and game.fps_show > 0 then
+            std.draw.fps(fame.fps_show, 8, 8)
+        end
+    end
+
     return {
-        draw={
-            fps=std.draw.fps
-        }
+        event={draw=event_draw},
+        std={draw={fps=std.draw.fps}}
     }
 end
 

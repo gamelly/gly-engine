@@ -29,8 +29,12 @@ local function text(x, y, text)
     return canvas:measureText(text or x)
 end
 
-local function font(a,b)
-    canvas:attrFont(a,b)
+local function font(name, size)
+    if type(name) == 'number' and not size then
+        size = name
+        name = 'Tiresias'
+    end
+    canvas:attrFont(name, size)
 end
 
 local function line(x1, y1, x2, y2)
@@ -48,17 +52,15 @@ local function install(std, lgame, application, ginga)
     std.draw.text=text
     std.draw.font=font
     std.draw.line=line
-    local index = #application.internal.fixed_loop + 1
-    application.internal.fixed_loop[index] = function ()
-        canvas:attrColor(0, 0, 0, 0)
-        canvas:clear()
+
+    local event_draw = function()
         application.callbacks.draw(std, game)
-        if game.fps_show and game.fps_show >= 0 and std.draw.fps then
-            std.draw.fps(game.fps_show, 8, 8)
-        end
-        canvas:flush()
     end
-    return std.draw
+
+    return {
+        event={draw=event_draw},
+        std={draw=std.draw}
+    }
 end
 
 local P = {

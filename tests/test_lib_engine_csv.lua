@@ -2,7 +2,7 @@ local luaunit = require('luaunit')
 local encoder = require('src/lib/engine/encoder')
 local csv = require('src/third_party/csv/rodrigodornelles')
 
-local std = encoder.install(nil, csv, 'csv')
+local std = encoder.install({}, {}, {}, csv, 'csv')
 
 function test_simple_csv()
     local result = {}
