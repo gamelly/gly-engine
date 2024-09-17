@@ -1,4 +1,4 @@
-import { LuaFactory }  from 'https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/+esm'
+import { LuaFactory, LuaMultiReturn }  from 'https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/+esm'
 
 document.addEventListener('DOMContentLoaded', async () => {
     const factory = new LuaFactory()
@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         () => canvas_ctx.stroke()
     ]
 
-    lua.global.set('native_draw_start', () => {})
+    lua.global.set('native_draw_start', () => {
+        canvas_ctx.clearRect(0, 0, canvas_element.width, canvas_element.height)
+    })
     lua.global.set('native_draw_flush', () => {})
     lua.global.set('native_draw_clear', (color) => {
         canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
@@ -45,10 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     )
     lua.global.set('native_draw_font', (name, size) => {})
     lua.global.set('native_draw_text', (x, y, text) => {
-        const { width, height } = canvas_ctx.measureText(text || x)
         x && y && canvas_ctx.fillText(text, x, y)
-        lua.cmodule.lua_pushnumber(lua, width)
-        lua.cmodule.lua_pushnumber(lua, height)
+        const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = canvas_ctx.measureText(text || x)
+        return LuaMultiReturn.from([width, actualBoundingBoxAscent + actualBoundingBoxDescent])
     })
     lua.global.set('native_dict_poly', {
         poly2: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
