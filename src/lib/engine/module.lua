@@ -41,15 +41,17 @@ end
 
 local function register(self, register_func)
     local listener_func = function(event_name)
-        local index = 1
         local filtered_events = {}
 
-        while index <= #self.event do
-            local event = self.event[index][event_name]
-            if event then
-                filtered_events[#filtered_events + 1] = event
+        do
+            local index = 1
+            while index <= #self.event do
+                local event = self.event[index][event_name]
+                if event then
+                    filtered_events[#filtered_events + 1] = event
+                end
+                index = index + 1
             end
-            index = index + 1
         end
 
         return function(a, b, c, d, e, f)
