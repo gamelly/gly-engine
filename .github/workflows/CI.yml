@@ -15,8 +15,8 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         lua_version: ['5.1', '5.3', '5.4']
     steps:
     -
