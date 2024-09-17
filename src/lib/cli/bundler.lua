@@ -97,9 +97,9 @@ local function build(src_path, src_filename, dest)
                     deps_var_name[index] = line_require[1]
                     deps_module_path[index] = line_require[2]
                     if from == 'main' then
-                        main_content = main_content..'--'..line_require[2]..line_require[1]..'--\n'
+                        main_content = main_content..'-'..'-'..line_require[2]..line_require[1]..'-'..'-\n'
                     else
-                        main_after = main_after..'--'..line_require[2]..line_require[1]..'--\n'
+                        main_after = main_after..'-'..'-'..line_require[2]..line_require[1]..'-'..'-\n'
                     end
                 elseif line and #line > 0 and from == 'main' then
                     main_content = main_content..line..'\n'

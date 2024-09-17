@@ -22,8 +22,8 @@ local core_list = {
     },
     love={
         src='src/engine/core/love/main.lua',
-        exe='love src/engine/core/love --screen '..screen..' '..game,
-        post_exe='love dist --screen '..screen
+        exe='love src/engine/core/love -'..'-screen '..screen..' '..game,
+        post_exe='love dist -'..'-screen '..screen
     },
     ginga={
         src='src/engine/core/ginga/main.lua',
@@ -136,7 +136,7 @@ elseif command == 'test-self' then
     end
 elseif command == 'build' then
     -- clean dist
-    zeebo_fs.clear(dist)
+    --zeebo_fs.clear(dist)
     
     -- check core
     if not core_list[core] then
@@ -219,8 +219,8 @@ elseif command == "help" then
     "- nintendo_wii: Builds for the Nintendo Wii.\n" ..
     "\n" ..
     "Usage:\n" ..
-    "- To run a command, use: ./cli.sh <command> <game_path> --core <core_name> [options]\n" ..
-    "- For example: ./cli.sh build ./examples/asteroids/game.lua --core ginga"
+    "- To run a command, use: ./cli.sh <command> <game_path> -".."-core <core_name> [options]\n" ..
+    "- For example: ./cli.sh build ./examples/asteroids/game.lua -".."-core ginga"
     print(help_message)
 else
     print('command not found: '..command)

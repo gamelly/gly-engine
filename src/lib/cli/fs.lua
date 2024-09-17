@@ -14,7 +14,7 @@ local function ls(src_path)
 end
 
 local function clear(src_path)
-    if os.execute('rm --version > /dev/null 2> /dev//null') then
+    if os.execute('rm -'..'-version > /dev/null 2> /dev//null') then
         os.execute('mkdir -p '..src_path)
         os.execute('rm -Rf '..src_path..'/*')
     else
