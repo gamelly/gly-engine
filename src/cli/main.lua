@@ -1,5 +1,6 @@
 local os = require('os')
 local zeebo_bundler = require('src/lib/cli/bundler')
+local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_args = require('src/lib/common/args')
 local zeebo_meta = require('src/lib/cli/meta')
 local zeebo_fs = require('src/lib/cli/fs')
@@ -44,7 +45,7 @@ local core_list = {
         src='src/engine/core/native/main.lua',
         post_exe='webos24 $(pwd)/dist',
         pipeline={
-            zeebo_meta.late(game):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
+            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
         },
         extras={
             'src/engine/meta/html5_webos/appinfo.json',
@@ -57,7 +58,7 @@ local core_list = {
     html5_tizen={
         src='src/engine/core/native/main.lua',
         pipeline={
-            zeebo_meta.late(game):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
+            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
             function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
         },
         extras={
@@ -73,7 +74,7 @@ local core_list = {
         src='src/engine/core/native/main.lua',
         post_exe='ginga dist/main.ncl -s '..screen,
         pipeline={
-            zeebo_meta.late(game):file(dist..'index.html'):pipe()
+            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
         },
         extras={
             'src/engine/meta/html5_ginga/main.ncl',
@@ -85,7 +86,7 @@ local core_list = {
     html5={
         src='src/engine/core/native/main.lua',
         pipeline={
-            zeebo_meta.late(game):file(dist..'index.html'):pipe()
+            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
         },
         extras={
             'src/engine/core/html5/index.html',
@@ -95,7 +96,7 @@ local core_list = {
     nintendo_wii={
         src='src/engine/core/nintendo_wii/main.lua',
         pipeline={
-            zeebo_meta.late(game):file(dist..'meta.xml'):pipe()
+            zeebo_meta.late(dist..'game.lua'):file(dist..'meta.xml'):pipe()
         },
         extras={
             'assets/icon128x48.png',
@@ -175,7 +176,7 @@ elseif command == 'build' then
     -- core move
     local index = 1
     local core = core_list[core]
-    zeebo_fs.build(core.src, dist..bundler)
+    zeebo_builder.build(core.src, dist..bundler)
     if core.extras then
         while index <= #core.extras do
             local file = core.extras[index]
