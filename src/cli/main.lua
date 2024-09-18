@@ -1,4 +1,5 @@
 local os = require('os')
+local zeebo_bootstrap = require('src/lib/cli/bootstrap')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_args = require('src/lib/common/args')
@@ -143,8 +144,18 @@ elseif command == 'test-self' then
 elseif command == 'build-self' then
     zeebo_fs.clear(dist)
     zeebo_bundler.build('src/cli/', 'main.lua', dist..'main.lua')
-    os.execute('lua tools/bootstrap.lua '..dist..'main.lua '..dist..'cli.lua ./src ./assets ./examples')
+    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples')
+    if not ok then
+        print(message)
+        os.exit(1)
+    end
     os.remove(dist..'main.lua')
+elseif command == 'dump-self' then
+    local ok, message = zeebo_bootstrap.dump(dist)
+    if not ok then
+        print(message)
+        os.exit(1)
+    end
 elseif command == 'build' then
     -- clean dist
     zeebo_fs.clear(dist)
