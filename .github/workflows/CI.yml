@@ -21,9 +21,6 @@ jobs:
     steps:
     -
       uses: actions/checkout@master
-      with:
-       repository: 'rodrigodornelles/codename-videogame-engine'
-       ref: 'develop'
     - 
       uses: leafo/gh-actions-lua@v10
       with:
@@ -41,3 +38,18 @@ jobs:
       if: (matrix.lua_version == '5.4') && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
       run: |
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
+
+  version:
+    if: github.event_name == 'push'
+    name: test version
+    runs-on: ubuntu-latest
+    steps:
+    -
+      uses: actions/checkout@master
+    - 
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: '5.4'
+    -
+      run: |
+        lua tools/versionchecker.lua

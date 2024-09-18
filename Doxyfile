@@ -1,7 +1,7 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Engine"
-PROJECT_NUMBER         = 0.0.4
+PROJECT_NUMBER         = 0.0.6
 PROJECT_BRIEF          = "Game engine in lua"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = .

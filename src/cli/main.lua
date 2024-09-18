@@ -188,6 +188,7 @@ elseif command == 'build' then
     if #bundler > 0 then
         zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
         zeebo_fs.clear(dist..bundler)
+        os.remove(dist..bundler)
     end
 
     -- post process
@@ -209,6 +210,8 @@ elseif command == 'build' then
         end
         os.exit(os.execute(core.post_exe) and 0 or 1)
     end
+elseif command == 'version' then
+    print('0.0.6')
 elseif command == "help" then
     local help_message = "Available commands:\n" ..
     "- run: Executes the specified core. If no core is specified, defaults to 'love'.\n" ..
