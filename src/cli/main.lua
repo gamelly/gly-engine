@@ -14,6 +14,11 @@ local screen = zeebo_args.get(arg, 'screen', '1280x720')
 local command = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 1, 'help')
 local game = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 2, '')
 
+-- alias for game examples
+if game and #game > 0 and game:sub(1, 1) == '@' then
+    game = 'examples/'..game:sub(2)..'/game.lua'
+end
+
 local core_list = {
     repl={
         src='src/engine/core/repl/main.lua',
@@ -136,7 +141,7 @@ elseif command == 'test-self' then
     end
 elseif command == 'build' then
     -- clean dist
-    --zeebo_fs.clear(dist)
+    zeebo_fs.clear(dist)
     
     -- check core
     if not core_list[core] then
