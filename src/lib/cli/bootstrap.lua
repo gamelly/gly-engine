@@ -1,43 +1,8 @@
 local function bootstrap()
-    return [[
-local real_io_open = io.open
-io.open = function(filename, mode)
-    if BOOTSTRAP[filename] and not BOOTSTRAP_DISABLE and mode == 'r' then
-        return {
-            pointer = 1,
-            read = function(self, size)
-                if self.pointer >= #BOOTSTRAP[filename] then
-                    return nil
-                elseif type(size) == 'number' then
-                    local content = BOOTSTRAP[filename]:sub(self.pointer, self.pointer + size)
-                    self.pointer = self.pointer + #content
-                    return content
-                elseif size == '*a' then
-                    return BOOTSTRAP[filename]
-                elseif size == nil then
-                    local content = BOOTSTRAP[filename]
-                    local line_index = content:find('\n', self.pointer)
-                    if line_index then
-                        local line = content:sub(self.pointer, line_index - 1)
-                        self.pointer = line_index + 1
-                        return line
-                    else
-                        local line = content:sub(self.pointer)
-                        self.pointer = #content + 1
-                        return line
-                    end
-                else
-                    error("not implemented")
-                end
-            end,
-            close = function() end,
-            write = function() end
-        }
-        
-    end
-    return real_io_open(filename, mode)
-end
-]]
+    local file = io.open('mock/bootstrap.lua', 'r')
+    local content = file:read('*a')
+    file:close()
+    return content
 end
 
 local function explode_string(input)
