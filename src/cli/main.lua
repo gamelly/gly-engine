@@ -144,7 +144,7 @@ elseif command == 'test-self' then
 elseif command == 'build-self' then
     zeebo_fs.clear(dist)
     zeebo_bundler.build('src/cli/', 'main.lua', dist..'main.lua')
-    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples')
+    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples', './mock', './tests')
     if not ok then
         print(message)
         os.exit(1)

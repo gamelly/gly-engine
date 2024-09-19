@@ -126,7 +126,7 @@ local function build(src_path, src_filename, dest)
             if lib and not deps_imported[lib] then
                 lib_name = lib_module:gsub('/', '_')
                 src_in = src_path..lib_module..'.lua'
-                src_file = io.open(src_in, 'r') or io.open(lib_module..'.lua')
+                src_file = io.open(src_in, 'r') or io.open(lib_module..'.lua', 'r')
                 src_file = src_file or io.open(src_path..relative_path..lib_module..'.lua')
                 from = src_file and 'lib' or 'system'
                 deps_imported[lib] = from
