@@ -36,7 +36,7 @@ local function install(std, game, application)
 
     local event_draw = function()
         if game.fps_show and game.fps_show > 0 then
-            std.draw.fps(fame.fps_show, 8, 8)
+            std.draw.fps(game.fps_show, 8, 8)
         end
     end
 

@@ -2,7 +2,6 @@ local zeebo_module = require('src/lib/engine/module')
 local engine_game = require('src/lib/engine/game')
 local engine_math = require('src/lib/engine/math')
 local engine_color = require('src/lib/object/color')
-local engine_math = require('src/lib/engine/math')
 local engine_http = require('src/lib/engine/http')
 local engine_dialog = require('src/lib/engine/dialog')
 local engine_encoder = require('src/lib/engine/encoder')
@@ -10,12 +9,14 @@ local engine_draw_fps = require('src/lib/draw/fps')
 local engine_draw_poly = require('src/lib/draw/poly')
 local engine_draw_dialog = require('src/lib/draw/dialog')
 local library_csv = require('src/third_party/csv/rodrigodornelles')
-local application_default = require('src/lib/object/application')
-local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 local application = nil
-local extraevents = {}
+local extraevents = {
+    loop = function(dt) end,
+    draw = function() end,
+    keydown = function(key, value) end
+}
 
 function native_callback_loop(milis)
     game.milis = milis

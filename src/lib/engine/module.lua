@@ -73,7 +73,6 @@ end
 local function package(self, module_name, module, custom)
     local system = module_name:sub(1, 1) == '@'
     local name = system and module_name:sub(2) or module_name
-    local should_install = self.list_append(name)
 
     if system then
         self.stdlib_required[name] = true
@@ -90,8 +89,7 @@ local function package(self, module_name, module, custom)
             end
         end
         
-        local foo, bar = pcall(try_install)
-        if not foo then print(bar) return end
+        if not pcall(try_install) then return end
         
         if system then
             self.stdlib_installed[name] = true

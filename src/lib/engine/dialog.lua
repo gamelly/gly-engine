@@ -186,7 +186,7 @@ local function key(std, game, application)
     end
 
     if key_button ~= 0 then
-        std.dialog.response = key == 1
+        std.dialog.response = key_button == 1
         handler_func(std, game)
         std.dialog.response = nil
         if std.dialog.ttl ~= game.milis then

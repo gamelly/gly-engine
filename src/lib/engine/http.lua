@@ -70,9 +70,9 @@ local function request(method, std, game, application, protocol_handler)
             param_list = {},
             param_dict = {},
             callback_handler = callback_handler,
-            success_handler = function () end,
-            failed_handler = function () end,
-            error_handler = function () end,
+            success_handler = function (std, game) end,
+            failed_handler = function (std, game) end,
+            error_handler = function (std, game) end,
             -- objects
             std = std,
             game = game,
@@ -105,7 +105,7 @@ local function request(method, std, game, application, protocol_handler)
         self.pipeline = {
             -- eval
             function()
-                local response = self:protocol_handler()
+                self:protocol_handler()
             end,
             -- callbacks
             function()
