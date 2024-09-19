@@ -2,7 +2,7 @@ local function bootstrap()
     return [[
 local real_io_open = io.open
 io.open = function(filename, mode)
-    if BOOTSTRAP[filename] and mode == 'r' then
+    if BOOTSTRAP[filename] and not BOOTSTRAP_DISABLE and mode == 'r' then
         return {
             pointer = 1,
             read = function(self, size)
@@ -60,6 +60,7 @@ local function string_to_hex(input)
 end
 
 local function map_files(files, prefix_len)
+    local list_paths = {}
     local list_files = {}
     local dict_files = {}
     local index = 1
@@ -73,12 +74,14 @@ local function map_files(files, prefix_len)
         if file_real_content then
             list_files[#list_files + 1] = file_name
             dict_files[file_name] = string_to_hex(file_real_content)
+        else 
+            list_paths[#list_paths + 1] = file_name
         end
 
         index = index + 1
     end
 
-    return list_files, dict_files
+    return list_paths, list_files, dict_files
 end
 
 local function merge_dict_and_lists(list_out, dict_out, list_in, dict_in)
@@ -86,13 +89,20 @@ local function merge_dict_and_lists(list_out, dict_out, list_in, dict_in)
     while index <= #list_in do
         local key = list_in[index]
         list_out[#list_out + 1] = key
-        dict_out[key] = dict_in[key]
+        if dict_out and dict_in then
+            dict_out[key] = dict_in[key]
+        end
         index = index + 1
     end
 end
 
 local function build(...)
     local args = {...}
+
+    if BOOTSTRAP then
+        BOOTSTRAP_DISABLE = true
+    end
+
     local input_file = io.open(args[1], 'r')
     local output_file = io.open(args[2], 'w')
 
@@ -105,6 +115,7 @@ local function build(...)
     end
 
     local index = 3
+    local all_list_paths = {}
     local all_list_files = {}
     local all_dict_files = {}
     while index <= #args do
@@ -135,25 +146,46 @@ local function build(...)
         local cmd_pid = io.popen('find '..path_src)
         local cmd_raw, cmd_pid = cmd_pid:read('*a'), cmd_pid:close()
         local list_raw = explode_string(cmd_raw)
-        local list_files, dict_files = map_files(list_raw, prefix_len)
+        local list_paths, list_files, dict_files = map_files(list_raw, prefix_len)
         merge_dict_and_lists(all_list_files, all_dict_files, list_files, dict_files)
+        merge_dict_and_lists(all_list_paths, nil, list_paths, nil)
         index = index + 1
     end
 
-    output_file:write('local BOOTSTRAP = {}\n')
-    output_file:write('local BOOTSTRAP_LIST = {')
+    output_file:write('local BOOTSTRAP = {}\nlocal BOOTSTRAP_DISABLE = false\n')
 
-    index = 1
-    while index <= #all_list_files do
-        local file_name = all_list_files[index]
-        local file_content = all_dict_files[file_name]
-        output_file:write('\''..file_name..'\'')
-        index = index + 1
-        if index <= #all_list_files then
-            output_file:write(', ')
-        else
-            output_file:write('}\n')
+    do
+        local index = 1
+        local content = 'local BOOTSTRAP_DIRS = {'
+        while index <= #all_list_paths do
+            local file_name = all_list_paths[index]
+            local file_content = all_dict_files[file_name]
+            content = content..'\''..file_name..'\''
+            index = index + 1
+            if index <= #all_list_paths then
+                content = content..', '
+            else
+                content = content..'}\n'
+            end
         end
+        output_file:write(content)
+    end
+
+    do
+        local index = 1
+        local content = 'local BOOTSTRAP_LIST = {'
+        while index <= #all_list_files do
+            local file_name = all_list_files[index]
+            local file_content = all_dict_files[file_name]
+            content = content..'\''..file_name..'\''
+            index = index + 1
+            if index <= #all_list_files then
+                content = content..', '
+            else
+                content = content..'}\n'
+            end
+        end
+        output_file:write(content)
     end
 
     index = 1
@@ -173,7 +205,30 @@ local function build(...)
 end
 
 local function dump()
-    return false, 'not implemeted'
+    if not BOOTSTRAP then
+        return false, 'cli is not bootstraped'
+    end
+
+    do
+        local index = 1
+        while index <= #BOOTSTRAP_DIRS do
+            os.execute('mkdir -p '..BOOTSTRAP_DIRS[index])
+            index = index + 1
+        end
+    end
+
+    do
+        local index = 1
+        while index <= #BOOTSTRAP_LIST do
+            local file = BOOTSTRAP_LIST[index]
+            local output_file = io.open(file, 'w')
+            output_file:write(io.open(file, 'r'):read('*a'))
+            output_file:close()
+            index = index + 1
+        end
+    end
+
+    return true
 end
 
 local P = {
