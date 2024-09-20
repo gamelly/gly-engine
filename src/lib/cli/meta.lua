@@ -65,7 +65,17 @@ local function run(self)
 end
 
 local function current(game, application)
-    local metadata = game and #game > 0 and dofile(game)
+    local gamefile = game and io.open(game, 'r')
+    local bytecode = gamefile and gamefile:read('*a')
+    local metadata = bytecode and (loadstring and loadstring(bytecode) or load(bytecode))
+
+    if gamefile then
+        gamefile:close()
+    end
+    
+    while type(metadata) == 'function' do
+        metadata = metadata()
+    end
 
     if not application then
         application = {

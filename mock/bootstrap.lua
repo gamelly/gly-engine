@@ -10,6 +10,14 @@ if jsRequire then
     io.popen = function() end
 end
 
+local function bootstrap_has_file(filename, mode)
+    if not BOOTSTRAP then return false end
+    if BOOTSTRAP_DISABLE then return false end
+    if not BOOTSTRAP[filename] then return false end
+    if mode and not mode:find('r') then return false end
+    return true
+end
+
 local function bootstrap_io_open(filename, mode)
     return {
         pointer = 1,
@@ -31,8 +39,9 @@ local function bootstrap_io_open(filename, mode)
                     return line
                 end
             elseif type(size) == 'number' then
-                self.pointer = self.pointer + size
-                return BOOTSTRAP[filename]:sub(self.pointer - size, self.pointer)
+                local content = BOOTSTRAP[filename]:sub(self.pointer, self.pointer + size)
+                self.pointer = self.pointer + #content
+                return content
             else
                 error("not implemented: "..tostring(size))
             end
@@ -47,10 +56,10 @@ local function javascript_io_open(filename, mode)
         pointer = 1,
         content = '',
         read = function(self)
-            self.content = javascript_fs.readFileSync(filename, 'utf8')
-            if self.content then
+            if self.content and #self.content > 0 then
                 return nil
             end
+            self.content = javascript_fs.readFileSync(filename, 'utf8')
             return self.content
         end,
         write = function(self, content)
@@ -58,15 +67,22 @@ local function javascript_io_open(filename, mode)
         end,
         close = function(self)
             javascript_fs.mkdirSync(javascript_path.dirname(filename), {recursive = true})
-            javascript_fs.writeFileSync(filename, self.content)
+            if mode:find('b') then
+                local blob, index = {}, 1
+                while index <= #self.content do
+                    blob[index] = string.byte(self.content, index)
+                    index = index + 1
+                end
+                javascript_fs.writeFileSync(filename, Buffer.from(blob))
+            else
+                javascript_fs.writeFileSync(filename, self.content)
+            end
         end
     }
 end
 
 io.open = function(filename, mode)
-    local read_from_self = (not mode or mode:find('r')) and BOOTSTRAP[filename]
-    
-    if BOOTSTRAP and not BOOTSTRAP_DISABLE and read_from_self then
+    if bootstrap_has_file(filename, mode) then
         return bootstrap_io_open(filename, mode)
     end
 

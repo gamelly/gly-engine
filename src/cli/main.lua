@@ -1,5 +1,6 @@
 local os = require('os')
 local zeebo_bootstrap = require('src/lib/cli/bootstrap')
+local zeebo_compiler = require('src/lib/cli/compiler')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_args = require('src/lib/common/args')
@@ -144,7 +145,7 @@ elseif command == 'test-self' then
 elseif command == 'build-self' then
     zeebo_fs.clear(dist)
     zeebo_bundler.build('src/cli/', 'main.lua', dist..'main.lua')
-    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples', './mock', './tests')
+    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples', './mock')
     if not ok then
         print(message)
         os.exit(1)
@@ -156,6 +157,8 @@ elseif command == 'dump-self' then
         print(message)
         os.exit(1)
     end
+elseif command == 'compile' then
+    zeebo_compiler.build(game, game..'.out')
 elseif command == 'build' then
     -- clean dist
     zeebo_fs.clear(dist)
