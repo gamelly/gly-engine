@@ -28,7 +28,7 @@ lua cli.lua build @asteroids --core html5
 
 | command | lua 5.4 | lua 5.3 | lua 5.1 | luajit | installation |
 | :-----: | :-----: | :-----: | :-----: | :----: | :----------- |
-| cli.sh  |    :ok: |    :ok: |    :ok: |   :ok: | git clone source code
+| cli.sh  |    :ok: |    :ok: |    :ok: |   :ok: | `git clone https://github.com/gamelly/gly-engine`
 | cli.lua |    :ok: |    :ok: |     :x: |   :ok: | `wget get.gamely.com.br/cli.lua`
 | gly-cli |    :ok: |         |         |        | `npm install -g @gamely/gly-cli`
 
