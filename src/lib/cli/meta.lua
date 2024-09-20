@@ -19,19 +19,20 @@ local function file(self, file)
     self.pipeline[#self.pipeline + 1] = function()
         if not self.loaded then return self end
 
+        local content = ''
         local file_meta = io.open(file_copy, 'r')
-        local file_temp = io.open(file_copy..'.tmp', 'w')
 
         repeat
             local line = file_meta:read()
-            file_temp:write(replace(line, self.meta, application_default.meta), '\n')
+            content = content..replace(line, self.meta, application_default.meta):gsub('\n', '')..'\n'
         until not line
 
         file_meta:close()
-        file_temp:close()
 
-        os.remove(file_copy)
-        os.rename(file_copy..'.tmp', file_copy) 
+        file_meta = io.open(file_copy, 'w')
+
+        file_meta:write(content)
+        file_meta:close()
     end
     return self
 end

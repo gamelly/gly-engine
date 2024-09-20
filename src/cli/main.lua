@@ -160,6 +160,9 @@ elseif command == 'dump-self' then
 elseif command == 'compile' then
     zeebo_compiler.build(game, game..'.out')
 elseif command == 'build' then
+    if not zeebo_args.get(arg, 'core') and jsRequire then
+        core = 'html5'
+    end
     -- clean dist
     zeebo_fs.clear(dist)
     

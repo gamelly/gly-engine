@@ -10,6 +10,36 @@ if jsRequire then
     io.popen = function() end
 end
 
+local function file_reader(self, mode, size, func)
+    if not self.content or #self.content == 0 then
+        self.content = func()
+    end
+
+    if self.pointer >= #self.content then
+        return nil
+    elseif size == '*a' then
+        return self.content
+    elseif size == nil then
+        local content = self.content
+        local line_index = content:find('\n', self.pointer)
+        if line_index then
+            local line = content:sub(self.pointer, line_index)
+            self.pointer = self.pointer + #line
+            return line
+        else
+            local line = content:sub(self.pointer)
+            self.pointer = self.pointer + #line
+            return line
+        end
+    elseif type(size) == 'number' then
+        local content = self.content:sub(self.pointer, self.pointer + size)
+        self.pointer = self.pointer + #content
+        return content
+    else
+        error("not implemented: "..tostring(size))
+    end
+end
+
 local function bootstrap_has_file(filename, mode)
     if not BOOTSTRAP then return false end
     if BOOTSTRAP_DISABLE then return false end
@@ -22,29 +52,9 @@ local function bootstrap_io_open(filename, mode)
     return {
         pointer = 1,
         read = function(self, size)
-            if self.pointer >= #BOOTSTRAP[filename] then
-                return nil
-            elseif size == '*a' then
+            return file_reader(self, mode, size, function()
                 return BOOTSTRAP[filename]
-            elseif size == nil then
-                local content = BOOTSTRAP[filename]
-                local line_index = content:find('\n', self.pointer)
-                if line_index then
-                    local line = content:sub(self.pointer, line_index - 1)
-                    self.pointer = line_index + 1
-                    return line
-                else
-                    local line = content:sub(self.pointer)
-                    self.pointer = #content + 1
-                    return line
-                end
-            elseif type(size) == 'number' then
-                local content = BOOTSTRAP[filename]:sub(self.pointer, self.pointer + size)
-                self.pointer = self.pointer + #content
-                return content
-            else
-                error("not implemented: "..tostring(size))
-            end
+            end)
         end,
         write = function() end,
         close = function() end
@@ -52,18 +62,20 @@ local function bootstrap_io_open(filename, mode)
 end
 
 local function javascript_io_open(filename, mode)
+    if (not mode or mode:find('r')) and not javascript_fs.existsSync(filename) then
+        return nil
+    end
+
     return {
         pointer = 1,
         content = '',
-        read = function(self)
-            if self.content and #self.content > 0 then
-                return nil
-            end
-            self.content = javascript_fs.readFileSync(filename, 'utf8')
-            return self.content
+        read = function(self, size)
+            return file_reader(self, mode, size, function()
+                return javascript_fs.readFileSync(filename, 'utf8')
+            end)
         end,
         write = function(self, content)
-            self.content = self.content..content..(mode:find('b') and '' or '\n')
+            self.content = self.content..content
         end,
         close = function(self)
             javascript_fs.mkdirSync(javascript_path.dirname(filename), {recursive = true})
