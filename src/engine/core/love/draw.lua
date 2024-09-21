@@ -40,6 +40,14 @@ local function line(x1, y1, x2, y2)
     love.graphics.line(x1, y1, x2, y2)
 end
 
+local function triangle(mode, x1, y1, x2, y2, x3, y3)
+    love.graphics.line(x1, y1, x2, y2)
+    love.graphics.line(x2, y2, x3, y3)
+    if mode <= 1 then
+        love.graphics.line(x1, y1, x3, y3)
+    end
+end
+
 local function font(name, size)
     if type(name) == 'number' and not size then
         size = name
@@ -77,7 +85,8 @@ local function install(std, game, application)
 end
 
 local P = {
-    install = install
+    install = install,
+    triangle=triangle
 }
 
 return P

@@ -25,6 +25,7 @@ function love.load(args)
     local game_title = zeebo_args.param(arg, {'screen'}, 2)
     local application = zeebo_module.loadgame(game_title)
     local polygons = {
+        triangle=engine_draw.triangle,
         poly=love.graphics.polygon,
         modes={'fill', 'line', 'line'}
     }
