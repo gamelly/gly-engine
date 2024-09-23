@@ -1,9 +1,8 @@
 local function build(src_in, bin_out)
     local src_file = io.open(src_in, 'r')
-    local bin_file = io.open(bin_out, 'wb')
 
-    if not src_file or not bin_file then
-        return
+    if not src_file then
+        return false, 'file not found: '..src_in
     end
 
     local content = src_file:read('*a')
@@ -11,8 +10,10 @@ local function build(src_in, bin_out)
     local bytecode2 = string.dump(bytecode1, true)
     src_file:close()
 
+    local bin_file = io.open(bin_out, 'wb')
     bin_file:write(bytecode2)
     bin_file:close()
+    return true
 end
 
 local P = {

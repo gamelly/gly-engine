@@ -159,6 +159,7 @@ local function build(src_path, src_filename, dest)
 
     dest_file:write(main_content)
     dest_file:close()
+    return true
 end
 
 local P = {

@@ -1,0 +1,22 @@
+{
+    "name": "@rodrigodorneles/cli",
+    "version": "1.0.0",
+    "author": "RodrigoDornelles",
+    "license": "Apache-2.0",
+    "funding": "https://github.com/sponsors/RodrigoDornelles",
+    "main": "bin/cli",
+    "bin": {
+        "cli": "bin/cli"
+    },
+    "scripts": {
+        "step1": "demoon cli.lua compiler cli.lua --dist cli.out",
+        "step2": "echo '#!/usr/bin/env -S npx demoon' > header.txt",
+        "step3": "cat header.txt cli.out > bin/cli && chmod +x bin/cli",
+        "step4": "rm -f package-lock.json cli.lua cli.out header.txt",
+        "build": "npm run step1 && npm run step2 && npm run step3 && npm run step4",
+        "deploy": "npm publish --provenance --access public"
+    },
+    "dependencies": {
+        "demoon": "0.0.9"
+    }
+}
