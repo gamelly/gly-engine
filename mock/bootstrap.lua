@@ -94,13 +94,15 @@ local function javascript_io_open(filename, mode)
 end
 
 io.open = function(filename, mode)
-    if bootstrap_has_file(filename, mode) then
-        return bootstrap_io_open(filename, mode)
-    end
+    local file = real_io_open(filename, mode)
 
     if javascript_fs then
-        return javascript_io_open(filename, mode)
+        file = javascript_io_open(filename, mode)
     end
 
-    return real_io_open(filename, mode)
+    if not file and bootstrap_has_file(filename, mode) then
+        file = bootstrap_io_open(filename, mode)
+    end
+
+    return file
 end

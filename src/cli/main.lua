@@ -1,261 +1,80 @@
-local os = require('os')
-local zeebo_bootstrap = require('src/lib/cli/bootstrap')
-local zeebo_compiler = require('src/lib/cli/compiler')
-local zeebo_bundler = require('src/lib/cli/bundler')
-local zeebo_builder = require('src/lib/cli/builder')
-local zeebo_args = require('src/lib/common/args')
-local zeebo_meta = require('src/lib/cli/meta')
-local zeebo_fs = require('src/lib/cli/fs')
+local _, os = pcall(require, 'os')
 
---! @cond
-local run = zeebo_args.has(arg, 'run')
-local bundler = zeebo_args.has(arg, 'bundler')
-local coverage = zeebo_args.has(arg, 'coverage')
-local core = zeebo_args.get(arg, 'core', 'ginga')
-local dist = zeebo_args.get(arg, 'dist', './dist/')
-local screen = zeebo_args.get(arg, 'screen', '1280x720')
-local command = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 1, 'help')
-local game = zeebo_args.param(arg, {'core', 'screen', 'dist'}, 2, '')
+local zeebo_argparse = require('src/lib/cli/argparse')
 
--- alias for game examples
-if game and #game > 0 and game:sub(1, 1) == '@' then
-    game = 'examples/'..game:sub(2)..'/game.lua'
+local commands_build = require('src/cli/commands/build')
+local commands_cli = require('src/cli/commands/cli')
+local commands_fs = require('src/cli/commands/fs')
+local commands_game = require('src/cli/commands/game')
+local commands_info = require('src/cli/commands/info')
+local commands_tools = require('src/cli/commands/tools')
+
+local command = zeebo_argparse.from(arg)
+    .add_subcommand('init', commands_game)
+    .add_next_value('game', {require=true, alias='@examples/{{game}}/game.lua'})
+    .add_option_get('dist', {default='{game}'})
+    --
+    .add_subcommand('build', commands_build)
+    .add_next_value('game', {alias='@examples/{{game}}/game.lua'})
+    .add_option_get('dist', {default='./dist/'})
+    .add_option_get('core', {default='ginga'})
+    .add_option_get('screen', {default='1280x720'})
+    .add_option_has('bundler')
+    .add_option_has('run')
+    --
+    .add_subcommand('run', commands_game)
+    .add_next_value('game', {required=true})
+    .add_option_get('core', {default='love'})
+    .add_option_get('screen', {default='1280x720'})
+    --
+    .add_subcommand('meta', commands_game)
+    .add_next_value('game', {required=true})
+    .add_option_get('format', {default='{{title}} {{version}}'})
+    --
+    .add_subcommand('bundler', commands_tools)
+    .add_next_value('file', {required=true})
+    .add_option_get('dist', {default='./dist/'})
+    --
+    .add_subcommand('compiler', commands_tools)
+    .add_next_value('file', {required=true})
+    .add_option_get('dist', {default='{{file}}.out'})
+    --
+    .add_subcommand('tool-love-zip', commands_tools)
+    .add_next_value('path', {required=true})
+    .add_option_get('dist', {required=true})
+    --
+    .add_subcommand('tool-love-exe', commands_tools)
+    .add_next_value('file', {required=true})
+    .add_option_get('dist', {required=true})
+    --
+    .add_subcommand('fs-replace', commands_fs)
+    .add_next_value('file', {required=true})
+    .add_next_value('dist', {required=true})
+    .add_option_get('format', {required=true})
+    --
+    .add_subcommand('fs-download', commands_fs)
+    .add_next_value('url', {required=true})
+    .add_next_value('dist', {required=true})
+    --
+    .add_subcommand('cli-build', commands_cli)
+    .add_option_get('dist', {default='./dist/'})
+    .add_subcommand('cli-test', commands_cli)
+    .add_subcommand('cli-dump', commands_cli)
+    --
+    .add_subcommand('version', commands_info)
+    .add_help_subcommand('help', commands_info)
+    .add_next_value('usage', {})
+    .add_error_cmd_usage('correct-usage', commands_info)
+    .add_error_cmd_not_found('not-found', commands_info)
+
+local ok, message = command.run()
+
+if message then
+    print(message)
 end
 
-local core_list = {
-    repl={
-        src='src/engine/core/repl/main.lua',
-        exe='lua src/engine/core/repl/main.lua '..game,
-        post_exe='lua dist/main.lua'
-    },
-    love={
-        src='src/engine/core/love/main.lua',
-        exe='love src/engine/core/love -'..'-screen '..screen..' '..game,
-        post_exe='love dist -'..'-screen '..screen
-    },
-    ginga={
-        src='src/engine/core/ginga/main.lua',
-        post_exe='ginga dist/main.ncl -s '..screen,
-        extras={
-            'src/engine/core/ginga/main.ncl'
-        }
-    },
-    native={
-        src='src/engine/core/native/main.lua',
-    },
-    html5_webos={
-        src='src/engine/core/native/main.lua',
-        post_exe='webos24 $(pwd)/dist',
-        pipeline={
-            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
-        },
-        extras={
-            'src/engine/meta/html5_webos/appinfo.json',
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/engine.js',
-            'assets/icon80x80.png'
-        }
-    },
-    html5_tizen={
-        src='src/engine/core/native/main.lua',
-        pipeline={
-            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
-            function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
-        },
-        extras={
-            'src/engine/meta/html5_tizen/config.xml',
-            'src/engine/meta/html5_tizen/.tproject',
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/engine.js',
-            'assets/icon80x80.png'
-        }
-    },
-    html5_ginga={
-        src='src/engine/core/native/main.lua',
-        post_exe='ginga dist/main.ncl -s '..screen,
-        pipeline={
-            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
-        },
-        extras={
-            'src/engine/meta/html5_ginga/main.ncl',
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/engine.js',
-        }
-    },
-    html5={
-        src='src/engine/core/native/main.lua',
-        pipeline={
-            zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
-        },
-        extras={
-            'src/engine/core/html5/index.html',
-            'src/engine/core/html5/engine.js'
-        }
-    },
-    nintendo_wii={
-        src='src/engine/core/nintendo_wii/main.lua',
-        pipeline={
-            zeebo_meta.late(dist..'game.lua'):file(dist..'meta.xml'):pipe()
-        },
-        extras={
-            'assets/icon128x48.png',
-            'src/engine/meta/nintendo_wii/meta.xml'
-        }
-    }
-}
-
-if command == 'run' then
-    if not zeebo_args.get(arg, 'core') then
-        core = 'love'
-    end
-    if not core_list[core] or not core_list[core].exe then
-        print('this core cannot be runned!')
-        os.exit(1)
-    end
-    os.exit(os.execute(core_list[core].exe) and 0 or 1)
-elseif command == 'clear' or command == 'clean' then
-    zeebo_fs.clear(dist)
-elseif command == 'meta' then
-    if core == 'ginga' then
-        core = '{{title}} {{version}}'
-    end
-    zeebo_meta.current(game):stdout(core):run()
-elseif command == 'bundler' then
-    local path, file = game:match("(.-)([^/\\]+)$")
-    zeebo_bundler.build(path, file, dist..file)
-elseif command == 'test-self' then
-    coverage = coverage and '-lluacov' or ''
-    local files = zeebo_fs.ls('./tests')
-    local index = 1
-    local ok = true
-    while index <= #files do
-        ok = ok and os.execute('lua '..coverage..' ./tests/'..files[index])
-        index = index + 1
-    end
-    if #coverage > 0 then
-        os.execute('luacov src')
-        os.execute('tail -n '..tostring(#files + 5)..' luacov.report.out')
-    end
-    if not ok then
-        os.exit(1)
-    end
-elseif command == 'build-self' then
-    zeebo_fs.clear(dist)
-    zeebo_bundler.build('src/cli/', 'main.lua', dist..'main.lua')
-    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples', './mock')
-    if not ok then
-        print(message)
-        os.exit(1)
-    end
-    os.remove(dist..'main.lua')
-elseif command == 'dump-self' then
-    local ok, message = zeebo_bootstrap.dump(dist)
-    if not ok then
-        print(message)
-        os.exit(1)
-    end
-elseif command == 'compile' then
-    zeebo_compiler.build(game, game..'.out')
-elseif command == 'build' then
-    if not zeebo_args.get(arg, 'core') and jsRequire then
-        core = 'html5'
-    end
-    -- clean dist
-    zeebo_fs.clear(dist)
-    
-    -- check core
-    if not core_list[core] then
-        print('this core cannot be build!')
-        os.exit(1)
-    end
-
-    -- force html5 to bundler
-    if core:find('html5') then
-        bundler = true
-    end
-    
-    -- pre bundler
-    if bundler then
-        bundler = '_bundler/'
-        zeebo_fs.clear(dist..bundler)
-    else
-        bundler = ''
-    end
-
-    -- move game
-    if game and #game > 0 then
-        zeebo_fs.move(game, dist..'game.lua')
-    end
-
-    -- core move
-    local index = 1
-    local core = core_list[core]
-    zeebo_builder.build(core.src, dist..bundler)
-    if core.extras then
-        while index <= #core.extras do
-            local file = core.extras[index]
-            zeebo_fs.move(file, dist..file:gsub('.*/', ''))
-            index = index + 1
-        end
-    end
-
-    -- combine files
-    if #bundler > 0 then
-        zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
-        zeebo_fs.clear(dist..bundler)
-        os.remove(dist..bundler)
-    end
-
-    -- post process
-    if core.pipeline then
-        local index = 1
-        while index <= #core.pipeline do
-            local eval = core.pipeline[index]
-            while type(eval) == 'function' do
-                eval = eval()
-            end
-            index = index + 1
-        end
-    end
-
-    if run then
-        if not core.post_exe then
-            print('this core cannot be runned after build!')
-            os.exit(1)
-        end
-        os.exit(os.execute(core.post_exe) and 0 or 1)
-    end
-elseif command == 'version' then
-    print('0.0.6')
-elseif command == "help" then
-    local help_message = "Available commands:\n" ..
-    "- run: Executes the specified core. If no core is specified, defaults to 'love'.\n" ..
-    "- clear | clean: Clears the specified distribution directory.\n" ..
-    "- meta: Displays metadata for the current game.\n" ..
-    "- bundler: Builds the game using the bundler.\n" ..
-    "- test-self: Runs tests located in the './tests' directory.\n" ..
-    "- build: Builds the game and prepares it for distribution.\n" ..
-    "\n" ..
-    "Available cores:\n" ..
-    "- repl: Runs the REPL core.\n" ..
-    "- love: Runs the Love2D core.\n" ..
-    "- ginga: Runs the Ginga core.\n" ..
-    "- html5_webos: Builds for HTML5 on WebOS.\n" ..
-    "- html5_tizen: Builds for HTML5 on Tizen.\n" ..
-    "- html5_ginga: Runs the Ginga core for HTML5.\n" ..
-    "- html5: Runs the standard HTML5 core.\n" ..
-    "- nintendo_wii: Builds for the Nintendo Wii.\n" ..
-    "\n" ..
-    "Usage:\n" ..
-    "- To run a command, use: ./cli.sh <command> <game_path> -".."-core <core_name> [options]\n" ..
-    "- For example: ./cli.sh build ./examples/asteroids/game.lua -".."-core ginga"
-    print(help_message)
-else
-    print('command not found: '..command)
+if not ok and os and os.exit then
     os.exit(1)
 end
 
---! @endcond
+return commands_info.meta()
