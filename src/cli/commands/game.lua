@@ -7,9 +7,9 @@ end
 
 local function run(args)
     local love = 'love'
-    local screen = args['screen'] and '-screen '..args['screen'] or ''
-    local command = love..' src/engine/core/love -'..screen..' '..args[game]
-    if os and os.execute then
+    local screen = args['screen'] and '-screen '..args.screen or ''
+    local command = love..' src/engine/core/love -'..screen..' '..args.game
+    if not os or not os.execute then
         return false, 'cannot can execute'
     end
     os.execute(command)

@@ -3,6 +3,7 @@ local zeebo_args = require('src/lib/common/args')
 local function add_next_value(self, param, opt)
     local index = #self.param_list_value[self.current]
     self.param_list_value[self.current][index + 1] = param 
+    self.param_dict_value_alias[self.current][param] = opt.alias
     self.param_dict_value_default[self.current][param] = opt and opt.default
     self.param_dict_value_required[self.current][param] = (opt and opt.required) == true
     return self
@@ -11,6 +12,7 @@ end
 local function add_option_get(self, param, opt)
     local index = #self.param_list_option_get[self.current]
     self.param_list_option_get[self.current][index + 1] = param 
+    self.param_dict_option_get_alias[self.current][param] = opt.alias
     self.param_dict_option_get_default[self.current][param] = opt and opt.default
     self.param_dict_option_get_required[self.current][param] = (opt and opt.required) == true
     return self
@@ -25,10 +27,12 @@ end
 local function add_subcommand(self, cmd_name, cmd_collection)
     self.param_dict_option_get_required[cmd_name] = {}
     self.param_dict_option_get_default[cmd_name] = {}
+    self.param_dict_option_get_alias[cmd_name] = {}
     self.param_list_option_get[cmd_name] = {}
     self.param_list_option_has[cmd_name] = {}
     self.param_dict_value_required[cmd_name] = {}
     self.param_dict_value_default[cmd_name] = {}
+    self.param_dict_value_alias[cmd_name] = {}
     self.param_list_value[cmd_name] = {}
     self.cmd_execution[cmd_name] = cmd_collection[cmd_name]
     self.commands[#self.commands + 1] = cmd_name
@@ -69,8 +73,12 @@ local function run(self, host_args)
         while index <= #self.param_list_option_get[command] and command ~= self.error_usage do
             local param = self.param_list_option_get[command][index]
             local value = zeebo_args.get(host_args, param)
+            local alias = self.param_dict_option_get_alias[command][param]
             local required = self.param_dict_option_get_required[command][param]
             local default_value = self.param_dict_option_get_default[command][param]
+            if alias and (value or ''):sub(1, 1) == alias:sub(1, 1)  then
+                value = self.param_dict_value_alias[command][param]:sub(2):gsub('{{'..param..'}}', value:sub(2))
+            end
             if required and not value then
                 command = self.error_usage
             end
@@ -84,8 +92,12 @@ local function run(self, host_args)
         while index <= #self.param_list_value[command] and command ~= self.error_usage do
             local param = self.param_list_value[command][index]
             local value = zeebo_args.param(host_args, self.param_list_option_get[command], index + 1)
+            local alias = self.param_dict_value_alias[command][param]
             local required = self.param_dict_value_required[command][param]
             local default_value = self.param_dict_value_default[command][param]
+            if alias and (value or ''):sub(1, 1) == alias:sub(1, 1)  then
+                value = self.param_dict_value_alias[command][param]:sub(2):gsub('{{'..param..'}}', value:sub(2))
+            end
             if required and not value then
                 command = self.error_usage
             end
@@ -121,10 +133,12 @@ local function from(host_args)
         error_not_found = nil,
         param_dict_option_get_required = {},
         param_dict_option_get_default = {},
+        param_dict_option_get_alias = {},
         param_list_option_get = {},
         param_list_option_has = {},
         param_dict_value_required = {},
         param_dict_value_default = {},
+        param_dict_value_alias = {},
         param_list_value = {},
         cmd_execution = {},
         commands = {},
