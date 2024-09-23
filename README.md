@@ -1,4 +1,6 @@
-# codename-videogame-engine
+<div align="center">
+<h1>:mechanical_arm:<br>GLY Engine<br><sup><sub>powered by <a href="https://gamely.com.br" target="_blank">gamely.com.br</a></sub></sup></h1>
+</div>
 
 [<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/RodrigoDornelles/codename-videogame-engine/blob/main/examples/asteroids/game.lua)
 
@@ -12,47 +14,36 @@
 
 ### Love 2D :heart_decoration: :desktop_computer:
 
-```bash
-$ ./cli.sh build ./examples/asteroids/game.lua --core love --run
-```
-
-### Ginga :brazil: :tv:
-
- * :octocat: [telemidia/ginga](https://github.com/TeleMidia/ginga)
-
-```bash
-$ ./cli.sh build ./examples/asteroids/game.lua --core ginga --run
+```sql
+lua cli.lua build @asteroids --core love --run
 ```
 
 ### Browser :globe_with_meridians:
 
-Need a web server to work, use live server in your vscode for development and github/cloudflare pages for production.
-
-```bash
-$ ./cli.sh build ./examples/asteroids/game.lua --core html5
+```sql
+lua cli.lua build @asteroids --core html5
 ```
 
-Platform Support List
-=====================
+#### CLI Plataform Support
 
-| core            | tier   | plataform |
-| :-------------- | :----: | :-------- |
-| ginga           | tier 1 | TV        |
-| love            | tier 1 | Library   |
-| repl            | tier 1 | PC        |
-| curses          | tier ? | PC        |
-| html5           | tier 2 | Browser   |
-| html5_webos     | tier 2 | TV        |
-| html5_tizen     | tier 3 | TV        |
-| html5_ginga     | tier ? | TV        |
-| esp32           | tier ? | Embed     |
-| roblox          | tier ? | Game      |
-| raylib          | tier ? | Library   |
-| nintendo_gba    | tier ? | Console   |
-| nintendo_3ds    | tier ? | Console   |
-| nintendo_wii    | tier 4 | Console   |
-| nintendo_wiiu   | tier ? | Console   |
-| nintendo_switch | tier ? | Console   |
-| playstation_2   | tier ? | Console   |
+| command | lua 5.4 | lua 5.3 | lua 5.1 | luajit | installation |
+| :-----: | :-----: | :-----: | :-----: | :----: | :----------- |
+| cli.sh  |    :ok: |    :ok: |    :ok: |   :ok: | `git clone https://github.com/gamelly/gly-engine`
+| cli.lua |    :ok: |    :ok: |     :x: |   :ok: | `wget get.gamely.com.br/cli.lua`
+| gly-cli |    :ok: |         |         |        | `npm install -g @gamely/gly-cli`
+
+#### Engine Plataform Support
+
+| Tier 1 | HTML5, WebOS2020 or later | main platform for production |
+| :----- | :------------------------ | :------------ |
+| Tier 2 | Love2D                    | main plataform for development and tests
+| Tier 3 | Tizen 8                   | full support WIP
+| Tier 4 | WebOS 6                   | coming soon
+| Tier 5 | Native Core SDL2          | full support, not available for download
+| Tier 6 | Native Core Arduino       | coming soon
+| Tier 7 | Ginga                     | support
+| Tier 8 | Play Station 2            | coming soon
+| Tier 9 | Nintendo Wii              | broken support
+
 ---
 This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.
