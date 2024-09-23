@@ -4,6 +4,7 @@
     "author": "RodrigoDornelles",
     "license": "Apache-2.0",
     "funding": "https://github.com/sponsors/RodrigoDornelles",
+    "repository": "github:rodrigodornelles/gaga",
     "main": "bin/cli",
     "bin": {
         "cli": "bin/cli"
