@@ -33,7 +33,7 @@ end
 local function reset(self)
     self.pipeline = self.pipeline or self.pipeline2
     self.pipeline2 = nil
-    self.pipeline_current = 1
+    self.pipeline_current = nil
 end
 
 local function clear(self)
