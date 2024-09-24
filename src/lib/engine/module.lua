@@ -31,6 +31,18 @@ local function loadgame(game_file)
             application = ok and app
         end
     end
+    if not application and io and io.open then
+        local app_file = io.open(game_file)
+        if app_file then
+            local app_src = app_file:read('*a')
+            local ok, app = pcall(load, app_src)
+            if not ok then
+                ok, app = pcall(loadstring, app_src)
+            end
+            application = ok and app
+            app_file:close()
+        end
+    end
 
     while application and type(application) == 'function' do
         application = application()

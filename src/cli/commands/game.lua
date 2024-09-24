@@ -6,14 +6,23 @@ local function init(args)
 end
 
 local function run(args)
-    local love = 'love'
-    local screen = args['screen'] and '-screen '..args.screen or ''
-    local command = love..' src/engine/core/love -'..screen..' '..args.game
-    if not os or not os.execute then
-        return false, 'cannot can execute'
+    if args.core == 'repl' then
+        arg = {args.game}
+        require('src/engine/core/repl/main')
+        return true
+    elseif args.core == 'love' then
+        if BOOTSTRAP then
+            return false, 'core love2d is not avaliable in bootstraped CLI.'
+        end
+        local love = 'love'
+        local screen = args['screen'] and '-screen '..args.screen or ''
+        local command = love..' src/engine/core/love -'..screen..' '..args.game
+        if not os or not os.execute then
+            return false, 'cannot can execute'
+        end
+        return os.execute(command)
     end
-    os.execute(command)
-    return true
+    return false, 'this core cannot be runned!'
 end
 
 local function meta(args)

@@ -4,10 +4,25 @@ local io = io or {open = function(a, b) end, popen = function (a) end}
 local javascript_path = jsRequire and jsRequire('path')
 local javascript_fs = jsRequire and jsRequire('fs')
 local real_io_open = io and io.open
+local real_require = require
 
 if jsRequire then
     os.execute = function() end
     io.popen = function() end
+end
+
+if package and package.searchers then
+    require = function(module_name)
+        local file_name = module_name..'.lua'
+        if package.preload[module_name] then
+            return package.preload[module_name]
+        end
+        if BOOTSTRAP[file_name] then
+            package.preload[module_name] = load(BOOTSTRAP[file_name])()
+            return package.preload[module_name]
+        end
+        return real_require
+    end
 end
 
 local function file_reader(self, mode, size, func)
