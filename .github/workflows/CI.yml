@@ -33,7 +33,7 @@ jobs:
         luarocks install luaunit
     -
       run: |
-        ./cli.sh test-self --coverage
+        ./cli.sh cli-test --coverage
     - 
       if: (matrix.lua_version == '5.4') && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
       run: |
@@ -74,7 +74,7 @@ jobs:
         unzip luau-ubuntu.zip
     -
       run: |
-        ./cli.sh cli --bundler --core ${{ matrix.core }}
+        ./cli.sh build --bundler --core ${{ matrix.core }}
         ./cli.sh fs-replace dist/main.lua dist/main.lua --format "function native_callback" --replace "local function _native_callback"
     -
       run: |
