@@ -3,13 +3,9 @@
 local io = io or {open = function(a, b) end, popen = function (a) end}
 local javascript_path = jsRequire and jsRequire('path')
 local javascript_fs = jsRequire and jsRequire('fs')
+local javascript_ps = jsRequire and jsRequire('child_process')
 local real_io_open = io and io.open
 local real_require = require
-
-if jsRequire then
-    os.execute = function() end
-    io.popen = function() end
-end
 
 if package and package.searchers and require then
     require = function(module_name)
@@ -120,4 +116,22 @@ io.open = function(filename, mode)
     end
 
     return file
+end
+
+if jsRequire then
+    os.execute = function(cmd)
+        return pcall(javascript_ps.execSync, cmd)
+    end
+    os.popen = function(cmd)
+        local ok, stdout = pcall(javascript_ps.execSync, cmd, {encoding='utf8'})
+        return {
+            read = function(self, size)
+                return file_reader(self, mode, size, function()
+                    return stdout
+                end)
+            end,
+            write = function() end,
+            close = function() return ok, '' end
+        }
+    end
 end
