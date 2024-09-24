@@ -11,7 +11,7 @@ if jsRequire then
     io.popen = function() end
 end
 
-if package and package.searchers then
+if package and package.searchers and require then
     require = function(module_name)
         local file_name = module_name..'.lua'
         if package.preload[module_name] then
@@ -21,7 +21,7 @@ if package and package.searchers then
             package.preload[module_name] = load(BOOTSTRAP[file_name])()
             return package.preload[module_name]
         end
-        return real_require
+        return real_require(module_name)
     end
 end
 
