@@ -24,7 +24,7 @@ lua cli.lua build @asteroids --core love --run
 lua cli.lua build @asteroids --core html5
 ```
 
-#### CLI Plataform Support
+#### CLI Platform Support
 
 | command | lua 5.4 | lua 5.3 | lua 5.1 | luajit | installation |
 | :-----: | :-----: | :-----: | :-----: | :----: | :----------- |
@@ -32,7 +32,7 @@ lua cli.lua build @asteroids --core html5
 | cli.lua |    :ok: |    :ok: |     :x: |   :ok: | `wget get.gamely.com.br/cli.lua`
 | gly-cli |    :ok: |         |         |        | `npm install -g @gamely/gly-cli`
 
-#### Engine Plataform Support
+#### Engine Platform Support
 
 | Tier 1 | HTML5, WebOS2020 or later | main platform for production |
 | :----- | :------------------------ | :------------ |
