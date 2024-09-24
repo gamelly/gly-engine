@@ -111,7 +111,6 @@ local function run(self, host_args)
         args.command = usage
         if self.cmd_execution[usage] then
             command = self.error_usage
-            force_ok = true
         else
             command = self.error_not_found
         end

@@ -1,4 +1,4 @@
-local _, os = pcall(require, 'os')
+local os = require('os')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_meta = require('src/lib/cli/meta')

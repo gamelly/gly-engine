@@ -1,4 +1,4 @@
-local _, os = pcall(require, 'os')
+local os = require('os')
 local zeebo_meta = require('src/lib/cli/meta')
 
 local function init(args)

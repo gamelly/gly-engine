@@ -30,6 +30,12 @@ local function run(self)
     return self
 end
 
+local function reset(self)
+    self.pipeline = self.pipeline or self.pipeline2
+    self.pipeline2 = nil
+    self.pipeline_current = 1
+end
+
 local function clear(self)
     self.pipeline_current = nil
     self.pipeline2 = nil
@@ -37,6 +43,7 @@ local function clear(self)
 end
 
 local P = {
+    reset=reset,
     clear=clear,
     pipe=pipe,
     stop=stop,

@@ -39,7 +39,7 @@ local function decorator_triangle(func_draw_poly, std, func_draw_triangle)
         local x2, y2 = point(x, y, verts[3], verts[4], scale, angle, ox, oy)
         local x3, y3 = point(x, y, verts[5], verts[6], scale, angle, ox, oy)
         
-        func_draw_triangle(engine_mode, x1, y1, x2, y2, x3, y3)
+        return func_draw_triangle(engine_mode, x1, y1, x2, y2, x3, y3)
     end
 end
 
