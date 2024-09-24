@@ -60,6 +60,7 @@ local command = zeebo_argparse.from(arg)
     .add_subcommand('cli-build', commands_cli)
     .add_option_get('dist', {default='./dist/'})
     .add_subcommand('cli-test', commands_cli)
+    .add_option_has('coverage')
     .add_subcommand('cli-dump', commands_cli)
     --
     .add_subcommand('version', commands_info)

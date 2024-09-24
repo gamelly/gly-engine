@@ -4,8 +4,8 @@ local zeebo_fs = require('src/lib/cli/fs')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_bootstrap = require('src/lib/cli/bootstrap')
 
-local function cli_test()
-    coverage = coverage and '-lluacov' or ''
+local function cli_test(args)
+    local coverage = args.coverage and '-lluacov' or ''
     local files = zeebo_fs.ls('./tests')
     local index = 1
     local ok = true
