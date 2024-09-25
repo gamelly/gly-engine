@@ -186,8 +186,8 @@ local function dump()
         local index = 1
         while index <= #BOOTSTRAP_LIST do
             local file = BOOTSTRAP_LIST[index]
-            local output_file = io.open(file, 'w')
-            output_file:write(io.open(file, 'r'):read('*a'))
+            local output_file = io.open(file, 'wb')
+            output_file:write(BOOTSTRAP[file])
             output_file:close()
             index = index + 1
         end
