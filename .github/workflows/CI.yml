@@ -12,15 +12,19 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lua_version: ['5.1', '5.3', '5.4']
     steps:
     -
       uses: actions/checkout@master
     - 
       uses: leafo/gh-actions-lua@v10
       with:
-        luaVersion: "5.4.7"
+        luaVersion: ${{ matrix.lua_version }}
     -
       uses: leafo/gh-actions-luarocks@v4
     -
@@ -29,8 +33,49 @@ jobs:
         luarocks install luaunit
     -
       run: |
-        ./cli.sh test-self --coverage
+        ./cli.sh cli-test --coverage
     - 
-      if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+      if: (matrix.lua_version == '5.4') && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
       run: |
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
+
+  version:
+    if: github.event_name == 'push'
+    name: test version
+    runs-on: ubuntu-latest
+    steps:
+    -
+      uses: actions/checkout@master
+    - 
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: '5.4'
+    -
+      run: |
+        lua tools/versionchecker.lua
+
+  lint:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        core: ['native']
+    steps:
+    -
+      uses: actions/checkout@master
+    - 
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: '5.4'
+    -
+      run: |
+        wget https://github.com/luau-lang/luau/releases/download/0.644/luau-ubuntu.zip
+        unzip luau-ubuntu.zip
+    -
+      run: |
+        ./cli.sh build --bundler --core ${{ matrix.core }}
+        ./cli.sh fs-replace dist/main.lua dist/main.lua --format "function native_callback" --replace "local function _native_callback"
+    -
+      run: |
+        ./luau-analyze dist/main.lua

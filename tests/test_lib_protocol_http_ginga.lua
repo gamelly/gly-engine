@@ -1,8 +1,13 @@
 local luaunit = require('luaunit')
 local protocol_http = require('src/lib/protocol/http_ginga')
 
+local std = {}
+local game = {}
 local application = {}
-local http_handler = protocol_http.install({}, {}, application)
+local protocol = protocol_http.install(std, game, application)
+local http_handler = protocol.handler
+application.internal.fixed_loop = { function() protocol.event.loop(std, game, application) end }
+application.internal.event_loop = { function(evt) protocol.event.ginga(std, game, application, evt) end }
 application.internal.http.dns_state = 2
 event = {
     post=function() end

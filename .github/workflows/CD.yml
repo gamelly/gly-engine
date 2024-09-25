@@ -1,0 +1,35 @@
+name: cd
+
+on:
+  workflow_dispatch:
+  push:
+    tags: 
+      - "*.*.*"
+
+permissions:
+  id-token: write
+
+jobs:
+  npm-gly-cli: 
+    runs-on: ubuntu-latest   
+    steps:
+      -
+        uses: actions/checkout@master
+      - 
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.4"
+      -
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      -
+        run: |
+          lua tools/build_npm_cli.lua
+      - 
+        working-directory: ./dist
+        run: |
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

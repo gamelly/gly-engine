@@ -70,9 +70,9 @@ local function request(method, std, game, application, protocol_handler)
             param_list = {},
             param_dict = {},
             callback_handler = callback_handler,
-            success_handler = function () end,
-            failed_handler = function () end,
-            error_handler = function () end,
+            success_handler = function (std, game) end,
+            failed_handler = function (std, game) end,
+            error_handler = function (std, game) end,
             -- objects
             std = std,
             game = game,
@@ -105,7 +105,7 @@ local function request(method, std, game, application, protocol_handler)
         self.pipeline = {
             -- eval
             function()
-                local response = self:protocol_handler()
+                self:protocol_handler()
             end,
             -- callbacks
             function()
@@ -127,43 +127,9 @@ local function request(method, std, game, application, protocol_handler)
                 self.std.http.error = nil
                 self.std.http.status = nil
             end,
-            -- clean lists
+            -- reset request
             function()
-                local index = 1
-                while index <= #self.param_list do
-                    self.param_dict[self.param_list[index]] = nil
-                    index = index + 1
-                end
-                index = 1
-                while index <= #self.header_list do
-                    self.header_dict[self.header_list[index]] = nil
-                    index = index + 1
-                end
-            end,
-            -- clean gc
-            function()
-                self.url = nil
-                self.body_content = nil
-                self.param_list = nil
-                self.param_dict = nil
-                self.header_list = nil
-                self.header_dict = nil
-                self.success_handler = nil
-                self.failed_handler = nil
-                self.std = nil
-                self.game = nil
-                self.application = nil
-                self.body = nil
-                self.param = nil
-                self.success = nil
-                self.failed = nil
-                self.run = nil
-                self.set = nil
-                self.promise = nil
-                self.resolve = nil
-                self.protocol_handler = nil
-                self.state = nil
-                zeebo_pipeline.clear(self)
+                zeebo_pipeline.reset(self)
             end
         }
 
@@ -174,7 +140,8 @@ end
 
 local function install(std, game, application, protocol)
     local protocol_handler = protocol.handler
-    std = std or {}
+    local event = nil
+    
     std.http = std.http or {}
     std.http.get=request('GET', std, game, application, protocol_handler)
     std.http.head=request('HEAD', std, game, application, protocol_handler)
@@ -184,10 +151,14 @@ local function install(std, game, application, protocol)
     std.http.patch=request('PATCH', std, game, application, protocol_handler)
     
     if protocol.install then
-        protocol.install(std, game, application)
+        local m = protocol.install(std, game, application)
+        event = m and m.event
     end
 
-    return std.http
+    return {
+        event=event,
+        std={http=std.http}
+    }
 end
 
 local P = {

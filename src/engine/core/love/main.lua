@@ -9,8 +9,8 @@ local engine_loop = require('src/engine/core/love/loop')
 local engine_color = require('src/lib/object/color')
 local engine_http = require('src/lib/engine/http')
 local engine_encoder = require('src/lib/engine/encoder')
-local engine_draw_fps = require('src/lib/engine/draw_fps')
-local engine_draw_poly = require('src/lib/engine/draw_poly')
+local engine_draw_fps = require('src/lib/draw/fps')
+local engine_draw_poly = require('src/lib/draw/poly')
 local protocol_curl_love = require('src/lib/protocol/http_curl_love')
 local library_csv = require('src/third_party/csv/rodrigodornelles')
 local library_json = require('src/third_party/json/rxi')
@@ -23,6 +23,7 @@ function love.load(args)
     local game_title = zeebo_args.param(arg, {'screen'}, 2)
     local application = zeebo_module.loadgame(game_title)
     local polygons = {
+        triangle=engine_draw.triangle,
         poly=love.graphics.polygon,
         modes={'fill', 'line', 'line'}
     }
@@ -51,6 +52,12 @@ function love.load(args)
         :package('http', engine_http, protocol_curl_love)
         :package('csv', engine_encoder, library_csv)
         :package('json', engine_encoder, library_json)
+        :register(function(listener)
+            love.update = listener('loop')
+            love.draw = listener('draw')
+            love.keypressed = listener('keydown')
+            love.keyreleased = listener('keyup')
+        end)
         :run()
 
     game.width, game.height = w, h

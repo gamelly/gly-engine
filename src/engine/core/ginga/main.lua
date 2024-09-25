@@ -8,8 +8,8 @@ local engine_color = require('src/lib/object/color')
 local engine_keys = require('src/engine/core/ginga/keys')
 local engine_loop = require('src/engine/core/ginga/loop')
 local engine_draw = require('src/engine/core/ginga/draw')
-local engine_draw_fps = require('src/lib/engine/draw_fps')
-local engine_draw_poly = require('src/lib/engine/draw_poly')
+local engine_draw_fps = require('src/lib/draw/fps')
+local engine_draw_poly = require('src/lib/draw/poly')
 local library_csv = require('src/third_party/csv/rodrigodornelles')
 local library_json = require('src/third_party/json/rxi')
 local protocol_http_ginga = require('src/lib/protocol/http_ginga')
@@ -29,24 +29,26 @@ local event = event
 --! @brief GINGA?
 _ENV = nil
 
-local function event_loop(evt)
-    local index = 1
-    while index <= #application.internal.event_loop do
-        application.internal.event_loop[index](evt)
-        index = index + 1
-    end
+local function register_event_loop(listener)
+    event.register(listener('ginga'))
 end
 
-local function fixed_loop()
-    local delay = application.internal.fps_controler(event.uptime())
-    local index = 1
+local function register_fixed_loop(listener)
+    local tick = nil
+    local loop = listener('loop')
+    local draw = listener('draw')
 
-    while index <= #application.internal.fixed_loop do
-        application.internal.fixed_loop[index]()
-        index = index + 1
+    tick = function()
+        local delay = application.internal.fps_controler(event.uptime())
+        loop()
+        canvas:attrColor(0, 0, 0, 0)
+        canvas:clear()
+        draw()
+        canvas:flush()
+        event.timer(delay, tick)
     end
 
-    event.timer(delay, fixed_loop)
+    event.timer(1, tick)
 end
 
 local function install(evt, gamefile)
@@ -73,10 +75,6 @@ local function install(evt, gamefile)
     game.width, game.height = canvas:attrSize()
     game.fps_max = application.config and application.config.fps_max or 100
     game.fps_show = application.config and application.config.fps_show or 0
-    application.internal = {
-        event_loop={},
-        fixed_loop={}
-    }
 
     zeebo_module.require(std, game, application)
         :package('@fps', engine_fps, config_fps)
@@ -94,11 +92,11 @@ local function install(evt, gamefile)
         :package('math', engine_math.clib)
         :package('random', engine_math.clib_random)
         :package('http', engine_http, protocol_http_ginga)
+        :register(register_event_loop)
+        :register(register_fixed_loop)
         :run()
-    
+
     application.callbacks.init(std, game)
-    event.timer(1, fixed_loop)
-    event.register(event_loop)
     event.unregister(install)
 end
 

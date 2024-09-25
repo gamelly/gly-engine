@@ -12,7 +12,7 @@ local function shared_args_get(args, key, default)
     while index <= #args do
         local param = args[index]
         local nextparam = args[index + 1]
-        if param:sub(1, 2) == '--' and param:sub(3, #param) == key and nextparam and nextparam:sub(1, 2) ~= '--' then
+        if param:sub(1, 2) == '-'..'-' and param:sub(3, #param) == key and nextparam and nextparam:sub(1, 2) ~= '-'..'-' then
             value = nextparam
         end 
         index = index + 1
@@ -31,7 +31,7 @@ local function shared_args_has(args, key)
     local index = 1
     while index <= #args do
         local param = args[index]
-        if param:sub(1, 2) == '--' and param:sub(3, #param) == key then
+        if param:sub(1, 2) == '-'..'-' and param:sub(3, #param) == key then
             return true
         end 
         index = index + 1
@@ -64,8 +64,8 @@ local function shared_args_param(args, ignore_keys, position, default)
     while index <= #args do
         local arg = args[index]
         local param = args[index - 1]
-        if arg:sub(1, 2) ~= '--' then
-            if index <= 1 or (param and not (param:sub(1, 2) == '--' and ignore_keys2[param:sub(3, #param)])) then
+        if arg:sub(1, 2) ~= '-'..'-' then
+            if index <= 1 or (param and not (param:sub(1, 2) == '-'..'-' and ignore_keys2[param:sub(3, #param)])) then
                 if position == count then
                     value = arg
                 end

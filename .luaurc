@@ -1,0 +1,25 @@
+{
+  "languageMode": "nonstrict",
+  "lint": { "*": true},
+  "lintErrors": true,
+  "globals": [
+    "Buffer",
+    "jsRequire",
+    "load",
+    "loadfile",
+    "love",
+    "native_dict_http",
+    "native_dict_json",
+    "native_dict_poly",
+    "native_dict_xml",
+    "native_draw_clear",
+    "native_draw_color",
+    "native_draw_flush",
+    "native_draw_font",
+    "native_draw_line",
+    "native_draw_rect",
+    "native_draw_start",
+    "native_draw_text",
+    "io"
+  ]
+}

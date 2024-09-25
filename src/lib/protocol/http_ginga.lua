@@ -413,9 +413,7 @@ local function install(std, game, application)
         by_connection={}
     }
 
-    application.internal = application.internal or {}    
-    application.internal.event_loop = application.internal.event_loop or {}
-    application.internal.fixed_loop = application.internal.fixed_loop or {}
+    application.internal = application.internal or {}
     application.internal.http = {}
     application.internal.http.dns_state = 0
     application.internal.http.queue = {}
@@ -446,15 +444,13 @@ local function install(std, game, application)
         http_clear=http_clear,
     }
 
-    application.internal.event_loop[#application.internal.event_loop + 1] = function (evt)
-        event_loop(std, game, application, evt)    
-    end
-    
-    application.internal.fixed_loop[#application.internal.fixed_loop + 1] = function ()
-        fixed_loop(std, game, application)    
-    end
-
-    return http_handler
+    return {
+        handler=http_handler,
+        event={
+            loop=fixed_loop,
+            ginga=event_loop
+        }
+    }
 end
 
 local P = {

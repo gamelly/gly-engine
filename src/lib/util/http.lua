@@ -98,10 +98,10 @@ local function create_request(method, uri)
 
     self.to_curl_cmd = function ()
         local index = 1
-        local request = 'curl -L \x2D\x2Dsilent \x2D\x2Dinsecure -w "\n%{http_code}" '
+        local request = 'curl -L -'..'-silent -'..'-insecure -w "\n%{http_code}" '
 
         if method == 'HEAD' then
-            request = request..'\x2D\x2DHEAD '
+            request = request..'-'..'-HEAD '
         else
             request = request..'-X '..method..' '
         end

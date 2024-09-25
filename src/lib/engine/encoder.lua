@@ -4,6 +4,7 @@ local function install(std, game, application, library, name)
         encode=library.encode,
         decode=library.decode
     }
+    
     return {[name]=std[name]}
 end
 

@@ -1,0 +1,28 @@
+{
+    "name": "@gamely/gly-cli",
+    "version": "0.0.6",
+    "author": "RodrigoDornelles",
+    "license": "Apache-2.0",
+    "homepage": "https://gamely.com.br",
+    "repository": "https://github.com/gamelly/gly-engine",
+    "funding": "https://github.com/sponsors/RodrigoDornelles",
+    "bugs": "https://github.com/gamelly/gly-engine/issues",
+    "description": "A Lua-based command-line interface for managing GLY game engine projects.",
+    "keywords": [
+        "game engine",
+        "game",
+        "engine",
+        "lua",
+        "love",
+        "cli",
+        "tizen",
+        "webos",
+        "webassembly"
+    ],
+    "bin": {
+        "gly-cli": "bin/gly-cli"
+    },
+    "dependencies": {
+        "demoon": "0.0.9"
+    }
+}

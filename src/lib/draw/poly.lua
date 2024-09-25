@@ -15,6 +15,34 @@ local function decorator_line(func_draw_line)
     end
 end
 
+local function decorator_triangle(func_draw_poly, std, func_draw_triangle)
+    if not func_draw_triangle then
+        return func_draw_poly
+    end
+
+    local point = function(x, y, px, py, scale, angle, ox, oy)
+        local xx = x + ((ox - px) * -scale * std.math.cos(angle)) - ((ox - py) * -scale * std.math.sin(angle))
+        local yy = y + ((oy - px) * -scale * std.math.sin(angle)) + ((oy - py) * -scale * std.math.cos(angle))
+        return xx, yy
+    end
+
+    return function(engine_mode, verts, x, y, scale, angle, ox, oy)
+        if #verts ~= 6 then
+            return func_draw_poly(engine_mode, verts, x, y, scale, angle, ox, oy)
+        end
+
+        ox = ox or 0
+        oy = oy or ox or 0
+        x, y = x or 0, y or 0
+
+        local x1, y1 = point(x, y, verts[1], verts[2], scale, angle, ox, oy)
+        local x2, y2 = point(x, y, verts[3], verts[4], scale, angle, ox, oy)
+        local x3, y3 = point(x, y, verts[5], verts[6], scale, angle, ox, oy)
+        
+        return func_draw_triangle(engine_mode, x1, y1, x2, y2, x3, y3)
+    end
+end
+
 local function decorator_poly(func_draw_poly, std, modes, repeats)    
     return function (engine_mode, verts, x, y, scale, angle, ox, oy)
         if #verts < 6 or #verts % 2 ~= 0 then return end
@@ -64,9 +92,13 @@ end
 local function install(std, game, application, config)
     local draw_line = decorator_poo(config.object, config.line)
     local draw_poly = decorator_poo(config.object, config.poly) or decorator_line(draw_line)
+    local draw_poly2 = config.poly2 or decorator_poly(draw_poly, std, config.modes, config.repeats)
+    local draw_verts = decorator_triangle(draw_poly2, std, config.triangle)
+
     std = std or {}
     std.draw = std.draw or {}
-    std.draw.poly = config.poly2 or decorator_poly(draw_poly, std, config.modes, config.repeats)
+    std.draw.poly = draw_verts
+    
     return {poly=std.draw.poly}
 end
 

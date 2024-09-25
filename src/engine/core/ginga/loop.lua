@@ -1,10 +1,12 @@
 local function install(std, game, application)
-    local index = #application.internal.fixed_loop + 1
-    application.internal.fixed_loop[index] = function ()
-        application.callbacks.loop(std, game)    
+    application.callbacks.loop = application.callbacks.loop or function () end
+
+    local event_loop = function()
+        application.callbacks.loop(std, game)
     end
+
     return {
-        loop=application.internal.fixed_loop[index]
+        event={loop=event_loop}
     }
 end
 

@@ -17,7 +17,7 @@ local key_bindings={
 }
 
 --! @li https://github.com/TeleMidia/ginga/issues/190
-local function event_loop(std, evt)
+local function event_ginga(std, game, application, evt)
     if evt.class ~= 'key' then return end
     if not key_bindings[evt.key] then return end
     
@@ -33,11 +33,11 @@ local function event_loop(std, evt)
 end
 
 local function install(std, game, application)
-    std = std or {}
-    application.internal.event_loop[#application.internal.event_loop + 1] = function (evt)
-        event_loop(std, evt)
-    end
-    return std
+    application.callbacks.loop = application.callbacks.loop or function () end
+
+    return {
+        event={ginga=event_ginga}
+    }
 end
 
 local P = {

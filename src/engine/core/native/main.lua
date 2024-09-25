@@ -2,27 +2,31 @@ local zeebo_module = require('src/lib/engine/module')
 local engine_game = require('src/lib/engine/game')
 local engine_math = require('src/lib/engine/math')
 local engine_color = require('src/lib/object/color')
-local engine_math = require('src/lib/engine/math')
 local engine_http = require('src/lib/engine/http')
 local engine_encoder = require('src/lib/engine/encoder')
-local engine_draw_fps = require('src/lib/engine/draw_fps')
-local engine_draw_poly = require('src/lib/engine/draw_poly')
+local engine_draw_fps = require('src/lib/draw/fps')
+local engine_draw_poly = require('src/lib/draw/poly')
 local library_csv = require('src/third_party/csv/rodrigodornelles')
-local application_default = require('src/lib/object/application')
-local color = require('src/lib/object/color')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 local application = nil
+local extraevents = {
+    loop = function(dt) end,
+    draw = function() end,
+    keydown = function(key, value) end
+}
 
 function native_callback_loop(milis)
     game.milis = milis
     application.callbacks.loop(std, game)
+    extraevents.loop(milis)
     return game.dt
 end
 
 function native_callback_draw()
     native_draw_start()
     application.callbacks.draw(std, game)
+    extraevents.draw()
     native_draw_flush()
 end
 
@@ -33,6 +37,7 @@ end
 
 function native_callback_keyboard(key, value)
     std.key.press[key] = value
+    extraevents.keydown(key, value)
 end
 
 function native_callback_init(width, height, game_lua)
@@ -51,6 +56,11 @@ function native_callback_init(width, height, game_lua)
         :package('json', engine_encoder, native_dict_json)
         :package('xml', engine_encoder, native_dict_xml)
         :package('csv', engine_encoder, library_csv)
+        :register(function(listener)
+            extraevents.loop = listener('loop')
+            extraevents.draw = listener('draw')
+            extraevents.keydown = listener('keydown')
+        end)
         :run()
 
     std.draw.clear=native_draw_clear

@@ -30,8 +30,7 @@ end
 
 local function install(std, game, application, config_fps)
     local index = 1
-    std = std or {}
-    application = application or {}
+    
     application.internal = application.internal or {}
     config_fps.inverse_list = {}
 

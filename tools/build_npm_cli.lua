@@ -1,0 +1,11 @@
+local os = require('os')
+
+assert(os.execute('npm install -g demoon > /dev/null'))
+assert(os.execute('rm -Rf ./dist'))
+assert(os.execute('./cli.sh cli-build'))
+assert(os.execute('mkdir -p dist/bin/'))
+assert(os.execute('npx demoon ./dist/cli.lua compiler ./dist/cli.lua --dist cli.out'))
+assert(os.execute('echo "#!/usr/bin/env -S npx demoon" > header.txt'))
+assert(os.execute('cat header.txt cli.out > dist/bin/gly-cli'))
+assert(os.execute('rm dist/cli.lua header.txt cli.out'))
+assert(os.execute('cp npm-gly-cli.json dist/package.json'))

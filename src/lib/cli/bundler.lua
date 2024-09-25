@@ -72,7 +72,7 @@ local function build(src_path, src_filename, dest)
 
     repeat
         if from == 'system' then
-            main_before = 'local '..lib_var..' = require(\''..lib_module..'\')\n'..main_before
+            main_before = 'local '..lib_var..' = select(2, pcall(require, \''..lib_module..'\')) or '..lib_var..'\n'..main_before
         end
         if src_file then
             if from == 'lib' then
@@ -97,9 +97,9 @@ local function build(src_path, src_filename, dest)
                     deps_var_name[index] = line_require[1]
                     deps_module_path[index] = line_require[2]
                     if from == 'main' then
-                        main_content = main_content..'--'..line_require[2]..line_require[1]..'--\n'
+                        main_content = main_content..'-'..'-'..line_require[2]..line_require[1]..'-'..'-\n'
                     else
-                        main_after = main_after..'--'..line_require[2]..line_require[1]..'--\n'
+                        main_after = main_after..'-'..'-'..line_require[2]..line_require[1]..'-'..'-\n'
                     end
                 elseif line and #line > 0 and from == 'main' then
                     main_content = main_content..line..'\n'
@@ -126,7 +126,7 @@ local function build(src_path, src_filename, dest)
             if lib and not deps_imported[lib] then
                 lib_name = lib_module:gsub('/', '_')
                 src_in = src_path..lib_module..'.lua'
-                src_file = io.open(src_in, 'r') or io.open(lib_module..'.lua')
+                src_file = io.open(src_in, 'r') or io.open(lib_module..'.lua', 'r')
                 src_file = src_file or io.open(src_path..relative_path..lib_module..'.lua')
                 from = src_file and 'lib' or 'system'
                 deps_imported[lib] = from
@@ -159,6 +159,7 @@ local function build(src_path, src_filename, dest)
 
     dest_file:write(main_content)
     dest_file:close()
+    return true
 end
 
 local P = {

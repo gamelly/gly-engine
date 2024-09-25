@@ -25,54 +25,68 @@ end
 --! @todo support WII
 local function text(x, y, text)
     if love.wiimote then return 32 end
+    local font = love.graphics.getFont()
+    local t = text and tostring(text) or tostring(x)
+    local n = select(2, t:gsub('\n', '')) + 1
+    local w = font:getWidth(t)
+    local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
     if x and y then
-        love.graphics.print(text, x, y)
+        love.graphics.print(t, x, y)
     end
-    return love.graphics.getFont():getWidth(text or x)
+    return w, h
 end
 
 local function line(x1, y1, x2, y2)
     love.graphics.line(x1, y1, x2, y2)
 end
 
---! @todo implement it!
-local function font(a, b)
+local function triangle(mode, x1, y1, x2, y2, x3, y3)
+    love.graphics.line(x1, y1, x2, y2)
+    love.graphics.line(x2, y2, x3, y3)
+    if mode <= 1 then
+        love.graphics.line(x1, y1, x3, y3)
+    end
+end
 
+local function font(name, size)
+    if type(name) == 'number' and not size then
+        size = name
+        name = 'Tiresias'
+    end
+    local index = 'font_'..tostring(name)..tostring(size)
+    if not _G[index] then
+        _G[index] = love.graphics.newFont(size)
+    end
+    love.graphics.setFont(_G[index])
 end
 
 local function install(std, game, application)
-    std = std or {}
-    std.draw = std.draw or {}
     application.callbacks.draw = application.callbacks.draw or function() end
-    
-    std.draw.clear = function(c)
-        color(c)
-        love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
-    end
-    
+
     std.draw.color=color
     std.draw.rect=rect
     std.draw.text=text
     std.draw.line=line
     std.draw.font=font
 
-    if love then
-        love.draw = function()
-            application.callbacks.draw(std, game)
-            if std.draw.fps then
-                std.draw.fps(game.fps_show, 8, 8)
-            end
-        end
-        love.resize = function(w, h)
-            game.width, game.height = w, h
-        end
+    std.draw.clear = function(c)
+        color(c)
+        love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
     end
 
-    return std.draw
+    local event_draw = function()
+        application.callbacks.draw(std, game)
+    end
+
+    return {
+        event={draw=event_draw},
+        std={draw=std.draw}
+    }
 end
 
 local P = {
-    install = install
+    install = install,
+    triangle=triangle
 }
 
 return P

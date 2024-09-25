@@ -19,19 +19,20 @@ local function file(self, file)
     self.pipeline[#self.pipeline + 1] = function()
         if not self.loaded then return self end
 
+        local content = ''
         local file_meta = io.open(file_copy, 'r')
-        local file_temp = io.open(file_copy..'.tmp', 'w')
 
         repeat
             local line = file_meta:read()
-            file_temp:write(replace(line, self.meta, application_default.meta), '\n')
+            content = content..replace(line, self.meta, application_default.meta):gsub('\n', '')..'\n'
         until not line
 
         file_meta:close()
-        file_temp:close()
 
-        os.remove(file_copy)
-        os.rename(file_copy..'.tmp', file_copy) 
+        file_meta = io.open(file_copy, 'w')
+
+        file_meta:write(content)
+        file_meta:close()
     end
     return self
 end
@@ -65,7 +66,17 @@ local function run(self)
 end
 
 local function current(game, application)
-    local metadata = game and #game > 0 and dofile(game)
+    local gamefile = game and io.open(game, 'r')
+    local bytecode = gamefile and gamefile:read('*a')
+    local metadata = bytecode and (loadstring and loadstring(bytecode) or load(bytecode))
+
+    if gamefile then
+        gamefile:close()
+    end
+    
+    while type(metadata) == 'function' do
+        metadata = metadata()
+    end
 
     if not application then
         application = {

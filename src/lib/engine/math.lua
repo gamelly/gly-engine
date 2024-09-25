@@ -261,8 +261,8 @@ local function install(std)
 end
 
 local function install_clib(std)
-    local math = require('math')
     std = std or {}
+    local math = require('math')
     std.math = std.math or {}
     std.math.acos=math.acos
     std.math.asin=math.asin
@@ -293,6 +293,7 @@ local function install_clib(std)
 end
 
 local function install_clib_random(std)
+    std = std or {}
     local math = require('math')
     std = std or {}
     std.math = std.math or {}
