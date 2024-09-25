@@ -26,21 +26,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       -
         run: |
-          ./cli.sh cli-build
-          ./cli.sh fs-replace README.md dist/README.md --format 'lua cli.lua' --replace 'gly-cli'
-      -
-        working-directory: ./dist
-        run: |
-          mv ../npm-gly-cli.json package.json
-          mkdir -p bin
-          npm install
-      -
-        working-directory: ./dist
-        run: |
-          npm run build
+          lua tools/build_npm_cli.lua
       - 
         working-directory: ./dist
         run: |
-          npm run deploy
+          npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
