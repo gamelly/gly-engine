@@ -1,0 +1,17 @@
+{
+    "name": "@gamely/gly-engine",
+    "version": "{{version}}",
+    "author": "RodrigoDornelles",
+    "license": "Apache-2.0",
+    "homepage": "https://gamely.com.br",
+    "repository": "https://github.com/gamelly/gly-engine",
+    "funding": "https://github.com/sponsors/RodrigoDornelles",
+    "bugs": "https://github.com/gamelly/gly-engine/issues",
+    "description": "Game Engine written in 100% lua that runs in a vacuum.",
+    "main": "dist/index.lua",
+    "keywords": [
+        "game engine",
+        "game",
+        "engine"
+    ]
+}

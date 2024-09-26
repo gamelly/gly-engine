@@ -1,0 +1,17 @@
+{
+    "name": "@gamely/core-native-html5",
+    "version": "{{version}}",
+    "author": "RodrigoDornelles",
+    "license": "Apache-2.0",
+    "homepage": "https://gamely.com.br",
+    "repository": "https://github.com/gamelly/gly-engine",
+    "funding": "https://github.com/sponsors/RodrigoDornelles",
+    "bugs": "https://github.com/gamelly/gly-engine/issues",
+    "description": "create your own game-engine with just javascript.",
+    "main": "dist/index.js",
+    "keywords": [
+        "game engine",
+        "game",
+        "engine"
+    ]
+}

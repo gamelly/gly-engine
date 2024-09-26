@@ -1,6 +1,6 @@
 {
     "name": "@gamely/gly-cli",
-    "version": "0.0.6",
+    "version": "{{version}}",
     "author": "RodrigoDornelles",
     "license": "Apache-2.0",
     "homepage": "https://gamely.com.br",

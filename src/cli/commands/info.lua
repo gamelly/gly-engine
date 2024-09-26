@@ -44,7 +44,7 @@ local help_message = "Available commands:\n"
   .."- To run a game: ./cli.sh run ./examples/asteroids/game.lua "  .. "-" .. "-core repl\n"
   .."- To display metadata: ./cli.sh meta ./examples/asteroids/game.lua\n"
 
-local version_message = '0.0.6'
+local version_message = '0.0.7'
 
 local function help()
   return true, help_message
