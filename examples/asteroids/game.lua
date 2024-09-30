@@ -26,6 +26,25 @@
 --! 8 -> 4: resume
 --! @enduml
 
+local function i18n(std, game)
+    return {
+        ['pt-BR'] = {
+            ['lifes:'] = 'vidas:',
+            ['Continue'] = 'Continuar',
+            ['New Game'] = 'Novo Jogo',
+            ['Dificulty'] = 'Dificuldade',
+            ['Invincibility'] = 'Imortabilidade',
+            ['Object Limit'] = 'Limitador',
+            ['Graphics'] = 'Graficos',
+            ['fast'] = 'rapido',
+            ['pretty'] = 'bonito',
+            ['Language'] = 'Idioma',
+            ['Credits'] = 'Creditos',
+            ['Exit'] = 'Sair'
+        }
+    }
+end
+
 --! @cond
 local function draw_logo(std, game, height, anim)
     anim = anim or 0
@@ -205,7 +224,7 @@ local function loop(std, game)
         local keyv = std.key.press.down - std.key.press.up
         local keyh = std.key.press.right - std.key.press.left + std.key.press.enter + std.key.press.red 
         if keyv ~= 0 and game.milis > game.menu_time + 250 then
-            game.menu = std.math.clamp(game.menu + keyv, game.player_pos_x == (game.width/2) and 2 or 1, 8)
+            game.menu = std.math.clamp(game.menu + keyv, game.player_pos_x == (game.width/2) and 2 or 1, 9)
             game.menu_time = game.milis
         end
         if keyh ~= 0 and game.milis > game.menu_time + 100 then
@@ -226,8 +245,10 @@ local function loop(std, game)
                 game.graphics_fastest = std.math.clamp(game.graphics_fastest + keyh, 0, 1)
                 game.fps_max = 100
             elseif game.menu == 7 then
-                game.state = 2
+                std.i18n.next_language()
             elseif game.menu == 8 then
+                game.state = 2
+            elseif game.menu == 9 then
                 std.game.exit()
             end
         end
@@ -372,30 +393,35 @@ local function draw(std, game)
     if game.state == 1 then
         local s2 = 0
         local h = game.height/16
-        local graphics = game.graphics_fastest == 1 and 'rapido' or 'bonito'
+        local hmenu = (h*(4+game.menu)) + 24
+        local language = std.i18n.get_language()
+        local graphics = game.graphics_fastest == 1 and 'fast' or 'pretty'
         local s = draw_logo(std, game, h*2)
         std.draw.font('sans', 16)
         std.draw.color(std.color.white)
         if game.player_pos_x ~= (game.width/2) then
-            std.draw.text(game.width/2 - s, h*6, 'Continuar')
+            std.draw.text(game.width/2 - s, h*5, 'Continue')
         end
-        std.draw.text(game.width/2 - s, h*7, 'Novo Jogo')
-        std.draw.text(game.width/2 - s, h*8, 'Dificuldade')
-        std.draw.text(game.width/2 - s, h*9, 'Imortalidade')
-        std.draw.text(game.width/2 - s, h*10, 'Limitador')
-        std.draw.text(game.width/2 - s, h*11, 'Graficos')
-        std.draw.text(game.width/2 - s, h*12, 'Creditos')
-        std.draw.text(game.width/2 - s, h*13, 'Sair')
-        std.draw.line(game.width/2 - s, (h*(5+game.menu)) + 24, game.width/2 + s, (h*(5+game.menu)) + 24)
+        std.draw.text(game.width/2 - s, h*6, 'New Game')
+        std.draw.text(game.width/2 - s, h*7, 'Dificulty')
+        std.draw.text(game.width/2 - s, h*8, 'Invincibility')
+        std.draw.text(game.width/2 - s, h*9, 'Object Limit')
+        std.draw.text(game.width/2 - s, h*10, 'Graphics')
+        std.draw.text(game.width/2 - s, h*11, 'Language')
+        std.draw.text(game.width/2 - s, h*12, 'Credits')
+        std.draw.text(game.width/2 - s, h*13, 'Exit')
+        std.draw.line(game.width/2 - s, hmenu, game.width/2 + s, hmenu)
         std.draw.color(std.color.red)
         s2=std.draw.text(game.level)
-        std.draw.text(game.width/2 + s - s2, h*8, game.level)
+        std.draw.text(game.width/2 + s - s2, h*7, game.level)
         s2=std.draw.text(game.imortal)
-        std.draw.text(game.width/2 + s - s2, h*9, game.imortal)
+        std.draw.text(game.width/2 + s - s2, h*8, game.imortal)
         s2=std.draw.text(game.asteroids_max)
-        std.draw.text(game.width/2 + s - s2, h*10, game.asteroids_max)
+        std.draw.text(game.width/2 + s - s2, h*9, game.asteroids_max)
         s2=std.draw.text(graphics)
-        std.draw.text(game.width/2 + s - s2, h*11, graphics)
+        std.draw.text(game.width/2 + s - s2, h*10, graphics)
+        s3=std.draw.text(language)
+        std.draw.text(game.width/2 + s - s3, h*11, language)
         return
     elseif game.state == 2 then
         local height = game.height/4
@@ -475,11 +501,12 @@ local P = {
         version='1.0.0'
     },
     config = {
-        require = 'math random',
+        require = 'math random i18n',
         fps_drop = 5,
         fps_time = 5
     },
     callbacks={
+        i18n=i18n,
         init=init,
         loop=loop,
         draw=draw,
