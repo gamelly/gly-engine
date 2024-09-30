@@ -45,7 +45,6 @@ local function i18n(std, game)
     }
 end
 
---! @cond
 local function draw_logo(std, game, height, anim)
     anim = anim or 0
     std.draw.font('sans', 32)
@@ -162,7 +161,6 @@ local function asteroid_destroy(std, game, id)
 
     return score
 end
---! @endcond
 
 local function init(std, game)
     -- game

@@ -1,4 +1,3 @@
---! @file src/lib/repl/main.lua
 --! @short Read Eval Print Loop
 --! @brief an interpreter to debuging the game via stdio.
 --! @par Extended Backus-Naur Form

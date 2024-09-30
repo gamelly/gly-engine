@@ -1,3 +1,6 @@
+--! @short gly-cli
+--! @par Command List
+--! @call commands
 local os = require('os')
 
 local zeebo_argparse = require('src/lib/cli/argparse')

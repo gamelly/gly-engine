@@ -2,4 +2,5 @@
 *.css linguist-generated
 *.sh linguist-generated
 *.bat linguist-generated
+*.txt linguist-language=Dox
 .luaurc linguist-language=Json
