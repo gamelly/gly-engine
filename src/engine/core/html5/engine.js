@@ -7,6 +7,7 @@ const engine = {
         canvas: false,
         stop: false   
     },
+    images: {},
     listen: {},
     global: {
         native_draw_start: () => {
@@ -31,7 +32,13 @@ const engine = {
         native_draw_rect: (mode, x, y, w, h) => {
             mode === 1 ? engine.canvas_ctx.strokeRect(x, y, w, h) : engine.canvas_ctx.fillRect(x, y, w, h)
         },
-        native_draw_font: (name, size) => {},
+        native_draw_font: (name, size) => {
+            const font_size = size || name
+            const font_name = 'sans'
+            engine.canvas_ctx.font = `${font_size}px ${font_name}`;
+            engine.canvas_ctx.textBaseline = 'top'
+            engine.canvas_ctx.textAlign = 'left'
+        },
         native_draw_text: (x, y, text) => {
             if (x && y) {
                 engine.canvas_ctx.fillText(text, x, y)
