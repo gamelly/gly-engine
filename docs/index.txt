@@ -1,3 +1,7 @@
-@mainpage Gly Game Engine
+@mainpage
 
-@todo document this
+@li @ref helloworld
+@li @ref install
+@li @ref why "Plataform Support"
+@li [View the CLI/Engine source code](https://github.com/gamelly/gly-engine)
+@li @ref why "Comparison between Game Engines"

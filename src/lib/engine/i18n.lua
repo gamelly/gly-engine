@@ -33,9 +33,8 @@ end
 
 --! @par Example
 --! @code
---! local some_tex t= std.i18n.get_text('some-text')
---! local width_some_text = std.draw.text(some_text)
---! std.draw.text(game.width - width_some_text, 8, some_text)
+--! local some_text = std.i18n.get_text('some-text')
+--! std.draw.text(8, 8, rot32(some_text))
 --! @endcode
 local function get_text(old_text)
     local new_text = translate[language] and translate[language][old_text]
@@ -59,10 +58,11 @@ local function set_language(l)
     language = l
 end
 
---! @todo better example
 --! @par Example
 --! @code
---! std.i18n.back_language()
+--! if game.state == game.menu_lang and std.key.press.left then
+--!     std.i18n.back_language()
+--! end
 --! @endcode
 local function back_language()
     local index = language_inverse_list[language]
@@ -73,10 +73,11 @@ local function back_language()
     set_language(language_list[index])
 end
 
---! @todo better example
 --! @par Example
 --! @code
---! std.i18n.next_language()
+--! if game.state == game.menu_lang and std.key.press.right then
+--!     std.i18n.next_language()
+--! end
 --! @endcode
 local function next_language()
     local index = language_inverse_list[language]

@@ -27,9 +27,9 @@ end
 
 local P = {
     meta={
-        title='Hello world',
+        title='DVD Player',
         author='RodrigoDornelles',
-        description='say hello to the world!',
+        description='a logo bouncing between the corners',
         version='1.0.0'
     },
     assets={

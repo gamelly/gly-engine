@@ -1,5 +1,0 @@
-@page compare
-
-| Native Resource | Gly Engine | Love2D     | GameMaker  | Unity      | Godot      |
-| :-------------- | :--------- | :--------- | :--------- | :--------- | :--------- |
-| Json Parse      | Yes        | No         | No         | No         | No         |
