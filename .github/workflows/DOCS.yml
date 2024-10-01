@@ -28,7 +28,7 @@ jobs:
         run: |
           docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua doxygen
       - 
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'workflow_dispatch'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -54,7 +54,7 @@ jobs:
         run: |
           ./cli.sh build @${{ matrix.game }} --core html5 --dist ./html/
       - 
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'workflow_dispatch'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
