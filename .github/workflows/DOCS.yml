@@ -1,8 +1,8 @@
 name: docs
 
 env:
-  CLOUDFLARE_PROJECT_DOXYGEN: doxygen-engine
-  CLOUDFLARE_PROJECT_PONG: pong-engine
+  CLOUDFLARE_PROJECT_DOXYGEN: doxygen-gly
+  CLOUDFLARE_PROJECT_EXAMPLE: example-gly
 
 on:
   workflow_dispatch:
@@ -36,20 +36,28 @@ jobs:
           projectName: ${{ env.CLOUDFLARE_PROJECT_DOXYGEN }}
           directory: html
 
-  pong:
-    runs-on: ubuntu-latest
+  example:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        game: ['asteroids', 'dvdplayer', 'helloworld', 'launcher', 'pong']
     steps:
       - 
         uses: actions/checkout@master
       - 
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.4'
+      - 
         run: |
-          docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua ./cli.sh build --core html5 ./examples/pong/game.lua --dist ./html/
+          ./cli.sh build @${{ matrix.game }} --core html5 --dist ./html/
       - 
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ env.CLOUDFLARE_PROJECT_PONG }}
+          projectName: ${{ matrix.game }}-${{ env.CLOUDFLARE_PROJECT_EXAMPLE }}
           directory: html
