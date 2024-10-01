@@ -6,6 +6,7 @@ local P = {
 
     },
     draw = {
+        image = function() end,
         clear = function () end,
         color = function () end,
         rect = function () end,

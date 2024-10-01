@@ -7,6 +7,7 @@ local engine_encoder = require('src/lib/engine/encoder')
 local engine_draw_fps = require('src/lib/draw/fps')
 local engine_draw_poly = require('src/lib/draw/poly')
 local engine_i18n = require('src/lib/engine/i18n')
+local engine_memory = require('src/lib/engine/memory')
 local library_csv = require('src/third_party/csv/rodrigodornelles')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
@@ -50,6 +51,7 @@ function native_callback_init(width, height, game_lua)
     std.draw.text=native_draw_text
     std.draw.rect=native_draw_rect
     std.draw.line=native_draw_line
+    std.draw.image=native_draw_image
     
     zeebo_module.require(std, game, application)
         :package('@game', engine_game)

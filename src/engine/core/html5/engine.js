@@ -46,6 +46,18 @@ const engine = {
             const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = engine.canvas_ctx.measureText(text || x)
             return [width, actualBoundingBoxAscent + actualBoundingBoxDescent]
         },
+        native_draw_image: (src, x, y) => {
+            if (!(src in engine.images)) {
+                engine.images[src] = document.createElement('img')
+                engine.images[src].src = src
+                engine.images[src].onload = function() {
+                    engine.images[src].attributes.done = 'true'
+                }
+            }
+            if (engine.images[src].attributes.done) {
+                engine.canvas_ctx.drawImage(engine.images[src], x, y)
+            }
+        },
         native_dict_poly: {
             poly2: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
                 let index = 0
