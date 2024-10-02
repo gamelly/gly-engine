@@ -80,7 +80,7 @@ local function install(std, game, application)
 
     -- engine dependent
     std.draw.image=function(src, x, y) return image(std, src, x, y) end
-    std.draw.font=function(std, name,size) return image(std, name, size) end
+    std.draw.font=function(name, size) return font(std, name, size) end
 
     std.draw.clear = function(c)
         color(c)
