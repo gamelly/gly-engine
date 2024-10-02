@@ -69,6 +69,10 @@ local function install(evt, gamefile)
         time={1, 10, 30, 40, 60, 90}
     }
 
+    local system_language = function()
+        return 'pt-BR'
+    end
+
     application = zeebo_module.loadgame(gamefile)
     if not application then
         error('game not loaded!')
@@ -95,7 +99,7 @@ local function install(evt, gamefile)
         :package('math', engine_math.clib)
         :package('random', engine_math.clib_random)
         :package('http', engine_http, protocol_http_ginga)
-        :package('i18n', engine_i18n)
+        :package('i18n', engine_i18n, system_language)
         :register(register_event_loop)
         :register(register_fixed_loop)
         :run()

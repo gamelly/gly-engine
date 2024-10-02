@@ -1,6 +1,4 @@
---! ISO 639
---! ISO 3166
-local language = 'pt-BR'
+local language = 'en-US'
 local language_default = 'en-US'
 
 local language_list = {}
@@ -28,7 +26,48 @@ end
 --! @defgroup std
 --! @{
 --! @defgroup i18n
+--! @short Internationalization
+--! @brief support multi-language games.
 --! @pre require @c i18n
+--! @details
+--! The format of language must be @c aa-AA, respectively <b>ISO 639</b> and <b>ISO 3166</b>,
+--! This module is based on the system language,
+--! but can also store the last saved language.
+--!
+--! @par Example
+--! @code
+--! local function i18n(std, game)
+--!     return {
+--!         ['pt-BR'] = {
+--!             ['hello world'] = 'ola mundo'
+--!         },
+--!         ['es-ES'] = {
+--!             ['hello world'] = 'hola mundo'
+--!         }
+--!     }
+--! end
+--!
+--! local function draw(std, game)
+--!     std.draw.clear(std.color.black)
+--!     std.draw.color(std.color.white)
+--!     std.draw.text(8, 8, 'hello world')
+--! end
+--! 
+--! local P = {
+--!     meta = {
+--!         title='Hello'
+--!     },
+--!     config = {
+--!         require='i18n'
+--!     },
+--!     callbacks = {
+--!         i18n=i18n,
+--!         draw=draw
+--!     }
+--! }
+--!
+--! return P
+--! @endcode
 --! @{
 
 --! @par Example
@@ -55,7 +94,11 @@ end
 --! std.i18n.set_langauge('en-US')
 --! @endcode
 local function set_language(l)
-    language = l
+    if language_inverse_list[l] then
+        language = l
+    else 
+        language = language_default
+    end
 end
 
 --! @par Example
@@ -102,17 +145,19 @@ local function decorator_draw_text(func)
     end
 end
 
-local function install(std, game, application)
+local function install(std, game, application, system_language)
     if not (std and std.draw and std.draw.text) then
         error('missing draw text')
     end
 
     local old_draw_text = std.draw.text
     local texts = application.callbacks.i18n(std, game)
-    print(pcall(function()
-        update_languages(texts)
-    end))
+    update_languages(texts)
 
+    if system_language then
+        set_language(system_language())
+    end
+    
     std.draw.text = decorator_draw_text(old_draw_text)
     std.i18n = {}
     std.i18n.get_text = get_text
