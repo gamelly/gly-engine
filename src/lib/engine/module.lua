@@ -43,10 +43,6 @@ local function loadgame(game_file)
         return normalize(game_file)
     end
 
-    if not game_file then
-        return nil
-    end
-
     local cwd = '.'
     local application = type(game_file) == 'function' and game_file
     local game_title = game_file and game_file:gsub('%.lua$', '') or 'game'
@@ -70,7 +66,7 @@ local function loadgame(game_file)
             application = ok and app
         end
     end
-    if not application and io and io.open then
+    if not application and io and io.open and game_file then
         local app_file = io.open(game_file)
         if app_file then
             local app_src = app_file:read('*a')
