@@ -20,11 +20,11 @@ end
 
 local function haxe_build(args)
     local game_name = args.game
-    local game_file = io.open(game_name, 'r')
+    local game_file, file_error = io.open(game_name, 'r')
     local game_content = game_file and game_file:read('*a')
 
-    if not game_content then
-        return false, 'game not found!'
+    if file_error then
+        return false, file_error
     end
 
     local pattern_utf8 = '_G%.require%("lua%-utf8"%)'
@@ -36,10 +36,10 @@ local function haxe_build(args)
     game_content = game_content:gsub(pattern_object, replace_object)
 
     game_file:close()
-    game_file = io.open(game_name, 'w')
+    game_file, file_error = io.open(game_name, 'w')
 
-    if not game_file then
-        return false, 'strange error'
+    if file_error then
+        return false, file_error
     end
 
     game_file:write(game_content)
