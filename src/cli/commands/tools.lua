@@ -35,6 +35,7 @@ local function haxe_build(args)
     game_content = game_content:gsub(pattern_utf8, replace_utf8)
     game_content = game_content:gsub(pattern_object, replace_object)
 
+    game_file:close()
     game_file = io.open(game_name, 'w')
 
     if not game_file then
@@ -42,6 +43,7 @@ local function haxe_build(args)
     end
 
     game_file:write(game_content)
+    game_file:close()
     
     return true
 end
