@@ -14,11 +14,13 @@ local function fast(self)
     return self
 end
 
+--! @hideparam self
 local function body(self, content)
     self.body_content=content
     return self
 end
 
+--! @hideparam self
 local function param(self, name, value)
     local index = #self.param_list + 1
     self.param_list[index] = name
@@ -26,6 +28,7 @@ local function param(self, name, value)
     return self
 end
 
+--! @hideparam self
 local function header(self, name, value)
     local index = #self.header_list + 1
     self.header_list[index] = name
@@ -33,16 +36,19 @@ local function header(self, name, value)
     return self
 end
 
+--! @hideparam self
 local function success(self, handler_func)
     self.success_handler = handler_func
     return self
 end
 
+--! @hideparam self
 local function failed(self, handler_func)
     self.failed_handler = handler_func
     return self
 end
 
+--! @hideparam self
 local function error(self, handler_func)
     self.error_handler = handler_func
     return self

@@ -1,3 +1,17 @@
+--! @defgroup std
+--! @{
+--! @defgroup draw
+--! @{
+
+--! @hideparam self
+--! @pre the <b>mode 3</b> require @c math
+--! 
+--! @param show @c integer
+--! @li mode 1: FPS
+--! @li mode 2: FPS / FPS Limit
+--! @li mode 3: FPS Real Time / FPS / FPS Limit
+--! @param x @c double
+--! @param y @c double
 local function fps(self, show, x, y)
     local s = 4
     self.std.draw.color(0xFFFF00FF)
@@ -26,6 +40,9 @@ local function fps(self, show, x, y)
         s = s + 46
     end
 end
+
+--! @}
+--! @}
 
 local function install(std, game, application)
     std = std or {}    
