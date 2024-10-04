@@ -1,5 +1,6 @@
 local zeebo_compiler = require('src/lib/cli/compiler')
 local zeebo_bundler = require('src/lib/cli/bundler')
+local zeebo_fs = require('src/lib/cli/fs')
 
 local function bundler(args)
     local path, file = args.file:match("(.-)([^/\\]+)$")
@@ -11,7 +12,15 @@ local function compiler(args)
 end
 
 local function love_zip(args)
-    return false, 'not implemented!'
+    os.execute('mkdir -p '..args.dist..'_love')
+    os.execute('mv '..args.path..'/* '..args.dist..'_love 2> /dev/null')
+    local zip_pid = io.popen('cd '..args.dist..'_love && zip -9 -r Game.love .')
+    local stdout = zip_pid:read('*a')
+    local ok = zip_pid:close()    
+    zeebo_fs.move(args.dist..'_love/Game.love', args.dist..'Game.love')
+    zeebo_fs.clear(args.dist..'_love')
+    os.remove(args.dist..'_love')
+    return ok, stdout
 end
 
 local function love_exe(args)

@@ -47,7 +47,7 @@ local command = zeebo_argparse.from(arg)
     --
     .add_subcommand('tool-love-zip', commands_tools)
     .add_next_value('path', {required=true})
-    .add_option_get('dist', {required=true})
+    .add_option_get('dist', {default='./dist/'})
     --
     .add_subcommand('tool-love-exe', commands_tools)
     .add_next_value('file', {required=true})
