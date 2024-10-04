@@ -76,12 +76,11 @@ local function gc_clear_all()
     local items = #memory_list
     
     while index <= items do
-        cache_clear(memory_list[index])
+        unset(memory_list[index])
         index = index + 1
     end
     
     memory_list = {}
-    memory_queue_list = {}
 
     return items
 end
@@ -97,7 +96,7 @@ local function install(std, game, application)
     std.mem.gc_clear_all = gc_clear_all
 
     return {
-        std={mem=mem}
+        mem=std.mem
     }
 end
 
