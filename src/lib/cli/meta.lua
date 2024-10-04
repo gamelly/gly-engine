@@ -1,4 +1,5 @@
 local application_default = require('src/lib/object/application')
+local zeebo_module = require('src/lib/engine/module')
 
 local function replace(src, meta, default)
     if src and #src > 0 then
@@ -65,18 +66,8 @@ local function run(self)
     return self
 end
 
-local function current(game, application)
-    local gamefile = game and io.open(game, 'r')
-    local bytecode = gamefile and gamefile:read('*a')
-    local metadata = bytecode and (loadstring and loadstring(bytecode) or load(bytecode))
-
-    if gamefile then
-        gamefile:close()
-    end
-    
-    while type(metadata) == 'function' do
-        metadata = metadata()
-    end
+local function current(gamefile, application)
+    local metadata = zeebo_module.loadgame(gamefile)
 
     if not application then
         application = {

@@ -1,13 +1,52 @@
 local zeebo_pipeline = require('src/lib/util/pipeline')
+local application_default = require('src/lib/object/application')
+
+local function normalize(application)
+    if not application then return nil end
+
+    if application.Game then
+        application = application.Game
+    end
+
+    if application.new and type(application.new) == 'function' then
+        application = application.new()
+    end
+
+    if application and application.meta and application.callbacks then
+        return application
+    end
+
+    local normalized_aplication = {
+        meta = {},
+        config = {},
+        callbacks = {}
+    }
+
+    for key, value in pairs(application) do
+        if application_default.meta[key] then
+            normalized_aplication.meta[key] = value
+        elseif type(value) == 'function' then
+            normalized_aplication.callbacks[key] = value
+        else
+            normalized_aplication.config[key] = value
+        end
+    end
+
+    return normalized_aplication
+end
 
 --! @short safe load game
 --! @brief search by game in filesystem / lua modules
 --! @li https://love2d.org/wiki/love.filesystem.getSource
 local function loadgame(game_file)
     if type(game_file) == 'table' then
-        return game_file
+        return normalize(game_file)
     end
-    
+
+    if not game_file then
+        return nil
+    end
+
     local cwd = '.'
     local application = type(game_file) == 'function' and game_file
     local game_title = game_file and game_file:gsub('%.lua$', '') or 'game'
@@ -48,7 +87,7 @@ local function loadgame(game_file)
         application = application()
     end
 
-    return application
+    return normalize(application)
 end
 
 local function register(self, register_func)

@@ -9,6 +9,7 @@ local commands_build = require('src/cli/commands/build')
 local commands_cli = require('src/cli/commands/cli')
 local commands_fs = require('src/cli/commands/fs')
 local commands_game = require('src/cli/commands/game')
+local commands_haxe = require('src/cli/commands/haxe')
 local commands_info = require('src/cli/commands/info')
 local commands_tools = require('src/cli/commands/tools')
 
@@ -41,6 +42,9 @@ local command = zeebo_argparse.from(arg)
     .add_subcommand('compiler', commands_tools)
     .add_next_value('file', {required=true})
     .add_option_get('dist', {default='a.out'})
+    --
+    .add_subcommand('tool-haxe-build', commands_haxe)
+    .add_next_value('game', {required=true})
     --
     .add_subcommand('tool-love-zip', commands_tools)
     .add_next_value('path', {required=true})
