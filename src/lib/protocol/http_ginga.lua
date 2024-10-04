@@ -1,4 +1,3 @@
---! @file src/lib/protocol/http_ginga.lua
 --! @short HTTP ginga module
 --! 
 --! @li @b specification: https://www.rfc-editor.org/rfc/rfc2616

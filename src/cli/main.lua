@@ -1,3 +1,6 @@
+--! @short gly-cli
+--! @par Command List
+--! @call commands
 local os = require('os')
 
 local zeebo_argparse = require('src/lib/cli/argparse')
@@ -39,9 +42,12 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('file', {required=true})
     .add_option_get('dist', {default='a.out'})
     --
+    .add_subcommand('tool-haxe-build', commands_tools)
+    .add_next_value('game', {required=true})
+    --
     .add_subcommand('tool-love-zip', commands_tools)
     .add_next_value('path', {required=true})
-    .add_option_get('dist', {required=true})
+    .add_option_get('dist', {default='./dist/'})
     --
     .add_subcommand('tool-love-exe', commands_tools)
     .add_next_value('file', {required=true})

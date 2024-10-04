@@ -38,7 +38,8 @@ local function build(args)
                 'src/engine/meta/html5_webos/appinfo.json',
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/index.html',
-                'src/engine/core/html5/engine.js',
+                'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
             }
         },
@@ -53,21 +54,9 @@ local function build(args)
                 'src/engine/meta/html5_tizen/.tproject',
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/index.html',
-                'src/engine/core/html5/engine.js',
+                'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
-            }
-        },
-        html5_ginga={
-            src='src/engine/core/native/main.lua',
-            post_exe='ginga dist/main.ncl -s '..screen,
-            pipeline={
-                zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
-            },
-            extras={
-                'src/engine/meta/html5_ginga/main.ncl',
-                'src/engine/core/html5/index.html',
-                'src/engine/core/html5/index.html',
-                'src/engine/core/html5/engine.js',
             }
         },
         html5={
@@ -77,7 +66,8 @@ local function build(args)
             },
             extras={
                 'src/engine/core/html5/index.html',
-                'src/engine/core/html5/engine.js'
+                'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-native-html5.js'
             }
         },
         nintendo_wii={

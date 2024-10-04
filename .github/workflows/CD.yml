@@ -10,8 +10,12 @@ permissions:
   id-token: write
 
 jobs:
-  npm-gly-cli: 
+  npm: 
     runs-on: ubuntu-latest   
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ['gly-cli', 'gly-engine', 'core-native-html5']
     steps:
       -
         uses: actions/checkout@master
@@ -26,7 +30,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       -
         run: |
-          lua tools/build_npm_cli.lua
+          lua tools/cd_npm_${{ matrix.package }}.lua
       - 
         working-directory: ./dist
         run: |

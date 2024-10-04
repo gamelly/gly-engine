@@ -43,18 +43,20 @@ local function decorator_triangle(func_draw_poly, std, func_draw_triangle)
     end
 end
 
-local function decorator_poly(func_draw_poly, std, modes, repeats)    
+local function decorator_poly(func_draw_poly, std, modes, repeats)
+    local func_repeat = function(verts, mode)
+        if repeats and repeats[mode + 1] then
+            verts[#verts + 1] = verts[1]
+            verts[#verts + 1] = verts[2]
+        end
+    end
+
     return function (engine_mode, verts, x, y, scale, angle, ox, oy)
         if #verts < 6 or #verts % 2 ~= 0 then return end
         local mode = modes and modes[engine_mode + 1] or engine_mode
         local rotated = std.math.cos and angle and angle ~= 0
         ox = ox or 0
         oy = oy or ox or 0
-        
-        if repeats and repeats[engine_mode + 1] then
-            verts[#verts + 1] = verts[1]
-            verts[#verts + 1] = verts[2]
-        end
         
         if x and y and not rotated then
             local index = 1
@@ -69,6 +71,8 @@ local function decorator_poly(func_draw_poly, std, modes, repeats)
                 end
                 index = index + 1
             end
+
+            func_repeat(verts2, engine_mode)
             func_draw_poly(mode, verts2)
         elseif x and y then
             local index = 1
@@ -82,6 +86,8 @@ local function decorator_poly(func_draw_poly, std, modes, repeats)
                 verts2[index + 1] = yy
                 index = index + 2
             end
+
+            func_repeat(verts2, engine_mode)
             func_draw_poly(mode, verts2)
         else
             func_draw_poly(mode, verts)

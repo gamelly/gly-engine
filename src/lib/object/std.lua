@@ -1,4 +1,3 @@
---! @file src/lib/object/std.lua
 --! @short standard library object
 --! @brief can be used as mock
 
@@ -7,6 +6,7 @@ local P = {
 
     },
     draw = {
+        image = function() end,
         clear = function () end,
         color = function () end,
         rect = function () end,

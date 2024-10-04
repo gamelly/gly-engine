@@ -36,6 +36,10 @@
     <main>
       <canvas id="gameCanvas"></canvas>
     </main>
-    <script type="module" src="./engine.js"></script>
+    <script src="core-native-html5.js"></script>
+    <script type="module" src="driver-wasmoon.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => await gly.wasmoon('game.lua'))
+    </script>
   </body>
 </html>

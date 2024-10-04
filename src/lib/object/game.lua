@@ -1,4 +1,3 @@
---! @file src/lib/object/game.lua
 --! @short game object
 --! @brief a table to put anything related to developer game.
 

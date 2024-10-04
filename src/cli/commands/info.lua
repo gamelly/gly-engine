@@ -21,7 +21,6 @@ local help_message = "Available commands:\n"
   .."- ginga: Runs the Ginga core.\n"
   .."- html5_webos: Builds for HTML5 on WebOS.\n"
   .."- html5_tizen: Builds for HTML5 on Tizen.\n"
-  .."- html5_ginga: Runs the Ginga core for HTML5.\n"
   .."- html5: Runs the standard HTML5 core.\n"
   .."- nintendo_wii: Builds for the Nintendo Wii.\n"
   .."\n"
@@ -44,7 +43,7 @@ local help_message = "Available commands:\n"
   .."- To run a game: ./cli.sh run ./examples/asteroids/game.lua "  .. "-" .. "-core repl\n"
   .."- To display metadata: ./cli.sh meta ./examples/asteroids/game.lua\n"
 
-local version_message = '0.0.6'
+local version_message = '0.0.7'
 
 local function help()
   return true, help_message

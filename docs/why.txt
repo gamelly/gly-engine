@@ -1,0 +1,45 @@
+@page why Features and Support
+
+## Comparison between Game Engines
+
+### In-game Resources
+
+| Native Resource  | Gly Engine | Love2D     | GameMaker  | Unity      | Godot      |
+| :--------------- | :--------- | :--------- | :--------- | :--------- | :--------- |
+| Http Requests    | Yes        | No         | No         | Yes        | Yes        |
+| Json Parse       | Yes        | No         | No         | No         | Yes        |
+| I18N API         | Yes        | No         | No         | No         | No         |
+| Cache API        | Yes        | No         | No         | Yes        | No         |
+| QRCode API       | Yes        | No         | No         | No         | No         |
+| Blend modes      | No         | No         | Yes        | Yes        | Yes        |
+| Shadders         | No         | Yes        | Yes        | Yes        | Yes        |
+| Image Tint       | No         | Yes        | Yes        | Yes        | Yes        |
+| Image Rotate     | No         | Yes        | Yes        | Yes        | Yes        |
+| Polygon Rotate   | Yes        | No         | No         | No         | No         |
+| WASM HTML5       | Yes        | No         | Yes        | Yes        | Yes        |
+| Non-WASM HTML5   | Yes        | No         | Yes        | No         | No         |
+
+### Development Resources 
+
+| Native Resource  | Gly Engine | Love2D     | GameMaker  | Unity      | Godot        |
+| :--------------- | :--------- | :--------- | :--------- | :--------- | :----------- |
+| CLI toolchain    | Yes        | No         | No         | No         | Yes          |
+| REPL script      | Lua        | No         | No         | No         | No           |
+| Code script      | Lua, Haxe or JS | Lua   | GMS        | C#         | C#, GDScript |
+| Visual script    | No         | No         | Yes        | Yes        | No           |
+| Package manager  | Yes        | No         | Yes        | Yes        | No           |
+| IDE Programming  | Yes        | No         | Yes        | Yes        | Yes          |
+| Unit Test tools  | Yes        | No         | No         | Yes        | Yes          |
+
+
+## Plataform Support
+
+@call support
+
+### Development environment
+
+| Tier 1 | Linux, MacOS or BSD | main platform |
+| :----- | :------------------ | :------------ |
+| Tier 2 | NodeJS CLI          | full support WIP
+| Tier 3 | HTML5 IDE           | support
+| Tier 4 | Windows             | support

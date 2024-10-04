@@ -1,4 +1,3 @@
---! @file src/lib/repl/main.lua
 --! @short Read Eval Print Loop
 --! @brief an interpreter to debuging the game via stdio.
 --! @par Extended Backus-Naur Form
@@ -83,7 +82,7 @@ local function main()
         :package('@color', engine_color)
         :package('load', zeebo_module.load)
         :package('math', engine_math.clib)
-        :package('random', engine_math.clib_random)
+        :package('math.random', engine_math.clib_random)
         :package('http', engine_http, protocol_curl)
         :package('csv', engine_encoder, library_csv)
         :package('json', engine_encoder, library_json)

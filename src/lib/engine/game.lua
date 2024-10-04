@@ -3,6 +3,7 @@
 --! @defgroup game
 --! @{
 
+--! @hideparam self
 local function reset(self)
     return function()
         if self.callbacks.exit then
@@ -14,6 +15,7 @@ local function reset(self)
     end
 end
 
+--! @hideparam self
 local function exit(self)
     return function()
         if self.callbacks.exit then

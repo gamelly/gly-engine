@@ -1,5 +1,4 @@
---! @file examples/launcher/game.lua
---!
+--! @par Game FSM
 --! @startuml
 --! hide empty description
 --! skinparam State {
@@ -39,7 +38,6 @@
 --! 9 --> [*]
 --! @enduml
 
---! @cond
 local function next_state(game, new_state)
     if game._state + 1 == new_state then
         game._state = new_state
@@ -64,7 +62,6 @@ local function halt_state(game)
         end
     end
 end
---! @endcond
 
 local function init(std, game)
     if not game._state then
@@ -239,7 +236,7 @@ local P = {
         version='1.0.0'
     },
     config={
-        require='http random math csv load'
+        require='http math.random math csv load'
     },
     callbacks={
         init=init,

@@ -31,10 +31,10 @@ function love.load(args)
         :package('@keys', engine_keys)
         :package('@loop', engine_loop)
         :package('@color', engine_color)
-        :package('@draw_poly', engine_draw_poly, polygons)
+        :package('@draw.poly', engine_draw_poly, polygons)
         :package('load', zeebo_module.load)
         :package('math', engine_math.clib)
-        :package('random', engine_math.clib_random)
+        :package('math.random', engine_math.clib_random)
         :run()
 
     game.width, game.height = w, h

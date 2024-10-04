@@ -48,26 +48,39 @@ local function triangle(mode, x1, y1, x2, y2, x3, y3)
     end
 end
 
-local function font(name, size)
-    if type(name) == 'number' and not size then
+local function font(std, name, size)
+    if not size and type(name) == 'number' then
         size = name
         name = 'Tiresias'
     end
-    local index = 'font_'..tostring(name)..tostring(size)
-    if not _G[index] then
-        _G[index] = love.graphics.newFont(size)
-    end
-    love.graphics.setFont(_G[index])
+    local f = std.mem.cache('font_'..name..tostring(size), function()
+        return love.graphics.newFont(size)
+    end)
+    love.graphics.setFont(f)
+end
+
+local function image(std, src, x, y)
+    local r, g, b, a = love.graphics.getColor()
+    local image = std.mem.cache('image'..src, function()
+        return love.graphics.newImage(src)
+    end)
+    love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
+    love.graphics.draw(image, x, y)
+    love.graphics.setColor(r, g, b, a) 
 end
 
 local function install(std, game, application)
     application.callbacks.draw = application.callbacks.draw or function() end
 
+    -- pure love
     std.draw.color=color
     std.draw.rect=rect
     std.draw.text=text
     std.draw.line=line
-    std.draw.font=font
+
+    -- engine dependent
+    std.draw.image=function(src, x, y) return image(std, src, x, y) end
+    std.draw.font=function(name, size) return font(std, name, size) end
 
     std.draw.clear = function(c)
         color(c)

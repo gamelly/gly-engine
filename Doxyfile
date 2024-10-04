@@ -1,9 +1,9 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Engine"
-PROJECT_NUMBER         = 0.0.6
+PROJECT_NAME           = "Gly Game Engine"
+PROJECT_NUMBER         = 0.0.7
 PROJECT_BRIEF          = "Game engine in lua"
-PROJECT_LOGO           = 
+PROJECT_LOGO           = assets/icon80x80.png
 OUTPUT_DIRECTORY       = .
 RECURSIVE              = YES
 CREATE_SUBDIRS         = NO
@@ -17,18 +17,19 @@ SHORT_NAMES            = YES
 INLINE_GROUPED_CLASSES = YES
 INLINE_SIMPLE_STRUCTS  = YES
 TYPEDEF_HIDES_STRUCT   = YES
-SOURCE_BROWSER         = YES
+SHOW_FILES             = NO
+SOURCE_BROWSER         = NO
 VERBATIM_HEADERS       = NO
+REPEAT_BRIEF           = NO
 PREDEFINED             = DOXYGEN=
 PLANTUML_JAR_PATH      = $(PLANTUML_JAR_PATH)
 PLANTUML_CFG_FILE      =
 PLANTUML_INCLUDE_PATH  =
 OUTPUT_LANGUAGE        = English
-FILE_PATTERNS          = *.lua
-FILTER_PATTERNS        = *.lua=lua2dox
+FILE_PATTERNS          = *.lua *.txt
+FILTER_PATTERNS        = *="lua tools/doxygen_filter.lua"
 EXTENSION_MAPPING      = .lua=C++
-INPUT                  = README.md SUPPORT.md src examples
-USE_MDFILE_AS_MAINPAGE = README.md
+INPUT                  = docs src examples
 MARKDOWN_ID_STYLE      = GITHUB
 ALIASES               += startjson=@startuml{json}
 ALIASES               += endjson=@enduml
@@ -40,6 +41,10 @@ ALIASES               += endsalt=@enduml
 GENERATE_TREEVIEW      = YES
 DISABLE_INDEX          = NO
 FULL_SIDEBAR           = NO
+HTML_HEADER            = doxygen/header.html
 HTML_EXTRA_STYLESHEET  = $(DOXYGEN_AWESOME_PATH)/doxygen-awesome.css \
-                         $(DOXYGEN_AWESOME_PATH)/doxygen-awesome-sidebar-only.css
+                         $(DOXYGEN_AWESOME_PATH)/doxygen-awesome-sidebar-only.css \
+                         $(DOXYGEN_AWESOME_PATH)/doxygen-awesome-sidebar-only-darkmode-toggle.css
+HTML_EXTRA_FILES       = $(DOXYGEN_AWESOME_PATH)/doxygen-awesome-darkmode-toggle.js \
+                         $(DOXYGEN_AWESOME_PATH)/doxygen-awesome-paragraph-link.js
 HTML_COLORSTYLE        = LIGHT

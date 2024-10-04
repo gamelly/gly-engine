@@ -3,6 +3,7 @@ local math = require('math')
 --! @cond
 local canvas = nil
 local game = nil
+local std = nil
 --! @endcond
 
 local function color(c)
@@ -41,11 +42,20 @@ local function line(x1, y1, x2, y2)
     canvas:drawLine(x1, y1, x2, y2)
 end
 
-local function install(std, lgame, application, ginga)
+local function image(src, x, y)
+    local image = std.mem.cache('image'..src, function()
+        return canvas:new('../assets/'..src)
+    end)
+    canvas:compose(x, y, image)
+end
+
+local function install(lstd, lgame, application, ginga)
     canvas = ginga.canvas
     game = lgame
+    std = lstd
     std = std or {}
     std.draw = std.draw or {}
+    std.draw.image=image
     std.draw.clear=clear
     std.draw.color=color
     std.draw.rect=rect
