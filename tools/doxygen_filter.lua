@@ -76,6 +76,7 @@ function main()
     local is_txt = arg[1]:sub(#arg[1] - 3) == '.txt'
     local is_lua = arg[1]:sub(#arg[1] - 3) == '.lua'
     local is_game = arg[1]:sub(#arg[1] - 7) == 'game.lua' and arg[1]:find('examples')
+    local hideparam_pattern = '@hideparam ([%w_]+)'
     local include_pattern = '^local [%w_%-]+ = require%(\'(.-)\'%)'
     local function_pattern = '^local function ([%w_]+%b())'
     local literal_pattern = '^local ([%w_%-]+) = ([%d%w\'"-_]+)'
@@ -102,6 +103,8 @@ function main()
         game_src = source(arg[1])
     end
 
+    local params_hiden = {}
+
     repeat
         local line = file:read('*l')
 
@@ -111,13 +114,25 @@ function main()
             local doxygen = line:match(doxygen_pattern)
             local include = line:match(include_pattern)
             local clojure = line:match(function_pattern)
+            local hideparam = line:match(hideparam_pattern)
             local variable, literal = line:match(literal_pattern)
 
             if is_lua and doxygen then
                 line = line:gsub(doxygen_pattern, '//!')
             end
 
-            if include then
+            if #params_hiden > 0 and clojure then
+                local index = 1
+                while index <= #params_hiden do
+                    clojure = clojure:gsub(params_hiden[index]..'[,]?', '')
+                    index = index + 1
+                end
+                params_hiden = {}
+            end
+
+            if hideparam then
+                params_hiden[#params_hiden + 1] = hideparam
+            elseif include then
                 io.write('#include "'..include..'.lua"')
             elseif is_game and not doxygen then
                 breakline = false

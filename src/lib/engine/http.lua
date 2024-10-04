@@ -7,6 +7,7 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @{
 
 --! @short reduced response
+--! @hideparam self
 --! @brief disconnect when receiving status
 local function fast(self)
     self.speed = '_fast'
