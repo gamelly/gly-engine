@@ -76,6 +76,7 @@ function main()
     local is_txt = arg[1]:sub(#arg[1] - 3) == '.txt'
     local is_lua = arg[1]:sub(#arg[1] - 3) == '.lua'
     local is_game = arg[1]:sub(#arg[1] - 7) == 'game.lua' and arg[1]:find('examples')
+    local renamefunc_pattern = '@renamefunc ([%w_]+)'
     local hideparam_pattern = '@hideparam ([%w_]+)'
     local include_pattern = '^local [%w_%-]+ = require%(\'(.-)\'%)'
     local function_pattern = '^local function ([%w_]+%b())'
@@ -103,6 +104,7 @@ function main()
         game_src = source(arg[1])
     end
 
+    local rename_function = false
     local params_hiden = {}
 
     repeat
@@ -115,10 +117,16 @@ function main()
             local include = line:match(include_pattern)
             local clojure = line:match(function_pattern)
             local hideparam = line:match(hideparam_pattern)
+            local rename_func = line:match(renamefunc_pattern)
             local variable, literal = line:match(literal_pattern)
 
             if is_lua and doxygen then
                 line = line:gsub(doxygen_pattern, '//!')
+            end
+
+            if rename_function and clojure then
+                clojure = clojure:gsub('^([%w_]+)', rename_function)
+                rename_function = false
             end
 
             if #params_hiden > 0 and clojure then
@@ -130,7 +138,9 @@ function main()
                 params_hiden = {}
             end
 
-            if hideparam then
+            if rename_func then
+                rename_function = rename_func
+            elseif hideparam then
                 params_hiden[#params_hiden + 1] = hideparam
             elseif include then
                 io.write('#include "'..include..'.lua"')

@@ -35,7 +35,14 @@ local function normalize(application)
     return normalized_aplication
 end
 
+--! @defgroup std
+--! @{
+--! @defgroup game
+--! @{
+
+--! @renamefunc load
 --! @short safe load game
+--! @pre require @c load
 --! @brief search by game in filesystem / lua modules
 --! @li https://love2d.org/wiki/love.filesystem.getSource
 local function loadgame(game_file)
@@ -85,6 +92,9 @@ local function loadgame(game_file)
 
     return normalize(application)
 end
+
+--! @}
+--! @}
 
 local function register(self, register_func)
     local listener_func = function(event_name)
