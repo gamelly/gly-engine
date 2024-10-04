@@ -6,8 +6,9 @@ if (!gly) {
 
 gly.wasmoon = async (game_file) => {
     const factory = new LuaFactory()
+    const engine_file = gly.engine.get()
     const lua = await factory.createEngine()
-    const engine_response = await fetch('./main.lua')
+    const engine_response = await fetch(engine_file)
     const engine_lua = await engine_response.text()
     await lua.doString(engine_lua)
     

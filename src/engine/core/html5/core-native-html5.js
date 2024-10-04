@@ -1,5 +1,6 @@
 const engine = {
     stop: false,
+    file: './main.lua',
     error: {
         callback: null,
         capture: false,
@@ -203,6 +204,10 @@ const gly = {
             engine.listen.native_callback_loop(milis)
             engine.listen.native_callback_draw()
         })
+    },
+    engine: {
+        set: (file_name) => engine.file = file_name,
+        get: () => engine.file
     },
     global: {
         set: (var_name, value) => {
