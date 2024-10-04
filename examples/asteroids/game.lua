@@ -499,7 +499,7 @@ local P = {
         version='1.0.0'
     },
     config = {
-        require = 'math random i18n',
+        require = 'math math.random i18n',
         fps_drop = 5,
         fps_time = 5
     },

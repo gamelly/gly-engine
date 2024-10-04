@@ -236,7 +236,7 @@ local P = {
         version='1.0.0'
     },
     config={
-        require='http random math csv load'
+        require='http math.random math csv load'
     },
     callbacks={
         init=init,
