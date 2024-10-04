@@ -39,7 +39,7 @@ end
 --! @brief search by game in filesystem / lua modules
 --! @li https://love2d.org/wiki/love.filesystem.getSource
 local function loadgame(game_file)
-    if type(game_file) == 'table' then
+    if type(game_file) == 'table' or type(game_file) == 'userdata' then
         return normalize(game_file)
     end
 
