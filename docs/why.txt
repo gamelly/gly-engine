@@ -25,7 +25,7 @@
 | :--------------- | :--------- | :--------- | :--------- | :--------- | :----------- |
 | CLI toolchain    | Yes        | No         | No         | No         | Yes          |
 | REPL script      | Lua        | No         | No         | No         | No           |
-| Code script      | Lua        | Lua        | GMS        | C#         | C#, GDScript |
+| Code script      | Lua, Haxe or JS | Lua   | GMS        | C#         | C#, GDScript |
 | Visual script    | No         | No         | Yes        | Yes        | No           |
 | Package manager  | Yes        | No         | Yes        | Yes        | No           |
 | IDE Programming  | Yes        | No         | Yes        | Yes        | Yes          |
