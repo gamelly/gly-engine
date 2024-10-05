@@ -1,10 +1,11 @@
 local os = require('os')
 local zeebo_module = require('src/lib/engine/module')
 local zeebo_args = require('src/lib/common/args')
+local engine_bus = require('src/lib/engine/bus')
 local engine_game = require('src/lib/engine/game')
 local engine_math = require('src/lib/engine/math')
 local engine_draw = require('src/engine/core/love/draw')
-local engine_keys = require('src/engine/core/love/keys')
+local engine_keys = require('src/lib/engine/key')
 local engine_loop = require('src/engine/core/love/loop')
 local engine_memory = require('src/lib/engine/memory')
 local engine_color = require('src/lib/object/color')
@@ -30,6 +31,17 @@ function love.load(args)
         poly=love.graphics.polygon,
         modes={'fill', 'line', 'line'}
     }
+    local key_bindings = {
+        ['return']='a',
+        up='up',
+        left='left',
+        right='right',
+        down='down',
+        z='a',
+        x='b',
+        c='c',
+        v='d'
+    }
 
     if screen then
         w, h = screen:match('(%d+)x(%d+)')
@@ -41,10 +53,11 @@ function love.load(args)
     end
     
     zeebo_module.require(std, game, application)
+        :package('@bus', engine_bus)
         :package('@game', engine_game, love.event.quit)
         :package('@math', engine_math)
         :package('@draw', engine_draw)
-        :package('@keys', engine_keys)
+        :package('@keys', engine_keys, key_bindings)
         :package('@loop', engine_loop)
         :package('@color', engine_color)
         :package('@draw.fps', engine_draw_fps)
@@ -57,11 +70,11 @@ function love.load(args)
         :package('csv', engine_encoder, library_csv)
         :package('json', engine_encoder, library_json)
         :package('i18n', engine_i18n, util_lua.get_sys_lang)
-        :register(function(listener)
-            love.update = listener('loop')
-            love.draw = listener('draw')
-            love.keypressed = listener('keydown')
-            love.keyreleased = listener('keyup')
+        :register(function()
+            love.update = std.bus.trigger('loop')
+            love.draw = std.bus.trigger('draw')
+            love.keypressed = std.bus.trigger('rkey1')
+            love.keyreleased = std.bus.trigger('rkey0')
         end)
         :run()
 

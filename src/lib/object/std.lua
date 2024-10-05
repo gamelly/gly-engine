@@ -20,16 +20,29 @@ local P = {
         exit = function () end
     },
     key = {
-        press = {
+        axis = {
+            x = 0,
+            y = 0,
+            menu=0,
             up=0,
             down=0,
             left=0,
             right=0,
-            red=0,
-            green=0,
-            yellow=0,
-            blue=0,
-            enter=0
+            a = 0,
+            b = 0, 
+            c = 0,
+            d = 0
+        },
+        press = {
+            menu=false,
+            up=false,
+            down=false,
+            left=false,
+            right=false,
+            a=false,
+            b=false,
+            c=false,
+            d=false
         }
     }
 }

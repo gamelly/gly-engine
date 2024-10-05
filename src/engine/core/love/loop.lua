@@ -5,15 +5,16 @@ local function loop(std, game, application, dt)
     application.callbacks.loop(std, game)
 end
 
+local function event_bus(std)
+    std.bus.listen_std('loop', loop)
+end
+
 local function install(std, game, application)
     application.callbacks.loop = application.callbacks.loop or function () end
-
-    return {
-        event={loop=loop}
-    }
 end
 
 local P = {
+    event_bus=event_bus,
     install=install
 }
 

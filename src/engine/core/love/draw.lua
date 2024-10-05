@@ -69,6 +69,10 @@ local function image(std, src, x, y)
     love.graphics.setColor(r, g, b, a) 
 end
 
+local function event_bus(std, game, application)
+    std.bus.listen_safe('draw', application.callbacks.draw)
+end
+
 local function install(std, game, application)
     application.callbacks.draw = application.callbacks.draw or function() end
 
@@ -87,19 +91,15 @@ local function install(std, game, application)
         love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
     end
 
-    local event_draw = function()
-        application.callbacks.draw(std, game)
-    end
-
     return {
-        event={draw=event_draw},
-        std={draw=std.draw}
+        draw=std.draw
     }
 end
 
 local P = {
     install = install,
-    triangle=triangle
+    event_bus = event_bus,
+    triangle = triangle
 }
 
 return P

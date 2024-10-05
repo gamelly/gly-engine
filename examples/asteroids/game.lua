@@ -219,10 +219,9 @@ end
 
 local function loop(std, game)
     if game.state == 1 then
-        local keyv = std.key.press.down - std.key.press.up
-        local keyh = std.key.press.right - std.key.press.left + std.key.press.enter + std.key.press.red 
-        if keyv ~= 0 and game.milis > game.menu_time + 250 then
-            game.menu = std.math.clamp(game.menu + keyv, game.player_pos_x == (game.width/2) and 2 or 1, 9)
+        local keyh = std.key.axis.x + std.key.axis.a 
+        if std.key.axis.y ~= 0 and game.milis > game.menu_time + 250 then
+            game.menu = std.math.clamp(game.menu + std.key.axis.y, game.player_pos_x == (game.width/2) and 2 or 1, 9)
             game.menu_time = game.milis
         end
         if keyh ~= 0 and game.milis > game.menu_time + 100 then
@@ -251,27 +250,24 @@ local function loop(std, game)
             end
         end
         return
-    elseif game.state == 2 then
-        local key = std.key.press.down + std.key.press.up + std.key.press.right + std.key.press.left + std.key.press.enter + std.key.press.red 
-        if key ~= 0 and game.milis > game.menu_time + 250 then
-            game.menu_time = game.milis
-            game.state = 1
-        end
+    elseif game.state == 2 and std.key.press.d then
+        game.menu_time = game.milis
+        game.state = 1
         return
     end
     -- enter in the menu
-    if std.key.press.green == 1 then
+    if std.key.press.d then
         game.state = 1
     end
     -- player move
-    game.player_angle = std.math.cycle(game.player_angle + (std.key.press.right - std.key.press.left) * 0.1, std.math.pi * 2) * std.math.pi * 2
+    game.player_angle = std.math.cycle(game.player_angle + (std.key.axis.x * 0.1), std.math.pi * 2) * std.math.pi * 2
     game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * game.dt)
     game.player_pos_y = game.player_pos_y + (game.player_spd_y/16 * game.dt)
-    if std.key.press.up == 0 and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
+    if not std.key.press.up and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
         game.player_spd_x = 0
         game.player_spd_y = 0
     end
-    if std.key.press.up == 1 then
+    if std.key.press.up then
         game.player_spd_x = game.player_spd_x + (game.boost * std.math.cos(game.player_angle - std.math.pi/2))
         game.player_spd_y = game.player_spd_y + (game.boost * std.math.sin(game.player_angle - std.math.pi/2))
         local max_spd_x = std.math.abs(game.speed_max * std.math.cos(game.player_angle - std.math.pi/2))
@@ -292,7 +288,7 @@ local function loop(std, game)
         game.player_pos_x = 3
     end
     -- player teleport
-    if std.key.press.down == 1 and game.milis > game.player_last_teleport + 1000 then
+    if std.key.press.down and game.milis > game.player_last_teleport + 1000 then
         game.player_last_teleport = game.milis
         game.player_spd_x = 0
         game.player_spd_y = 0
@@ -302,7 +298,7 @@ local function loop(std, game)
         until not asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1)
     end
     -- player shoot
-    if not game.laser_enabled and game.state == 4 and (std.key.press.red == 1 or std.key.press.enter == 1) then
+    if not game.laser_enabled and game.state == 4 and std.key.press.a then
         local index = 1
         local asteroids = #game.asteroid_size
         local sin = std.math.cos(game.player_angle - std.math.pi/2)

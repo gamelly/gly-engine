@@ -97,33 +97,7 @@ end
 --! @}
 
 local function register(self, register_func)
-    local listener_func = function(event_name)
-        local filtered_events = {}
-
-        do
-            local index = 1
-            while index <= #self.event do
-                local event = self.event[index][event_name]
-                if event then
-                    filtered_events[#filtered_events + 1] = event
-                end
-                index = index + 1
-            end
-        end
-
-        return function(a, b, c, d, e, f)
-            local index = 1
-            while index <= #filtered_events do
-                filtered_events[index](self.std, self.game, self.application, a, b, c, d, e, f)
-                index = index + 1
-            end
-        end
-    end
-
-    self.pipeline[#self.pipeline + 1] = function()
-        register_func(listener_func)
-    end
-
+    self.pipeline[#self.pipeline + 1] = register_func
     return self
 end
 
@@ -140,9 +114,9 @@ local function package(self, module_name, module, custom)
         if not system and not self.lib_required[name] then return end
         
         local try_install = function()
-            local m = module.install(self.std, self.game, self.application, custom, module_name)
-            if m.event then
-                self.event[#self.event + 1] = m.event
+            module.install(self.std, self.game, self.application, custom, module_name)
+            if module.event_bus then
+                module.event_bus(self.std, self.game, self.application)
             end
         end
         

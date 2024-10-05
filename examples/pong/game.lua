@@ -11,10 +11,8 @@ local function init(std, game)
 end
 
 local function loop(std, game)
-    -- inputs
-    game.player_dir = std.key.press.down - std.key.press.up
     -- moves
-    game.player_pos = std.math.clamp(game.player_pos + (game.player_dir * 7), 0, game.height - game.player_size)
+    game.player_pos = std.math.clamp(game.player_pos + (std.key.axis.y * 7), 0, game.height - game.player_size)
     game.ball_pos_x = game.ball_pos_x + (game.ball_spd_x * game.dt)
     game.ball_pos_y = game.ball_pos_y + (game.ball_spd_y * game.dt)
     -- colisions
