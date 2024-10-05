@@ -44,15 +44,15 @@ gly.wasmoon = async (game_file) => {
     }
 
     const keys = [
-        [403, 'red'],
-        [404, 'green'],
-        [405, 'yellow'],
-        [406, 'blue'],
-        ['KeyZ', 'red'],
-        ['KeyX', 'green'],
-        ['KeyC', 'yellow'],
-        ['KeyV', 'blue'],
-        ['Enter', 'enter'],
+        [403, 'a'],
+        [404, 'b'],
+        [405, 'c'],
+        [406, 'd'],
+        ['KeyZ', 'a'],
+        ['KeyX', 'b'],
+        ['KeyC', 'c'],
+        ['KeyV', 'd'],
+        ['Enter', 'a'],
         ['ArrowUp', 'up'],
         ['ArrowDown', 'down'],
         ['ArrowLeft', 'left'],
@@ -64,9 +64,10 @@ gly.wasmoon = async (game_file) => {
     }
 
     function updateKey(ev) {
-        const key = keys.find(key => key[0] == ev.code)
+        const key = keys.find(key => [ev.code, ev.keyCode].includes(key[0]))
         if (key) {
-        gly.input(key[1], Number(ev.type === 'keydown'))
+            ev.preventDefault()
+            gly.input(key[1], ev.type === 'keydown')
         }
     }
 

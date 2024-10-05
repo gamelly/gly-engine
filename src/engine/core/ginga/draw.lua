@@ -2,6 +2,7 @@ local math = require('math')
 
 --! @cond
 local canvas = nil
+local application = nil
 local game = nil
 local std = nil
 --! @endcond
@@ -49,8 +50,13 @@ local function image(src, x, y)
     canvas:compose(x, y, image)
 end
 
-local function install(lstd, lgame, application, ginga)
+local function event_bus()
+    std.bus.listen_safe('draw', application.callbacks.draw)
+end
+
+local function install(lstd, lgame, lapplication, ginga)
     canvas = ginga.canvas
+    application = lapplication
     game = lgame
     std = lstd
     std = std or {}
@@ -63,18 +69,14 @@ local function install(lstd, lgame, application, ginga)
     std.draw.font=font
     std.draw.line=line
 
-    local event_draw = function()
-        application.callbacks.draw(std, game)
-    end
-
     return {
-        event={draw=event_draw},
-        std={draw=std.draw}
+        draw=std.draw
     }
 end
 
 local P = {
-    install=install
+    event_bus = event_bus,
+    install = install
 }
 
 return P

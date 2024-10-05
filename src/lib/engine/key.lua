@@ -57,7 +57,7 @@ end
 
 local function install(std, game, application, key_bindings)
     application = application or {}
-    application.internal = application.iternal or {}
+    application.internal = application.internal or {}
     application.internal.key_bindings = key_bindings or {}
 end
 

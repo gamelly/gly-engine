@@ -145,14 +145,19 @@ local function decorator_draw_text(func)
     end
 end
 
+local function event_bus(std, game, application)
+    std.bus.listen('i18n', function(texts)
+        update_languages(texts)
+    end)
+    std.bus.spawn('i18n', application.callbacks.i18n(std, game))
+end
+
 local function install(std, game, application, system_language)
     if not (std and std.draw and std.draw.text) then
         error('missing draw text')
     end
 
     local old_draw_text = std.draw.text
-    local texts = application.callbacks.i18n(std, game)
-    update_languages(texts)
 
     if system_language then
         set_language(system_language())
@@ -177,6 +182,7 @@ local function install(std, game, application, system_language)
 end
 
 local P = {
+    event_bus=event_bus,
     install=install
 }
 

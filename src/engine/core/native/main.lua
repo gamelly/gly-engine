@@ -1,8 +1,10 @@
 local zeebo_module = require('src/lib/engine/module')
+local engine_bus = require('src/lib/engine/bus')
 local engine_game = require('src/lib/engine/game')
 local engine_math = require('src/lib/engine/math')
 local engine_color = require('src/lib/object/color')
 local engine_http = require('src/lib/engine/http')
+local engine_key = require('src/lib/engine/key')
 local engine_encoder = require('src/lib/engine/encoder')
 local engine_draw_fps = require('src/lib/draw/fps')
 local engine_draw_poly = require('src/lib/draw/poly')
@@ -12,23 +14,17 @@ local library_csv = require('src/third_party/csv/rodrigodornelles')
 local game = require('src/lib/object/game')
 local std = require('src/lib/object/std')
 local application = nil
-local extraevents = {
-    loop = function(dt) end,
-    draw = function() end,
-    keydown = function(key, value) end
-}
 
 function native_callback_loop(milis)
     game.milis = milis
     application.callbacks.loop(std, game)
-    extraevents.loop(milis)
-    return game.dt
+    std.bus.spawn('loop', game.dt)
 end
 
 function native_callback_draw()
     native_draw_start()
     application.callbacks.draw(std, game)
-    extraevents.draw()
+    std.bus.spawn('draw')
     native_draw_flush()
 end
 
@@ -38,8 +34,7 @@ function native_callback_resize(width, height)
 end
 
 function native_callback_keyboard(key, value)
-    std.key.press[key] = value
-    extraevents.keydown(key, value)
+    std.bus.spawn('rkey', key, value)
 end
 
 function native_callback_init(width, height, game_lua)
@@ -54,9 +49,11 @@ function native_callback_init(width, height, game_lua)
     std.draw.image=native_draw_image
     
     zeebo_module.require(std, game, application)
+        :package('@bus', engine_bus)
         :package('@game', engine_game)
         :package('@math', engine_math)
         :package('@color', engine_color)
+        :package('@key', engine_key)
         :package('@draw.fps', engine_draw_fps)
         :package('@draw.poly', engine_draw_poly, native_dict_poly)
         :package('@memory', engine_memory)
@@ -68,11 +65,6 @@ function native_callback_init(width, height, game_lua)
         :package('xml', engine_encoder, native_dict_xml)
         :package('csv', engine_encoder, library_csv)
         :package('i18n', engine_i18n, native_get_system_lang)
-        :register(function(listener)
-            extraevents.loop = listener('loop')
-            extraevents.draw = listener('draw')
-            extraevents.keydown = listener('keydown')
-        end)
         :run()
 
     game.width = width
