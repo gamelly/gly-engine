@@ -71,4 +71,38 @@ function test_create_request_no_body_in_get()
     luaunit.assertEquals(request, 'GET / HTTP/1.1\r\n\r\n')
 end
 
+function test_create_request_wget_get()
+    local request = zeebo_util_http.create_request('GET', 'http://example.com')
+        .add_imutable_header('Accept', 'application/json')
+        .to_wget_cmd()
+
+    luaunit.assertEquals(request, 'wget --quiet --output-document=- --header="Accept: application/json" http://example.com')
+end
+
+function test_create_request_wget_post_with_body()
+    local request = zeebo_util_http.create_request('POST', 'http://example.com')
+        .add_imutable_header('Content-Type', 'application/json')
+        .add_body_content('{"key": "value"}')
+        .to_wget_cmd()
+
+    luaunit.assertEquals(request, 'wget --quiet --output-document=- --method=POST --header="Content-Type: application/json" --body-data="{\\"key\\": \\"value\\"}" http://example.com')
+end
+
+function test_create_request_wget_with_headers()
+    local request = zeebo_util_http.create_request('PUT', 'http://example.com')
+        .add_imutable_header('Authorization', 'Bearer token')
+        .add_imutable_header('Content-Type', 'application/json')
+        .add_body_content('{"name": "test"}')
+        .to_wget_cmd()
+
+    luaunit.assertEquals(request, 'wget --quiet --output-document=- --method=PUT --header="Authorization: Bearer token" --header="Content-Type: application/json" --body-data="{\\"name\\": \\"test\\"}" http://example.com')
+end
+
+function test_create_request_wget_head()
+    local request = zeebo_util_http.create_request('HEAD', 'http://example.com')
+        .to_wget_cmd()
+
+    luaunit.assertEquals(request, 'wget --quiet --output-document=- --method=HEAD http://example.com')
+end
+
 os.exit(luaunit.LuaUnit.run())
