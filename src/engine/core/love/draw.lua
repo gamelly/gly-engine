@@ -71,6 +71,9 @@ end
 
 local function event_bus(std, game, application)
     std.bus.listen_safe('draw', application.callbacks.draw)
+    std.bus.listen('resize', function(w, h)
+        game.width, game.height = w, h
+    end)
 end
 
 local function install(std, game, application)
