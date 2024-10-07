@@ -92,8 +92,9 @@ local function asteroid_nest(std, game, x, y, id)
     local index = 1
     while index < #game.asteroid_size do
         if index ~= id  and game.asteroid_size[index] ~= -1 then
-            local distance = std.math.dis(x, y, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
-            if (distance - 3) <= (game.asteroid_size[index] / 2) then
+            local size = game.asteroid_size[index] / 2
+            local distance = std.math.dis(x, y, game.asteroid_pos_x[index] + size, game.asteroid_pos_y[index] + size)
+            if (distance - 3) <= size then
                 return true
             end
         end
@@ -290,6 +291,8 @@ local function loop(std, game)
     -- player teleport
     if std.key.press.down and game.milis > game.player_last_teleport + 1000 then
         game.player_last_teleport = game.milis
+        game.laser_pos_x1 = game.player_pos_x
+        game.laser_pos_y1 = game.player_pos_y 
         game.player_spd_x = 0
         game.player_spd_y = 0
         repeat
@@ -303,8 +306,8 @@ local function loop(std, game)
         local asteroids = #game.asteroid_size
         local sin = std.math.cos(game.player_angle - std.math.pi/2)
         local cos = std.math.sin(game.player_angle - std.math.pi/2)
-        local laser_fake_x = game.player_pos_x - (game.laser_distance_fire * sin * 2)
-        local laser_fake_y = game.player_pos_y - (game.laser_distance_fire * cos * 2)
+        local laser_fake_x = game.player_pos_x - (game.laser_distance_fire * sin)
+        local laser_fake_y = game.player_pos_y - (game.laser_distance_fire * cos)
         game.laser_pos_x2 = game.player_pos_x + (game.laser_distance_fire * sin)
         game.laser_pos_y2 = game.player_pos_y + (game.laser_distance_fire * cos)
         game.laser_pos_x1 = game.player_pos_x + (12 * sin)
@@ -382,7 +385,8 @@ local function loop(std, game)
 end
 
 local function draw(std, game)
-    std.draw.clear(std.color.black)
+    local death_anim = game.state == 5 and game.milis < game.menu_time + 50 
+    std.draw.clear(death_anim and std.color.white or std.color.black)
     local s = 0
     if game.state == 1 then
         local s2 = 0
@@ -432,6 +436,7 @@ local function draw(std, game)
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
+            local s = game.asteroid_size[index]/2
             if game.graphics_fastest == 1 then
                 local s = game.asteroid_size[index]
                 std.draw.rect(1, game.asteroid_pos_x[index] - s/2,  game.asteroid_pos_y[index] - s/2, s, s)
@@ -448,14 +453,29 @@ local function draw(std, game)
         index = index + 1
     end
     -- draw player
-    std.draw.color(std.color.yellow)
     if game.state ~= 5 then
+        -- triangle
+        std.draw.color(std.color.yellow)
         std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
-    end
-    -- laser bean
-    if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
-        std.draw.color(std.color.green)
-        std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2)
+        -- laser bean
+        if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
+            std.draw.color(std.color.green)
+            std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2)
+        end
+        std.draw.color(std.color.red)
+        -- boost
+        if std.key.press.up then
+            local s = std.math.random(4, 12)
+            local sin = std.math.cos(game.player_angle - std.math.pi/2)
+            local cos = std.math.sin(game.player_angle - std.math.pi/2)
+            local x = game.player_pos_x - (sin * (s + 12)) - (s/2)
+            local y = game.player_pos_y - (cos * (s + 12)) - (s/2)
+            std.draw.rect(1, x, y, s, s)
+        end
+        -- teleport
+        if game.milis < game.player_last_teleport + 100 then
+            std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.player_pos_x, game.player_pos_y)
+        end
     end
     -- draw gui
     local w = game.width/16
