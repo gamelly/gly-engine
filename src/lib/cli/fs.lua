@@ -43,6 +43,7 @@ local function move(src_in, dist_out)
     if dist_file then
         dist_file:close()
     end
+    return true
 end
 
 local P = {

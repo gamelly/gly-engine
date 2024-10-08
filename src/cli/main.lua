@@ -53,6 +53,10 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('file', {required=true})
     .add_option_get('dist', {required=true})
     --
+    .add_subcommand('fs-copy', commands_fs)
+    .add_next_value('file', {required=true})
+    .add_next_value('dist', {required=true})
+    --
     .add_subcommand('fs-xxd-i', commands_fs)
     .add_next_value('file', {required=true})
     .add_next_value('dist', {})

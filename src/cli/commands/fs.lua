@@ -1,3 +1,5 @@
+local zeebo_fs = require('src/lib/cli/fs')
+
 local function replace(args)
     local file_in = io.open(args.file,'r')
 
@@ -18,6 +20,10 @@ end
 
 local function download(args)
     return false, 'not implemented!'
+end
+
+local function copy(args)
+    return zeebo_fs.move(args.file, args.dist)
 end
 
 local function vim_xxd_i(args)
@@ -64,10 +70,11 @@ local function vim_xxd_i(args)
     until not chunk
     file_out:write('\n};\n'..const..'unsigned int '..var_name..'_len = '..tostring(length)..';\n')
 
-    return false, content
+    return true
 end
 
 local P = {
+    ['fs-copy'] = copy,
     ['fs-xxd-i'] = vim_xxd_i,
     ['fs-replace'] = replace,
     ['fs-download'] = download
