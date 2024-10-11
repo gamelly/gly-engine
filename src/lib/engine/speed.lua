@@ -16,15 +16,19 @@ end
 
 local function real_key(std, game, application, rkey, rvalue)
     local index = 2
+    local value = rvalue == 1 or rvalue == true
     if rkey == keybindings[1] then
-        enable = rvalue == 1 or rvalue == true
+        enable = value
     end
-    while index <= #keybindings do
-        if rkey == keybindings[index] and (rvalue == 1 or rvalue == true) then
-            if index == 11 then
-                speed = 20
-            else
+    if rkey == keybindings[11] and value then
+        enable = not enable
+    end
+    while index < #keybindings do
+        if rkey == keybindings[index] and value then
+            if index <= 5 then
                 speed = index
+            else
+                speed = 10 * (index - 5)
             end
         end
         index = index + 1
