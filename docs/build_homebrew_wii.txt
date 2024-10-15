@@ -1,0 +1,14 @@
+@defgroup build
+@{
+
+@defgroup homebrew
+@{
+
+@page build_wii Nintendo Wii
+
+You can make your games in Lua for Nintendo Wii using Gly Engine, including support for motion controls.
+
+ - **comming soon**
+
+@}
+@}

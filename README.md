@@ -44,6 +44,7 @@ lua cli.lua build @asteroids --core html5
 | Tier 7 | Ginga                     | support
 | Tier 8 | Play Station 2            | coming soon
 | Tier 9 | Nintendo Wii              | broken support
+| Tier 10 | Nintendo GBA             | limited support
 
 ---
 This game engine is **open source** and **free** for all uses, focusing on promoting content for our **commercial platform**.

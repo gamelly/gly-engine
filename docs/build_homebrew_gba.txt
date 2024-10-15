@@ -1,0 +1,28 @@
+@defgroup build
+@{
+
+@defgroup homebrew
+@{
+
+@page build_gba Nintendo GBA
+
+You can make your Lua games for gameboy advanced using the Gly engine,
+although the hardware is somewhat limited, small games can run well.
+
+ - source code <https://github.com/gamelly/core-native-gba>
+ - documentation <https://gamelly.github.io/core-native-gba>
+
+```text
+git clone https://github.com/gamelly/core-native-gba
+```
+
+```text
+cmake -Bbuild -H. -DGAME=path/to/your/game.lua -DFPS_MODE=1
+```
+
+```text
+make -C build
+```
+
+@}
+@}

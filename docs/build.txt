@@ -1,0 +1,55 @@
+@defgroup build
+@short exporting engine with game
+@{
+
+## Framework
+
+The engine is multi-platform and can even be embedded within another engine, such as @b Love2D, which is widely used for developing new systems.
+It offers interfaces tailored to the target platform on which the game will run.
+
+If you’re organizing your project with multiple code files and numerous assets,
+the CLI includes a bundler that can assist you with that, actually worry about your input code from a @b game.lua file, when you're ready,
+you can use a template and drag your game to distribute, or use the CLI to extract the parts of the engine needed for your game to run.
+
+@startuml
+file game
+
+frame engine {
+ interface std
+ component core_ginga
+ component core_love
+ component core_native
+ component core_html5
+}
+
+game --> std
+std --> core_love
+std --> core_ginga
+std --> core_native
+core_ginga --> ginga
+core_love --> love2d
+core_native --> native
+core_native -> core_html5
+core_html5 --> wasmoon
+core_html5 --> fengari
+@enduml
+
+### Native interface
+
+export the engine natively to platforms or create support yourself @ref framework_functions "from scratch".
+
+@li @ref build_gba
+
+### Native interface + HTML5
+
+@todo
+
+### Ginga interface
+
+@todo
+
+### Love2d Interface
+
+@todo
+
+@}
