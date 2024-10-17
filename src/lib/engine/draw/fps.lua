@@ -44,6 +44,15 @@ end
 --! @}
 --! @}
 
+local function event_bus(std, game, application)
+    std.bus.listen('draw', function()
+        if game.fps_show and game.fps_show > 0 then
+            std.draw.fps(game.fps_show, 8, 8)
+        end
+    end)
+end
+
+
 local function install(std, game, application)
     std = std or {}    
     std.draw = std.draw or {}
@@ -52,18 +61,16 @@ local function install(std, game, application)
     end
 
     local event_draw = function()
-        if game.fps_show and game.fps_show > 0 then
-            std.draw.fps(game.fps_show, 8, 8)
-        end
+        
     end
 
     return {
-        event={draw=event_draw},
         std={draw={fps=std.draw.fps}}
     }
 end
 
 local P = {
+    event_bus=event_bus,
     install=install
 }
 

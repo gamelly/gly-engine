@@ -94,7 +94,7 @@ local function asteroid_nest(std, game, x, y, id)
         if index ~= id  and game.asteroid_size[index] ~= -1 then
             local size = game.asteroid_size[index] / 2
             local distance = std.math.dis(x, y, game.asteroid_pos_x[index] + size, game.asteroid_pos_y[index] + size)
-            if (distance - 3) <= size then
+            if distance <= size then
                 return true
             end
         end
@@ -221,12 +221,12 @@ end
 local function loop(std, game)
     if game.state == 1 then
         local keyh = std.key.axis.x + std.key.axis.a 
-        if std.key.axis.y ~= 0 and game.milis > game.menu_time + 250 then
+        if std.key.axis.y ~= 0 and std.milis > game.menu_time + 250 then
             game.menu = std.math.clamp(game.menu + std.key.axis.y, game.player_pos_x == (game.width/2) and 2 or 1, 9)
-            game.menu_time = game.milis
+            game.menu_time = std.milis
         end
-        if keyh ~= 0 and game.milis > game.menu_time + 100 then
-            game.menu_time = game.milis
+        if keyh ~= 0 and std.milis > game.menu_time + 100 then
+            game.menu_time = std.milis
             if game.menu == 1 then
                 game.state = 4
             elseif game.menu == 2 then
@@ -252,7 +252,7 @@ local function loop(std, game)
         end
         return
     elseif game.state == 2 and std.key.press.d then
-        game.menu_time = game.milis
+        game.menu_time = std.milis
         game.state = 1
         return
     end
@@ -262,8 +262,8 @@ local function loop(std, game)
     end
     -- player move
     game.player_angle = std.math.cycle(game.player_angle + (std.key.axis.x * 0.1), std.math.pi * 2) * std.math.pi * 2
-    game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * game.dt)
-    game.player_pos_y = game.player_pos_y + (game.player_spd_y/16 * game.dt)
+    game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * std.delta)
+    game.player_pos_y = game.player_pos_y + (game.player_spd_y/16 * std.delta)
     if not std.key.press.up and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
         game.player_spd_x = 0
         game.player_spd_y = 0
@@ -289,8 +289,8 @@ local function loop(std, game)
         game.player_pos_x = 3
     end
     -- player teleport
-    if std.key.press.down and game.milis > game.player_last_teleport + 1000 then
-        game.player_last_teleport = game.milis
+    if std.key.press.down and std.milis > game.player_last_teleport + 1000 then
+        game.player_last_teleport = std.milis
         game.laser_pos_x1 = game.player_pos_x
         game.laser_pos_y1 = game.player_pos_y 
         game.player_spd_x = 0
@@ -312,7 +312,7 @@ local function loop(std, game)
         game.laser_pos_y2 = game.player_pos_y + (game.laser_distance_fire * cos)
         game.laser_pos_x1 = game.player_pos_x + (12 * sin)
         game.laser_pos_y1 = game.player_pos_y + (12 * cos)
-        game.laser_last_fire = game.milis
+        game.laser_last_fire = std.milis
         game.laser_enabled = true
         while index <= asteroids do
             if game.asteroid_size[index] ~= -1 then
@@ -330,12 +330,12 @@ local function loop(std, game)
             index = index + 1
         end
     end
-    if game.laser_enabled and game.milis > game.laser_last_fire + game.laser_time_recharge then
+    if game.laser_enabled and std.milis > game.laser_last_fire + game.laser_time_recharge then
         game.laser_enabled = false
     end
     -- player death
     if game.imortal ~= 1 and game.state == 4 and asteroid_nest(std, game, game.player_pos_x, game.player_pos_y, -1) then
-        game.menu_time = game.milis
+        game.menu_time = std.milis
         game.lifes = game.lifes - 1
         game.state = 5
     end
@@ -364,16 +364,16 @@ local function loop(std, game)
     end
     -- next level
     if game.state == 4 and game.asteroids_count == 0 then
-        game.menu_time = game.milis
+        game.menu_time = std.milis
         game.state = 6
     end
-    if game.state == 6 and game.milis > game.menu_time + 3000 then
+    if game.state == 6 and std.milis > game.menu_time + 3000 then
         std.game.reset()
         game.level = game.level + 1
         game.state = 4
     end
     -- restart 
-    if game.state == 5 and game.milis > game.menu_time + 3000 then
+    if game.state == 5 and std.milis > game.menu_time + 3000 then
         std.game.reset()
         game.state = 4
         if game.lifes == 0 then
@@ -385,7 +385,7 @@ local function loop(std, game)
 end
 
 local function draw(std, game)
-    local death_anim = game.state == 5 and game.milis < game.menu_time + 50 
+    local death_anim = game.state == 5 and std.milis < game.menu_time + 50 
     std.draw.clear(death_anim and std.color.white or std.color.black)
     local s = 0
     if game.state == 1 then
@@ -424,7 +424,7 @@ local function draw(std, game)
     elseif game.state == 2 then
         local height = game.height/4
         local w = std.draw.text('Rodrigo Dornelles')
-        local anim = std.math.cos(std.math.cycle(game.milis, 200) * std.math.pi*2)
+        local anim = std.math.cos(std.math.cycle(std.milis, 200) * std.math.pi*2)
         draw_logo(std, game, height, anim) 
         std.draw.font('sans', 16)
         std.draw.color(std.color.white)
@@ -436,10 +436,9 @@ local function draw(std, game)
     local index = 1
     while index <= #game.asteroid_size do
         if game.asteroid_size[index] ~= -1 then
-            local s = game.asteroid_size[index]/2
             if game.graphics_fastest == 1 then
                 local s = game.asteroid_size[index]
-                std.draw.rect(1, game.asteroid_pos_x[index] - s/2,  game.asteroid_pos_y[index] - s/2, s, s)
+                std.draw.rect(1, game.asteroid_pos_x[index], game.asteroid_pos_y[index], s, s)
             elseif game.asteroid_size[index] == game.asteroid_large_size then
                 std.draw.poly(1, game.asteroid_large, game.asteroid_pos_x[index], game.asteroid_pos_y[index])
             elseif game.asteroid_size[index] == game.asteroid_mid_size then
@@ -458,7 +457,7 @@ local function draw(std, game)
         std.draw.color(std.color.yellow)
         std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
         -- laser bean
-        if game.laser_enabled and game.milis < game.laser_last_fire + game.laser_time_fire then
+        if game.laser_enabled and std.milis < game.laser_last_fire + game.laser_time_fire then
             std.draw.color(std.color.green)
             std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.laser_pos_x2, game.laser_pos_y2)
         end
@@ -473,7 +472,7 @@ local function draw(std, game)
             std.draw.rect(1, x, y, s, s)
         end
         -- teleport
-        if game.milis < game.player_last_teleport + 100 then
+        if std.milis < game.player_last_teleport + 100 then
             std.draw.line(game.laser_pos_x1, game.laser_pos_y1, game.player_pos_x, game.player_pos_y)
         end
     end

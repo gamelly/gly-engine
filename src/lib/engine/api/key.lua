@@ -24,7 +24,7 @@
 
 local function real_key(std, game, application, rkey, rvalue)
     local value = rvalue == 1 or rvalue == true
-    local key = std.key.axis[rkey] and rkey or application.internal.key_bindings[rkey]
+    local key = application.internal.key_bindings[rkey] or (std.key.axis[rkey] and rkey)
     if key then
         std.key.axis[key] = value and 1 or 0
         std.key.press[key] = value

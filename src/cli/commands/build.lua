@@ -69,16 +69,6 @@ local function build(args)
                 'src/engine/core/html5/driver-wasmoon.js',
                 'src/engine/core/html5/core-native-html5.js'
             }
-        },
-        nintendo_wii={
-            src='src/engine/core/nintendo_wii/main.lua',
-            pipeline={
-                zeebo_meta.late(dist..'game.lua'):file(dist..'meta.xml'):pipe()
-            },
-            extras={
-                'assets/icon128x48.png',
-                'src/engine/meta/nintendo_wii/meta.xml'
-            }
         }
     }
 

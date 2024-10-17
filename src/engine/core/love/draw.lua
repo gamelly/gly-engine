@@ -1,30 +1,28 @@
+local util_decorator = require('src/lib/util/decorator')
+
 local modes = {
-    [true] = {
-        [0] = true,
-        [1] = false
-    },
-    [false] = {
-        [0] = 'fill',
-        [1] = 'line'
-    }
+    [0] = 'fill',
+    [1] = 'line'
 }
 
-local function color(c)
-    local DIV = love.wiimote and 1 or 255
-    local R = bit.band(bit.rshift(c, 24), 0xFF)/DIV
-    local G = bit.band(bit.rshift(c, 16), 0xFF)/DIV
-    local B = bit.band(bit.rshift(c, 8), 0xFF)/DIV
-    local A = bit.band(bit.rshift(c, 0), 0xFF)/DIV
+local function color(std, game, application, tint)
+    local R = bit.band(bit.rshift(tint, 24), 0xFF)/255
+    local G = bit.band(bit.rshift(tint, 16), 0xFF)/255
+    local B = bit.band(bit.rshift(tint, 8), 0xFF)/255
+    local A = bit.band(bit.rshift(tint, 0), 0xFF)/255
     love.graphics.setColor(R, G, B, A)
 end
 
-local function rect(a,b,c,d,e,f)
-    love.graphics.rectangle(modes[love.wiimote ~= nil][a], b, c, d, e)
+local function clear(std, game, application, tint)
+    color(nil, nil, nil, tint)
+    love.graphics.rectangle(modes[0], 0, 0, game.width, game.height)
 end
 
---! @todo support WII
-local function text(x, y, text)
-    if love.wiimote then return 32 end
+local function rect(std, game, application, mode, x, y, width, height)
+    love.graphics.rectangle(modes[mode], x, y, width, height)
+end
+
+local function text(std, game, application, x, y, text)
     local font = love.graphics.getFont()
     local t = text and tostring(text) or tostring(x)
     local n = select(2, t:gsub('\n', '')) + 1
@@ -36,7 +34,7 @@ local function text(x, y, text)
     return w, h
 end
 
-local function line(x1, y1, x2, y2)
+local function line(std, game, application, x1, y1, x2, y2)
     love.graphics.line(x1, y1, x2, y2)
 end
 
@@ -48,7 +46,7 @@ local function triangle(mode, x1, y1, x2, y2, x3, y3)
     end
 end
 
-local function font(std, name, size)
+local function font(std, game, application, name, size)
     if not size and type(name) == 'number' then
         size = name
         name = 'Tiresias'
@@ -59,7 +57,7 @@ local function font(std, name, size)
     love.graphics.setFont(f)
 end
 
-local function image(std, src, x, y)
+local function image(std, game, application, src, x, y)
     local r, g, b, a = love.graphics.getColor()
     local image = std.mem.cache('image'..src, function()
         return love.graphics.newImage(src)
@@ -70,29 +68,20 @@ local function image(std, src, x, y)
 end
 
 local function event_bus(std, game, application)
-    std.bus.listen_safe('draw', application.callbacks.draw)
-    std.bus.listen('resize', function(w, h)
-        game.width, game.height = w, h
-    end)
+    std.bus.listen_std('post_draw', std.bus.trigger('draw_tui'))
 end
 
 local function install(std, game, application)
     application.callbacks.draw = application.callbacks.draw or function() end
 
-    -- pure love
-    std.draw.color=color
-    std.draw.rect=rect
-    std.draw.text=text
-    std.draw.line=line
-
-    -- engine dependent
-    std.draw.image=function(src, x, y) return image(std, src, x, y) end
-    std.draw.font=function(name, size) return font(std, name, size) end
-
-    std.draw.clear = function(c)
-        color(c)
-        love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
-    end
+    std.draw.image = util_decorator.prefix3(std, game, application, image)
+    std.draw.clear = util_decorator.prefix3(std, game, application, clear)
+    std.draw.color = util_decorator.prefix3(std, game, application, color)
+    std.draw.rect = util_decorator.prefix3(std, game, application, rect)
+    std.draw.text = util_decorator.prefix3(std, game, application, text)
+    std.draw.font = util_decorator.prefix3(std, game, application, font)
+    std.draw.line = util_decorator.prefix3(std, game, application, line)
+    std.draw.tui_text = util_decorator.prefix3(std, game, application, text)
 
     return {
         draw=std.draw

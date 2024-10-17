@@ -2,7 +2,7 @@ local http_util = require('src/lib/util/http')
 
 local function http_handler(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
-    local command, cleanup = http_util.create_request(self.method, self.url..params)
+    local command = http_util.create_request(self.method, self.url..params)
         .add_custom_headers(self.header_list, self.header_dict)
         .add_body_content(self.body_content)
         .to_curl_cmd()
@@ -22,10 +22,8 @@ local function http_handler(self)
 
     self.promise()
     self.application.internal.http.queue[#self.application.internal.http.queue + 1] = self
-    thread = love.thread.newThread(threadCode)
+    local thread = love.thread.newThread(threadCode)
     thread:start(command, tostring(self))
-
-    cleanup()
 end
 
 local function http_callback(self)
@@ -47,6 +45,7 @@ local function http_callback(self)
         self.resolve()
         return true
     end
+    return false
 end
 
 local function install(std, game, application)

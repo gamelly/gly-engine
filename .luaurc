@@ -3,7 +3,10 @@
   "lint": { "*": true},
   "lintErrors": true,
   "globals": [
+    "arg",
+    "bit",
     "Buffer",
+    "jit",
     "jsRequire",
     "load",
     "loadfile",

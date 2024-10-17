@@ -1,6 +1,7 @@
 local buses = {
     list = {},
-    dict = {}
+    dict = {},
+    queue = {}
 }
 
 --! @defgroup std
@@ -13,6 +14,10 @@ local buses = {
 --! @brief internal mechanisms communication system,
 --! but can also be used externally.
 
+local function spawn_next(key, a, b, c, d, e, f)
+    buses.queue[#buses.queue + 1] = {key, a, b, c, d, e, f}
+end
+
 --! @par Example
 --! @code
 --! function love.update(dt)
@@ -20,11 +25,17 @@ local buses = {
 --! end
 --! @endcode
 local function spawn(key, a, b, c, d, e, f)
-    local index = 1
-    local bus = buses.dict[key]
-    while bus and index <= #bus do
-        bus[index](a, b, c, d, e, f)
-        index = index + 1
+    local index1, index2 = 1, 1
+    local prefixes = {'pre_', '', 'post_'}
+    while index1 <= #prefixes do
+        index2 = 1
+        local prefix = prefixes[index1]
+        local bus = buses.dict[prefix..key]
+        while bus and index2 <= #bus do
+            bus[index2](a, b, c, d, e, f)
+            index2 = index2 + 1
+        end
+        index1 = index1 + 1
     end
 end
 
@@ -63,6 +74,7 @@ local function install(std, game, application)
     std.bus.spawn = spawn
     std.bus.listen = listen
     std.bus.trigger = trigger
+    std.bus.spawn_next = spawn_next
 
     std.bus.listen_std = function(key, handler_func)
         listen(key, function(a, b, c, d, e, f)
@@ -75,6 +87,16 @@ local function install(std, game, application)
             handler_func(std, game, a, b, c, d, e, f)
         end)
     end
+
+    listen('pre_loop', function()
+        local index = 1
+        while index <= #buses.queue do
+            local pid = buses.queue[index]
+            spawn(pid[1], pid[2], pid[3], pid[4], pid[5], pid[6])
+            index = index + 1
+        end
+        buses.queue = {}
+    end)
 
     return {
         bus=std.bus

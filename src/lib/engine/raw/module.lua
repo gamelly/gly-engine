@@ -1,6 +1,16 @@
 local zeebo_pipeline = require('src/lib/util/pipeline')
 local application_default = require('src/lib/object/application')
 
+local function register(std, game, application)
+    local callbacks = application.callbacks
+
+    for event, callback in pairs(callbacks) do
+        std.bus.listen(event, function()
+            application.callbacks[event](std, game)
+        end)
+    end
+end
+
 local function normalize(application)
     if not application then return nil end
 
@@ -96,11 +106,6 @@ end
 --! @}
 --! @}
 
-local function register(self, register_func)
-    self.pipeline[#self.pipeline + 1] = register_func
-    return self
-end
-
 local function package(self, module_name, module, custom)
     local system = module_name:sub(1, 1) == '@'
     local name = system and module_name:sub(2) or module_name
@@ -133,6 +138,10 @@ local function package(self, module_name, module, custom)
 end
 
 local function require(std, game, application)
+    if not application then
+        error('game not found!')
+    end
+
     local application_require = application.config and application.config.require or ''
     local next_library = application_require:gmatch('%S+')
     local self = {
@@ -141,7 +150,6 @@ local function require(std, game, application)
         game=game,
         application=application,
         -- methods
-        register = register,
         package = package,
         -- data
         event = {},
@@ -198,11 +206,12 @@ end
 local function install(std, game, application, exit_func)
     std.game = std.game or {}
     std.game.load = loadgame
+    std.game.register = function(app) return register(std, game, app) end
     return {load=loadgame}
 end
 
 local P = {
-    load={install=install},
+    install=install,
     loadgame = loadgame,
     require = require
 }

@@ -2,6 +2,7 @@
 --! @brief can be used as mock
 
 local P = {
+    delta = 0,
     math = {
 
     },
