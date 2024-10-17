@@ -1,14 +1,26 @@
 local zeebo_pipeline = require('src/lib/util/pipeline')
 local application_default = require('src/lib/object/application')
 
-local function register(std, game, application)
-    local callbacks = application.callbacks
+local function default(application)
+    if not application then return nil end
+    local index = 1    
+    local items = {'data', 'meta', 'config', 'callbacks'}
+    local normalized_aplication = {}
 
-    for event, callback in pairs(callbacks) do
-        std.bus.listen(event, function()
-            application.callbacks[event](std, game)
-        end)
+    while index <= #items do
+        local key1 = items[index]
+        local keys = application_default[key1]
+
+        normalized_aplication[key1] = {}
+
+        for key2, default_value in pairs(keys) do
+            local value = application[key1] and application[key1][key2]
+            normalized_aplication[key1][key2] = value or default_value
+        end
+        index = index + 1
     end
+
+    return normalized_aplication
 end
 
 local function normalize(application)
@@ -27,6 +39,7 @@ local function normalize(application)
     end
 
     local normalized_aplication = {
+        data = {},
         meta = {},
         config = {},
         callbacks = {}
@@ -35,10 +48,12 @@ local function normalize(application)
     for key, value in pairs(application) do
         if application_default.meta[key] then
             normalized_aplication.meta[key] = value
+        elseif application_default.config[key] then
+            normalized_aplication.config[key] = value
         elseif type(value) == 'function' then
             normalized_aplication.callbacks[key] = value
         else
-            normalized_aplication.config[key] = value
+            normalized_aplication.data[key] = value
         end
     end
 
@@ -49,6 +64,19 @@ end
 --! @{
 --! @defgroup game
 --! @{
+
+--! @hideparam std
+local function register(std, engine, application)
+    local callbacks = application.callbacks
+
+    for event, callback in pairs(callbacks) do
+        std.bus.listen(event, function()
+            local data = application.data or {}
+            engine.current = application
+            application.callbacks[event](std, data)
+        end)
+    end
+end
 
 --! @renamefunc load
 --! @short safe load game
@@ -100,7 +128,7 @@ local function loadgame(game_file)
         application = application()
     end
 
-    return normalize(application)
+    return default(normalize(application))
 end
 
 --! @}
@@ -111,6 +139,7 @@ local function package(self, module_name, module, custom)
     local name = system and module_name:sub(2) or module_name
 
     if system then
+        self.list_append(name)
         self.stdlib_required[name] = true
     end
 
@@ -119,13 +148,17 @@ local function package(self, module_name, module, custom)
         if not system and not self.lib_required[name] then return end
         
         local try_install = function()
-            module.install(self.std, self.game, self.application, custom, module_name)
+            module.install(self.std, self.engine, custom, module_name)
             if module.event_bus then
-                module.event_bus(self.std, self.game, self.application)
+                module.event_bus(self.std, self.engine, custom, module_name)
             end
         end
         
-        if not pcall(try_install) then return end
+        local ok, msg = pcall(try_install)
+        if not ok then
+            self.lib_error[name] = msg    
+            return
+        end
         
         if system then
             self.stdlib_installed[name] = true
@@ -137,23 +170,23 @@ local function package(self, module_name, module, custom)
     return self
 end
 
-local function require(std, game, application)
+local function require(std, application, engine)
     if not application then
         error('game not found!')
     end
 
-    local application_require = application.config and application.config.require or ''
+    local application_require = application.config.require
     local next_library = application_require:gmatch('%S+')
     local self = {
         -- objects
         std=std,
-        game=game,
-        application=application,
+        engine=engine,
         -- methods
         package = package,
         -- data
         event = {},
         list = {},
+        lib_error = {},
         lib_optional = {},
         lib_required = {},
         lib_installed = {},
@@ -178,10 +211,10 @@ local function require(std, game, application)
         while index <= #self.list do
             local name = self.list[index]
             if self.stdlib_required[name] and not self.stdlib_installed[name] then
-                error('system library not loaded: '..name)
+                error('system library not loaded: '..name..'\n'..self.lib_error[name])
             end
             if self.lib_required[name] and not self.lib_installed[name] then
-                error('library not loaded: '..name)
+                error('library not loaded: '..name..'\n'..self.lib_error[name])
             end
             index = index + 1
         end
@@ -203,10 +236,10 @@ local function require(std, game, application)
     return self
 end
 
-local function install(std, game, application, exit_func)
+local function install(std, engine)
     std.game = std.game or {}
     std.game.load = loadgame
-    std.game.register = function(app) return register(std, game, app) end
+    std.game.register = function(app) return register(std, engine, app) end
     return {load=loadgame}
 end
 

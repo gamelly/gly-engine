@@ -3,7 +3,45 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @defgroup std
 --! @{
 --! @defgroup http
+--! @short API for HTTP Requests
 --! @pre require @c http
+--! @par Methods
+--! @li @b std.http.get
+--! @li @b std.http.head
+--! @li @b std.http.post
+--! @li @b std.http.put
+--! @li @b std.http.delete
+--! @li @b std.http.patch
+--! 
+--! @par Example
+--! @li local handlers
+--! @code
+--! std.http.get('http://pudim.com.br')
+--!     :success(function()
+--!         print('2xx callback')
+--!     end)
+--!     :failed(function()
+--!         print('4xx / 5xx callback')
+--!     end)
+--!     :error(function()
+--!         print('eg. to many redirects')
+--!     end)
+--!     :run()
+--! @endcode
+--! @li global handler
+--! @code{.java}
+--! local function http(std, game)
+--!     if std.http.error then
+--!         print('eg. https is not supported')
+--!     end
+--!     if std.http.ok then
+--!         print('2xx status')
+--!     end
+--!     if std.http.status > 400 then
+--!         print('2xx / 5xx status')
+--!     end
+--! end
+--! @endcode
 --! @{
 
 --! @short reduced response

@@ -1,37 +1,29 @@
+local util_decorator = require('src/lib/util/decorator')
+
 --! @defgroup std
 --! @{
 --! @defgroup game
 --! @{
 
---! @hideparam self
-local function reset(self)
-    return function()
-        if self.callbacks.exit then
-            self.callbacks.exit(self.std, self.game)
-        end
-        if self.callbacks.init then
-            self.callbacks.init(self.std, self.game)
-        end
+--! @hideparam std
+local function reset(std)
+    std.bus.spawn('exit')
+    std.bus.spawn('init')
+end
+
+--! @hideparam std
+--! @hideparam func
+local function exit(std, func)
+    std.bus.spawn('exit')
+    if func then
+        func()
     end
 end
 
---! @hideparam self
-local function exit(self)
-    return function()
-        if self.callbacks.exit then
-            self.callbacks.exit(self.std, self.game)
-        end
-        if self.exit then
-            self.exit()
-        end
-    end
-end
-
-
---! @hideparam self
-local function title(self, window_name)
-    if self.cfg.set_title then
-        self.cfg.set_title(window_name)
+--! @hideparam func
+local function title(func, window_name)
+    if func then
+        func(window_name)
     end
 end
 
@@ -39,21 +31,13 @@ end
 --! @}
 
 --! @cond
-local function install(std, game, application, config)
+local function install(std, engine, config)
     std = std or {}
     std.game = std.game or {}
-    
-    local app = {
-        cfg = config,
-        callbacks=application.callbacks,
-        exit=exit_func,
-        std=std,
-        game=game
-    }
 
-    std.game.title = function(t) title(app, t) end
-    std.game.reset = reset(app)
-    std.game.exit = exit(app)
+    std.game.title = util_decorator.prefix1(config.set_title, title)
+    std.game.exit = util_decorator.prefix2(std, config.quit, exit)
+    std.game.reset = util_decorator.prefix1(std, reset)
     std.game.get_fps = config.fps
 
     return std.game

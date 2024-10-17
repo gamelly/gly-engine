@@ -60,20 +60,25 @@ function love.load(args)
     local fullscreen = util_arg.has(args, 'fullscreen')
     local game_title = util_arg.param(arg, {'screen'}, 2)
     local application = lib_raw_module.loadgame(game_title)
+    local engine = {}
 
     if screen then
         w, h = screen:match('(%d+)x(%d+)')
         w, h = tonumber(w), tonumber(h)
     end
 
-    love.window.setMode(w, h, {
-        resizable=true,
-        fullscreen=fullscreen
-    })
+    if application then
+        std.game.width = w
+        std.game.height = h
+        application.data.width = w
+        application.data.height = h
+        love.window.setMode(w, h, {
+            resizable=true,
+            fullscreen=fullscreen
+        })
+    end
 
-    local game = {width=w, height=h}
-
-    lib_raw_module.require(std, game, application)
+    lib_raw_module.require(std, application, engine)
         :package('@bus', lib_raw_bus)
         :package('@memory', lib_raw_memory)
         :package('@module', lib_raw_module)
@@ -91,6 +96,9 @@ function love.load(args)
         :package('json', lib_api_encoder, cfg_json_rxi)
         :package('i18n', lib_api_i18n, util_lua.get_sys_lang)
         :run()
+
+    engine.root = application
+    engine.current = application
 
     std.game.title(application.meta.title..' - '..application.meta.version)
     std.game.register(application)

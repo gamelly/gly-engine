@@ -88,7 +88,7 @@ end
 --! @}
 --! @}
 
-local function install(std, game, application)
+local function install(std)
     std = std or {}
     std.mem = std.mem or {}
     std.mem.cache = cache

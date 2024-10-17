@@ -67,7 +67,7 @@ end
 --! @}
 --! @}
 
-local function install(std, game, application)
+local function install(std, engine)
     std = std or {}
     std.bus = std.bus or {}
     
@@ -78,13 +78,13 @@ local function install(std, game, application)
 
     std.bus.listen_std = function(key, handler_func)
         listen(key, function(a, b, c, d, e, f)
-            handler_func(std, game, application, a, b, c, d, e, f)
+            handler_func(std, a, b, c, d, e, f)
         end)
     end
 
-    std.bus.listen_safe = function(key, handler_func)
+    std.bus.listen_std_engine = function(key, handler_func)
         listen(key, function(a, b, c, d, e, f)
-            handler_func(std, game, a, b, c, d, e, f)
+            handler_func(std, engine, a, b, c, d, e, f)
         end)
     end
 

@@ -2,6 +2,10 @@
 --! @brief metatags, configs and code.
 
 local P = {
+    data={
+        width=1280,
+        height=720
+    },
     meta={
         id='',
         title='',
@@ -11,6 +15,7 @@ local P = {
         version=''
     },
     config = {
+        require = '',
         fps_max = 100,
         fps_show = 0,
         fps_drop = 2,

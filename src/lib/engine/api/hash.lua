@@ -43,7 +43,7 @@ end
 --! @}
 --! @}
 
-local function install(std, game, application, all_your_secrets)
+local function install(std, engine, all_your_secrets)
     local id = fingerprint(all_your_secrets)
     std = std or {}
     std.hash = std.hash or {}
