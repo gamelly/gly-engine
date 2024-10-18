@@ -15,6 +15,8 @@ local P = {
         version=''
     },
     config = {
+        offset_x = 0,
+        offset_y = 0,
         require = '',
         fps_max = 100,
         fps_show = 0,

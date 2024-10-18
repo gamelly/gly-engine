@@ -24,7 +24,7 @@ local function event_ginga(std, game, application, evt)
         fixture190 = evt.type
     end
 
-    std.bus.spawn('rkey', key_bindings[evt.key], fixture190 == evt.type)
+    std.bus.emit('rkey', key_bindings[evt.key], fixture190 == evt.type)
 end
 
 local function event_bus(std)

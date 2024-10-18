@@ -37,7 +37,7 @@ local function real_key(std, engine, rkey, rvalue)
             std.key.axis.y = std.key.axis.down - std.key.axis.up
         end
         
-        std.bus.spawn('key')
+        std.bus.emit('key')
     end
 end
 

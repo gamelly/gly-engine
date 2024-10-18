@@ -1,0 +1,14 @@
+@defgroup build
+@{
+
+@defgroup homebrew
+@{
+
+@page build_nds Nintendo DS
+
+You can make your games in Lua for Nintendo DS using Gly Engine.
+
+ - **comming soon**
+
+@}
+@}

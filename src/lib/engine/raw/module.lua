@@ -20,6 +20,12 @@ local function default(application)
         index = index + 1
     end
 
+    normalized_aplication.config.id = tostring(application) 
+
+    for event, handler in pairs(application.callbacks) do
+        normalized_aplication.callbacks[event] = handler
+    end
+
     return normalized_aplication
 end
 
@@ -66,23 +72,17 @@ end
 --! @{
 
 --! @hideparam std
-local function register(std, engine, application)
-    local callbacks = application.callbacks
-
-    for event, callback in pairs(callbacks) do
-        std.bus.listen(event, function()
-            local data = application.data or {}
-            engine.current = application
-            application.callbacks[event](std, data)
-        end)
-    end
-end
 
 --! @renamefunc load
 --! @short safe load game
---! @pre require @c load
 --! @brief search by game in filesystem / lua modules
---! @li https://love2d.org/wiki/love.filesystem.getSource
+--! @pre require @c load
+--! @see @ref spawn "load and spawn two games inside one"
+--! @par Example
+--! @code{.java}
+--! local game = std.game.load('examples/pong/game.lua')
+--! print(game.meta.title)
+--! @endcode
 local function loadgame(game_file)
     if type(game_file) == 'table' or type(game_file) == 'userdata' then
         return normalize(game_file)
@@ -239,7 +239,6 @@ end
 local function install(std, engine)
     std.game = std.game or {}
     std.game.load = loadgame
-    std.game.register = function(app) return register(std, engine, app) end
     return {load=loadgame}
 end
 

@@ -15,27 +15,58 @@ end
 
 local function clear(std, engine, tint)
     color(nil, nil, tint)
-    love.graphics.rectangle(modes[0], 0, 0, std.game.width, std.game.height)
+    local x = engine.current.config.offset_x
+    local y = engine.current.config.offset_y
+    local width = engine.current.data.width
+    local height = engine.current.data.height
+    love.graphics.rectangle(modes[0], x, y, width, height)
 end
 
-local function rect(std, engine, mode, x, y, width, height)
+local function rect(std, engine, mode, pos_x, pos_y, width, height)
+    local x = engine.current.config.offset_x + pos_x
+    local y = engine.current.config.offset_y + pos_y
     love.graphics.rectangle(modes[mode], x, y, width, height)
 end
 
-local function text(std, engine, x, y, text)
+local function tui_text(std, engine, pos_x, pos_y, size, text)
+    local hem = engine.current.data.width / 80
+    local vem = engine.current.data.height / 24
+    local x = engine.current.config.offset_x + (pos_x * hem)
+    local y = engine.current.config.offset_y + (pos_y * vem)
+    local font_size = hem * size
+
+    local old_font = love.graphics.getFont()
+    local new_font = std.mem.cache('font_tui'..tostring(font_size), function()
+        return love.graphics.newFont(font_size)
+    end)
+
+    love.graphics.setFont(new_font)
+    love.graphics.print(text, x, y)
+    love.graphics.setFont(old_font)
+end
+
+local function text(std, engine, pos_x, pos_y, text)
     local font = love.graphics.getFont()
-    local t = text and tostring(text) or tostring(x)
+    local t = text and tostring(text) or tostring(pos_x)
     local n = select(2, t:gsub('\n', '')) + 1
     local w = font:getWidth(t)
     local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
-    if x and y then
+    if pos_x and pos_y then
+        local x = engine.current.config.offset_x + pos_x
+        local y = engine.current.config.offset_y + pos_y
         love.graphics.print(t, x, y)
     end
     return w, h
 end
 
 local function line(std, engine, x1, y1, x2, y2)
-    love.graphics.line(x1, y1, x2, y2)
+    local ox = engine.current.config.offset_x 
+    local oy = engine.current.config.offset_y
+    local px1 = ox + x1
+    local py1 = oy + y1
+    local px2 = ox + x2
+    local py2 = oy + y2
+    love.graphics.line(px1, py1, px2, py2)
 end
 
 local function triangle(mode, x1, y1, x2, y2, x3, y3)
@@ -68,6 +99,12 @@ local function image(std, engine, src, x, y)
 end
 
 local function event_bus(std, engine)
+    std.bus.listen('resize', function(w, h)
+        engine.root.data.width = w
+        engine.root.data.height = h
+        std.game.width = w
+        std.game.height = h
+    end)
 end
 
 local function install(std, engine)
@@ -78,7 +115,7 @@ local function install(std, engine)
     std.draw.text = util_decorator.prefix2(std, engine, text)
     std.draw.font = util_decorator.prefix2(std, engine, font)
     std.draw.line = util_decorator.prefix2(std, engine, line)
-    std.draw.tui_text = util_decorator.prefix2(std, engine, text)
+    std.draw.tui_text = util_decorator.prefix2(std, engine, tui_text)
 
     return {
         draw=std.draw

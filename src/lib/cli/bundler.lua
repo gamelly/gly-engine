@@ -72,7 +72,10 @@ local function build(src_path, src_filename, dest)
 
     repeat
         if from == 'system' then
-            main_before = 'local '..lib_var..' = select(2, pcall(require, \''..lib_module..'\')) or '..lib_var..'\n'..main_before
+            local os = function() local x, y = pcall(require, 'os'); return x and y end or _G.os
+
+            main_before = 'local '..lib_var..' = function() local x, y = pcall(require, \''..lib_module
+                ..'\'); return x and y end or _G.'..lib_var..'\n'..main_before
         end
         if src_file then
             if from == 'lib' then

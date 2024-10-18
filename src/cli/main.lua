@@ -28,7 +28,7 @@ local command = zeebo_argparse.from(arg)
     .add_subcommand('run', commands_game)
     .add_next_value('game', {required=true, alias='@examples/{{game}}/game.lua'})
     .add_option_get('core', {default='love'})
-    .add_option_get('screen', {default='1280x720'})
+    .add_option_get('screen', {})
     --
     .add_subcommand('meta', commands_game)
     .add_next_value('game', {required=true, alias='@examples/{{game}}/game.lua'})

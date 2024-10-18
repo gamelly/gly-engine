@@ -3,7 +3,9 @@
 --! @defgroup draw
 --! @{
 
---! @hideparam self
+--! @hideparam std
+--! @hideparam engine
+--! @todo refact
 --! @pre the <b>mode 3</b> require @c math
 --! 
 --! @param show @c integer
@@ -12,7 +14,9 @@
 --! @li mode 3: FPS Real Time / FPS / FPS Limit
 --! @param x @c double
 --! @param y @c double
-local function fps(self, show, x, y)
+local function fps(std, engine, show, pos_x, pos_y)
+    local x = engine.current.offset_x + pos_x
+    local x = engine.current.offset_y + pos_y
     local s = 4
     self.std.draw.color(0xFFFF00FF)
     if show >= 1 then
@@ -45,23 +49,13 @@ end
 --! @}
 
 local function event_bus(std, game, application)
-    std.bus.listen('draw', function()
-        if game.fps_show and game.fps_show > 0 then
-            std.draw.fps(game.fps_show, 8, 8)
-        end
-    end)
+    --! @todo this
 end
 
 
-local function install(std, game, application)
-    std = std or {}    
-    std.draw = std.draw or {}
+local function install(std, engine, application)
     std.draw.fps = function(show, x, y)
-        fps({std=std, game=game}, show, x, y)
-    end
-
-    local event_draw = function()
-        
+        fps(std, engine, show, x, y)
     end
 
     return {

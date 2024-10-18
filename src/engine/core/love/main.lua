@@ -55,26 +55,24 @@ local cfg_game_api = {
 }
 
 function love.load(args)
-    local w, h = love.graphics.getDimensions()
     local screen = util_arg.get(args, 'screen')
     local fullscreen = util_arg.has(args, 'fullscreen')
     local game_title = util_arg.param(arg, {'screen'}, 2)
     local application = lib_raw_module.loadgame(game_title)
     local engine = {}
-
+    
     if screen then
-        w, h = screen:match('(%d+)x(%d+)')
-        w, h = tonumber(w), tonumber(h)
+        local w, h = screen:match('(%d+)x(%d+)')
+        application.data.width = tonumber(w)
+        application.data.height = tonumber(h)
     end
 
     if application then
-        std.game.width = w
-        std.game.height = h
-        application.data.width = w
-        application.data.height = h
-        love.window.setMode(w, h, {
-            resizable=true,
-            fullscreen=fullscreen
+        std.game.width = application.data.width
+        std.game.height = application.data.height
+        love.window.setMode(std.game.width, std.game.height, {
+            fullscreen=fullscreen,
+            resizable=true
         })
     end
 
@@ -95,20 +93,21 @@ function love.load(args)
         :package('http', lib_api_http, cfg_http_curl_love)
         :package('json', lib_api_encoder, cfg_json_rxi)
         :package('i18n', lib_api_i18n, util_lua.get_sys_lang)
+        :package('hash', lib_api_hash, {'love'})
         :run()
 
     engine.root = application
     engine.current = application
 
     std.game.title(application.meta.title..' - '..application.meta.version)
-    std.game.register(application)
 
     love.update = std.bus.trigger('loop')
     love.resize = std.bus.trigger('resize')
     love.draw = std.bus.trigger('draw')
     love.keypressed = std.bus.trigger('rkey1')
     love.keyreleased = std.bus.trigger('rkey0')
-
-    std.bus.spawn_next('load')
-    std.bus.spawn_next('init')
+    
+    std.bus.spawn(application)
+    std.bus.emit_next('load')
+    std.bus.emit_next('init')
 end

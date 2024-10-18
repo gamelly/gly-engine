@@ -7,14 +7,14 @@ local util_decorator = require('src/lib/util/decorator')
 
 --! @hideparam std
 local function reset(std)
-    std.bus.spawn('exit')
-    std.bus.spawn('init')
+    std.bus.emit('exit')
+    std.bus.emit('init')
 end
 
 --! @hideparam std
 --! @hideparam func
 local function exit(std, func)
-    std.bus.spawn('exit')
+    std.bus.emit('exit')
     if func then
         func()
     end
