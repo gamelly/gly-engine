@@ -1,75 +1,148 @@
-local zeebo_module = require('src/lib/engine/module')
-local engine_bus = require('src/lib/engine/bus')
-local engine_game = require('src/lib/engine/game')
-local engine_math = require('src/lib/engine/math')
-local engine_color = require('src/lib/object/color')
-local engine_http = require('src/lib/engine/http')
-local engine_key = require('src/lib/engine/key')
-local engine_encoder = require('src/lib/engine/encoder')
-local engine_draw_fps = require('src/lib/draw/fps')
-local engine_draw_poly = require('src/lib/draw/poly')
-local engine_i18n = require('src/lib/engine/i18n')
-local engine_memory = require('src/lib/engine/memory')
-local library_csv = require('src/third_party/csv/rodrigodornelles')
-local game = require('src/lib/object/game')
+local zeebo_module = require('src/lib/engine/raw/module')
+--
+local lib_api_encoder = require('src/lib/engine/api/encoder')
+local lib_api_game = require('src/lib/engine/api/game')
+local lib_api_hash = require('src/lib/engine/api/hash')
+local lib_api_http = require('src/lib/engine/api/http')
+local lib_api_i18n = require('src/lib/engine/api/i18n')
+local lib_api_key = require('src/lib/engine/api/key')
+local lib_api_math = require('src/lib/engine/api/math')
+local lib_draw_fps = require('src/lib/engine/draw/fps')
+local lib_draw_poly = require('src/lib/engine/draw/poly')
+local lib_raw_bus = require('src/lib/engine/raw/bus')
+local lib_raw_memory = require('src/lib/engine/raw/memory')
+--
+local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
-local application = nil
+--
+local application = {}
+local engine = {}
 
-function native_callback_loop(milis)
-    game.milis = milis
-    application.callbacks.loop(std, game)
-    std.bus.spawn('loop', game.dt)
+--! @defgroup std
+--! @{
+--! @defgroup draw
+--! @{
+
+--! @short std.draw.clear
+local function clear(tint)
+    local x, y = engine.current.config.offset_x, engine.current.config.offset_y
+    local width, height = engine.current.data.width, engine.current.data.height
+    native_draw_clear(tint, x, y, width, height)
+end
+
+--! @short std.draw.rect
+local function rect(mode, pos_x, pos_y, width, height)
+    local ox, oy = engine.current.config.offset_x, engine.current.config.offset_y
+    native_draw_rect(mode, pos_x + ox, pos_y + oy, width, height)
+end
+
+--! @short std.draw.tui_text
+local function tui_text(pos_x, pos_y, size, text)
+    local ox, oy = engine.current.config.offset_x, engine.current.config.offset_y
+    local width, height = engine.current.data.width, engine.current.data.height
+    native_draw_text_tui(pos_x, pos_y, ox, oy, width, height, size, text)
+end
+
+--! @short std.draw.text
+local function text(pos_x, pos_y, text)
+    local ox, oy = engine.current.config.offset_x, engine.current.config.offset_y
+    if pos_x and pos_y then
+        return native_draw_text(pos_x + ox, pos_y + oy, text)
+    end
+    return native_draw_text(pos_x)
+end
+
+--! @short std.draw.line
+local function line(x1, y1, x2, y2)
+    local ox, oy = engine.current.config.offset_x, engine.current.config.offset_y
+    native_draw_line(x1 + ox, y1 + oy, x2 + ox, y2 + oy)
+end
+
+--! @short std.draw.image
+local function image(src, pos_x, pos_y)
+    local ox, oy = engine.current.config.offset_x, engine.current.config.offset_y
+    native_draw_text_tui(src, pos_x + ox, pos_y + oy)
+end
+
+--! @}
+--! @}
+
+function native_callback_loop(dt)
+    std.milis = std.milis + dt
+    std.delta = dt
+    std.bus.emit('loop')
 end
 
 function native_callback_draw()
     native_draw_start()
-    application.callbacks.draw(std, game)
-    std.bus.spawn('draw')
+    std.bus.emit('draw')
     native_draw_flush()
 end
 
 function native_callback_resize(width, height)
-    game.width = width
-    game.height = height
+    engine.root.data.width = width
+    engine.root.data.height = height
+    std.game.width = width
+    std.game.height = height
+    std.bus.emit('resize', width, height)
 end
 
 function native_callback_keyboard(key, value)
-    std.bus.spawn('rkey', key, value)
+    std.bus.emit('rkey', key, value)
 end
 
 function native_callback_init(width, height, game_lua)
     application = zeebo_module.loadgame(game_lua)
 
-    std.draw.clear=native_draw_clear
+    if application then
+        application.data.width = width
+        application.data.height = height
+        std.game.width = width
+        std.game.height = height
+    end
+
     std.draw.color=native_draw_color
     std.draw.font=native_draw_font
-    std.draw.text=native_draw_text
-    std.draw.rect=native_draw_rect
-    std.draw.line=native_draw_line
-    std.draw.image=native_draw_image
+    std.draw.clear=clear
+    std.draw.text=text
+    std.draw.tui_text=tui_text
+    std.draw.rect=rect
+    std.draw.line=line
+    std.draw.image=image
     
-    zeebo_module.require(std, game, application)
-        :package('@bus', engine_bus)
-        :package('@game', engine_game)
-        :package('@math', engine_math)
-        :package('@color', engine_color)
-        :package('@key', engine_key)
-        :package('@draw.fps', engine_draw_fps)
-        :package('@draw.poly', engine_draw_poly, native_dict_poly)
-        :package('@memory', engine_memory)
-        :package('load', zeebo_module.load)
-        :package('math', engine_math.clib)
-        :package('math.random', engine_math.clib_random)
-        :package('http', engine_http, native_dict_http)
-        :package('json', engine_encoder, native_dict_json)
-        :package('xml', engine_encoder, native_dict_xml)
-        :package('csv', engine_encoder, library_csv)
-        :package('i18n', engine_i18n, native_get_system_lang)
+    zeebo_module.require(std, application, engine)
+        :package('@bus', lib_raw_bus)
+        :package('@memory', lib_raw_memory)
+        :package('@module', zeebo_module.lib)
+        :package('@game', lib_api_game, {})
+        :package('@math', lib_api_math)
+        :package('@key', lib_api_key, {})
+        :package('@draw.poly', lib_draw_poly, native_dict_poly)
+        :package('@draw.fps', lib_draw_fps)
+        :package('@color', color)
+        :package('math', lib_api_math.clib)
+        :package('math.random', lib_api_math.clib_random)
+        :package('http', lib_api_http, cfg_http_curl_love)
+        :package('json', lib_api_encoder, native_dict_json)
+        :package('xml', lib_api_encoder, native_dict_xml)
+        :package('i18n', lib_api_i18n, native_get_system_lang)
         :run()
 
-    game.width = width
-    game.height = height
-    game.fps = 60
-    game.dt = 16
-    application.callbacks.init(std, game)
+    engine.root = application
+    engine.current = application
+
+    std.bus.spawn(application)
+    std.bus.emit_next('load')
+    std.bus.emit_next('init')
 end
+
+local P = {
+    meta={
+        title='gly-engine',
+        author='RodrigoDornelles',
+        description='native core',
+        version='0.0.8'
+    }
+}
+
+return P

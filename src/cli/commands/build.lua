@@ -93,7 +93,8 @@ local function build(args)
 
     -- move game
     if args.game then
-        zeebo_fs.move(args.game, dist..'game.lua')
+        local dir, file = args.game:match("(.*/)([^/]+)$")
+        zeebo_bundler.build(dir, file, dist..'game.lua')
     end
 
     -- core move

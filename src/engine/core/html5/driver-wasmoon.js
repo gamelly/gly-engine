@@ -28,6 +28,7 @@ gly.wasmoon = async (game_file) => {
     lua.global.set('native_dict_http', gly.global.get('native_dict_http'))
     lua.global.set('native_dict_json', gly.global.get('native_dict_json'))
     lua.global.set('native_dict_poly', gly.global.get('native_dict_poly'))
+    lua.global.set('native_draw_text_tui', gly.global.get('native_draw_text_tui'))
     lua.global.set('native_draw_text', (x, y, text) => {
         const native_draw_text = gly.global.get('native_draw_text')
         return LuaMultiReturn.from(native_draw_text(x, y, text))

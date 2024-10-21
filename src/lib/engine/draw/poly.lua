@@ -98,6 +98,10 @@ local function decorator_position(engine, func)
     return function(mode, verts, pos_x, pos_y, scale, angle, ox, oy)
         local x = engine.current.config.offset_x + (pos_x or 0)
         local y = engine.current.config.offset_y + (pos_y or 0)
+        ox = ox or 0
+        oy = ox or oy or 0
+        scale = scale or 1
+        angle = angle or 0
         return func(mode, verts, x, y, scale, angle, ox, oy)
     end
 end

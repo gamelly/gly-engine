@@ -53,7 +53,8 @@
 --! main()
 --! @endcode
 local function build(src_path, src_filename, dest)
-    local pattern = "local ([%w_%-]+) = require%('(.-)'%)"
+    local pattern_require = "local ([%w_%-]+) = require%('(.-)'%)"
+    local pattern_gameload = "([%w_%-%.]+) = std%.game%.load%('(.-)'%)"
     local from = 'main'
     local src_in = src_path..src_filename
     local src_file = io.open(src_in, 'r')
@@ -74,8 +75,8 @@ local function build(src_path, src_filename, dest)
         if from == 'system' then
             local os = function() local x, y = pcall(require, 'os'); return x and y end or _G.os
 
-            main_before = 'local '..lib_var..' = function() local x, y = pcall(require, \''..lib_module
-                ..'\'); return x and y end or _G.'..lib_var..'\n'..main_before
+            main_before = 'local '..lib_var..' = ((function() local x, y = pcall(require, \''..lib_module
+                ..'\'); return x and y end)()) or _G.'..lib_var..'\n'..main_before
         end
         if src_file then
             if from == 'lib' then
@@ -93,9 +94,16 @@ local function build(src_path, src_filename, dest)
                     line = line:gsub('%s*%-%-([^\'\"%[%]].*)$', '')
                 end
 
-                local line_require = line and { line:match(pattern) }
+                local line_require = line and { line:match(pattern_require) }
+                local line_gameload = line and { line:match(pattern_gameload) }
 
-                if line_require and #line_require > 0 then
+                if line_gameload and #line_gameload > 0 then
+                    local index = #deps_var_name + 1
+                    local gamefile = line_gameload[2]:gsub('/', '_'):gsub('%.lua$', '')
+                    deps_var_name[index] = line_gameload[1]
+                    deps_module_path[index] = line_gameload[2]:gsub('%.lua$', '')
+                    main_content = main_content..line_gameload[1]..' = std.game.load('..gamefile..')\n'
+                elseif line_require and #line_require > 0 then
                     local index = #deps_var_name + 1
                     deps_var_name[index] = line_require[1]
                     deps_module_path[index] = line_require[2]

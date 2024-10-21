@@ -66,12 +66,6 @@ local function meta()
       version=version_message,
       author='RodrigoDornelles',
       description=description
-    },
-    callbacks={
-      init=function() end,
-      loop=function() end,
-      draw=function() end,
-      exit=function() end,
     }
   }
 end

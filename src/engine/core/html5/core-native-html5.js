@@ -1,6 +1,7 @@
 const engine = {
     stop: false,
     file: './main.lua',
+    milis: null,
     error: {
         callback: null,
         capture: false,
@@ -15,9 +16,9 @@ const engine = {
             engine.canvas_ctx.clearRect(0, 0, engine.canvas_element.width, engine.canvas_element.height)
         },
         native_draw_flush: () => {},
-        native_draw_clear: (color) => {
+        native_draw_clear: (color, x, y, w, h) => {
             engine.canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
-            engine.canvas_ctx.fillRect(0, 0, engine.canvas_element.width, engine.canvas_element.height)
+            engine.canvas_ctx.fillRect(x, y, w, h)
         },
         native_draw_color: (color) => {
             const hex = '#' + color.toString(16).padStart(8, '0')
@@ -39,6 +40,15 @@ const engine = {
             engine.canvas_ctx.font = `${font_size}px ${font_name}`;
             engine.canvas_ctx.textBaseline = 'top'
             engine.canvas_ctx.textAlign = 'left'
+        },
+        native_draw_text_tui: (x, y, ox, oy, width, height, size, text) => {
+            const old_font = engine.canvas_ctx.font
+            const hem = width / 80
+            const vem = height / 24
+            const font_size = hem * size
+            engine.canvas_ctx.font = `${font_size}px sans`
+            engine.canvas_ctx.fillText(text, ox + (x * hem), oy + (y * vem))
+            engine.canvas_ctx.font = old_font
         },
         native_draw_text: (x, y, text) => {
             if (x && y) {
@@ -63,7 +73,7 @@ const engine = {
             return navigator.language
         },
         native_dict_poly: {
-            poly2: (mode, verts, x, y, scale = 1, angle = 0, ox = 0, oy = 0) => {
+            poly2: (mode, verts, x, y, scale, angle, ox, oy) => {
                 let index = 0
                 engine.canvas_ctx.beginPath()
                 while (index < verts.length) {
@@ -199,9 +209,12 @@ const gly = {
             engine.listen.native_callback_resize(width, height)
         })
     },
-    update: (milis) => {
+    update: (milis, dt) => {
+        engine.milis = engine.milis ?? milis
+        dt = dt ?? (milis - engine.milis)
+        engine.milis = milis ?? (engine.milis + dt)
         errorController(() => {
-            engine.listen.native_callback_loop(milis)
+            engine.listen.native_callback_loop(dt)
             engine.listen.native_callback_draw()
         })
     },

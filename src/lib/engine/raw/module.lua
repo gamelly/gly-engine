@@ -22,8 +22,10 @@ local function default(application)
 
     normalized_aplication.config.id = tostring(application) 
 
-    for event, handler in pairs(application.callbacks) do
-        normalized_aplication.callbacks[event] = handler
+    if application.callbacks then
+        for event, handler in pairs(application.callbacks) do
+            normalized_aplication.callbacks[event] = handler
+        end
     end
 
     return normalized_aplication
@@ -40,7 +42,7 @@ local function normalize(application)
         application = application.new()
     end
 
-    if application and application.meta and application.callbacks then
+    if application and (application.meta or application.callbacks) then
         return application
     end
 
@@ -76,7 +78,8 @@ end
 --! @renamefunc load
 --! @short safe load game
 --! @brief search by game in filesystem / lua modules
---! @pre require @c load
+--! @note When build the main game file, it will be directly affected by the bundler,
+--! if it finds a path to the game it will be unified.
 --! @see @ref spawn "load and spawn two games inside one"
 --! @par Example
 --! @code{.java}
@@ -90,8 +93,7 @@ local function loadgame(game_file)
 
     local cwd = '.'
     local application = type(game_file) == 'function' and game_file
-    local game_title = game_file and game_file:gsub('%.lua$', '') or 'game'
-
+    local game_title = not application and game_file and game_file:gsub('%.lua$', '') or 'game'
 
     if not application and game_file and game_file:find('\n') then
         local ok, app = pcall(load, game_file)
@@ -243,9 +245,11 @@ local function install(std, engine)
 end
 
 local P = {
-    install=install,
     loadgame = loadgame,
-    require = require
+    require = require,
+    lib = {
+        install=install
+    }
 }
 
 return P
