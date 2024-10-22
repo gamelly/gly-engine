@@ -74,8 +74,7 @@ jobs:
         unzip luau-ubuntu.zip
     -
       run: |
-        ./cli.sh build --bundler --core ${{ matrix.core }}
-        ./cli.sh fs-replace dist/main.lua dist/main.lua --format "function native_callback" --replace "local function _native_callback"
+        lua tools/ci_luau-analyze.lua ${{ matrix.core }}
     -
       run: |
         ./luau-analyze dist/main.lua

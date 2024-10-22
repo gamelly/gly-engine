@@ -24,6 +24,7 @@
     "native_draw_rect",
     "native_draw_start",
     "native_draw_text",
+    "native_draw_text_tui",
     "native_get_system_lang",
     "io"
   ]

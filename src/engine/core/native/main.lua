@@ -7,16 +7,19 @@ local lib_api_http = require('src/lib/engine/api/http')
 local lib_api_i18n = require('src/lib/engine/api/i18n')
 local lib_api_key = require('src/lib/engine/api/key')
 local lib_api_math = require('src/lib/engine/api/math')
-local lib_draw_fps = require('src/lib/engine/draw/fps')
 local lib_draw_poly = require('src/lib/engine/draw/poly')
 local lib_raw_bus = require('src/lib/engine/raw/bus')
 local lib_raw_memory = require('src/lib/engine/raw/memory')
 --
+local application_default = require('src/lib/object/application')
 local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
 --
-local application = {}
-local engine = {}
+local application = application_default
+local engine = {
+    current = application_default,
+    root = application_default
+}
 
 --! @defgroup std
 --! @{
@@ -118,14 +121,15 @@ function native_callback_init(width, height, game_lua)
         :package('@math', lib_api_math)
         :package('@key', lib_api_key, {})
         :package('@draw.poly', lib_draw_poly, native_dict_poly)
-        :package('@draw.fps', lib_draw_fps)
+        --:package('@draw.fps', lib_draw_fps)
         :package('@color', color)
         :package('math', lib_api_math.clib)
         :package('math.random', lib_api_math.clib_random)
-        :package('http', lib_api_http, cfg_http_curl_love)
+        :package('http', lib_api_http, native_dict_http)
         :package('json', lib_api_encoder, native_dict_json)
         :package('xml', lib_api_encoder, native_dict_xml)
         :package('i18n', lib_api_i18n, native_get_system_lang)
+        :package('hash', lib_api_hash, {'native'})
         :run()
 
     engine.root = application
