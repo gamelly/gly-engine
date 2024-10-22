@@ -293,11 +293,14 @@ local function install_clib(std)
 end
 
 local function install_clib_random(std)
-    std = std or {}
     local math = require('math')
     std = std or {}
     std.math = std.math or {}
-    std.math.random = math.random
+    std.math.random = function(a, b)
+        a = a and math.floor(a)
+        b = b and math.floor(b)
+        return math.random(a, b)
+    end
     return std.math
 end
 
