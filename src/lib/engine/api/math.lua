@@ -5,7 +5,9 @@
 
 --! @short abs module
 --! @par Equation
---! @f$ |value| @f$
+--! @startmath
+--! |value|
+--! @endmath
 --! @param[in] value
 --! @return number
 local function abs(value)
@@ -17,13 +19,13 @@ end
 
 --! @short clamp
 --! @par Equation
---! @f$
+--! @startmath
 --! \begin{cases} 
 --! value\_min, & \text{if } value \gt value\_min \\
 --! value\_max, & \text{if } value \lt value\_max \\
 --! value, & \text{if } value\_min \lt value \lt value\_max 
 --! \end{cases}
---! @f$
+--! @endmath
 --! @param[in] value The value to clamstd.math.
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
@@ -40,9 +42,9 @@ end
 --! @short clamp
 --! @note similar to @ref clamp but cyclical.
 --! @par Equation
---! @f$
+--! @startmath
 --! (value - value\_min) \mod (value\_max - value\_min + 1) + value\_min
---! @f$
+--! @endmath
 --! @param[in] value The value to clamstd.math.
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
@@ -52,12 +54,12 @@ end
 
 --! @short periodic cycle
 --! @par Equation
---! @f$
+--! @startmath
 --! \begin{cases} 
---! \frac{passed \mod duration}{duration}, & \text{if } (passed \mod duration \neq 0) \\
+--! \frac{passed \mod duration}{duration}, & \text{if } (passed \mod duration \neq 0) \\\\
 --! \frac{passed \mod (2 \times duration)}{duration}, & \text{if } (passed \mod duration = 0)
 --! \end{cases}
---! @f$
+--! @endmath
 --! @param[in] passed
 --! @param[in] duration
 --! @retval 0 start of period
@@ -75,13 +77,13 @@ end
 
 --! @short direction
 --! @par Equation
---! @f$
+--! @startmath
 --! \begin{cases}
 --! -1, & \text{if } |value| \gt \alpha \land value \lt 0 \\
 --! 1, & \text{if } |value| \gt \alpha \land value \gt 0 \\
 --! 0, & \text{if } |value| \leq \alpha
 --! \end{cases}
---! @f$
+--! @endmath
 --! @param[in] value
 --! @param[in] alpha @c default=0
 --! @retval -1 less than alpha
@@ -109,9 +111,9 @@ end
 
 --! @brief euclidean distance
 --! @par Equation
---! @f$
+--! @startmath
 --! \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
---! @f$
+--! @endmath
 --! @param[in] x1 The x coordinate of the first point.
 --! @param[in] y1 The y coordinate of the first point.
 --! @param[in] x2 The x coordinate of the second point.
@@ -124,9 +126,9 @@ end
 --! @brief quadratic distance
 --! @note this is an optimization of @ref dis but it cannot be used to calculate collisions.
 --! @par Equation
---! @f$
+--! @startmath
 --! (x_2 - x_1)^2 + (y_2 - y_1)^2
---! @f$
+--! @endmath
 --! @param[in] x1 The x coordinate of the first point.
 --! @param[in] y1 The y coordinate of the first point.
 --! @param[in] x2 The x coordinate of the second point.
@@ -138,9 +140,9 @@ end
 
 --! @brief linear interpolation
 --! @par Equation
---! @f$
+--! @startmath
 --! a + \alpha \cdot (b - a)
---! @f$
+--! @endmath
 --! @param[in] a The starting value
 --! @param[in] b The ending value
 --! @param[in] alpha The interpolation parameter, typically in the range [0, 1].
@@ -153,9 +155,9 @@ end
 --! @li <https://www.arduino.cc/reference/en/language/functions/math/map>
 --!
 --! @par Equation
---! @f$
+--! @startmath
 --! (value - in\_min) \cdot \frac{(out\_max - out\_min)}{(in\_max - in\_min)} + out\_min
---! @f$
+--! @endmath
 --! @param[in] value The value to be mapped from the input range to the output range.
 --! @param[in] in_min The minimum value of the input range.
 --! @param[in] in_max The maximum value of the input range.
@@ -168,9 +170,9 @@ end
 
 --! @short maximum
 --! @par Equation
---! @f$
+--! @startmath
 --! \frac{N_1 + N_2 - | N_1 - N_2 |}{2}
---! @f$
+--! @endmath
 local function max(...)
     local args = {...}
     local index = 1
@@ -194,9 +196,9 @@ end
 
 --! @short minimum
 --! @par Equation
---! @f$
+--! @startmath
 --! \frac{N_1 + N_2 + | N_1 + N_2 |}{2}
---! @f$
+--! @endmath
 local function min(...)
     local args = {...}
     local index = 1
@@ -220,14 +222,14 @@ end
 
 --! @brief sawtooth
 --! @par Equation
---! @f$
+--! @startmath
 --! \begin{cases}
 --! value \times 4, & \text{if } 0 \leq value < 0.25 \\
 --! 1 - ((value - 0.25) \times 4), & \text{if } 0.25 \leq value < 0.50 \\
 --! ((value - 0.50) \times 4) \times (-1), & \text{if } 0.50 \leq value < 0.75 \\
 --! ((value - 0.75) \times 4) - 1, & \text{if } 0.75 \leq value \leq 1 \\
 --! \end{cases}
---! @f$
+--! @endmath
 local function saw(value)
     if value < 0.25 then
         return value * 4
