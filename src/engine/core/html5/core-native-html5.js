@@ -2,6 +2,7 @@ const engine = {
     stop: false,
     file: './main.lua',
     milis: null,
+    pause: false,
     error: {
         callback: null,
         capture: false,
@@ -209,14 +210,25 @@ const gly = {
             engine.listen.native_callback_resize(width, height)
         })
     },
+    pause: () => {
+        engine.pause = true
+    },
+    resume: () => {
+        engine.pause = false
+    },
     update: (milis, dt) => {
-        engine.milis = engine.milis ?? milis
+        if (!milis && !dt) {
+            dt = 16
+        }
+        engine.milis = engine.milis ?? milis ?? 0
         dt = dt ?? (milis - engine.milis)
         engine.milis = milis ?? (engine.milis + dt)
-        errorController(() => {
-            engine.listen.native_callback_loop(dt)
-            engine.listen.native_callback_draw()
-        })
+        if (!engine.pause) {
+            errorController(() => {
+                engine.listen.native_callback_loop(dt)
+                engine.listen.native_callback_draw()
+            })
+        }
     },
     engine: {
         set: (file_name) => engine.file = file_name,

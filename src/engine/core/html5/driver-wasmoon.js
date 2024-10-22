@@ -74,10 +74,12 @@ gly.wasmoon = async (game_file) => {
 
     function updateLoop() {
         window.requestAnimationFrame(updateLoop);
-        gly.update((new Date()).getTime())
+        gly.update(performance.now())
     }
 
-    window.addEventListener("resize", updateSize);
+    window.addEventListener('blur', gly.pause)
+    window.addEventListener('focus', gly.resume)
+    window.addEventListener("resize", updateSize)
     window.addEventListener('keydown', updateKey)
     window.addEventListener('keyup', updateKey)
     window.requestAnimationFrame(updateLoop);
