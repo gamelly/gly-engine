@@ -56,7 +56,7 @@ local function event_bus(std, engine)
 end
 
 local function install(std, engine, key_bindings)
-    engine.key_bindings = key_bindings
+    engine.key_bindings = key_bindings or {}
 end
 
 local P = {

@@ -1,5 +1,7 @@
 local fixture190 = ''
 local key_bindings={
+    BACK='menu',
+    BACKSPACE='menu',
     CURSOR_UP='up',
     CURSOR_DOWN='down',
     CURSOR_LEFT='left',
@@ -16,11 +18,11 @@ local key_bindings={
 }
 
 --! @li https://github.com/TeleMidia/ginga/issues/190
-local function event_ginga(std, game, application, evt)
+local function event_ginga(std, evt)
     if evt.class ~= 'key' then return end
     if not key_bindings[evt.key] then return end
     
-    if #fixture190 == 0 and evt.key ~= 'ENTER' then
+    if #fixture190 == 0 then
         fixture190 = evt.type
     end
 
@@ -31,7 +33,7 @@ local function event_bus(std)
     std.bus.listen_std('ginga', event_ginga)
 end
 
-local function install(std, game, application)
+local function install()
 end
 
 local P = {

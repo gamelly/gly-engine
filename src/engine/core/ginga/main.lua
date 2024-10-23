@@ -1,24 +1,29 @@
-local zeebo_module = require('src/lib/engine/module')
-local engine_encoder = require('src/lib/engine/encoder')
-local engine_bus = require('src/lib/engine/bus')
-local engine_fps = require('src/lib/engine/fps')
-local engine_math = require('src/lib/engine/math')
-local engine_game = require('src/lib/engine/game')
-local engine_http = require('src/lib/engine/http')
-local engine_i18n = require('src/lib/engine/i18n')
-local engine_keys2 = require('src/lib/engine/key')
-local engine_memory = require('src/lib/engine/memory')
-local engine_color = require('src/lib/object/color')
-local engine_keys1 = require('src/engine/core/ginga/keys')
-local engine_draw = require('src/engine/core/ginga/draw')
-local engine_draw_fps = require('src/lib/draw/fps')
-local engine_draw_poly = require('src/lib/draw/poly')
-local library_csv = require('src/third_party/csv/rodrigodornelles')
-local library_json = require('src/third_party/json/rxi')
-local protocol_http_ginga = require('src/lib/protocol/http_ginga')
-local application = nil
-local game = require('src/lib/object/game')
+local zeebo_module = require('src/lib/engine/raw/module')
+--
+local core_draw = require('src/engine/core/ginga/draw')
+local core_keys = require('src/engine/core/ginga/keys')
+--
+local engine_encoder = require('src/lib/engine/api/encoder')
+local engine_game = require('src/lib/engine/api/game')
+local engine_hash = require('src/lib/engine/api/hash')
+local engine_http = require('src/lib/engine/api/http')
+local engine_i18n = require('src/lib/engine/api/i18n')
+local engine_keys = require('src/lib/engine/api/key')
+local engine_math = require('src/lib/engine/api/math')
+local engine_draw_fps = require('src/lib/engine/draw/fps')
+local engine_draw_poly = require('src/lib/engine/draw/poly')
+local engine_bus = require('src/lib/engine/raw/bus')
+local engine_memory = require('src/lib/engine/raw/memory')
+--
+local cfg_json_rxi = require('src/third_party/json/rxi')
+--foo() 
+--local cfg_http_curl_love = require('src/lib/protocol/http_curl_love')
+--
+local application_default = require('src/lib/object/application')
+local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
+--
+local application = application_default
 
 --! @short nclua:canvas
 --! @li <http://www.telemidia.puc-rio.br/~francisco/nclua/referencia/canvas.html>
@@ -28,9 +33,37 @@ local canvas = canvas
 --! @li <http://www.telemidia.puc-rio.br/~francisco/nclua/referencia/event.html>
 local event = event
 
+--! @field canvas <http://www.telemidia.puc-rio.br/~francisco/nclua/referencia/canvas.html>
+--! @field event <http://www.telemidia.puc-rio.br/~francisco/nclua/referencia/event.html>
+local engine = {
+    current = application_default,
+    root = application_default,
+    canvas = canvas,
+    event = event
+}
+
 --! @short clear ENV
 --! @brief GINGA?
 _ENV = nil
+
+local cfg_app = {
+
+}
+
+local cfg_poly = {
+    repeats={true, true},
+    line=canvas.drawLine,
+    object=canvas
+}
+
+local cfg_fps_control = {
+    list={100, 60, 30, 20, 15, 10},
+    time={1, 10, 30, 40, 60, 90}
+}
+
+local system_language = function()
+    return 'pt-BR'
+end
 
 local function register_event_loop()
     event.register(std.bus.trigger('ginga'))
@@ -39,12 +72,9 @@ end
 local function register_fixed_loop()
     local tick = nil
     local loop = std.bus.trigger('loop')
-    local draw = std.bus.trigger('draw')
-
-    std.bus.listen_safe('loop', application.callbacks.loop)
-    
+    local draw = std.bus.trigger('draw')    
     tick = function()
-        local delay = application.internal.fps_controler(event.uptime())
+        local delay = 1 -- application.internal.fps_controler(event.uptime())
         loop()
         canvas:attrColor(0, 0, 0, 0)
         canvas:clear()
@@ -58,57 +88,38 @@ end
 
 local function install(evt, gamefile)
     if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
-    local ginga = {
-        canvas=canvas,
-        event=event
-    }
-    local polygons = {
-        repeats={true, true},
-        line=canvas.drawLine,
-        object=canvas
-    }
-    local config_fps = {
-        list={100, 60, 30, 20, 15, 10},
-        time={1, 10, 30, 40, 60, 90}
-    }
-
-    local system_language = function()
-        return 'pt-BR'
-    end
 
     application = zeebo_module.loadgame(gamefile)
-    if not application then
-        error('game not loaded!')
-    end
 
-    game.width, game.height = canvas:attrSize()
-    game.fps_max = application.config and application.config.fps_max or 100
-    game.fps_show = application.config and application.config.fps_show or 0
-
-    zeebo_module.require(std, game, application)
+    zeebo_module.require(std, application, engine)
         :package('@bus', engine_bus)
-        :package('@fps', engine_fps, config_fps)
-        :package('@math', engine_math)
-        :package('@game', engine_game)
-        :package('@color', engine_color)
-        :package('@keys1', engine_keys1)
-        :package('@keys2', engine_keys2)
-        :package('@draw', engine_draw, ginga)
-        :package('@draw.fps', engine_draw_fps)
-        :package('@draw.poly', engine_draw_poly, polygons)
         :package('@memory', engine_memory)
-        :package('load', zeebo_module.load)
-        :package('csv', engine_encoder, library_csv)
-        :package('json', engine_encoder, library_json)
+        :package('@module', zeebo_module.lib)
+        :package('@game', engine_game, cfg_app)
+        :package('@math', engine_math)
+        :package('@keys1', engine_keys)
+        :package('@keys2', core_keys)
+        :package('@draw', core_draw)
+        :package('@draw.fps', engine_draw_fps)
+        :package('@draw.poly', engine_draw_poly, cfg_poly)
+        :package('@color', color)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
-        :package('http', engine_http, protocol_http_ginga)
+        :package('json', engine_encoder, cfg_json_rxi)
+        --:package('http', engine_http, protocol_http_ginga)
         :package('i18n', engine_i18n, system_language)
-        :register(register_event_loop)
-        :register(register_fixed_loop)
         :run()
 
-    application.callbacks.init(std, game)
+    application.data.width, application.data.height = canvas:attrSize()
+    std.game.width, std.game.height = application.data.width, application.data.height
+
+    register_event_loop()
+    register_fixed_loop()
+
+    std.bus.spawn(application)
+    std.bus.emit_next('load')
+    std.bus.emit_next('init')
+
     event.unregister(install)
 end
 
