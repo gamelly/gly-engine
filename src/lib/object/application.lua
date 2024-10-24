@@ -20,8 +20,8 @@ local P = {
         require = '',
         fps_max = 100,
         fps_show = 0,
-        fps_drop = 2,
-        fps_time = 1
+        fps_drop = 5,
+        fps_time = 5
     },
     callbacks={
         init=function () end,

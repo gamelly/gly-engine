@@ -13,6 +13,7 @@ local engine_math = require('src/lib/engine/api/math')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_bus = require('src/lib/engine/raw/bus')
+local engine_fps = require('src/lib/engine/raw/fps')
 local engine_memory = require('src/lib/engine/raw/memory')
 --
 local cfg_json_rxi = require('src/third_party/json/rxi')
@@ -39,7 +40,9 @@ local engine = {
     current = application_default,
     root = application_default,
     canvas = canvas,
-    event = event
+    event = event,
+    delay = 1,
+    fps = 0
 }
 
 --! @short clear ENV
@@ -58,7 +61,8 @@ local cfg_poly = {
 
 local cfg_fps_control = {
     list={100, 60, 30, 20, 15, 10},
-    time={1, 10, 30, 40, 60, 90}
+    time={1, 10, 30, 40, 60, 90},
+    uptime=event.uptime
 }
 
 local system_language = function()
@@ -74,16 +78,15 @@ local function register_fixed_loop()
     local loop = std.bus.trigger('loop')
     local draw = std.bus.trigger('draw')    
     tick = function()
-        local delay = 1 -- application.internal.fps_controler(event.uptime())
         loop()
         canvas:attrColor(0, 0, 0, 0)
         canvas:clear()
         draw()
         canvas:flush()
-        event.timer(delay, tick)
+        event.timer(engine.delay, tick)
     end
 
-    event.timer(1, tick)
+    event.timer(engine.delay, tick)
 end
 
 local function install(evt, gamefile)
@@ -93,6 +96,7 @@ local function install(evt, gamefile)
 
     zeebo_module.require(std, application, engine)
         :package('@bus', engine_bus)
+        :package('@fps', engine_fps, cfg_fps_control)
         :package('@memory', engine_memory)
         :package('@module', zeebo_module.lib)
         :package('@game', engine_game, cfg_app)

@@ -28,33 +28,33 @@ local function fps_counter(fps_limit, fps_tracker, current_time)
     return true
 end
 
-local function install(std, game, application, config_fps)
+local function install(std, engine, config_fps)
     local index = 1
-    
-    application.internal = application.internal or {}
-    config_fps.inverse_list = {}
+    local fps_obj = {total_fps=0,frame_count=0,last_check=0,last_frame_time=0,time_delta=0,fall_streak=0}
 
-    local fps_obj = {total_fps=0,frame_count=0,last_check=0,last_frame_time=0,time_delta=0,fall_streak=0,drop=0}
-    fps_obj.allowed_falls=application.config and application.config.fps_time or 1
-    fps_obj.drop_count=application.config and application.config.fps_drop or 2
+    config_fps.inverse_list = {}
+    fps_obj.allowed_falls = engine.root.config.fps_time
+    fps_obj.drop_count = engine.root.config.fps_drop
 
     while index <= #config_fps.list do
         config_fps.inverse_list[config_fps.list[index]] = index
         index = index + 1
     end
 
-    application.internal.fps_controler=function(milis)
-        local index = config_fps.inverse_list[game.fps_max]
-        game.milis = event.uptime()
-        game.fps = fps_obj.total_fps
-        game.dt = fps_obj.time_delta 
-        if not fps_counter(game.fps_max, fps_obj, game.milis) then
+    std.bus.listen('pre_loop', function()
+        local fpsmax = engine.root.config.fps_max
+        local milis = config_fps.uptime()
+        local index = config_fps.inverse_list[fpsmax]
+        engine.fps = fps_obj.total_fps
+        std.delta = fps_obj.time_delta 
+        std.milis = milis
+        if not fps_counter(fpsmax, fps_obj, milis) then
             if index < #config_fps.list then
-                game.fps_max = config_fps.list[index + 1]
+                engine.root.config.fps_max = config_fps.list[index + 1]
             end
         end
-        return config_fps.time[index]
-    end
+        engine.delay = config_fps.time[index]
+    end)
 
     return {
         fps_controler = fps_controler
@@ -62,6 +62,7 @@ local function install(std, game, application, config_fps)
 end
 
 local P = {
+    event_bus=event_bus,
     install=install
 }
 

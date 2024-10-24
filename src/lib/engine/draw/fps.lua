@@ -16,10 +16,11 @@
 --! @param pos_x @c double
 --! @param pos_y @c double
 local function draw_fps(std, engine, show, pos_x, pos_y)
-    if not show then return end
+    if engine.root.config.fps_show < 1 then return end
 
-    local x = engine.current.offset_x + pos_x
-    local y = engine.current.offset_y + pos_y
+    local show = engine.root.config.fps_show
+    local x = engine.current.config.offset_x + pos_x
+    local y = engine.current.config.offset_y + pos_y
     local s = 4
 
     std.draw.color(0xFFFF00FF)
@@ -36,12 +37,13 @@ local function draw_fps(std, engine, show, pos_x, pos_y)
     std.draw.color(0x000000FF)
     std.draw.font('Tiresias', 16)
     if show >= 3 then
-        local fps = std.math.floor and std.math.floor((1/std.delta) * 1000) or '--'
+        local floor = std.math.floor or math.floor or function() return 'XX' end
+        local fps =  floor((1/std.delta) * 1000)
         std.draw.text(x + s, y, fps)
         s = s + 46
     end
     if show >= 1 then
-        std.draw.text(x + s, y, 'XX')
+        std.draw.text(x + s, y, engine.fps)
         s = s + 46
     end
     if show >= 2 then
