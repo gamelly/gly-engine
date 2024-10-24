@@ -1,6 +1,10 @@
 local math = require('math')
 local util_decorator = require('src/lib/util/decorator')
 
+local deafult_font_name = 'Tiresias'
+local current_font_name = deafult_font_name
+local current_font_size = 8
+
 local function color(std, engine, canvas, tint)
     local c = tint
     local R = math.floor(c/0x1000000)
@@ -41,14 +45,18 @@ local function tui_text(std, engine, canvas, pos_x, pos_y, size, text)
     local y = engine.current.config.offset_y + (pos_y * vem)
     local font_size = hem * size
 
+    canvas:attrFont(current_font_name, font_size)
     canvas:drawText(x, y, text)
+    canvas:attrFont(current_font_name, current_font_size)
 end 
 
 local function font(std, engine, canvas, name, size)
     if type(name) == 'number' and not size then
         size = name
-        name = 'Tiresias'
+        name = current_font_name
     end
+    current_font_name = name
+    current_font_size = size
     canvas:attrFont(name, size)
 end
 
