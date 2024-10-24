@@ -42,8 +42,8 @@ local function draw(std, game)
     std.draw.color(std.color.white)
     std.draw.rect(0, game.ball_size, game.player_pos, game.ball_size, game.player_size)
     std.draw.rect(0, game.ball_pos_x, game.ball_pos_y, game.ball_size, game.ball_size)
-    std.draw.tui_text(20, 1, game.score)
-    std.draw.tui_text(40, 1, game.highscore)
+    std.draw.tui_text(20, 1, 2, game.score)
+    std.draw.tui_text(60, 1, 2, game.highscore)
 end
 
 local function exit(std, game)
@@ -61,7 +61,6 @@ local P = {
         init=init,
         loop=loop,
         draw=draw,
-        draw_tui=draw_tui,
         exit=exit
     }
 }
