@@ -35,7 +35,7 @@ end
 --! std.bus.emit('on_shoot', x1, y1, x2, y2)
 --! @endcode
 local function emit(key, a, b, c, d, e, f)
-    local index1, index2 = 1, 1
+    local index1, index2, index3 = 1, 1, 1
     local prefixes = {'pre_', '', 'post_'}
     while index1 <= #prefixes do
         index2 = 1
@@ -44,7 +44,18 @@ local function emit(key, a, b, c, d, e, f)
         while bus and index2 <= #bus do
             local func = bus[index2]
             if not buses.pause[func] then
-                func(a, b, c, d, e, f)
+                local ret = func(a, b, c, d, e, f)
+                if ret then
+                    index3 = 1
+                    local bus3 = buses.dict['ret_'..prefix..key]
+                    while bus3 and index3 <= #bus3 do
+                        local func3 = bus3[index3]
+                        if func3 then
+                            func3(ret, a, b, c, d, e, f)
+                        end
+                        index3 = index3 + 1
+                    end
+                end
             end
             index2 = index2 + 1
         end
@@ -108,7 +119,7 @@ local function spawn(std, engine, application)
             if not buses.pause[event..application.config.id] then
                 local data = application.data or {}
                 engine.current = application
-                application.callbacks[event](std, data)
+                return application.callbacks[event](std, data)
             end
         end)
     end

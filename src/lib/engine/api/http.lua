@@ -186,7 +186,6 @@ end
 
 local function install(std, engine, protocol)
     local protocol_handler = protocol.handler
-    local event = nil
     
     std.http = std.http or {}
     std.http.get=request('GET', std, engine, protocol_handler)
@@ -197,7 +196,7 @@ local function install(std, engine, protocol)
     std.http.patch=request('PATCH', std, engine, protocol_handler)
     
     if protocol.install then
-        local m = protocol.install(std, engine)
+        protocol.install(std, engine)
     end
 
     return {

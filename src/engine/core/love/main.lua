@@ -42,10 +42,6 @@ local cfg_keys = {
     v='d'
 }
 
-local cfg_keys_speed = {
-    'space', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
-}
-
 local cfg_game_api = {
     set_fullscreen = love.window.setFullscreen,
     get_fullscreen = love.window.getFullscreen,

@@ -16,9 +16,8 @@
 --! @param pos_x @c double
 --! @param pos_y @c double
 local function draw_fps(std, engine, show, pos_x, pos_y)
-    if engine.root.config.fps_show < 1 then return end
+    if show < 1 then return end
 
-    local show = engine.root.config.fps_show
     local x = engine.current.config.offset_x + pos_x
     local y = engine.current.config.offset_y + pos_y
     local s = 4
@@ -58,7 +57,7 @@ end
 local function event_bus(std, engine)
     std.bus.listen('post_draw', function()
         engine.current = engine.root
-        draw_fps(std, engine, engine.root.config.show_fps, 8, 8)
+        draw_fps(std, engine, engine.root.config.fps_show, 8, 8)
     end)
 end
 

@@ -145,8 +145,11 @@ local function decorator_draw_text(func)
     end
 end
 
---! @todo
 local function event_bus(std, engine)
+    std.bus.listen('ret_i18n', function(result)
+        update_languages(result)
+    end)
+    std.bus.emit_next('i18n')
 end
 
 local function install(std, engine, system_language)
