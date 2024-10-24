@@ -6,6 +6,7 @@ function test_game_reset()
     local buses = {}
     local std = {
         bus = {
+            listen = function() end,
             emit = function(key)
                 buses[key] = index
                 index = index + 1
@@ -26,6 +27,7 @@ function test_game_exit()
     local buses = {}
     local std = {
         bus = {
+            listen = function() end,
             emit = function(key)
                 buses[key] = index
                 index = index + 1
@@ -37,7 +39,8 @@ function test_game_exit()
     zeebo_game.exit()
 
     luaunit.assertEquals(buses.exit, 1)
-    luaunit.assertEquals(index, 2)
+    luaunit.assertEquals(buses.quit, 2)
+    luaunit.assertEquals(index, 3)
 end
 
 os.exit(luaunit.LuaUnit.run())

@@ -12,12 +12,9 @@ local function reset(std)
 end
 
 --! @hideparam std
---! @hideparam func
-local function exit(std, func)
+local function exit(std)
     std.bus.emit('exit')
-    if func then
-        func()
-    end
+    std.bus.emit('quit')
 end
 
 --! @hideparam func
@@ -35,8 +32,14 @@ local function install(std, engine, config)
     std = std or {}
     std.game = std.game or {}
 
+    std.bus.listen('post_quit', function()
+        if config.quit then
+            config.quit()
+        end
+    end)
+
     std.game.title = util_decorator.prefix1(config.set_title, title)
-    std.game.exit = util_decorator.prefix2(std, config.quit, exit)
+    std.game.exit = util_decorator.prefix1(std, exit)
     std.game.reset = util_decorator.prefix1(std, reset)
     std.game.get_fps = config.fps
 

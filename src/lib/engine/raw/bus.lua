@@ -5,6 +5,8 @@ local buses = {
     pause = {}
 }
 
+local must_abort = false
+
 --! @defgroup std
 --! @{
 --! @defgroup bus
@@ -14,6 +16,20 @@ local buses = {
 --! You might be lost if you are a beginner.
 --! @brief internal mechanisms communication system,
 --! but can also be used externally.
+
+--! @short stop current signal
+--! @brief This interrupts the signal to the next nodes,
+--! this also applies to the engine itself and prevents lifecycle events.
+--! @note reckless use can lead to bad behavior.
+--! @par Example
+--! @code{.java}
+--! local function quit(std, game)
+--!     std.bus.abort()
+--! end
+--! @endcode
+local function abort()
+    must_abort = true
+end
 
 --! @short send signal in next frame
 --! @par Example
@@ -41,7 +57,7 @@ local function emit(key, a, b, c, d, e, f)
         index2 = 1
         local prefix = prefixes[index1]
         local bus = buses.dict[prefix..key]
-        while bus and index2 <= #bus do
+        while not must_abort and bus and index2 <= #bus do
             local func = bus[index2]
             if not buses.pause[func] then
                 local ret = func(a, b, c, d, e, f)
@@ -61,6 +77,7 @@ local function emit(key, a, b, c, d, e, f)
         end
         index1 = index1 + 1
     end
+    must_abort = false
 end
 
 --! @short sender event function
@@ -145,6 +162,7 @@ local function install(std, engine)
     std.bus = std.bus or {}
     
     std.bus.emit = emit
+    std.bus.abort = abort
     std.bus.listen = listen
     std.bus.trigger = trigger
     std.bus.pause = pause
