@@ -17,8 +17,7 @@ local engine_fps = require('src/lib/engine/raw/fps')
 local engine_memory = require('src/lib/engine/raw/memory')
 --
 local cfg_json_rxi = require('src/third_party/json/rxi')
---foo() 
---local cfg_http_curl_love = require('src/lib/protocol/http_curl_love')
+local cfg_http_ginga = require('src/lib/protocol/http_ginga')
 --
 local application_default = require('src/lib/object/application')
 local color = require('src/lib/object/color')
@@ -110,12 +109,14 @@ local function install(evt, gamefile)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
         :package('json', engine_encoder, cfg_json_rxi)
-        --:package('http', engine_http, protocol_http_ginga)
+        :package('http', engine_http, cfg_http_ginga)
         :package('i18n', engine_i18n, system_language)
         :run()
 
     application.data.width, application.data.height = canvas:attrSize()
     std.game.width, std.game.height = application.data.width, application.data.height
+
+    engine.root = application
 
     register_event_loop()
     register_fixed_loop()

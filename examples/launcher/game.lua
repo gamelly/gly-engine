@@ -1,3 +1,5 @@
+--! @todo rework
+
 --! @par Game FSM
 --! @startuml
 --! hide empty description
@@ -70,17 +72,12 @@ local function init(std, game)
         game._csv = ''
         game._list = {}
         game._source = ''
-        game._menu_time = game.milis
+        game._menu_time = std.milis
         game._want_leave = false
         std.game.exit = function () 
             game._want_leave = true
         end
     end
-    if game._state == 7 then
-        halt_state(game)(function() 
-            game._app.callbacks.init(std, game)
-        end)
-    end    
 end
 
 local function http(std, game)
@@ -113,25 +110,25 @@ local function loop(std, game)
     elseif game._state == 1 then
         halt_state(game)(function() 
             next_state(game, 2)
-            std.http.get('http://gh.dornelles.me/games.csv'):run()
+            std.http.get('http://t.gamely.com.br/games.json'):run()
         end)
     elseif game._state == 2 and #game._csv > 0 then
         next_state(game, 3)
     elseif game._state == 3 then
         halt_state(game)(function() 
-            std.csv.decode(game._csv, game._list)
+            game._list = std.json.decode(game._csv)
             game._csv = ''
             next_state(game, 4)
         end)
     elseif game._state == 4 then
         halt_state(game)(function() 
-            local key = std.key.press.down - std.key.press.up
-            if key ~= 0 and game.milis > game._menu_time + 250 then
+            local key = std.key.axis.y
+            if key ~= 0 and std.milis > game._menu_time + 250 then
                 game._menu = std.math.clamp2(game._menu + key, 1, #game._list)
-                game._menu_time = game.milis
+                game._menu_time = std.milis
             end
-            if std.key.press.enter == 1 and game.milis > game._menu_time + 250 then
-                game._menu_time = game.milis
+            if std.key.press.a and std.milis > game._menu_time + 250 then
+                game._menu_time = std.milis
                 next_state(game, 5)
                 std.http.get(game._list[game._menu].raw_url):run()
             end
@@ -140,27 +137,15 @@ local function loop(std, game)
         next_state(game, 6)
     elseif game._state == 6 then
         halt_state(game)(function()
-            game._app = std.game.load(game._source)
-            game._app.callbacks.init(std, game)
+            std.bus.spawn(std.game.load(game._source))
+            std.bus.emit('init')
             game._source = ''
             next_state(game, 7)
         end)
     elseif game._state == 7 then
-        halt_state(game)(function()
-            if not game._want_leave then
-                game._app.callbacks.loop(std, game)
-            else
-                game._app.callbacks.exit(std, game)
-                game._want_leave = false
-                next_state(game, 8)                           
-            end
-        end)
+
     elseif game._state == 8 then
-        halt_state(game)(function()
-            game._menu_time = game.milis
-            game._app.callbacks.exit(std, game)
-            next_state(game, 4)
-        end)
+        
     end
 end
 
@@ -199,9 +184,6 @@ local function draw(std, game)
         std.draw.color(std.color.white)
         std.draw.text(8, 8, 'loading game...')
     elseif game._state == 7 then
-        halt_state(game)(function()
-            game._app.callbacks.draw(std, game)
-        end)
     elseif game._state == 8 then
         std.draw.clear(std.color.gold)
         std.draw.color(std.color.white)
@@ -220,14 +202,6 @@ local function draw(std, game)
     end
 end
 
-local function exit(std, game)
-    if game._state == 7 then
-        halt_state(game)(function()
-            game._app.callbacks.exit(std, game)
-        end)
-    end
-end
-
 local P = {
     meta={
         title='Launcher Games',
@@ -236,7 +210,7 @@ local P = {
         version='1.0.0'
     },
     config={
-        require='http math.random math csv load'
+        require='http math.random math json'
     },
     callbacks={
         init=init,

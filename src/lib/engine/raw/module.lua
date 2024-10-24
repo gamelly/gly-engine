@@ -213,10 +213,10 @@ local function require(std, application, engine)
         while index <= #self.list do
             local name = self.list[index]
             if self.stdlib_required[name] and not self.stdlib_installed[name] then
-                error('system library not loaded: '..name..'\n'..self.lib_error[name])
+                error('system library not loaded: '..name..'\n'..(self.lib_error[name] or ''))
             end
             if self.lib_required[name] and not self.lib_installed[name] then
-                error('library not loaded: '..name..'\n'..self.lib_error[name])
+                error('library not loaded: '..name..'\n'..(self.lib_error[name] or ''))
             end
             index = index + 1
         end

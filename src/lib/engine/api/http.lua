@@ -96,14 +96,16 @@ end
 --! @}
 
 --! @cond
-local function request(method, std, game, application, protocol_handler)
-    local callback_handler = application and application.callbacks and application.callbacks.http
-
-    if not callback_handler then
-        callback_handler = function() end
+local function request(method, std, engine, protocol_handler)
+    local callback_handler = function()
+        if engine.current.callbacks.http then
+            engine.current.callbacks.http(std, engine.current.data)
+        end
     end
 
     return function (url)
+        local game = engine.current.data
+
         local self = {
             -- content
             url = url,
@@ -121,7 +123,6 @@ local function request(method, std, game, application, protocol_handler)
             -- objects
             std = std,
             game = game,
-            application = application,
             -- functions
             fast = fast,
             body = body,
@@ -183,25 +184,23 @@ local function request(method, std, game, application, protocol_handler)
 end
 --! @endcond
 
-local function install(std, game, application, protocol)
+local function install(std, engine, protocol)
     local protocol_handler = protocol.handler
     local event = nil
     
     std.http = std.http or {}
-    std.http.get=request('GET', std, game, application, protocol_handler)
-    std.http.head=request('HEAD', std, game, application, protocol_handler)
-    std.http.post=request('POST', std, game, application, protocol_handler)
-    std.http.put=request('PUT', std, game, application, protocol_handler)
-    std.http.delete=request('DELETE', std, game, application, protocol_handler)
-    std.http.patch=request('PATCH', std, game, application, protocol_handler)
+    std.http.get=request('GET', std, engine, protocol_handler)
+    std.http.head=request('HEAD', std, engine, protocol_handler)
+    std.http.post=request('POST', std, engine, protocol_handler)
+    std.http.put=request('PUT', std, engine, protocol_handler)
+    std.http.delete=request('DELETE', std, engine, protocol_handler)
+    std.http.patch=request('PATCH', std, engine, protocol_handler)
     
     if protocol.install then
-        local m = protocol.install(std, game, application)
-        event = m and m.event
+        local m = protocol.install(std, engine)
     end
 
     return {
-        event=event,
         std={http=std.http}
     }
 end
