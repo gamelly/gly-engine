@@ -68,24 +68,6 @@ local function normalize(application)
     return normalized_aplication
 end
 
---! @defgroup std
---! @{
---! @defgroup game
---! @{
-
---! @hideparam std
-
---! @renamefunc load
---! @short safe load game
---! @brief search by game in filesystem / lua modules
---! @note When build the main game file, it will be directly affected by the bundler,
---! if it finds a path to the game it will be unified.
---! @see @ref spawn "load and spawn two games inside one"
---! @par Example
---! @code{.java}
---! local game = std.game.load('examples/pong/game.lua')
---! print(game.meta.title)
---! @endcode
 local function loadgame(game_file)
     if type(game_file) == 'table' or type(game_file) == 'userdata' then
         return normalize(game_file)
@@ -132,9 +114,6 @@ local function loadgame(game_file)
 
     return default(normalize(application))
 end
-
---! @}
---! @}
 
 local function package(self, module_name, module, custom)
     local system = module_name:sub(1, 1) == '@'
@@ -238,18 +217,9 @@ local function require(std, application, engine)
     return self
 end
 
-local function install(std, engine)
-    std.game = std.game or {}
-    std.game.load = loadgame
-    return {load=loadgame}
-end
-
 local P = {
     loadgame = loadgame,
-    require = require,
-    lib = {
-        install=install
-    }
+    require = require
 }
 
 return P

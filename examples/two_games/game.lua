@@ -4,8 +4,8 @@
 local function load(std, game)
     game.toggle = false
 
-    game.pong1 = std.game.load('examples/pong/game.lua')
-    game.pong2 = std.game.load('examples/asteroids/game.lua')
+    game.pong1 = std.node.load('examples/pong/game.lua')
+    game.pong2 = std.node.load('examples/asteroids/game.lua')
 
     game.pong1.data.width = game.width/2
     game.pong1.data.height = game.height
@@ -15,20 +15,20 @@ local function load(std, game)
     game.pong2.data.width = game.width/2
     game.pong2.data.height = game.height
 
-    std.bus.spawn(game.pong1)
-    std.bus.spawn(game.pong2)
-    std.bus.pause('loop', game.pong2)
+    std.node.spawn(game.pong1)
+    std.node.spawn(game.pong2)
+    std.node.pause(game.pong2, 'loop')
 end
 
 local function key(std, game)
     if std.key.press.b then
         game.toggle = not game.toggle
         if game.toggle then
-            std.bus.pause('loop', game.pong1)
-            std.bus.resume('loop', game.pong2)
+            std.node.pause(game.pong1, 'loop')
+            std.node.resume(game.pong2, 'loop')
         else
-            std.bus.resume('loop', game.pong1)
-            std.bus.pause('loop', game.pong2)
+            std.node.resume(game.pong1, 'loop')
+            std.node.pause(game.pong2, 'loop')
         end
     end
 end

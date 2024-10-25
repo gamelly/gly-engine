@@ -38,6 +38,8 @@ ALIASES               += startebnf=@startuml{ebnf}
 ALIASES               += endebnf=@enduml
 ALIASES               += startsalt=@startuml{salt}
 ALIASES               += endsalt=@enduml
+ALIASES               += startmindmap=@startuml{mindmap}
+ALIASES               += endmindmap=@enduml
 ALIASES               += startmath=@f(
 ALIASES               += endmath=@f)
 # Theme: https://jothepro.github.io/doxygen-awesome-css/
