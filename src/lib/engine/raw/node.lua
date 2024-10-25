@@ -88,6 +88,8 @@ end
 --! @short create new node
 --! @note When build the main game file, it will be directly affected by the bundler,
 --! if it finds a path to the game it will be unified.
+--! @param [in] application
+--! @return node
 --! @par Example
 --! @code{.java}
 --! local game = std.node.load('examples/pong/game.lua')
@@ -99,18 +101,29 @@ end
 --! @short register node to event bus
 --! @hideparam std
 --! @hideparam engine
+--! @param [in/out] application
 --! @par Example
 --! @code{.java}
 --! local game = std.node.load('examples/pong/game.lua')
 --! std.node.spawn(game)
 --! @endcode
 local function spawn(engine, application)
+    if buses.inverse_list[application] then return end
     local index = #buses.list + 1
     buses.list[index] = application
     buses.inverse_list[application] = index
-    application.config.parent = engine.current
+    if engine.current then
+        application.config.parent = engine.current
+    end
 end
 
+--! @short unregister node from event bus
+--! @par Example
+--! @code{.java}
+--! if std.milis > minigame_limit_time then
+--!    std.node.kill(minigame)
+--! end
+--! @endcode
 local function kill(application)
     local index = application and buses.inverse_list[application]
     local last_item = #buses.list
@@ -159,7 +172,15 @@ local function event_bus(std, engine, key, a, b, c, d, e, f)
     while index <= #buses.list do
         local application = buses.list[index]
         if engine.current ~= application then
+            local node = application
             engine.current = application
+            engine.offset_x = 0
+            engine.offset_y = 0
+            while node do
+                engine.offset_x = engine.offset_x + node.config.offset_x
+                engine.offset_y = engine.offset_y + node.config.offset_y
+                node = node.config.parent
+            end
         end
 
         local ret = emit(std, application, key, a, b, c, d, e, f)

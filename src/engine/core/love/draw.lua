@@ -15,24 +15,24 @@ end
 
 local function clear(std, engine, tint)
     color(nil, nil, tint)
-    local x = engine.current.config.offset_x
-    local y = engine.current.config.offset_y
+    local x = engine.offset_x
+    local y = engine.offset_y
     local width = engine.current.data.width
     local height = engine.current.data.height
     love.graphics.rectangle(modes[0], x, y, width, height)
 end
 
 local function rect(std, engine, mode, pos_x, pos_y, width, height)
-    local x = engine.current.config.offset_x + pos_x
-    local y = engine.current.config.offset_y + pos_y
+    local x = engine.offset_x + pos_x
+    local y = engine.offset_y + pos_y
     love.graphics.rectangle(modes[mode], x, y, width, height)
 end
 
 local function tui_text(std, engine, pos_x, pos_y, size, text)
     local hem = engine.current.data.width / 80
     local vem = engine.current.data.height / 24
-    local x = engine.current.config.offset_x + (pos_x * hem)
-    local y = engine.current.config.offset_y + (pos_y * vem)
+    local x = engine.offset_x + (pos_x * hem)
+    local y = engine.offset_y + (pos_y * vem)
     local font_size = hem * size
 
     local old_font = love.graphics.getFont()
@@ -52,16 +52,16 @@ local function text(std, engine, pos_x, pos_y, text)
     local w = font:getWidth(t)
     local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
     if pos_x and pos_y then
-        local x = engine.current.config.offset_x + pos_x
-        local y = engine.current.config.offset_y + pos_y
+        local x = engine.offset_x + pos_x
+        local y = engine.offset_y + pos_y
         love.graphics.print(t, x, y)
     end
     return w, h
 end
 
 local function line(std, engine, x1, y1, x2, y2)
-    local ox = engine.current.config.offset_x 
-    local oy = engine.current.config.offset_y
+    local ox = engine.offset_x 
+    local oy = engine.offset_y
     local px1 = ox + x1
     local py1 = oy + y1
     local px2 = ox + x2
