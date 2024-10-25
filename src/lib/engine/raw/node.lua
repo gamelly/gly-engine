@@ -1,5 +1,6 @@
 local buses = {
     list = {},
+    inverse_list = {},
     pause = {},
 }
 
@@ -103,9 +104,26 @@ end
 --! local game = std.node.load('examples/pong/game.lua')
 --! std.node.spawn(game)
 --! @endcode
-local function spawn(application)
+local function spawn(engine, application)
     local index = #buses.list + 1
     buses.list[index] = application
+    buses.inverse_list[application] = index
+    application.config.parent = engine.current
+end
+
+local function kill(application)
+    local index = application and buses.inverse_list[application]
+    local last_item = #buses.list
+
+    while index and index <= last_item do
+        buses.list[index] = buses.list[index + 1]
+        index = index + 1
+    end
+    
+    if application then
+        buses.inverse_list[application] = nil
+        application.config.parent = nil
+    end
 end
 
 --! @short disable node callback
@@ -157,10 +175,14 @@ end
 local function install(std, engine, config)
     std.node = std.node or {}
 
-    std.node.spawn = spawn
+    std.node.kill = kill
     std.node.pause = pause
     std.node.resume = resume
     std.node.load = config.loadgame
+
+    std.node.spawn = function (application)
+        spawn(engine, application)
+    end
 
     std.bus.listen_all(function(key, a, b, c, d, e, f)
         event_bus(std, engine, key, a, b, c, d, e, f)

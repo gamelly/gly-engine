@@ -33,6 +33,7 @@ local cfg_poly = {
 }
 
 local cfg_keys = {
+    ['escape']='menu',
     ['return']='a',
     up='up',
     left='left',
