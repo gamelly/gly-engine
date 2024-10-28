@@ -12,6 +12,11 @@ local function add(std, engine, self, application)
     node.config.parent = self.node
 
     self.items[index] = node
+    
+    if application.node then
+        self.uis[application.node] = application
+    end
+
     self:update_positions()
 
     return self
@@ -27,9 +32,15 @@ local function update_positions(self)
         local x = math.ceil(index / self.cols) - 1
         local y = (index - 1) %  self.cols
         local node = self.items[index]
+        local ui = self.uis[node]
         node.config.offset_x = x * hem
         node.config.offset_y = y * vem
         index = index + 1
+        node.data.width = hem
+        node.data.height = vem
+        if ui then
+            ui:update_positions()
+        end
     end
 
     return self
@@ -45,6 +56,7 @@ local function grid(std, engine, layout)
         rows=tonumber(rows),
         cols=tonumber(cols),
         items = {},
+        uis = {},
         node=node,
         add=util_decorator.prefix2(std, engine, add),
         update_positions=update_positions
