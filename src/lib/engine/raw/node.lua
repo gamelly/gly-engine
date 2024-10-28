@@ -1,3 +1,6 @@
+local zeebo_module = require('src/lib/engine/raw/module')
+local node_default = require('src/lib/object/node')
+
 local buses = {
     list = {},
     inverse_list = {},
@@ -96,6 +99,7 @@ end
 --! print(game.meta.title)
 --! @endcode
 local function load(application)
+    return zeebo_module.loadgame(application, node_default)
 end
 
 --! @short register node to event bus
@@ -108,7 +112,7 @@ end
 --! std.node.spawn(game)
 --! @endcode
 local function spawn(engine, application)
-    if buses.inverse_list[application] then return end
+    if not application or buses.inverse_list[application] then return end
     local index = #buses.list + 1
     buses.list[index] = application
     buses.inverse_list[application] = index
@@ -193,13 +197,13 @@ local function event_bus(std, engine, key, a, b, c, d, e, f)
     end
 end
 
-local function install(std, engine, config)
+local function install(std, engine)
     std.node = std.node or {}
 
     std.node.kill = kill
     std.node.pause = pause
     std.node.resume = resume
-    std.node.load = config.loadgame
+    std.node.load = load
 
     std.node.spawn = function (application)
         spawn(engine, application)

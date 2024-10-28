@@ -1,30 +1,65 @@
-local interfaces = {}
+local math = require('math')
+local util_decorator = require('src/lib/util/decorator')
 
-local function add_app(self, application)
+--! @hideparam std
+--! @hideparam engine
+--! @hideparam self
+local function add(std, engine, self, application)
+    local index = #self.items + 1
+    local node = application.node or std.node.load(application.node or application)
 
+    std.node.spawn(node)
+    node.config.parent = self.node
+
+    self.items[index] = node
+    self:update_positions()
+
+    return self
 end
 
-local function cols()
-    local col = {
-        add_app = add_app
+--! hideparam self
+local function update_positions(self)
+    local index = 1
+    local hem = self.node.data.width / self.rows
+    local vem = self.node.data.height / self.cols
+
+    while index <= #self.items do
+        local x = math.ceil(index / self.cols) - 1
+        local y = (index - 1) %  self.cols
+        local node = self.items[index]
+        node.config.offset_x = x * hem
+        node.config.offset_y = y * vem
+        index = index + 1
+    end
+
+    return self
+end
+
+--! @hideparam std
+--! @hideparam engine
+local function grid(std, engine, layout)
+    local rows, cols = layout:match('(%d+)x(%d+)')
+    local node = std.node.load({})
+    
+    local grid_system = {
+        rows=tonumber(rows),
+        cols=tonumber(cols),
+        items = {},
+        node=node,
+        add=util_decorator.prefix2(std, engine, add),
+        update_positions=update_positions
     }
 
-    interfaces[#interfaces + 1] = col
-    return col
+    std.node.spawn(node)
+    return grid_system
 end
 
-local function event_bus(std, game, application)
-    
-end
-
-local function install(std, game, application)
-    std=std or {}
+local function install(std, engine, application)
     std.ui = std.ui or {}
-    std.ui.cols = cols
+    std.ui.grid = util_decorator.prefix2(std, engine, grid)
 end
 
 local P = {
-    event_bus=event_bus,
     install=install
 }
 

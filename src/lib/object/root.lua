@@ -1,6 +1,3 @@
---! @short application object
---! @brief metatags, configs and code.
-
 local P = {
     data={
         width=1280,
@@ -24,10 +21,6 @@ local P = {
         fps_time = 5
     },
     callbacks={
-        init=function () end,
-        loop=function () end,
-        draw=function () end,
-        exit=function () end
     }
 }
 

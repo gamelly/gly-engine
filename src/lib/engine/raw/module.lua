@@ -1,15 +1,16 @@
 local zeebo_pipeline = require('src/lib/util/pipeline')
-local application_default = require('src/lib/object/application')
+local application_default = require('src/lib/object/root')
 
-local function default(application)
+local function default(application, defaults)
     if not application then return nil end
     local index = 1    
     local items = {'data', 'meta', 'config', 'callbacks'}
     local normalized_aplication = {}
+    defaults = defaults or application_default
 
     while index <= #items do
         local key1 = items[index]
-        local keys = application_default[key1]
+        local keys = defaults[key1]
 
         normalized_aplication[key1] = {}
 
@@ -68,9 +69,9 @@ local function normalize(application)
     return normalized_aplication
 end
 
-local function loadgame(game_file)
+local function loadgame(game_file, defaults)
     if type(game_file) == 'table' or type(game_file) == 'userdata' then
-        return normalize(game_file)
+        return default(normalize(game_file), defaults)
     end
 
     local cwd = '.'
@@ -112,7 +113,7 @@ local function loadgame(game_file)
         application = application()
     end
 
-    return default(normalize(application))
+    return default(normalize(application), defaults)
 end
 
 local function package(self, module_name, module, custom)

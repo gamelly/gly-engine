@@ -1,4 +1,4 @@
-local application_default = require('src/lib/object/application')
+local application_default = require('src/lib/object/root')
 local zeebo_module = require('src/lib/engine/raw/module')
 
 local function replace(src, meta, default)
