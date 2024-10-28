@@ -4,17 +4,18 @@ local util_decorator = require('src/lib/util/decorator')
 --! @hideparam std
 --! @hideparam engine
 --! @hideparam self
-local function add(std, engine, self, application)
-    local index = #self.items + 1
+local function add(std, engine, self, application, size)
+    local index = #self.items_node + 1
     local node = application.node or std.node.load(application.node or application)
 
     std.node.spawn(node)
     node.config.parent = self.node
 
-    self.items[index] = node
+    self.items_node[index] = node
+    self.items_size[index] = size or 1
     
     if application.node then
-        self.uis[application.node] = application
+        self.items_ui[application.node] = application
     end
 
     self:update_positions()
@@ -22,25 +23,38 @@ local function add(std, engine, self, application)
     return self
 end
 
+local function get_item(self, id)
+    return self.items_node[id]
+end
+
 --! hideparam self
 local function update_positions(self)
     local index = 1
+    local x, y = 0, 0
     local hem = self.node.data.width / self.rows
     local vem = self.node.data.height / self.cols
 
-    while index <= #self.items do
-        local x = math.ceil(index / self.cols) - 1
-        local y = (index - 1) %  self.cols
-        local node = self.items[index]
-        local ui = self.uis[node]
+    while index <= #self.items_node do
+        local node = self.items_node[index]
+        local size = self.items_size[index]
+        local ui = self.items_ui[node]
+
         node.config.offset_x = x * hem
         node.config.offset_y = y * vem
-        index = index + 1
-        node.data.width = hem
+        node.data.width = size * hem
         node.data.height = vem
+
+        x = x + size
+        if x >= self.rows then
+            y = y + 1
+            x = 0
+        end
+
         if ui then
             ui:update_positions()
         end
+       
+        index = index + 1
     end
 
     return self
@@ -55,11 +69,13 @@ local function grid(std, engine, layout)
     local grid_system = {
         rows=tonumber(rows),
         cols=tonumber(cols),
-        items = {},
-        uis = {},
+        items_node = {},
+        items_size = {},
+        items_ui = {},
         node=node,
         add=util_decorator.prefix2(std, engine, add),
-        update_positions=update_positions
+        update_positions=update_positions,
+        get_item=get_item
     }
 
     std.node.spawn(node)

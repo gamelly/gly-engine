@@ -2,34 +2,24 @@
 --! @see asteroids
 
 local function load(std, game)
+    local game1 = std.node.load('examples/pong/game.lua')
+    local game2 = std.node.load('examples/asteroids/game.lua')
+
     game.toggle = false
+    game.ui_split = std.ui.grid('2x1')
+        :add(game1)
+        :add(game2)
 
-    game.pong1 = std.node.load('examples/pong/game.lua')
-    game.pong2 = std.node.load('examples/asteroids/game.lua')
-
-    game.pong1.data.width = game.width/2
-    game.pong1.data.height = game.height
-
-    game.pong2.config.offset_x = game.width/2
-    
-    game.pong2.data.width = game.width/2
-    game.pong2.data.height = game.height
-
-    std.node.spawn(game.pong1)
-    std.node.spawn(game.pong2)
-    std.node.pause(game.pong2, 'loop')
+    std.node.pause(game.ui_split:get_item(2), 'loop')
 end
 
 local function key(std, game)
     if std.key.press.b then
+        local to_pause = game.ui_split:get_item(game.toggle and 2 or 1)
+        local to_resume = game.ui_split:get_item(game.toggle and 1 or 2)
+        std.node.pause(to_pause, 'loop')
+        std.node.resume(to_resume, 'loop')
         game.toggle = not game.toggle
-        if game.toggle then
-            std.node.pause(game.pong1, 'loop')
-            std.node.resume(game.pong2, 'loop')
-        else
-            std.node.resume(game.pong1, 'loop')
-            std.node.pause(game.pong2, 'loop')
-        end
     end
 end
 
