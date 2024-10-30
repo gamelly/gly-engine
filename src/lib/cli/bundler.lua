@@ -58,7 +58,6 @@ local function build(src_path, src_filename, dest)
     local from = 'main'
     local src_in = src_path..src_filename
     local src_file = io.open(src_in, 'r')
-    local dest_file = io.open(dest, 'w')
     local relative_path = src_path:gsub('[%w_-]+', '..')
     local deps_imported = {}
     local deps_var_name = {}
@@ -168,8 +167,14 @@ local function build(src_path, src_filename, dest)
         main_content = main_content..'return main()\n'
     end
 
+    local dest_file, dest_err = io.open(dest, 'w')
+    if not dest_file then
+        return false, dest_err
+    end
+
     dest_file:write(main_content)
     dest_file:close()
+    
     return true
 end
 

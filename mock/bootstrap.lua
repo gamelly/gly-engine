@@ -90,7 +90,7 @@ local function javascript_io_open(filename, mode)
         end,
         close = function(self)
             javascript_fs.mkdirSync(javascript_path.dirname(filename), {recursive = true})
-            if mode:find('b') then
+            if (mode or ''):find('b') then
                 local blob, index = {}, 1
                 while index <= #self.content do
                     blob[index] = string.byte(self.content, index)

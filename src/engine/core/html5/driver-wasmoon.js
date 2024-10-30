@@ -74,7 +74,7 @@ gly.wasmoon = async (game_file) => {
 
     function updateLoop() {
         window.requestAnimationFrame(updateLoop);
-        gly.update(performance.now())
+        gly.update_uptime(performance.now())
     }
 
     window.addEventListener('blur', gly.pause)

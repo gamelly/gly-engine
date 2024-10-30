@@ -43,7 +43,7 @@ local help_message = "Available commands:\n"
   .."- To run a game: ./cli.sh run ./examples/asteroids/game.lua "  .. "-" .. "-core repl\n"
   .."- To display metadata: ./cli.sh meta ./examples/asteroids/game.lua\n"
 
-local version_message = '0.0.7'
+local version_message = '0.0.8'
 
 local function help()
   return true, help_message
@@ -88,7 +88,7 @@ local function correct_usage(args)
   index = 1
   while index <= #args.option_get do
     local option = args.option_get[index]
-    command = command..' --'..option..' ['..option..']'
+    command = command..' -'..'-'..option..' ['..option..']'
     index = index + 1
   end
 

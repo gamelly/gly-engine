@@ -13,15 +13,10 @@ local function ls(src_path)
     return ls_files
 end
 
+--! @todo better support windows
 local function clear(src_path)
-    if os.execute('rm -'..'-version > /dev/null 2> /dev//null') then
-        os.execute('mkdir -p '..src_path)
-        os.execute('rm -Rf '..src_path..'/*')
-    else
-        src_path = src_path:gsub('/', '\\')
-        os.execute('mkdir '..src_path)
-        os.execute('rmdir /s /q '..src_path..'\\*')
-    end
+    os.execute('mkdir -p '..src_path)
+    os.execute('rm -Rf '..src_path..'/*')
 end
 
 local function move(src_in, dist_out)

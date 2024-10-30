@@ -80,8 +80,10 @@ tick()
  * **gly.load(game_file_text)**
  * **gly.input(key, value)** 
  * **gly.error(behavior)**
- * **gly.resize()**
- * **gly.update(milis)**
+ * **gly.resize(width, height)**
+ * **gly.update()**
+ * **gly.update_dt(milis)**
+ * **gly.update_uptime(milis)**
  * **gly.global.set(name, value)**
  * **gly.global.get(name)**
 
@@ -95,7 +97,8 @@ tick()
  * **native_draw_rect(mode, x, y, width, heigth)**
  * **native_draw_line(x1, y1, x2, y2)**
  * **native_draw_text(x, y, text)**
- * **native_draw_poly(mode, verts, x, y, scale, angle, ox, oy)**
+ * **native_draw_text_tui(x, y, ox, oy, width, height, size, text)**
+ * **native_draw_poly2(mode, verts, x, y, scale, angle, ox, oy)**
  * **native_dict_http**
  * **native_dict_json**
 
