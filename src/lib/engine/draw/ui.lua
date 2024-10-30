@@ -101,6 +101,7 @@ local util_decorator = require('src/lib/util/decorator')
 --! @param [in,out] application new column
 --! @param [in] size column width in blocks
 local function add(std, engine, self, application, size)
+    if not application then return self end
     local index = #self.items_node + 1
     local node = application.node or std.node.load(application.node or application)
 
@@ -177,7 +178,10 @@ end
 --! @}
 local function grid(std, engine, layout)
     local rows, cols = layout:match('(%d+)x(%d+)')
-    local node = std.node.load({})
+    local node = std.node.load({
+        width = engine.current.data.width,
+        height = engine.current.data.height
+    })
     
     local grid_system = {
         rows=tonumber(rows),
@@ -187,7 +191,7 @@ local function grid(std, engine, layout)
         items_ui = {},
         node=node,
         add=util_decorator.prefix2(std, engine, add),
-        add_items=util_decorator.prefix2(std, engine, add)
+        add_items=util_decorator.prefix2(std, engine, add),
         update_positions=update_positions,
         get_item=get_item
     }

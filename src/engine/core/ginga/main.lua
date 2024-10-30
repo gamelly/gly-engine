@@ -10,16 +10,18 @@ local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
 local engine_keys = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
+local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_bus = require('src/lib/engine/raw/bus')
 local engine_fps = require('src/lib/engine/raw/fps')
+local engine_node = require('src/lib/engine/raw/node')
 local engine_memory = require('src/lib/engine/raw/memory')
 --
 local cfg_json_rxi = require('src/third_party/json/rxi')
 local cfg_http_ginga = require('src/lib/protocol/http_ginga')
 --
-local application_default = require('src/lib/object/application')
+local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
 --
@@ -40,6 +42,8 @@ local engine = {
     root = application_default,
     canvas = canvas,
     event = event,
+    offset_x = 0,
+    offset_y = 0,
     delay = 1,
     fps = 0
 }
@@ -95,14 +99,15 @@ local function install(evt, gamefile)
 
     zeebo_module.require(std, application, engine)
         :package('@bus', engine_bus)
+        :package('@node', engine_node)
         :package('@fps', engine_fps, cfg_fps_control)
         :package('@memory', engine_memory)
-        :package('@module', zeebo_module.lib)
         :package('@game', engine_game, cfg_app)
         :package('@math', engine_math)
         :package('@keys1', engine_keys)
         :package('@keys2', core_keys)
         :package('@draw', core_draw)
+        :package('@draw.ui', engine_draw_ui)
         :package('@draw.fps', engine_draw_fps)
         :package('@draw.poly', engine_draw_poly, cfg_poly)
         :package('@color', color)
@@ -116,12 +121,14 @@ local function install(evt, gamefile)
     application.data.width, application.data.height = canvas:attrSize()
     std.game.width, std.game.height = application.data.width, application.data.height
 
+    std.node.spawn(application)
+
     engine.root = application
+    engine.current = application
 
     register_event_loop()
     register_fixed_loop()
 
-    std.bus.spawn(application)
     std.bus.emit_next('load')
     std.bus.emit_next('init')
 

@@ -16,23 +16,23 @@ end
 
 local function clear(std, engine, canvas, tint)
     color(std, engine, canvas, tint)
-    local x = engine.current.config.offset_x
-    local y = engine.current.config.offset_y
+    local x = engine.offset_x
+    local y = engine.offset_y
     local width = engine.current.data.width
     local height = engine.current.data.height
     canvas:drawRect('fill', x, y, width, height)
 end
 
 local function rect(std, engine, canvas, mode, pos_x, pos_y, width, height)
-    local x = engine.current.config.offset_x + pos_x
-    local y = engine.current.config.offset_y + pos_y
+    local x = engine.offset_x + pos_x
+    local y = engine.offset_y + pos_y
     canvas:drawRect(mode == 0 and 'fill' or 'frame', x, y, width, height)
 end
 
 local function text(std, engine, canvas, pos_x, pos_y, text)
     if pos_x and pos_y then
-        local x = engine.current.config.offset_x + pos_x
-        local y = engine.current.config.offset_y + pos_y
+        local x = engine.offset_x + pos_x
+        local y = engine.offset_y + pos_y
         canvas:drawText(x, y, text)
     end
     return canvas:measureText(text or pos_x)
@@ -41,8 +41,8 @@ end
 local function tui_text(std, engine, canvas, pos_x, pos_y, size, text)
     local hem = engine.current.data.width / 80
     local vem = engine.current.data.height / 24
-    local x = engine.current.config.offset_x + (pos_x * hem)
-    local y = engine.current.config.offset_y + (pos_y * vem)
+    local x = engine.offset_x + (pos_x * hem)
+    local y = engine.offset_y + (pos_y * vem)
     local font_size = hem * size
 
     canvas:attrFont(current_font_name, font_size)
@@ -61,8 +61,8 @@ local function font(std, engine, canvas, name, size)
 end
 
 local function line(std, engine, canvas, x1, y1, x2, y2)
-    local ox = engine.current.config.offset_x 
-    local oy = engine.current.config.offset_y
+    local ox = engine.offset_x 
+    local oy = engine.offset_y
     local px1 = ox + x1
     local py1 = oy + y1
     local px2 = ox + x2
