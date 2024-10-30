@@ -62,6 +62,10 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('dist', {})
     .add_option_get('name', {})
     .add_option_has('const')
+    -- 
+    .add_subcommand('fs-luaconf', commands_fs)
+    .add_next_value('file', {required=true})
+    .add_option_has('32bits')
     --
     .add_subcommand('fs-replace', commands_fs)
     .add_next_value('file', {required=true})

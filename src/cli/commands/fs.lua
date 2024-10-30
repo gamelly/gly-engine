@@ -73,9 +73,32 @@ local function vim_xxd_i(args)
     return true
 end
 
+local function luaconf(args)
+    local file_in, file_err = io.open(args.file, 'r')
+
+    if not file_in then
+        return false, file_err
+    end
+
+    local content = file_in:read('*a')
+    file_in:close()
+
+    if args['32bits'] then
+        content = content:gsub('#define%sLUA_32BITS%s%d', '#define LUA_32BITS 1')
+    end
+
+    local file_out = io.open(args.file, 'w')
+
+    file_out:write(content)
+    file_out:close()
+
+    return true
+end
+
 local P = {
     ['fs-copy'] = copy,
     ['fs-xxd-i'] = vim_xxd_i,
+    ['fs-luaconf'] = luaconf,
     ['fs-replace'] = replace,
     ['fs-download'] = download
 }
