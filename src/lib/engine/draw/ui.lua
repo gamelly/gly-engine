@@ -128,6 +128,7 @@ local function add_items(std, engine, self, applications)
     local index = 1
     while application and index < #application do
         add(std, engine, self, applications[index])
+        index = index + 1
     end
     return self
 end

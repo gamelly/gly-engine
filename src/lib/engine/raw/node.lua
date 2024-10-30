@@ -169,9 +169,10 @@ end
 --! @}
 --! @}
 
---! note note remove
+--! note no remove
 local function event_bus(std, engine, key, a, b, c, d, e, f)
     local index = 1
+    local depth = 0
     
     while index <= #buses.list do
         local application = buses.list[index]
@@ -180,10 +181,11 @@ local function event_bus(std, engine, key, a, b, c, d, e, f)
             engine.current = application
             engine.offset_x = 0
             engine.offset_y = 0
-            while node do
+            while node and depth < 100 do
                 engine.offset_x = engine.offset_x + node.config.offset_x
                 engine.offset_y = engine.offset_y + node.config.offset_y
                 node = node.config.parent
+                depth = depth + 1
             end
         end
 
