@@ -30,6 +30,7 @@ end
 --! @cond
 local function install(std, engine, config)
     std = std or {}
+    config = config or {}
     std.game = std.game or {}
 
     std.bus.listen('post_quit', function()

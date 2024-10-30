@@ -122,7 +122,7 @@ function native_callback_init(width, height, game_lua)
         :package('@bus', engine_raw_bus)
         :package('@node', engine_raw_node)
         :package('@memory', engine_raw_memory)
-        :package('@game', engine_game, {})
+        :package('@game', engine_game, native_dict_game)
         :package('@math', engine_math)
         :package('@key', engine_key, {})
         :package('@draw.ui', engine_draw_ui)
@@ -142,6 +142,7 @@ function native_callback_init(width, height, game_lua)
     application.data.height, std.game.height = height, height
 
     std.node.spawn(application)
+    std.game.title(application.meta.title..' - '..application.meta.version)
 
     engine.root = application
     engine.current = application
