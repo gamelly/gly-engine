@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local protocol_http = require('src/lib/protocol/http_ginga')
+local protocol_http = require('ee/lib/protocol/http_ginga')
 
 local std = {bus = {listen = function() end}}
 

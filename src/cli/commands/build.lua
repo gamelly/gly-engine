@@ -19,10 +19,10 @@ local function build(args)
             post_exe='love dist -'..'-screen '..screen
         },
         ginga={
-            src='src/engine/core/ginga/main.lua',
+            src='ee/engine/core/ginga/main.lua',
             post_exe='ginga dist/main.ncl -s '..screen,
             extras={
-                'src/engine/core/ginga/main.ncl'
+                'ee/engine/meta/ginga/main.ncl'
             }
         },
         native={

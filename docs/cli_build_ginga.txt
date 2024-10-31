@@ -9,6 +9,8 @@
 
 @short build apps for brazilian and latam televisors
 
+@call ginga 
+
 @details
 The application will be downloaded via the free digital television signal.
 

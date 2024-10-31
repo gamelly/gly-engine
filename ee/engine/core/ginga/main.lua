@@ -1,7 +1,7 @@
 local zeebo_module = require('src/lib/engine/raw/module')
 --
-local core_draw = require('src/engine/core/ginga/draw')
-local core_keys = require('src/engine/core/ginga/keys')
+local core_draw = require('ee/engine/core/ginga/draw')
+local core_keys = require('ee/engine/core/ginga/keys')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
 local engine_game = require('src/lib/engine/api/game')
@@ -19,7 +19,7 @@ local engine_node = require('src/lib/engine/raw/node')
 local engine_memory = require('src/lib/engine/raw/memory')
 --
 local cfg_json_rxi = require('src/third_party/json/rxi')
-local cfg_http_ginga = require('src/lib/protocol/http_ginga')
+local cfg_http_ginga = require('ee/lib/protocol/http_ginga')
 --
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')

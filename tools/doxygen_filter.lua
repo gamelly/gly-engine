@@ -30,6 +30,14 @@ function commands()
     return content
 end
 
+function hardcore()
+    
+end
+
+function ginga()
+    return '@warning <strong>ginga is an enterprise part</strong>, using it in production requires a commercial license for the engine.'
+end
+
 local function source(file_name)
     local content = ''
     local file = io.open(file_name, 'r')
