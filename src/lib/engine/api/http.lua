@@ -98,9 +98,7 @@ end
 --! @cond
 local function request(method, std, engine, protocol_handler)
     local callback_handler = function()
-        if engine.current.callbacks.http then
-            engine.current.callbacks.http(std, engine.current.data)
-        end
+        std.node.emit(engine.current, 'http')
     end
 
     return function (url)
