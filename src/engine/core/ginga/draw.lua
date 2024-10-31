@@ -96,7 +96,6 @@ local function install(std, engine)
 end
 
 local P = {
-    event_bus = event_bus,
     install = install
 }
 

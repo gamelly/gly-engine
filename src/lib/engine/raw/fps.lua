@@ -55,14 +55,9 @@ local function install(std, engine, config_fps)
         end
         engine.delay = config_fps.time[index]
     end)
-
-    return {
-        fps_controler = fps_controler
-    }
 end
 
 local P = {
-    event_bus=event_bus,
     install=install
 }
 

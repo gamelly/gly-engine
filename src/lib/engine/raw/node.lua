@@ -86,6 +86,7 @@ local function emit(std, application, key, a, b, c, d, e, f)
     if not buses.pause[key..tostring(application)] and callback then
         return callback(std, application.data, a, b, c, d, e, f)
     end
+    return nil
 end
 
 --! @short create new node

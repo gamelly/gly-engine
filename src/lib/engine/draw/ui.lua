@@ -126,7 +126,7 @@ end
 --! @param [in,out] list of application columns
 local function add_items(std, engine, self, applications)
     local index = 1
-    while application and index < #application do
+    while applications and index < #applications do
         add(std, engine, self, applications[index])
         index = index + 1
     end
@@ -192,7 +192,7 @@ local function grid(std, engine, layout)
         items_ui = {},
         node=node,
         add=util_decorator.prefix2(std, engine, add),
-        add_items=util_decorator.prefix2(std, engine, add),
+        add_items=util_decorator.prefix2(std, engine, add_items),
         update_positions=update_positions,
         get_item=get_item
     }
