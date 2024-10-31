@@ -77,7 +77,7 @@ local function run(self, host_args)
             local required = self.param_dict_option_get_required[command][param]
             local default_value = self.param_dict_option_get_default[command][param]
             if alias and (value or ''):sub(1, 1) == alias:sub(1, 1)  then
-                value = self.param_dict_value_alias[command][param]:sub(2):gsub('{{'..param..'}}', value:sub(2))
+                value = alias:sub(2):gsub('{{'..param..'}}', value:sub(2))
             end
             if required and not value then
                 command = self.error_usage
