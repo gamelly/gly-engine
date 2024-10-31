@@ -92,7 +92,7 @@ local function create_request(method, uri)
         if method ~= 'GET' and method ~= 'HEAD' and #self.body_content > 0 then
             request = request..self.body_content..'\r\n\r\n'
         end
-        self = nil
+
         return request, function() end
     end
 
@@ -119,37 +119,35 @@ local function create_request(method, uri)
 
         request = request..uri
 
-        self = nil
         return request, function() end
     end
 
     self.to_wget_cmd = function ()
-        local parts = {'wget --quiet --output-document=-'}
+        local parts = {'wget -'..'-quiet -'..'-output-document=-'}
 
         if method == 'HEAD' then
-            table.insert(parts, '--method=HEAD')
+            table.insert(parts, '-'..'-method=HEAD')
         elseif method ~= 'GET' then
-            table.insert(parts, '--method=' .. method)
+            table.insert(parts, '-'..'-method=' .. method)
         end
 
         for index, header in ipairs(self.header_list) do
             local value = self.header_dict[header]
             if value then
                 local escaped_value = value:gsub('"', '\\"')
-                table.insert(parts, '--header="' .. header .. ': ' .. escaped_value .. '"')
+                table.insert(parts, '-'..'-header="' .. header .. ': ' .. escaped_value .. '"')
             end
         end
 
         if method ~= 'GET' and method ~= 'HEAD' and #self.body_content > 0 then
             local escaped_body = self.body_content:gsub('"', '\\"')
-            table.insert(parts, '--body-data="' .. escaped_body .. '"')
+            table.insert(parts, '-'..'-body-data="' .. escaped_body .. '"')
         end
 
         table.insert(parts, uri)
 
         local request = table.concat(parts, ' ')
 
-        self = nil
         return request, function() end
     end
 

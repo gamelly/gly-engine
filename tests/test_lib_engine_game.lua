@@ -1,46 +1,46 @@
 local luaunit = require('luaunit')
-local engine_game = require('src/lib/engine/game')
+local engine_game = require('src/lib/engine/api/game')
 
 function test_game_reset()
     local index = 1
-    local init = nil
-    local exit = nil
-    local application = {
-        callbacks = {
-            init = function()
-                init = index
-                index = index + 1
-            end,
-            exit = function()
-                exit = index
+    local buses = {}
+    local std = {
+        bus = {
+            listen = function() end,
+            emit = function(key)
+                buses[key] = index
                 index = index + 1
             end
         }
     }
 
-    zeebo_game = engine_game.install({}, {}, application)
+    zeebo_game = engine_game.install(std, {}, {})
     zeebo_game.reset()
 
-    luaunit.assertEquals(exit, 1)
-    luaunit.assertEquals(init, 2)
+    luaunit.assertEquals(buses.exit, 1)
+    luaunit.assertEquals(buses.init, 2)
+    luaunit.assertEquals(index, 3)
 end
 
 function test_game_exit()
     local index = 1
-    local exit = nil
-    local application = {
-        callbacks = {
-            exit = function()
-                exit = index
+    local buses = {}
+    local std = {
+        bus = {
+            listen = function() end,
+            emit = function(key)
+                buses[key] = index
                 index = index + 1
             end
         }
     }
 
-    zeebo_game = engine_game.install({}, {}, application, application.callbacks.exit)
+    zeebo_game = engine_game.install(std, {}, {})
     zeebo_game.exit()
 
-    luaunit.assertEquals(exit, 2)
+    luaunit.assertEquals(buses.exit, 1)
+    luaunit.assertEquals(buses.quit, 2)
+    luaunit.assertEquals(index, 3)
 end
 
 os.exit(luaunit.LuaUnit.run())

@@ -2,6 +2,8 @@
 --! @brief can be used as mock
 
 local P = {
+    milis = 0,
+    delta = 0,
     math = {
 
     },
@@ -16,7 +18,12 @@ local P = {
         poly = function () end
     },
     game = {
+        width = 1280,
+        height = 720,
+        register = function() end,
+        title = function() end,
         reset = function () end,
+        load = function() end,
         exit = function () end
     },
     key = {

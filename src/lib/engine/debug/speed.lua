@@ -7,7 +7,7 @@ local function loop(std, game, application, dt)
     if enable then
         frameskip = frameskip + 1
         if frameskip < speed then
-            std.bus.spawn('loop', dt)
+            std.bus.emit('loop', dt)
         else
             frameskip = 0
         end

@@ -33,7 +33,6 @@ local function decorator_triangle(func_draw_poly, std, func_draw_triangle)
 
         ox = ox or 0
         oy = oy or ox or 0
-        x, y = x or 0, y or 0
 
         local x1, y1 = point(x, y, verts[1], verts[2], scale, angle, ox, oy)
         local x2, y2 = point(x, y, verts[3], verts[4], scale, angle, ox, oy)
@@ -95,17 +94,25 @@ local function decorator_poly(func_draw_poly, std, modes, repeats)
     end
 end
 
-local function install(std, game, application, config)
+local function decorator_position(engine, func)
+    return function(mode, verts, pos_x, pos_y, scale, angle, ox, oy)
+        local x = engine.current.config.offset_x + (pos_x or 0)
+        local y = engine.current.config.offset_y + (pos_y or 0)
+        ox = ox or 0
+        oy = ox or oy or 0
+        scale = scale or 1
+        angle = angle or 0
+        return func(mode, verts, x, y, scale, angle, ox, oy)
+    end
+end
+
+local function install(std, engine, config)
     local draw_line = decorator_poo(config.object, config.line)
     local draw_poly = decorator_poo(config.object, config.poly) or decorator_line(draw_line)
     local draw_poly2 = config.poly2 or decorator_poly(draw_poly, std, config.modes, config.repeats)
     local draw_verts = decorator_triangle(draw_poly2, std, config.triangle)
 
-    std = std or {}
-    std.draw = std.draw or {}
-    std.draw.poly = draw_verts
-    
-    return {poly=std.draw.poly}
+    std.draw.poly = decorator_position(engine, draw_verts)
 end
 
 local P = {

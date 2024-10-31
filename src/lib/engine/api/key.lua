@@ -22,9 +22,9 @@
 --! @}
 --! @}
 
-local function real_key(std, game, application, rkey, rvalue)
+local function real_key(std, engine, rkey, rvalue)
     local value = rvalue == 1 or rvalue == true
-    local key = std.key.axis[rkey] and rkey or application.internal.key_bindings[rkey]
+    local key = engine.key_bindings[rkey] or (std.key.axis[rkey] and rkey)
     if key then
         std.key.axis[key] = value and 1 or 0
         std.key.press[key] = value
@@ -37,28 +37,26 @@ local function real_key(std, game, application, rkey, rvalue)
             std.key.axis.y = std.key.axis.down - std.key.axis.up
         end
         
-        std.bus.spawn('key', std, game)
+        std.bus.emit('key')
     end
 end
 
-local function real_keydown(std, game, application, key)
-    real_key(std, game, application, key, 1)
+local function real_keydown(std, engine, key)
+    real_key(std, engine, key, 1)
 end
 
-local function real_keyup(std, game, application, key)
-    real_key(std, game, application, key, 0)
+local function real_keyup(std, engine, key)
+    real_key(std, engine, key, 0)
 end
 
-local function event_bus(std, game, application)
-    std.bus.listen_std('rkey', real_key)
-    std.bus.listen_std('rkey1', real_keydown)
-    std.bus.listen_std('rkey0', real_keyup)
+local function event_bus(std, engine)
+    std.bus.listen_std_engine('rkey', real_key)
+    std.bus.listen_std_engine('rkey1', real_keydown)
+    std.bus.listen_std_engine('rkey0', real_keyup)
 end
 
-local function install(std, game, application, key_bindings)
-    application = application or {}
-    application.internal = application.internal or {}
-    application.internal.key_bindings = key_bindings or {}
+local function install(std, engine, key_bindings)
+    engine.key_bindings = key_bindings or {}
 end
 
 local P = {

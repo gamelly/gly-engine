@@ -1,4 +1,4 @@
-local function install(std, game, application, library, name)
+local function install(std, engine, library, name)
     std = std or {}
     std[name] = {
         encode=library.encode,

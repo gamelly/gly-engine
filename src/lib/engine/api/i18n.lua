@@ -26,7 +26,7 @@ end
 --! @defgroup std
 --! @{
 --! @defgroup i18n
---! @short Internationalization
+--! @short API for Internationalization
 --! @brief support multi-language games.
 --! @pre require @c i18n
 --! @details
@@ -145,14 +145,14 @@ local function decorator_draw_text(func)
     end
 end
 
-local function event_bus(std, game, application)
-    std.bus.listen('i18n', function(texts)
-        update_languages(texts)
+local function event_bus(std, engine)
+    std.bus.listen('ret_i18n', function(result)
+        update_languages(result)
     end)
-    std.bus.spawn('i18n', application.callbacks.i18n(std, game))
+    std.bus.emit_next('i18n')
 end
 
-local function install(std, game, application, system_language)
+local function install(std, engine, system_language)
     if not (std and std.draw and std.draw.text) then
         error('missing draw text')
     end

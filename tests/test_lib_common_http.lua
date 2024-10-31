@@ -1,8 +1,9 @@
 local luaunit = require('luaunit')
-local zeebo_http = require('src/lib/engine/http')
+local zeebo_http = require('src/lib/engine/api/http')
 local mock_http = require('mock/protocol_http')
 
-local std = {}
+local std = {node={emit=function()end}}
+local engine = {current={callbacks={}}}
 
 local http_handler = mock_http.requests({
     ['example.com/status200'] = {
@@ -27,7 +28,7 @@ local http_handler = mock_http.requests({
     }
 })
 
-zeebo_http.install(std, {}, {}, {handler=http_handler})
+zeebo_http.install(std, engine, {handler=http_handler})
 
 function test_http_head_200()
     local status = 0

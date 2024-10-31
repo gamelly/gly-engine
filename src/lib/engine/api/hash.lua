@@ -5,6 +5,9 @@
 --! @pre require @c hash
 --! @{
 
+--! @short std.hash.djb2
+--! @param [in] digest string to hashing
+--!
 --! @li https://softwareengineering.stackexchange.com/questions/49550/which-hashing-algorithm-is-best-for-uniqueness-and-speed
 --!
 --! @return integer 32bit
@@ -23,6 +26,8 @@ local function djb2(digest)
     return hash
 end
 
+--! @short std.hash.fingerprint
+--! @todo copulate each color with unique data
 --! @hideparam all_your_secrets
 --! @return integer 32bit
 local function fingerprint(all_your_secrets)
@@ -43,7 +48,7 @@ end
 --! @}
 --! @}
 
-local function install(std, game, application, all_your_secrets)
+local function install(std, engine, all_your_secrets)
     local id = fingerprint(all_your_secrets)
     std = std or {}
     std.hash = std.hash or {}

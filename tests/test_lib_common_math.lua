@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local engine_math = require('src/lib/engine/math')
+local engine_math = require('src/lib/engine/api/math')
 
 local zeebo_math = engine_math.install()
 

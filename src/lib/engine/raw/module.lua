@@ -1,5 +1,36 @@
 local zeebo_pipeline = require('src/lib/util/pipeline')
-local application_default = require('src/lib/object/application')
+local application_default = require('src/lib/object/root')
+
+local function default(application, defaults)
+    if not application then return nil end
+    local index = 1    
+    local items = {'data', 'meta', 'config', 'callbacks'}
+    local normalized_aplication = {}
+    defaults = defaults or application_default
+
+    while index <= #items do
+        local key1 = items[index]
+        local keys = defaults[key1]
+
+        normalized_aplication[key1] = {}
+
+        for key2, default_value in pairs(keys) do
+            local value = application[key1] and application[key1][key2]
+            normalized_aplication[key1][key2] = value or default_value
+        end
+        index = index + 1
+    end
+
+    normalized_aplication.config.id = tostring(application) 
+
+    if application.callbacks then
+        for event, handler in pairs(application.callbacks) do
+            normalized_aplication.callbacks[event] = handler
+        end
+    end
+
+    return normalized_aplication
+end
 
 local function normalize(application)
     if not application then return nil end
@@ -12,11 +43,12 @@ local function normalize(application)
         application = application.new()
     end
 
-    if application and application.meta and application.callbacks then
+    if application and (application.meta or application.callbacks) then
         return application
     end
 
     local normalized_aplication = {
+        data = {},
         meta = {},
         config = {},
         callbacks = {}
@@ -25,35 +57,26 @@ local function normalize(application)
     for key, value in pairs(application) do
         if application_default.meta[key] then
             normalized_aplication.meta[key] = value
+        elseif application_default.config[key] then
+            normalized_aplication.config[key] = value
         elseif type(value) == 'function' then
             normalized_aplication.callbacks[key] = value
         else
-            normalized_aplication.config[key] = value
+            normalized_aplication.data[key] = value
         end
     end
 
     return normalized_aplication
 end
 
---! @defgroup std
---! @{
---! @defgroup game
---! @{
-
---! @renamefunc load
---! @short safe load game
---! @pre require @c load
---! @brief search by game in filesystem / lua modules
---! @li https://love2d.org/wiki/love.filesystem.getSource
-local function loadgame(game_file)
+local function loadgame(game_file, defaults)
     if type(game_file) == 'table' or type(game_file) == 'userdata' then
-        return normalize(game_file)
+        return default(normalize(game_file), defaults)
     end
 
     local cwd = '.'
     local application = type(game_file) == 'function' and game_file
-    local game_title = game_file and game_file:gsub('%.lua$', '') or 'game'
-
+    local game_title = not application and game_file and game_file:gsub('%.lua$', '') or 'game'
 
     if not application and game_file and game_file:find('\n') then
         local ok, app = pcall(load, game_file)
@@ -90,15 +113,7 @@ local function loadgame(game_file)
         application = application()
     end
 
-    return normalize(application)
-end
-
---! @}
---! @}
-
-local function register(self, register_func)
-    self.pipeline[#self.pipeline + 1] = register_func
-    return self
+    return default(normalize(application), defaults)
 end
 
 local function package(self, module_name, module, custom)
@@ -106,6 +121,7 @@ local function package(self, module_name, module, custom)
     local name = system and module_name:sub(2) or module_name
 
     if system then
+        self.list_append(name)
         self.stdlib_required[name] = true
     end
 
@@ -114,13 +130,17 @@ local function package(self, module_name, module, custom)
         if not system and not self.lib_required[name] then return end
         
         local try_install = function()
-            module.install(self.std, self.game, self.application, custom, module_name)
+            module.install(self.std, self.engine, custom, module_name)
             if module.event_bus then
-                module.event_bus(self.std, self.game, self.application)
+                module.event_bus(self.std, self.engine, custom, module_name)
             end
         end
         
-        if not pcall(try_install) then return end
+        local ok, msg = pcall(try_install)
+        if not ok then
+            self.lib_error[name] = msg    
+            return
+        end
         
         if system then
             self.stdlib_installed[name] = true
@@ -132,20 +152,23 @@ local function package(self, module_name, module, custom)
     return self
 end
 
-local function require(std, game, application)
-    local application_require = application.config and application.config.require or ''
+local function require(std, application, engine)
+    if not application then
+        error('game not found!')
+    end
+
+    local application_require = application.config.require
     local next_library = application_require:gmatch('%S+')
     local self = {
         -- objects
         std=std,
-        game=game,
-        application=application,
+        engine=engine,
         -- methods
-        register = register,
         package = package,
         -- data
         event = {},
         list = {},
+        lib_error = {},
         lib_optional = {},
         lib_required = {},
         lib_installed = {},
@@ -170,10 +193,10 @@ local function require(std, game, application)
         while index <= #self.list do
             local name = self.list[index]
             if self.stdlib_required[name] and not self.stdlib_installed[name] then
-                error('system library not loaded: '..name)
+                error('system library not loaded: '..name..'\n'..(self.lib_error[name] or ''))
             end
             if self.lib_required[name] and not self.lib_installed[name] then
-                error('library not loaded: '..name)
+                error('library not loaded: '..name..'\n'..(self.lib_error[name] or ''))
             end
             index = index + 1
         end
@@ -195,14 +218,7 @@ local function require(std, game, application)
     return self
 end
 
-local function install(std, game, application, exit_func)
-    std.game = std.game or {}
-    std.game.load = loadgame
-    return {load=loadgame}
-end
-
 local P = {
-    load={install=install},
     loadgame = loadgame,
     require = require
 }
