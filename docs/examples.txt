@@ -1,0 +1,16 @@
+@defgroup Examples 
+@{
+
+@par build a example
+
+```sql
+lua cli.lua build @pong --core html5
+```
+
+#### create a project
+
+```sql
+lua cli.lua my_awesome_game --template @pong
+```
+
+@}

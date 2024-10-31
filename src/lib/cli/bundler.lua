@@ -1,11 +1,30 @@
---! @short unify files
---! @brief groups code into a single source
---! @param[in] src_path folder with lua includes
---! @param[in] src_file entry file
---! @param[in] dest_file packaged file output
---! @par Input
---! @li @c lib_common_math.lua
---! @code
+--! @defgroup cli
+--! @{
+--! @defgroup bundler
+--! @{
+--!
+--! @short unify lua files
+--!
+--! @details
+--! The bundler is for general use and can be used in any lua code in addition to games made for the gly engine.
+--!
+--! @li optimized recursive search for dependencies in your files.
+--! @li minification by removing comments, extrabreaklines and tabulations.
+--! @li compatibility with lua distributions that do not expose standard libs in require.
+--!
+--! @par Instalation
+--!
+--! @todo coming soon, just bundler as a utility `.lua` script to use in your CI system. @n (without the engine)
+--!
+--! @par Usage
+--! @code{.sql}
+--! lua cli.lua src/main.lua --dist ./dist
+--! @endcode
+--!
+--! @par Result
+--! @li @b Input
+--! - @c lib_common_math.lua
+--! @code{.java}
 --! local function sum(a, b)
 --!     return a + b
 --! end
@@ -16,9 +35,8 @@
 --! 
 --! return P
 --! @endcode
---!
---! @li @c main.lua
---! @code
+--! - @c main.lua
+--! @code{.java}
 --! local os = require('os')
 --! local zeebo_math = require('lib_common_math')
 --! 
@@ -26,10 +44,10 @@
 --! os.exit(0)
 --! @endcode
 --! 
---! @par Output 
---! @li @c main.lua
---! @code
---! local os = require('os')
+--! @li @b Output 
+--! - @c main.lua
+--! @code{.java}
+--! local os = ((function() local x, y = pcall(require, 'os'); return x and y end)()) or _G.os
 --! local lib_common_math = nil
 --! 
 --! local function main()
@@ -52,6 +70,9 @@
 --! 
 --! main()
 --! @endcode
+--! @}
+--! @}
+
 local function build(src_path, src_filename, dest)
     local pattern_require = "local ([%w_%-]+) = require%('(.-)'%)"
     local pattern_gameload = "([%w_%-%.]+) = std%.node%.load%('(.-)'%)"

@@ -16,7 +16,7 @@ local commands_tools = require('src/cli/commands/tools')
 local command = zeebo_argparse.from(arg)
     .add_subcommand('init', commands_init)
     .add_next_value('project', {required=true})
-    .add_option_get('template', {alias='@examples/{{template}}/game.lua', default='./examples/helloworld/game.lua'})
+    .add_option_get('template', {alias='@examples/{{template}}/game.lua', default='examples/helloworld/game.lua'})
     --
     .add_subcommand('build', commands_build)
     .add_next_value('game', {alias='@examples/{{game}}/game.lua'})

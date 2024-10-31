@@ -1,0 +1,30 @@
+@defgroup cli
+@{
+
+@defgroup build
+@{
+
+@defgroup tui
+@{
+
+@short build terminal based games
+
+@page ci_build_ascii Ascii
+
+ - source code <https://github.com/gamelly/core-native-ascii>
+
+```text
+git clone https://github.com/gamelly/core-native-ascii
+```
+
+```text
+cmake -Bbuild -H. -DGAME=path/to/your/game.lua
+```
+
+```text
+make -C build
+```
+
+@}
+@}
+@}

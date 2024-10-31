@@ -1,3 +1,6 @@
+@defgroup cli
+@{
+
 @defgroup build
 @{
 
@@ -165,5 +168,6 @@ void gly_engine_loop()
 }
 ```
 
+@}
 @}
 @}

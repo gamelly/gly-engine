@@ -2,6 +2,7 @@ luacov.*
 vendor/
 dist/
 html/
+rtf/
 latex/
 doxygen/
 .out

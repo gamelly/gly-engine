@@ -2,7 +2,6 @@
 --! @{
 --! @defgroup key
 --! @{
---! @short Keyboard
 --!
 --! | input              | values |
 --! | :----------------- | :----- |

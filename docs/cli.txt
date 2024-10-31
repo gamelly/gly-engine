@@ -1,0 +1,7 @@
+@defgroup cli
+@{
+
+@par List of commands
+@call commands
+
+@}

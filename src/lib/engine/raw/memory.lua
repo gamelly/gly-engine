@@ -6,8 +6,7 @@ local memory_list = {}
 --! @{
 --! @defgroup mem
 --! @{
---! @short Memory Manager
---! @brief A Garbage Collector System and also mangament manual of memory.
+--! @details A Garbage Collector System and also mangament manual of memory.
 
 --! @par Example
 --! @code

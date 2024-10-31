@@ -1,10 +1,10 @@
 @page limits Limitations
 
-## Love2d
+## Limits in Love2D
 
 love 2d would be the hardware of your computer or video game, it has no performance limitations but some features are unavailable.
 
-#### Polygons
+@par Polygons
 
 It's a problem that <strong>Love2D itself doesn't support open polygons like wireframes</strong>,
 so it's not possible to bring it in an optimized way to engine.
@@ -12,41 +12,49 @@ so it's not possible to bring it in an optimized way to engine.
 @li polygon with 3 vertice are supported as open wireframes, but cannot be filled.
 @li to fill a polygon with 3 vertices, just make a 4th point that is aligned.
 
-## Ginga
+## Limits in Ginga
 
 Ginga doesn't have as much firepower, although it has a lot of available memory,
 it is running at low CPU priority, which can significantly hinder the Lua language from running quickly.
 
-#### Polygons
+@par Polygons
 
 filled pylogons are not supported.
 
-#### HTTPS
+@par HTTPS
 
 does not support requests with SSL and also HTTP 2.0 or higher.
 
-## Gameboy Advanced
+## Limits in Gameboy Advanced
 
 @ref build_gba does not have an FPU so the lua number type is emulated via software by the compiler, 
 it is also CPU is 16.78 MHz with 288 KB of RAM, so don't expect to make a big game, but it is a good hobby,
 if you make a well optimized code you can play at 30 or 60 FPS.
 
-#### Clear
+@par HTTP
+
+does not support it, as it is difficult to test on emulators.
+
+@par Clear
 
 Don't change colors too often with @c std.draw.clear as this is expensive,
 if you always keep the same color you will never have a problem.
 
 @li can only be called at the start of a draw.
 
-#### Rects
+@par Rects
 
 Don't draw giant filled squares, it can drop your FPS every time you try.
 
-#### Polygons
+@par Images
+
+Currently not supported, but will be worked on in the future.
+
+@par Polygons
 
 filled pylogons are not supported.
 
-#### Divisions / Multiplications
+@par Divisions / Multiplications
 
 Avoid doing multiplications and divisions of non-base 2 numbers during the game loop, this really negatively impacts the game's performance.
 
@@ -60,10 +68,29 @@ x = x + (game.hspeed * 3)
 x = x + speed + (speed * 2)
 @endcode
 
-#### Texts
+@par Texts
 
 Long texts are expensive, and can cause synchronization problems at +30 FPS <i>(especially at the top of the screen)</i>,
 avoid filling the screen with text if you are playing a game and not reading a book.
 
 @li prefer to write texts at the bottom of the screen
 @li code yours @c std.draw.text in end of the of @c draw callback
+
+## Limits in SDL
+
+@par HTTPS
+
+TLS 1.3 is not supported.
+
+## Limits in Console TUI (ASCII)
+
+The engine supports TUI style games, @ref ci_build_ascii mode is to support any terminal,
+whether Windows or a POSIX system. The minimum resolution is 80x24, but you can expand the screen.
+
+@par HTTPS
+
+TLS 1.3 is not supported.
+
+@par Images
+
+Not supported.

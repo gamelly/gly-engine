@@ -26,8 +26,7 @@ end
 --! @defgroup std
 --! @{
 --! @defgroup i18n
---! @short API for Internationalization
---! @brief support multi-language games.
+--! @details support multi-language games.
 --! @pre require @c i18n
 --! @details
 --! The format of language must be @c aa-AA, respectively <b>ISO 639</b> and <b>ISO 3166</b>,

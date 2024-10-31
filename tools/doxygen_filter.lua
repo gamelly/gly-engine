@@ -22,7 +22,7 @@ function commands()
             local pid = io.popen('lua '..name..' help '..cmd)
             local usage = pid:read('*a')
             local tutorial = usage:gsub('usage: ', ''):gsub(name, 'gly-cli')
-            content = content..'//! @code{.sql}\n//! '..tutorial..'//! @endcode\n'
+            content = content..'@code{.sql}\n'..tutorial..'\n@endcode\n'
             pid:close()
         end
     until not cmd
@@ -94,9 +94,10 @@ function main()
 
     if is_game then
         local game = dofile(arg[1])
-        local game_name = arg[1]:match('(%w+)/game.lua$')
+        local game_name = arg[1]:match('([%w_]+)/game.lua$')
         io.write(group('Examples', game_name, game.meta.title))
         io.write(game_requires(game))
+        io.write('//! @short @c \\@'..game_name..'\n')
         io.write('//! @author '..game.meta.author..'\n')
         io.write('//! @version '..game.meta.version..'\n')
         io.write('//! @par Brief \n//! @details '..game.meta.description..'\n')

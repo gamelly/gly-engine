@@ -33,7 +33,10 @@ local function init_project(args)
 
     local game_lua_content = project_gamefile:read('*a')
 
-    create_directory(project_name)
+    if project_name ~= '.' then
+        create_directory(project_name)
+    end
+
     create_file(project_name .. "/.gitignore", ".DS_Store\nThumbs.db\nvendor\ndist\ncli.lua")
     
     create_directory(project_name .. "/dist")

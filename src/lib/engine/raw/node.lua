@@ -90,7 +90,7 @@ local function emit(std, application, key, a, b, c, d, e, f)
 end
 
 --! @short create new node
---! @note When build the main game file, it will be directly affected by the bundler,
+--! @note When build the main game file, it will be directly affected by the @ref bundler,
 --! if it finds a path to the game it will be unified.
 --! @param [in] application
 --! @return node

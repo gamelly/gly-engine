@@ -3,7 +3,6 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @defgroup std
 --! @{
 --! @defgroup http
---! @short API for HTTP Requests
 --! @pre require @c http
 --! @par Methods
 --! @li @b std.http.get
