@@ -52,7 +52,7 @@ jobs:
         luaVersion: '5.4'
     -
       run: |
-        lua tools/versionchecker.lua
+        lua tools/ci_version_local.lua
 
   lint:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
