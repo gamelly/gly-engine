@@ -139,7 +139,7 @@ local function build(src_path, src_filename, dest)
                 end
             until not line
             if from == 'lib' then
-                main_after = main_after..'end\n'
+                main_after = main_after..'end\n-'..'-\n'
             end
         end
 
