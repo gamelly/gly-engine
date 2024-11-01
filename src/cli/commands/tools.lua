@@ -1,5 +1,7 @@
 local zeebo_compiler = require('src/lib/cli/compiler')
 local zeebo_bundler = require('src/lib/cli/bundler')
+local zeebo_package = require('src/lib/cli/package')
+local zeebo_filler = require('src/lib/cli/filler')
 local zeebo_fs = require('src/lib/cli/fs')
 
 local function bundler(args)
@@ -57,13 +59,22 @@ local function haxe_build(args)
     return true
 end
 
+local function package_del(args)
+    return zeebo_package.del(args.file, args.module)
+end
+
+local function template_fill(args)
+    return zeebo_filler.put(args.file, tonumber(args.size))
+end
 
 local P = {
     bundler = bundler,
     compiler = compiler,
     ['tool-haxe-build'] = haxe_build,
     ['tool-love-zip'] = love_zip,
-    ['tool-love-exe'] = love_exe
+    ['tool-love-exe'] = love_exe,
+    ['tool-package-del'] = package_del,
+    ['tool-template-fill'] = template_fill
 }
 
 return P

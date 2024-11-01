@@ -54,6 +54,14 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('file', {required=true})
     .add_option_get('dist', {required=true})
     --
+    .add_subcommand('tool-package-del', commands_tools)
+    .add_next_value('file', {required=true})   
+    .add_next_value('module', {required=true})   
+    --
+    .add_subcommand('tool-template-fill', commands_tools)
+    .add_next_value('file', {required=true})
+    .add_next_value('size', {required=true}) 
+    --
     .add_subcommand('fs-copy', commands_fs)
     .add_next_value('file', {required=true})
     .add_next_value('dist', {required=true})
@@ -77,10 +85,6 @@ local command = zeebo_argparse.from(arg)
     .add_subcommand('fs-download', commands_fs)
     .add_next_value('url', {required=true})
     .add_next_value('dist', {required=true})
-    --
-    .add_subcommand('fs-gamefill', commands_fs)
-    .add_next_value('dist', {required=true})
-    .add_next_value('size', {required=true})
     --
     .add_subcommand('cli-build', commands_cli)
     .add_option_get('dist', {default='./dist/'})
