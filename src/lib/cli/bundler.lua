@@ -18,7 +18,7 @@
 --!
 --! @par Usage
 --! @code{.sql}
---! lua cli.lua src/main.lua --dist ./dist
+--! lua cli.lua bundler src/main.lua --dist ./dist
 --! @endcode
 --!
 --! @par Result
