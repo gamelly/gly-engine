@@ -19,10 +19,10 @@ local function build(args)
             post_exe='love dist -'..'-screen '..screen
         },
         ginga={
-            src='src/engine/core/ginga/main.lua',
+            src='ee/engine/core/ginga/main.lua',
             post_exe='ginga dist/main.ncl -s '..screen,
             extras={
-                'src/engine/core/ginga/main.ncl'
+                'ee/engine/meta/ginga/main.ncl'
             }
         },
         native={
@@ -69,16 +69,6 @@ local function build(args)
                 'src/engine/core/html5/driver-wasmoon.js',
                 'src/engine/core/html5/core-native-html5.js'
             }
-        },
-        nintendo_wii={
-            src='src/engine/core/nintendo_wii/main.lua',
-            pipeline={
-                zeebo_meta.late(dist..'game.lua'):file(dist..'meta.xml'):pipe()
-            },
-            extras={
-                'assets/icon128x48.png',
-                'src/engine/meta/nintendo_wii/meta.xml'
-            }
         }
     }
 
@@ -103,7 +93,8 @@ local function build(args)
 
     -- move game
     if args.game then
-        zeebo_fs.move(args.game, dist..'game.lua')
+        local dir, file = args.game:match("(.*/)([^/]+)$")
+        zeebo_bundler.build(dir, file, dist..'game.lua')
     end
 
     -- core move

@@ -1,19 +1,18 @@
-local function loop(std, game, application, dt)
-    game.dt = dt * 1000
-    game.milis = love.timer.getTime() * 1000
-    game.fps = love.timer.getFPS()
-    application.callbacks.loop(std, game)
+local function loop(std, engine, dt)
+    std.delta = dt * 1000
+    std.milis = love.timer.getTime() * 1000
+    engine.fps = love.timer.getFPS()
+end
+
+local function event_bus(std)
+    std.bus.listen_std_engine('pre_loop', loop)
 end
 
 local function install(std, game, application)
-    application.callbacks.loop = application.callbacks.loop or function () end
-
-    return {
-        event={loop=loop}
-    }
 end
 
 local P = {
+    event_bus=event_bus,
     install=install
 }
 

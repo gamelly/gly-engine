@@ -7,8 +7,8 @@ local function init(std, game)
 end
 
 local function loop(std, game)
-    game.x = std.math.clamp(game.x + (game.hspeed * game.dt), 0, game.width - game.size)
-    game.y = std.math.clamp(game.y + (game.vspeed * game.dt), 0, game.height - game.size)
+    game.x = std.math.clamp(game.x + (game.hspeed * std.delta), 0, game.width - game.size)
+    game.y = std.math.clamp(game.y + (game.vspeed * std.delta), 0, game.height - game.size)
     if game.x == 0 or game.x == game.width - game.size then
         game.hspeed = -1 * game.hspeed
     end

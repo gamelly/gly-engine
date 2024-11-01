@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: ['asteroids', 'dvdplayer', 'helloworld', 'launcher', 'pong']
+        game: ['asteroids', 'dvdplayer', 'launcher', '2games', 'helloworld', 'gridsystem', 'pong']
     steps:
       - 
         uses: actions/checkout@master
@@ -52,7 +52,7 @@ jobs:
           luaVersion: '5.4'
       - 
         run: |
-          ./cli.sh build @${{ matrix.game }} --core html5 --dist ./html/
+          lua tools/cd_docs_example.lua ${{ matrix.game }}
       - 
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'workflow_dispatch'
         uses: cloudflare/pages-action@v1

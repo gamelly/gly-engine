@@ -1,11 +1,30 @@
---! @short unify files
---! @brief groups code into a single source
---! @param[in] src_path folder with lua includes
---! @param[in] src_file entry file
---! @param[in] dest_file packaged file output
---! @par Input
---! @li @c lib_common_math.lua
---! @code
+--! @defgroup cli
+--! @{
+--! @defgroup bundler
+--! @{
+--!
+--! @short unify lua files
+--!
+--! @details
+--! The bundler is for general use and can be used in any lua code in addition to games made for the gly engine.
+--!
+--! @li optimized recursive search for dependencies in your files.
+--! @li minification by removing comments, extrabreaklines and tabulations.
+--! @li compatibility with lua distributions that do not expose standard libs in require.
+--!
+--! @par Instalation
+--!
+--! @todo coming soon, just bundler as a utility `.lua` script to use in your CI system. @n (without the engine)
+--!
+--! @par Usage
+--! @code{.sql}
+--! lua cli.lua src/main.lua --dist ./dist
+--! @endcode
+--!
+--! @par Result
+--! @li @b Input
+--! - @c lib_common_math.lua
+--! @code{.java}
 --! local function sum(a, b)
 --!     return a + b
 --! end
@@ -16,9 +35,8 @@
 --! 
 --! return P
 --! @endcode
---!
---! @li @c main.lua
---! @code
+--! - @c main.lua
+--! @code{.java}
 --! local os = require('os')
 --! local zeebo_math = require('lib_common_math')
 --! 
@@ -26,10 +44,10 @@
 --! os.exit(0)
 --! @endcode
 --! 
---! @par Output 
---! @li @c main.lua
---! @code
---! local os = require('os')
+--! @li @b Output 
+--! - @c main.lua
+--! @code{.java}
+--! local os = ((function() local x, y = pcall(require, 'os'); return x and y end)()) or _G.os
 --! local lib_common_math = nil
 --! 
 --! local function main()
@@ -52,12 +70,15 @@
 --! 
 --! main()
 --! @endcode
+--! @}
+--! @}
+
 local function build(src_path, src_filename, dest)
-    local pattern = "local ([%w_%-]+) = require%('(.-)'%)"
+    local pattern_require = "local ([%w_%-]+) = require%('(.-)'%)"
+    local pattern_gameload = "([%w_%-%.]+) = std%.node%.load%('(.-)'%)"
     local from = 'main'
     local src_in = src_path..src_filename
     local src_file = io.open(src_in, 'r')
-    local dest_file = io.open(dest, 'w')
     local relative_path = src_path:gsub('[%w_-]+', '..')
     local deps_imported = {}
     local deps_var_name = {}
@@ -72,7 +93,10 @@ local function build(src_path, src_filename, dest)
 
     repeat
         if from == 'system' then
-            main_before = 'local '..lib_var..' = select(2, pcall(require, \''..lib_module..'\')) or '..lib_var..'\n'..main_before
+            local os = function() local x, y = pcall(require, 'os'); return x and y end or _G.os
+
+            main_before = 'local '..lib_var..' = ((function() local x, y = pcall(require, \''..lib_module
+                ..'\'); return x and y end)()) or _G.'..lib_var..'\n'..main_before
         end
         if src_file then
             if from == 'lib' then
@@ -90,9 +114,16 @@ local function build(src_path, src_filename, dest)
                     line = line:gsub('%s*%-%-([^\'\"%[%]].*)$', '')
                 end
 
-                local line_require = line and { line:match(pattern) }
+                local line_require = line and { line:match(pattern_require) }
+                local line_gameload = line and { line:match(pattern_gameload) }
 
-                if line_require and #line_require > 0 then
+                if line_gameload and #line_gameload > 0 then
+                    local index = #deps_var_name + 1
+                    local gamefile = line_gameload[2]:gsub('/', '_'):gsub('%.lua$', '')
+                    deps_var_name[index] = line_gameload[1]
+                    deps_module_path[index] = line_gameload[2]:gsub('%.lua$', '')
+                    main_content = main_content..'local '..line_gameload[1]..' = std.node.load('..gamefile..')\n'
+                elseif line_require and #line_require > 0 then
                     local index = #deps_var_name + 1
                     deps_var_name[index] = line_require[1]
                     deps_module_path[index] = line_require[2]
@@ -157,8 +188,14 @@ local function build(src_path, src_filename, dest)
         main_content = main_content..'return main()\n'
     end
 
+    local dest_file, dest_err = io.open(dest, 'w')
+    if not dest_file then
+        return false, dest_err
+    end
+
     dest_file:write(main_content)
     dest_file:close()
+    
     return true
 end
 

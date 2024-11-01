@@ -24,7 +24,7 @@ local function cli_build(args)
     local dist = args.dist
     zeebo_fs.clear(dist)
     zeebo_bundler.build('src/cli/', 'main.lua', dist..'main.lua')
-    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples', './mock')
+    local ok, message = zeebo_bootstrap.build(dist..'main.lua', dist..'cli.lua', './src', './assets', './examples', './mock', './ee')
     os.remove(dist..'main.lua')
     return ok, message
 end
@@ -33,10 +33,16 @@ local function cli_dump(args)
     return zeebo_bootstrap.dump(dist)
 end
 
+local function cli_init(args)
+    local project_name = args[1] or 'my_project'
+    init.init_project(project_name)
+end
+
 local P = {
     ['cli-build'] = cli_build,
     ['cli-test'] = cli_test,
-    ['cli-dump'] = cli_dump
+    ['cli-dump'] = cli_dump,
+    ['cli-init'] = cli_init
 }
 
 return P

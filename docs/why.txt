@@ -11,7 +11,7 @@
 | I18N API         | Yes        | No         | No         | No         | No         |
 | Cache API        | Yes        | No         | No         | Yes        | No         |
 | QRCode API       | Yes        | No         | No         | No         | No         |
-| Blend modes      | No         | No         | Yes        | Yes        | Yes        |
+| Blend modes      | No         | No         | Yes        | Yes        | NO         |
 | Shadders         | No         | Yes        | Yes        | Yes        | Yes        |
 | Image Tint       | No         | Yes        | Yes        | Yes        | Yes        |
 | Image Rotate     | No         | Yes        | Yes        | Yes        | Yes        |

@@ -3,11 +3,18 @@
   "lint": { "*": true},
   "lintErrors": true,
   "globals": [
+    "arg",
+    "bit",
     "Buffer",
+    "canvas",
+    "event",
+    "io",
+    "jit",
     "jsRequire",
     "load",
     "loadfile",
     "love",
+    "native_dict_game",
     "native_dict_http",
     "native_dict_json",
     "native_dict_poly",
@@ -20,8 +27,8 @@
     "native_draw_line",
     "native_draw_rect",
     "native_draw_start",
+    "native_draw_text_tui",
     "native_draw_text",
-    "native_get_system_lang",
-    "io"
+    "native_get_system_lang"
   ]
 }

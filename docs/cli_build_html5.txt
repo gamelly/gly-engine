@@ -1,0 +1,58 @@
+@defgroup cli
+@{
+
+@defgroup build
+@{
+
+@defgroup HTML5
+@{
+
+@short build web pages, pwa's and tv apps
+
+@li html5
+@li html5_tizen 
+@li html5_webos
+
+@page cli_build_html5_global create HTML5 project using gly-deps.json
+
+@par Install CLI
+
+```sql
+npm install -g demoon @gamely/gly-cli
+```
+
+@par Creating a project
+
+```sql
+gly-cli init awesome_game --template @pong
+```
+
+@par Building as web page
+
+```sql
+gly-cli build src/game.lua --core html5
+```
+
+@page cli_build_html5_local create HTML5 project using package.json
+
+@par Install CLI
+
+```sql
+npm install @gamely/gly-cli --dev
+```
+
+@par Generate structures
+
+```sql
+npx gly-cli init . --template @pong
+```
+
+@par Building
+
+```sql
+npx gly-cli build src/game.lua --core html5
+```
+
+@}
+@}
+@}

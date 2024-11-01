@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<app version="1">
-	<name>{{title}}</name>
-	<version>{{version}}</version>
-	<coder>{{author}}</coder>
-	<short_description>{{title}} - {{version}} by {{author}}</short_description>
-	<long_description>{{description}}</long_description>
-</app>

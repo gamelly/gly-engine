@@ -1,17 +1,20 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Gly Game Engine"
-PROJECT_NUMBER         = 0.0.7
+PROJECT_NUMBER         = 0.0.8
 PROJECT_BRIEF          = "Game engine in lua"
 PROJECT_LOGO           = assets/icon80x80.png
+GENERATE_RTF           = NO
+GENERATE_LATEX         = NO
 OUTPUT_DIRECTORY       = .
 RECURSIVE              = YES
 CREATE_SUBDIRS         = NO
 STRIP_CODE_COMMENTS    = NO
-CALL_GRAPH             = YES
-HAVE_DOT               = YES
+CALL_GRAPH             = NO
+HAVE_DOT               = NO
 EXTRACT_ALL            = YES
 USE_MATHJAX            = YES
+COMPACT_LATEX          = NO
 EXTRACT_STATIC         = NO
 SHORT_NAMES            = YES
 INLINE_GROUPED_CLASSES = YES
@@ -37,6 +40,10 @@ ALIASES               += startebnf=@startuml{ebnf}
 ALIASES               += endebnf=@enduml
 ALIASES               += startsalt=@startuml{salt}
 ALIASES               += endsalt=@enduml
+ALIASES               += startmindmap=@startuml{mindmap}
+ALIASES               += endmindmap=@enduml
+ALIASES               += startmath=@f(
+ALIASES               += endmath=@f)
 # Theme: https://jothepro.github.io/doxygen-awesome-css/
 GENERATE_TREEVIEW      = YES
 DISABLE_INDEX          = NO

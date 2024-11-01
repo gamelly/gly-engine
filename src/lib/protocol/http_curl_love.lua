@@ -1,8 +1,9 @@
 local http_util = require('src/lib/util/http')
+local queue = {}
 
 local function http_handler(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
-    local command, cleanup = http_util.create_request(self.method, self.url..params)
+    local command = http_util.create_request(self.method, self.url..params)
         .add_custom_headers(self.header_list, self.header_dict)
         .add_body_content(self.body_content)
         .to_curl_cmd()
@@ -21,11 +22,9 @@ local function http_handler(self)
         ..'end'
 
     self.promise()
-    self.application.internal.http.queue[#self.application.internal.http.queue + 1] = self
-    thread = love.thread.newThread(threadCode)
+    queue[#queue + 1] = self
+    local thread = love.thread.newThread(threadCode)
     thread:start(command, tostring(self))
-
-    cleanup()
 end
 
 local function http_callback(self)
@@ -47,25 +46,19 @@ local function http_callback(self)
         self.resolve()
         return true
     end
+    return false
 end
 
-local function install(std, game, application)
-    application.internal = application.internal or {}
-    application.internal.http = {queue = {}}
-
-    local event_loop = function()
+local function install(std, engine)
+    std.bus.listen('loop',function()
         local index = 1
-        while index <= #application.internal.http.queue do
-            if http_callback(application.internal.http.queue[index]) then
-                table.remove(application.internal.http.queue, index)
+        while index <= #queue do
+            if http_callback(queue[index]) then
+                table.remove(queue, index)
             end
             index = index + 1
         end
-    end
-
-    return {
-        event={loop=event_loop}
-    }
+    end)
 end
 
 local P = {

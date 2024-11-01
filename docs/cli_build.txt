@@ -1,0 +1,67 @@
+@defgroup cli
+@{
+
+@defgroup build
+@short exporting engine with game
+@{
+
+## Framework
+
+The engine is multi-platform and can even be embedded within another engine, such as @b Love2D, which is widely used for developing new systems.
+It offers interfaces tailored to the target platform on which the game will run.
+
+If you’re organizing your project with multiple code files and numerous assets,
+the CLI includes a bundler that can assist you with that, actually worry about your input code from a @b game.lua file, when you're ready,
+you can use a template and drag your game to distribute, or use the CLI to extract the parts of the engine needed for your game to run.
+
+@startuml
+file game
+
+frame engine {
+ interface std
+ component core_ginga
+ component core_love
+ component core_native
+ component core_html5
+}
+
+game --> std
+std --> core_love
+std --> core_ginga
+std --> core_native
+core_ginga --> ginga
+core_love --> love2d
+core_native --> native
+core_native -> core_html5
+core_html5 --> wasmoon
+core_html5 --> fengari
+@enduml
+
+### Core Native
+
+export the engine natively to platforms or create support yourself @ref framework_functions "from scratch".
+
+@li @ref ci_build_gba
+@li @ref ci_build_nds
+@li @ref ci_build_wii
+@li @ref ci_build_ascii "Text User Interface ASCII"
+
+### Core HTML5
+
+@li @ref npm_install "install gly-cli using node npm"
+@li @ref cli_build_html5_local
+
+### Core Ginga
+
+@li @ref limits-in-ginga
+@li @ref Ginga "Generating Ginga App"
+
+### Core Love2D
+
+@li @ref limits-in-love2d
+@li @ref ci_build_tool_love_zip
+@li @ref ci_build_tool_love_exe
+@li @ref ci_build_tool_love_dump
+
+@}
+@}

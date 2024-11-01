@@ -1,0 +1,113 @@
+@defgroup cli
+@{
+
+@defgroup build
+@{
+
+@defgroup Ginga
+@{
+
+@short build apps for brazilian and latam televisors
+
+@call ginga 
+
+@details
+The application will be downloaded via the free digital television signal.
+
+@par Create Project
+
+```sql
+lua cli.lua init my_tv_app --template @gridsystem
+```
+
+@par How to build
+
+```sql
+lua cli.lua build src/game.lua --core ginga
+```
+
+@par How to simulate
+
+```sql
+ginga dist/main.ncl -s 1280x720
+```
+
+@par How to run in real hardware
+
+Everything is an example of how a testing and production environment would work,
+but some components may be on the same hardware or done via software.
+
+@note This is more for the sake of curiosity about how the engine is tested,
+and it is an expensive investment, casual developers would not be able to test it,
+and putting it into production requires government authorizations or partnerships with television channels.
+
+@startuml
+left to right direction
+
+component computer {
+ file application
+ file pmt
+ port pc_lan_out_1 as "lan"
+}
+
+component "IP/ASI conversor" {
+ portout ip_lan_in_1 as "lan"
+ portout ip_asi_out_1 as "asi 1"
+}
+
+component encoder {
+ file video
+ file audio
+ file pmt2 as "pmt"
+ portout enc_asi_out_1  as "asi 1"
+}
+
+component multiplexer {
+ portin mux_asi_in_2 as "asi 2"
+ portin mux_asi_in_1 as "asi 1"
+ portout mux_asi_out_1 as "asi 1"
+}
+
+component modulator {
+  portin mod_asi_in_1 as "asi 1"
+  portout mod_rf_test as "rf test"
+  portout mod_rf as "rf"
+}
+
+
+package "production environment" {
+ component transmissor {
+  portin trans_rf as "rf"
+  portout trans_rf_power as "rf power"
+ }
+ 
+ actor user
+ cloud antena
+ person tv_user as "TV"
+}
+
+person tv_developer as "TV"
+actor developer
+
+application --> pc_lan_out_1
+pmt ---> pc_lan_out_1
+ip_lan_in_1 <-- pc_lan_out_1
+video ---> enc_asi_out_1
+audio ---> enc_asi_out_1
+pmt2 --> enc_asi_out_1
+enc_asi_out_1 --> mux_asi_in_1
+ip_asi_out_1 --> mux_asi_in_2
+mux_asi_out_1 --> mod_asi_in_1
+mod_rf --> trans_rf
+mod_rf_test --> tv_developer: rf cable
+tv_developer --> developer
+trans_rf_power --> antena
+antena .left.> tv_user: rf transmission
+tv_user .left.> user
+application <... developer: coding
+
+@enduml
+
+@}
+@}
+@}

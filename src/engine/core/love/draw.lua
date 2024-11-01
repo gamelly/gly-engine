@@ -1,43 +1,72 @@
+local util_decorator = require('src/lib/util/decorator')
+
 local modes = {
-    [true] = {
-        [0] = true,
-        [1] = false
-    },
-    [false] = {
-        [0] = 'fill',
-        [1] = 'line'
-    }
+    [0] = 'fill',
+    [1] = 'line'
 }
 
-local function color(c)
-    local DIV = love.wiimote and 1 or 255
-    local R = bit.band(bit.rshift(c, 24), 0xFF)/DIV
-    local G = bit.band(bit.rshift(c, 16), 0xFF)/DIV
-    local B = bit.band(bit.rshift(c, 8), 0xFF)/DIV
-    local A = bit.band(bit.rshift(c, 0), 0xFF)/DIV
+local function color(std, engine, tint)
+    local R = bit.band(bit.rshift(tint, 24), 0xFF)/255
+    local G = bit.band(bit.rshift(tint, 16), 0xFF)/255
+    local B = bit.band(bit.rshift(tint, 8), 0xFF)/255
+    local A = bit.band(bit.rshift(tint, 0), 0xFF)/255
     love.graphics.setColor(R, G, B, A)
 end
 
-local function rect(a,b,c,d,e,f)
-    love.graphics.rectangle(modes[love.wiimote ~= nil][a], b, c, d, e)
+local function clear(std, engine, tint)
+    color(nil, nil, tint)
+    local x = engine.offset_x
+    local y = engine.offset_y
+    local width = engine.current.data.width
+    local height = engine.current.data.height
+    love.graphics.rectangle(modes[0], x, y, width, height)
 end
 
---! @todo support WII
-local function text(x, y, text)
-    if love.wiimote then return 32 end
+local function rect(std, engine, mode, pos_x, pos_y, width, height)
+    local x = engine.offset_x + pos_x
+    local y = engine.offset_y + pos_y
+    love.graphics.rectangle(modes[mode], x, y, width, height)
+end
+
+local function tui_text(std, engine, pos_x, pos_y, size, text)
+    local hem = engine.current.data.width / 80
+    local vem = engine.current.data.height / 24
+    local x = engine.offset_x + (pos_x * hem)
+    local y = engine.offset_y + (pos_y * vem)
+    local font_size = hem * size
+
+    local old_font = love.graphics.getFont()
+    local new_font = std.mem.cache('font_tui'..tostring(font_size), function()
+        return love.graphics.newFont(font_size)
+    end)
+
+    love.graphics.setFont(new_font)
+    love.graphics.print(text, x, y)
+    love.graphics.setFont(old_font)
+end
+
+local function text(std, engine, pos_x, pos_y, text)
     local font = love.graphics.getFont()
-    local t = text and tostring(text) or tostring(x)
+    local t = text and tostring(text) or tostring(pos_x)
     local n = select(2, t:gsub('\n', '')) + 1
     local w = font:getWidth(t)
     local h = (font:getHeight('A') * n) + (font:getLineHeight() * n)
-    if x and y then
+    if pos_x and pos_y then
+        local x = engine.offset_x + pos_x
+        local y = engine.offset_y + pos_y
         love.graphics.print(t, x, y)
     end
     return w, h
 end
 
-local function line(x1, y1, x2, y2)
-    love.graphics.line(x1, y1, x2, y2)
+local function line(std, engine, x1, y1, x2, y2)
+    local ox = engine.offset_x 
+    local oy = engine.offset_y
+    local px1 = ox + x1
+    local py1 = oy + y1
+    local px2 = ox + x2
+    local py2 = oy + y2
+    love.graphics.line(px1, py1, px2, py2)
 end
 
 local function triangle(mode, x1, y1, x2, y2, x3, y3)
@@ -48,7 +77,7 @@ local function triangle(mode, x1, y1, x2, y2, x3, y3)
     end
 end
 
-local function font(std, name, size)
+local function font(std, engine, name, size)
     if not size and type(name) == 'number' then
         size = name
         name = 'Tiresias'
@@ -59,7 +88,7 @@ local function font(std, name, size)
     love.graphics.setFont(f)
 end
 
-local function image(std, src, x, y)
+local function image(std, engine, src, x, y)
     local r, g, b, a = love.graphics.getColor()
     local image = std.mem.cache('image'..src, function()
         return love.graphics.newImage(src)
@@ -69,37 +98,34 @@ local function image(std, src, x, y)
     love.graphics.setColor(r, g, b, a) 
 end
 
-local function install(std, game, application)
-    application.callbacks.draw = application.callbacks.draw or function() end
+local function event_bus(std, engine)
+    std.bus.listen('resize', function(w, h)
+        engine.root.data.width = w
+        engine.root.data.height = h
+        std.game.width = w
+        std.game.height = h
+    end)
+end
 
-    -- pure love
-    std.draw.color=color
-    std.draw.rect=rect
-    std.draw.text=text
-    std.draw.line=line
-
-    -- engine dependent
-    std.draw.image=function(src, x, y) return image(std, src, x, y) end
-    std.draw.font=function(name, size) return font(std, name, size) end
-
-    std.draw.clear = function(c)
-        color(c)
-        love.graphics.rectangle(modes[love.wiimote ~= nil][0], 0, 0, game.width, game.height)
-    end
-
-    local event_draw = function()
-        application.callbacks.draw(std, game)
-    end
+local function install(std, engine)
+    std.draw.image = util_decorator.prefix2(std, engine, image)
+    std.draw.clear = util_decorator.prefix2(std, engine, clear)
+    std.draw.color = util_decorator.prefix2(std, engine, color)
+    std.draw.rect = util_decorator.prefix2(std, engine, rect)
+    std.draw.text = util_decorator.prefix2(std, engine, text)
+    std.draw.font = util_decorator.prefix2(std, engine, font)
+    std.draw.line = util_decorator.prefix2(std, engine, line)
+    std.draw.tui_text = util_decorator.prefix2(std, engine, tui_text)
 
     return {
-        event={draw=event_draw},
-        std={draw=std.draw}
+        draw=std.draw
     }
 end
 
 local P = {
     install = install,
-    triangle=triangle
+    event_bus = event_bus,
+    triangle = triangle
 }
 
 return P

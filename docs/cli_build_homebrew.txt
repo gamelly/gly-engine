@@ -1,0 +1,11 @@
+@defgroup cli
+@{
+
+@defgroup build
+@{
+
+@defgroup homebrew
+@short roms for videogames
+
+@}
+@}

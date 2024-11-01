@@ -28,6 +28,7 @@ gly.wasmoon = async (game_file) => {
     lua.global.set('native_dict_http', gly.global.get('native_dict_http'))
     lua.global.set('native_dict_json', gly.global.get('native_dict_json'))
     lua.global.set('native_dict_poly', gly.global.get('native_dict_poly'))
+    lua.global.set('native_draw_text_tui', gly.global.get('native_draw_text_tui'))
     lua.global.set('native_draw_text', (x, y, text) => {
         const native_draw_text = gly.global.get('native_draw_text')
         return LuaMultiReturn.from(native_draw_text(x, y, text))
@@ -44,15 +45,15 @@ gly.wasmoon = async (game_file) => {
     }
 
     const keys = [
-        [403, 'red'],
-        [404, 'green'],
-        [405, 'yellow'],
-        [406, 'blue'],
-        ['KeyZ', 'red'],
-        ['KeyX', 'green'],
-        ['KeyC', 'yellow'],
-        ['KeyV', 'blue'],
-        ['Enter', 'enter'],
+        [403, 'a'],
+        [404, 'b'],
+        [405, 'c'],
+        [406, 'd'],
+        ['KeyZ', 'a'],
+        ['KeyX', 'b'],
+        ['KeyC', 'c'],
+        ['KeyV', 'd'],
+        ['Enter', 'a'],
         ['ArrowUp', 'up'],
         ['ArrowDown', 'down'],
         ['ArrowLeft', 'left'],
@@ -64,18 +65,21 @@ gly.wasmoon = async (game_file) => {
     }
 
     function updateKey(ev) {
-        const key = keys.find(key => key[0] == ev.code)
+        const key = keys.find(key => [ev.code, ev.keyCode].includes(key[0]))
         if (key) {
-        gly.input(key[1], Number(ev.type === 'keydown'))
+            ev.preventDefault()
+            gly.input(key[1], ev.type === 'keydown')
         }
     }
 
     function updateLoop() {
         window.requestAnimationFrame(updateLoop);
-        gly.update((new Date()).getTime())
+        gly.update_uptime(performance.now())
     }
 
-    window.addEventListener("resize", updateSize);
+    window.addEventListener('blur', gly.pause)
+    window.addEventListener('focus', gly.resume)
+    window.addEventListener("resize", updateSize)
     window.addEventListener('keydown', updateKey)
     window.addEventListener('keyup', updateKey)
     window.requestAnimationFrame(updateLoop);

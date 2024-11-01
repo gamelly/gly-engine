@@ -33,7 +33,7 @@ now you need use npx to run inside your project!
 npx gly-cli version
 ```
 
----
+@htmlonly <hr/> @endhtmlonly
 
 @anchor cli_download
 

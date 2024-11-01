@@ -17,7 +17,7 @@ local function get_sys_lang()
         return 'en-US'
     end
     
-    local lang, contry = (os.setlocale() or ''):match('LC_CTYPE=(%a%a).(%a%a)')
+    local lang, country = (os.setlocale() or ''):match('LC_CTYPE=(%a%a).(%a%a)')
 
     if not lang then
         lang, country = (os.getenv('LANG') or ''):match('(%a%a).(%a%a)')

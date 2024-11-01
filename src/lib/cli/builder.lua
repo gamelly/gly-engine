@@ -1,6 +1,7 @@
 local function move(src_in, dist_path, dist_file)
     local deps = {}
     local pattern = "local ([%w_%-]+) = require%('src/(.-)'%)"
+    local pattern_ee = "local ([%w_%-]+) = require%('ee/(.-)'%)"
     local src_file = io.open(src_in, "r")
     local dist_file_normalized = src_in:gsub('/', '_'):gsub('^src_', '')
     local dist_out = dist_path:gsub('/$', '')..'/'..(dist_file or dist_file_normalized)
@@ -11,7 +12,14 @@ local function move(src_in, dist_path, dist_file)
             local line = src_file:read()
             if line then
                 local line_require = { line:match(pattern) }
-                if line_require and #line_require > 0 then
+                local line_require_ee = { line:match(pattern_ee) }
+
+                if line_require_ee and #line_require_ee > 0 then
+                    local var_name = line_require_ee[1]
+                    local module_path = line_require_ee[2]
+                    deps[#deps + 1] = 'ee/'..module_path..'.lua'
+                    dist_file:write('local '..var_name..' = require(\'ee_'..module_path:gsub('/', '_')..'\')\n')
+                elseif line_require and #line_require > 0 then
                     local var_name = line_require[1]
                     local module_path = line_require[2]
                     deps[#deps + 1] = 'src/'..module_path..'.lua'
