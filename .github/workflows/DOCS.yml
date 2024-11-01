@@ -42,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: ['asteroids', 'launcher', 'two_games', 'helloworld', 'gridsystem', 'pong']
+        game: ['asteroids', 'launcher', '2games', 'helloworld', 'gridsystem', 'pong']
     steps:
       - 
         uses: actions/checkout@master
