@@ -59,7 +59,7 @@ function love.load(args)
     local fullscreen = util_arg.has(args, 'fullscreen')
     local game_title = util_arg.param(arg, {'screen'}, 2)
     local application = zeebo_module.loadgame(game_title)
-    local engine = {}
+    local engine = {offset_x=0,offset_y=0}
     
     if screen then
         local w, h = screen:match('(%d+)x(%d+)')
