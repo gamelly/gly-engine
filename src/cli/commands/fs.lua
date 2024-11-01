@@ -1,4 +1,5 @@
 local zeebo_fs = require('src/lib/cli/fs')
+local zeebo_filler = require('src/lib/cli/filler')
 
 local function replace(args)
     local file_in = io.open(args.file,'r')
@@ -95,12 +96,17 @@ local function luaconf(args)
     return true
 end
 
+local function game_fill(args)
+    return zeebo_filler.put(args.dist, tonumber(args.size))
+end
+
 local P = {
     ['fs-copy'] = copy,
     ['fs-xxd-i'] = vim_xxd_i,
     ['fs-luaconf'] = luaconf,
     ['fs-replace'] = replace,
-    ['fs-download'] = download
+    ['fs-download'] = download,
+    ['fs-gamefill'] = game_fill
 }
 
 return P
