@@ -2,6 +2,12 @@ local function is_ok(status)
     return (status and 200 <= status and status < 300) or false
 end
 
+local function is_ok_header(header)
+    local status = tonumber(header:match('HTTP/%d.%d (%d%d%d)'))
+    local ok = status and is_ok(status) or false
+    return ok, status
+end
+
 local function is_redirect(status)
     return (status and 300 <= status and status < 400) or false
 end
@@ -183,6 +189,7 @@ end
 
 return {
     is_ok=is_ok,
+    is_ok_header=is_ok_header,
     is_redirect=is_redirect,
     url_search_param=url_search_param,
     create_request=create_request
