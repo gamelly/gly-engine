@@ -1,7 +1,7 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Gly Game Engine"
-PROJECT_NUMBER         = 0.0.8
+PROJECT_NUMBER         = 0.0.9
 PROJECT_BRIEF          = "Game engine in lua"
 PROJECT_LOGO           = assets/icon80x80.png
 GENERATE_RTF           = NO
