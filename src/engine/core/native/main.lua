@@ -69,7 +69,7 @@ end
 --! @short std.draw.image
 local function image(src, pos_x, pos_y)
     local ox, oy = engine.offset_x, engine.offset_y
-    native_draw_text_tui(src, pos_x + ox, pos_y + oy)
+    native_draw_image(src, pos_x + ox, pos_y + oy)
 end
 
 --! @}

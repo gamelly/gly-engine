@@ -74,7 +74,9 @@ local function image(std, engine, canvas, src, x, y)
     local image = std.mem.cache('image'..src, function()
         return canvas:new('../assets/'..src)
     end)
-    canvas:compose(x, y, image)
+    if image then
+        canvas:compose(engine.offset_x + x, engine.offset_y + y, image)
+    end
 end
 
 local function install(std, engine)
