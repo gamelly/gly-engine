@@ -49,7 +49,7 @@ end
 --! @}
 
 local function install(std, engine, all_your_secrets)
-    local id = fingerprint(all_your_secrets)
+    local id = fingerprint(all_your_secrets or {'not secret!'})
     std = std or {}
     std.hash = std.hash or {}
     std.hash.djb2 = djb2

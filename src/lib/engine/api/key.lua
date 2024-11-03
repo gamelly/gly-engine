@@ -56,6 +56,7 @@ end
 
 local function install(std, engine, key_bindings)
     engine.key_bindings = key_bindings or {}
+    engine.keyboard = real_key
 end
 
 local P = {

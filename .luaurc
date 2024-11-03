@@ -14,6 +14,7 @@
     "load",
     "loadfile",
     "love",
+    "native_dict_secret",
     "native_dict_game",
     "native_dict_http",
     "native_dict_json",

@@ -108,11 +108,13 @@ end
 --! @endcode
 local function back_language()
     local index = language_inverse_list[language]
-    if index <= 1 then
-        index = #language_list + 1
+    if index then
+        if index <= 1 then
+            index = #language_list + 1
+        end
+        index = index - 1
+        set_language(language_list[index])
     end
-    index = index - 1
-    set_language(language_list[index])
 end
 
 --! @par Example
@@ -123,11 +125,13 @@ end
 --! @endcode
 local function next_language()
     local index = language_inverse_list[language]
-    if index >= #language_list then
-        index = 0
+    if index then
+        if index >= #language_list then
+            index = 0
+        end
+        index = index + 1
+        set_language(language_list[index])
     end
-    index = index + 1
-    set_language(language_list[index])
 end
 
 --! @}

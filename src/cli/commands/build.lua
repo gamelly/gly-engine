@@ -25,6 +25,9 @@ local function build(args)
                 'ee/engine/meta/ginga/main.ncl'
             }
         },
+        lite={
+            src='src/engine/core/lite/main.lua',
+        },
         native={
             src='src/engine/core/native/main.lua',
         },
@@ -57,6 +60,17 @@ local function build(args)
                 'src/engine/core/html5/driver-wasmoon.js',
                 'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
+            }
+        },
+        html5_lite={
+            src='src/engine/core/lite/main.lua',
+            pipeline={
+                zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
+            },
+            extras={
+                'src/engine/core/html5/index.html',
+                'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-native-html5.js'
             }
         },
         html5={
