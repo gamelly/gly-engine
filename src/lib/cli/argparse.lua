@@ -152,8 +152,8 @@ local function from(host_args)
         return add_option_get(cmd, param, opt)
     end
 
-    cmd.add_option_has = function(param, opt)
-        return add_option_has(cmd, param, opt)
+    cmd.add_option_has = function(param)
+        return add_option_has(cmd, param)
     end
 
     cmd.add_subcommand = function(cmd_name, cmd_collection)

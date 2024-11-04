@@ -89,12 +89,9 @@ local function build(src_path, src_filename, dest)
     local lib_module = nil
     local lib_name = nil
     local lib_var = nil
-    local index = nil
 
     repeat
         if from == 'system' then
-            local os = function() local x, y = pcall(require, 'os'); return x and y end or _G.os
-
             main_before = 'local '..lib_var..' = ((function() local x, y = pcall(require, \''..lib_module
                 ..'\'); return x and y end)()) or _G.'..lib_var..'\n'..main_before
         end
@@ -148,7 +145,7 @@ local function build(src_path, src_filename, dest)
             src_file = nil
         end
 
-        index = 1
+        local index = 1
         src_in = nil
         while not src_in and index <= #deps_var_name do
             lib_module = deps_module_path[index]
@@ -166,7 +163,7 @@ local function build(src_path, src_filename, dest)
         end
     until not src_in
 
-    index = 1
+    local index = 1
     while index <= #deps_var_name do
         lib_module = deps_module_path[index]
         lib_name = lib_module:gsub('/', '_')

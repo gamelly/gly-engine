@@ -3,7 +3,6 @@ local template_suffix = '\n-'..'-GLYEND'
 local template = 'return {meta={title=\'G\',author=\'G\',version=\'0.0.0\'},callbacks={draw=function(s) s.draw.rect(0,8,8,8,8) end}}'
 
 local function put(dest, size)
-    local index = 0
     local template_size = #(template..template_prefix..template_suffix)
     local padding_size = size - template_size
 

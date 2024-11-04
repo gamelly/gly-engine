@@ -53,11 +53,6 @@ local function version()
   return true, version_message
 end
 
---! @todo show all commands with complete flags
-local function show(args)
-  return false, 'not implemented!'
-end
-
 local function meta()
   local description = 'not implemented!'
   return {

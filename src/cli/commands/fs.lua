@@ -42,7 +42,7 @@ local function vim_xxd_i(args)
         end
     end
 
-    local content, length, column = '', 0, 0
+    local length, column = 0, 0
     local const =  args.const and 'const ' or '' 
     local var_name = args.name or args.file:gsub('[%._/]', '_'):gsub("__+", "_"):gsub('^_', '')
 

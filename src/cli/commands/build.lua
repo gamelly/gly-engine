@@ -112,14 +112,16 @@ local function build(args)
     end
 
     -- core move
-    local index = 1
     local core = core_list[args.core]
-    zeebo_builder.build(core.src, dist..bundler)
-    if core.extras then
-        while index <= #core.extras do
-            local file = core.extras[index]
-            zeebo_fs.move(file, dist..file:gsub('.*/', ''))
-            index = index + 1
+    do
+        local index = 1
+        zeebo_builder.build(core.src, dist..bundler)
+        if core.extras then
+            while index <= #core.extras do
+                local file = core.extras[index]
+                zeebo_fs.move(file, dist..file:gsub('.*/', ''))
+                index = index + 1
+            end
         end
     end
 

@@ -1,10 +1,10 @@
-local function move(src_in, dist_path, dist_file)
+local function move(src_in, dist_path, dist_fileout)
     local deps = {}
     local pattern = "local ([%w_%-]+) = require%('src/(.-)'%)"
     local pattern_ee = "local ([%w_%-]+) = require%('ee/(.-)'%)"
     local src_file = io.open(src_in, "r")
     local dist_file_normalized = src_in:gsub('/', '_'):gsub('^src_', '')
-    local dist_out = dist_path:gsub('/$', '')..'/'..(dist_file or dist_file_normalized)
+    local dist_out = dist_path:gsub('/$', '')..'/'..(dist_fileout or dist_file_normalized)
     local dist_file = io.open(dist_out, "w")
 
     if src_file and dist_file then

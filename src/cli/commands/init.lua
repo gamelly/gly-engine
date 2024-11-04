@@ -23,7 +23,7 @@ end
 local function init_project(args)
     local project_name = args.project
     local project_template = args.template
-    local project_gamefile, error_gamefile = io.open(project_template, 'r')
+    local project_gamefile = io.open(project_template, 'r')
 
     ok = true
 

@@ -18,7 +18,7 @@ end
 local function file(self, file)
     local file_copy = string.format("%s", file)
     self.pipeline[#self.pipeline + 1] = function()
-        if not self.loaded then return self end
+        if not self.loaded then return end
 
         local content = ''
         local file_meta = io.open(file_copy, 'r')
@@ -45,7 +45,7 @@ local function stdout(self, format)
         format_copy = format_copy..'"version":"{{version}}","description":"{{description}}"}'
     end
     self.pipeline[#self.pipeline + 1] = function()
-        if not self.loaded then return self end
+        if not self.loaded then return end
         print(replace(format_copy, self.meta, application_default.meta))
     end
     return self
