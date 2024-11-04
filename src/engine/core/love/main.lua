@@ -1,6 +1,6 @@
 local os = require('os')
 --
-local zeebo_module = require('src/lib/engine/raw/module')
+local zeebo_module = require('src/lib/common/module')
 --
 local core_draw = require('src/engine/core/love/draw')
 local core_loop = require('src/engine/core/love/loop')

@@ -1,4 +1,4 @@
-local zeebo_module = require('src/lib/engine/raw/module')
+local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
 local engine_game = require('src/lib/engine/api/game')

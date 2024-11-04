@@ -1,4 +1,4 @@
-local zeebo_module = require('src/lib/engine/raw/module')
+local zeebo_module = require('src/lib/common/module')
 --
 local core_draw = require('ee/engine/core/ginga/draw')
 local core_keys = require('ee/engine/core/ginga/keys')

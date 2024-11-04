@@ -1,5 +1,5 @@
 local application_default = require('src/lib/object/root')
-local zeebo_module = require('src/lib/engine/raw/module')
+local zeebo_module = require('src/lib/common/module')
 
 local function replace(src, meta, default)
     if src and #src > 0 then

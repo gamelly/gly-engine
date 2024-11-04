@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        core: ['lite', 'native', 'love']
+        core: ['repl', 'lite', 'native', 'love']
     steps:
     -
       uses: actions/checkout@master

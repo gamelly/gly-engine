@@ -1,4 +1,4 @@
-local zeebo_module = require('src/lib/engine/raw/module')
+local zeebo_module = require('src/lib/common/module')
 local node_default = require('src/lib/object/node')
 
 local buses = {
