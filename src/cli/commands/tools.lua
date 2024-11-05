@@ -7,12 +7,16 @@ local util_fs = require('src/lib/util/fs')
 local util_cmd = require('src/lib/util/cmd')
 
 local function bundler(args)
-    local path, file = args.file:match("(.-)([^/\\]+)$")
-    return zeebo_bundler.build(path, file, args.dist..file)
+    local d = util_fs.path(args.dist)
+    local f = util_fs.file(args.file)
+    zeebo_fs.clear(d.get_fullfilepath())
+    return zeebo_bundler.build(f.get_sys_path(), f.get_file(), d.get_sys_path()..f.get_file())
 end
 
 local function compiler(args)
-    return zeebo_compiler.build(args.file, args.dist)
+    local file = util_fs.file(args.file).get_fullfilepath()
+    local dist = util_fs.file(args.dist).get_fullfilepath()
+    return zeebo_compiler.build(file, dist)
 end
 
 local function love_zip(args)
