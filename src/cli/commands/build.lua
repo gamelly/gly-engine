@@ -131,7 +131,7 @@ local function build(args)
         zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
         zeebo_bundler.build(dist..bundler, 'game.lua', dist..'game.lua')
         zeebo_fs.clear(dist..bundler)
-        os.remove(dist..bundler)
+        zeebo_fs.rmdir(dist..bundler)
     end
 
     -- post process

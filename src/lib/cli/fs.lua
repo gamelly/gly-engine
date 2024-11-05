@@ -17,11 +17,16 @@ local function ls(src_path)
     return ls_files
 end
 
+local function rmdir(src_path)
+    local p = util_fs.path(src_path).get_fullfilepath()
+    os.execute(util_cmd.rmdir()..p..util_cmd.silent())
+end
+
 local function clear(src_path)
     local p = util_fs.path(src_path).get_fullfilepath()
-    os.execute(util_cmd.mkdir()..p)
-    os.execute(util_cmd.rmdir()..p..'*')
-    os.execute(util_cmd.del()..p..'*')
+    os.execute(util_cmd.mkdir()..p..util_cmd.silent())
+    os.execute(util_cmd.rmdir()..p..'*'..util_cmd.silent())
+    os.execute(util_cmd.del()..p..'*'..util_cmd.silent())
 end
 
 local function move(src_in, dist_out)
@@ -49,7 +54,8 @@ end
 local P = {
     ls = ls,
     move = move,
-    clear = clear
+    clear = clear,
+    rmdir = rmdir
 }
 
 return P

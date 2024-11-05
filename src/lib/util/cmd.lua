@@ -39,9 +39,9 @@ end
 
 local function silent()
     if dos() then
-        return ' 2> nul'
+        return ' 2> nul > nul'
     end
-    return ' 2> /dev/null'
+    return ' 2> /dev/null > /dev/null'
 end
 
 local P = {
