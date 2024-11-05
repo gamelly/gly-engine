@@ -40,7 +40,7 @@ jobs:
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
 
   version:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: test version
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        core: ['native', 'love']
+        core: ['cli', 'repl', 'lite', 'native', 'love']
     steps:
     -
       uses: actions/checkout@master

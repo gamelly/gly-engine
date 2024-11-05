@@ -5,6 +5,7 @@ function test_game_reset()
     local index = 1
     local buses = {}
     local std = {
+        node = {},
         bus = {
             listen = function() end,
             emit = function(key)

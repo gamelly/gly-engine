@@ -1,4 +1,4 @@
-local zeebo_module = require('src/lib/engine/raw/module')
+local zeebo_module = require('src/lib/common/module')
 local node_default = require('src/lib/object/node')
 
 local buses = {
@@ -90,13 +90,12 @@ local function emit(std, application, key, a, b, c, d, e, f)
 end
 
 --! @short create new node
---! @note When build the main game file, it will be directly affected by the @ref bundler,
---! if it finds a path to the game it will be unified.
+--! @note When build the main game file, it will be directly affected by the @b build.
 --! @param [in] application
 --! @return node
 --! @par Example
 --! @code{.java}
---! local game = std.node.load('examples/pong/game.lua')
+--! local game = std.node.load('examples/awesome/game.lua')
 --! print(game.meta.title)
 --! @endcode
 local function load(application)
@@ -109,7 +108,7 @@ end
 --! @param [in/out] application
 --! @par Example
 --! @code{.java}
---! local game = std.node.load('examples/pong/game.lua')
+--! local game = std.node.load('examples/awesome/game.lua')
 --! std.node.spawn(game)
 --! @endcode
 local function spawn(engine, application)

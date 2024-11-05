@@ -3,33 +3,40 @@ local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_meta = require('src/lib/cli/meta')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_fs = require('src/lib/util/fs')
 
 local function build(args)
     local bundler = ''
     local screen = args.screen
-    local dist = args.dist
+    local dist = util_fs.path(args.dist).get_unix_path()
 
     local core_list = {
+        none = {
+
+        },
         repl={
-            src='src/engine/core/repl/main.lua',
+            src='src/engine/core/repl',
             post_exe='lua dist/main.lua'
         },
         love={
-            src='src/engine/core/love/main.lua',
+            src='src/engine/core/love',
             post_exe='love dist -'..'-screen '..screen
         },
         ginga={
-            src='ee/engine/core/ginga/main.lua',
+            src='ee/engine/core/ginga',
             post_exe='ginga dist/main.ncl -s '..screen,
             extras={
                 'ee/engine/meta/ginga/main.ncl'
             }
         },
+        lite={
+            src='src/engine/core/lite',
+        },
         native={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
         },
         html5_webos={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
             post_exe='webos24 $(pwd)/dist',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
@@ -44,7 +51,7 @@ local function build(args)
             }
         },
         html5_tizen={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
                 function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
@@ -59,8 +66,19 @@ local function build(args)
                 'assets/icon80x80.png'
             }
         },
+        html5_lite={
+            src='src/engine/core/lite',
+            pipeline={
+                zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
+            },
+            extras={
+                'src/engine/core/html5/index.html',
+                'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-native-html5.js'
+            }
+        },
         html5={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
             },
@@ -73,7 +91,7 @@ local function build(args)
     }
 
     -- clean dist
-    zeebo_fs.clear(args.dist)
+    zeebo_fs.clear(dist)
 
     -- check core
     if not core_list[args.core] then
@@ -93,27 +111,36 @@ local function build(args)
 
     -- move game
     if args.game then
-        local dir, file = args.game:match("(.*/)([^/]+)$")
-        zeebo_bundler.build(dir, file, dist..'game.lua')
+        local game = util_fs.file(args.game)
+        zeebo_builder.build(game.get_unix_path(), game.get_file(), dist..bundler, 'game.lua', 'game_')
     end
 
     -- core move
-    local index = 1
     local core = core_list[args.core]
-    zeebo_builder.build(core.src, dist..bundler)
-    if core.extras then
-        while index <= #core.extras do
-            local file = core.extras[index]
-            zeebo_fs.move(file, dist..file:gsub('.*/', ''))
-            index = index + 1
+    do
+        local index = 1
+        if core.src then
+            zeebo_builder.build(core.src, 'main.lua', dist..bundler, 'main.lua', 'core_')
+        end
+        if core.extras then
+            while index <= #core.extras do
+                local file = core.extras[index]
+                zeebo_fs.move(file, dist..file:gsub('.*/', ''))
+                index = index + 1
+            end
         end
     end
 
     -- combine files
     if #bundler > 0 then
-        zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
+        if core.src then
+            zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
+        end
+        if args.game then
+            zeebo_bundler.build(dist..bundler, 'game.lua', dist..'game.lua')
+        end
         zeebo_fs.clear(dist..bundler)
-        os.remove(dist..bundler)
+        zeebo_fs.rmdir(dist..bundler)
     end
 
     -- post process

@@ -1,3 +1,5 @@
+local util_cmd = require('src/lib/util/cmd')
+
 local function bootstrap()
     local file = io.open('mock/bootstrap.lua', 'r')
     local content = file:read('*a')
@@ -109,7 +111,8 @@ local function build(...)
         end
 
         local cmd_pid = io.popen('find '..path_src)
-        local cmd_raw, cmd_pid = cmd_pid:read('*a'), cmd_pid:close()
+        local cmd_raw = cmd_pid:read('*a')
+        cmd_pid:close()
         local list_raw = explode_string(cmd_raw)
         local list_paths, list_files, dict_files = map_files(list_raw, prefix_len)
         merge_dict_and_lists(all_list_files, all_dict_files, list_files, dict_files)
@@ -120,28 +123,10 @@ local function build(...)
     output_file:write('local BOOTSTRAP = {}\nlocal BOOTSTRAP_DISABLE = false\n')
 
     do
-        local index = 1
-        local content = 'local BOOTSTRAP_DIRS = {'
-        while index <= #all_list_paths do
-            local file_name = all_list_paths[index]
-            local file_content = all_dict_files[file_name]
-            content = content..'\''..file_name..'\''
-            index = index + 1
-            if index <= #all_list_paths then
-                content = content..', '
-            else
-                content = content..'}\n'
-            end
-        end
-        output_file:write(content)
-    end
-
-    do
-        local index = 1
+        index = 1
         local content = 'local BOOTSTRAP_LIST = {'
         while index <= #all_list_files do
             local file_name = all_list_files[index]
-            local file_content = all_dict_files[file_name]
             content = content..'\''..file_name..'\''
             index = index + 1
             if index <= #all_list_files then
@@ -153,12 +138,14 @@ local function build(...)
         output_file:write(content)
     end
 
-    index = 1
-    while index <= #all_list_files do
-        local file_name = all_list_files[index]
-        local file_content = all_dict_files[file_name]
-        output_file:write('BOOTSTRAP[\''..file_name..'\'] = \''..file_content..'\'\n')
-        index = index + 1
+    do
+        index = 1
+        while index <= #all_list_files do
+            local file_name = all_list_files[index]
+            local file_content = all_dict_files[file_name]
+            output_file:write('BOOTSTRAP[\''..file_name..'\'] = \''..file_content..'\'\n')
+            index = index + 1
+        end
     end
 
     output_file:write(bootstrap())
@@ -177,7 +164,7 @@ local function dump()
     do
         local index = 1
         while index <= #BOOTSTRAP_DIRS do
-            os.execute('mkdir -p '..BOOTSTRAP_DIRS[index])
+            os.execute(util_cmd.mkdir()..BOOTSTRAP_DIRS[index])
             index = index + 1
         end
     end

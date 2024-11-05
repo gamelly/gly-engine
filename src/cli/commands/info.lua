@@ -43,7 +43,7 @@ local help_message = "Available commands:\n"
   .."- To run a game: ./cli.sh run ./examples/asteroids/game.lua "  .. "-" .. "-core repl\n"
   .."- To display metadata: ./cli.sh meta ./examples/asteroids/game.lua\n"
 
-local version_message = '0.0.10'
+local version_message = '0.0.11'
 
 local function help()
   return true, help_message
@@ -51,11 +51,6 @@ end
 
 local function version()
   return true, version_message
-end
-
---! @todo show all commands with complete flags
-local function show(args)
-  return false, 'not implemented!'
 end
 
 local function meta()

@@ -1,5 +1,9 @@
---! @short Read Eval Print Loop
---! @brief an interpreter to debuging the game via stdio.
+--! @defgroup Languages
+--! @{
+--! 
+--! @defgroup REPL
+--! @{
+--!
 --! @par Extended Backus-Naur Form
 --! @startebnf
 --! line = exit | frame_skip | [frame_skip], variable, ["=", value (* assignment *)];
@@ -7,20 +11,42 @@
 --! digit = { ? 0 - 9 ? }- ;
 --! exit = "?" ;
 --! @endebnf
-local zeebo_module = require('src/lib/engine/module')
-local engine_game = require('src/lib/engine/game')
-local engine_math = require('src/lib/engine/math')
-local engine_color = require('src/lib/object/color')
-local engine_http = require('src/lib/engine/http')
-local engine_encoder = require('src/lib/engine/encoder')
-local engine_draw_fps = require('src/lib/draw/fps')
-local engine_draw_poly = require('src/lib/draw/poly')
-local protocol_curl = require('src/lib/protocol/http_curl')
-local library_csv = require('src/third_party/csv/rodrigodornelles')
-local library_json = require('src/third_party/json/rxi')
-local application_default = require('src/lib/object/application')
-local game = require('src/lib/object/game')
+--!
+--! @par Usage
+--! @code{.sql}
+--! lua cli.lua run game.lua --core repl
+--! @endcode
+--!
+--! @}
+--! @}
+
+local zeebo_module = require('src/lib/common/module')
+--
+local engine_encoder = require('src/lib/engine/api/encoder')
+local engine_game = require('src/lib/engine/api/game')
+local engine_hash = require('src/lib/engine/api/hash')
+local engine_http = require('src/lib/engine/api/http')
+local engine_i18n = require('src/lib/engine/api/i18n')
+local engine_key = require('src/lib/engine/api/key')
+local engine_math = require('src/lib/engine/api/math')
+local engine_draw_ui = require('src/lib/engine/draw/ui')
+local engine_raw_bus = require('src/lib/engine/raw/bus')
+local engine_raw_node = require('src/lib/engine/raw/node')
+local engine_raw_memory = require('src/lib/engine/raw/memory')
+--
+local application_default = require('src/lib/object/root')
+local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
+--
+local cfg_json_rxi = require('src/third_party/json/rxi')
+local cfg_http_curl = require('src/lib/protocol/http_curl')
+--
+local engine = {
+    current = application_default,
+    root = application_default,
+    offset_x = 0,
+    offset_y = 0
+}
 
 local function line_skip_frames(line_src)
     local frames, line = line_src:match('(%d+)!(.*)')
@@ -72,24 +98,36 @@ local function main()
     local frames = 0
     local variable = ''
     local assignment = ''
-    local started = false
     local application = zeebo_module.loadgame(arg[1]) or application_default
 
-    -- init the game
-    zeebo_module.require(std, game, application)
-        :package('@game', engine_game)
+    zeebo_module.require(std, application, engine)
+        :package('@bus', engine_raw_bus)
+        :package('@node', engine_raw_node)
+        :package('@memory', engine_raw_memory)
+        :package('@game', engine_game, native_dict_game)
         :package('@math', engine_math)
-        :package('@color', engine_color)
-        :package('load', zeebo_module.load)
+        :package('@key', engine_key, {})
+        :package('@draw.ui', engine_draw_ui)
+        :package('@color', color)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
-        :package('http', engine_http, protocol_curl)
-        :package('csv', engine_encoder, library_csv)
-        :package('json', engine_encoder, library_json)
+        :package('http', engine_http, cfg_http_curl)
+        :package('json', engine_encoder, cfg_json_rxi)
+        :package('i18n', engine_i18n, native_get_system_lang)
+        :package('hash', engine_hash, {'repl'})
         :run()
+
+    std.node.spawn(application)
+
+    engine.root = application
+    engine.current = application
+
+    std.bus.emit_next('load')
+    std.bus.emit_next('init')
     
     while true do
         local index = 1
+        local output = ''
         local ok, line = pcall(io.read)
 
         if not ok or line == nil or line == '?' then
@@ -100,7 +138,7 @@ local function main()
         variable, assignment = line_assignment(line)
         frames = tonumber(frames)
 
-        local ok, output = evaluate(variable, assignment, std, game, application)
+        ok, output = evaluate(variable, assignment, std, application.data, application)
         if ok then
             print(output)
         else
@@ -108,18 +146,9 @@ local function main()
             print('\n')
         end
 
-        if not started and frames > 0 and application.callbacks.init then
-            application.callbacks.init(std, game)
-            started = true
-        end
-
         while index <= frames do
-            if application.callbacks.loop then
-                application.callbacks.loop(std, game)
-            end
-            if application.callbacks.draw then
-                application.callbacks.draw(std, game)
-            end
+            std.bus.emit('loop')
+            std.bus.emit('draw')
             index = index + 1
         end
     end

@@ -6,9 +6,15 @@ local util_decorator = require('src/lib/util/decorator')
 --! @{
 
 --! @hideparam std
-local function reset(std)
-    std.bus.emit('exit')
-    std.bus.emit('init')
+--! @hideparam engine
+local function reset(std, engine)
+    if std.node then
+        std.bus.emit('exit')
+        std.bus.emit('init')
+    else
+        engine.root.callbacks.exit(std, engine.root.data)
+        engine.root.callbacks.init(std, engine.root.data)
+    end
 end
 
 --! @hideparam std
@@ -41,7 +47,7 @@ local function install(std, engine, config)
 
     std.game.title = util_decorator.prefix1(config.set_title, title)
     std.game.exit = util_decorator.prefix1(std, exit)
-    std.game.reset = util_decorator.prefix1(std, reset)
+    std.game.reset = util_decorator.prefix2(std, engine, reset)
     std.game.get_fps = config.fps
 
     return std.game

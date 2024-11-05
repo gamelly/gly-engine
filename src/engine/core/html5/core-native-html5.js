@@ -216,20 +216,19 @@ const gly = {
     resume: () => {
         engine.pause = false
     },
-    update: () => {
-        gly.update_dt(16);
-    },
-    update_dt: (milis) => {
-        errorController(() => {
-            engine.listen.native_callback_loop(milis)
-            engine.listen.native_callback_draw()
-        })
+    update: (milis) => {
+        if (!engine.pause) {
+            errorController(() => {
+                engine.listen.native_callback_loop(milis ?? 16)
+                engine.listen.native_callback_draw()
+            })
+        }
     },
     update_uptime: (milis) => {
         engine.milis = engine.milis ?? milis ?? 0
         const dt = milis - engine.milis
         engine.milis = milis
-        gly.update_dt(dt)
+        gly.update(dt)
     },
     engine: {
         set: (file_name) => engine.file = file_name,

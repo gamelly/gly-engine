@@ -15,7 +15,8 @@ local P = {
         text = function () end,
         font = function () end,
         line = function () end,
-        poly = function () end
+        poly = function () end,
+        tui_text = function() end
     },
     game = {
         width = 1280,
