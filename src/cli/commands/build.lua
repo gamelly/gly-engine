@@ -133,8 +133,12 @@ local function build(args)
 
     -- combine files
     if #bundler > 0 then
-        zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
-        zeebo_bundler.build(dist..bundler, 'game.lua', dist..'game.lua')
+        if core.src then
+            zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
+        end
+        if args.game then
+            zeebo_bundler.build(dist..bundler, 'game.lua', dist..'game.lua')
+        end
         zeebo_fs.clear(dist..bundler)
         zeebo_fs.rmdir(dist..bundler)
     end
