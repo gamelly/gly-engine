@@ -1,31 +1,40 @@
-local function move(src_in, dist_path, dist_fileout)
-    local deps = {}
-    local pattern = "local ([%w_%-]+) = require%('src/(.-)'%)"
-    local pattern_ee = "local ([%w_%-]+) = require%('ee/(.-)'%)"
-    local src_file = io.open(src_in, "r")
-    local dist_file_normalized = src_in:gsub('/', '_'):gsub('^src_', '')
-    local dist_out = dist_path:gsub('/$', '')..'/'..(dist_fileout or dist_file_normalized)
-    local dist_file = io.open(dist_out, "w")
+local util_fs = require('src/lib/util/fs')
 
-    if src_file and dist_file then
+local function move(src_filename, out_filename, prefix)
+    local deps = {}
+    local content = ''
+    local src_file = io.open(src_filename, 'r')
+    local out_file = src_file and io.open(out_filename, 'w')
+    local pattern_require = 'local ([%w_%-]+) = require%([\'"]([%w_/-]+)[\'"]%)'
+    local pattern_gameload = 'std%.node%.load%([\'"](.-)[\'"]%)'
+
+    if src_file and out_file then
         repeat
             local line = src_file:read()
             if line then
-                local line_require = { line:match(pattern) }
-                local line_require_ee = { line:match(pattern_ee) }
+                local line_require = { line:match(pattern_require) }
+                local node_require = { line:match(pattern_gameload) }
 
-                if line_require_ee and #line_require_ee > 0 then
-                    local var_name = line_require_ee[1]
-                    local module_path = line_require_ee[2]
-                    deps[#deps + 1] = 'ee/'..module_path..'.lua'
-                    dist_file:write('local '..var_name..' = require(\'ee_'..module_path:gsub('/', '_')..'\')\n')
+                if node_require and #node_require > 0 then     
+                    local mod = util_fs.file(node_require[1])
+                    local module_path = (mod.get_unix_path()..mod.get_filename()):gsub('%./', '')
+                    local var_name = 'node_'..module_path:gsub('/', '_')
+                    deps[#deps + 1] = module_path..'.lua'
+                    content = 'local '..var_name..' = require(\''..prefix..module_path:gsub('/', '_')..'\')\n'..content
+                    content = content..line:gsub(pattern_gameload, 'std.node.load('..var_name..')')..'\n'
                 elseif line_require and #line_require > 0 then
+                    local exist_as_file = io.open(line_require[2]..'.lua', 'r')
                     local var_name = line_require[1]
                     local module_path = line_require[2]
-                    deps[#deps + 1] = 'src/'..module_path..'.lua'
-                    dist_file:write('local '..var_name..' = require(\''..module_path:gsub('/', '_')..'\')\n')
+                    local module_prefix = exist_as_file and prefix or ''
+                    deps[#deps + 1] = module_path..'.lua'
+                    content = content..'local '..var_name..' = require(\''
+                    content = content..module_prefix..module_path:gsub('/', '_')..'\')\n'
+                    if exist_as_file then
+                        exist_as_file:close()
+                    end
                 else
-                    dist_file:write(line, '\n')
+                    content = content..line..'\n'
                 end
             end
         until not line
@@ -34,24 +43,33 @@ local function move(src_in, dist_path, dist_fileout)
     if src_file then
         src_file:close()
     end
-    if dist_file then
-        dist_file:close()
+    if out_file then
+        out_file:write(content)
+        out_file:close()
     end
 
     return deps
 end
 
-local function build(src_in, dist_path)
+local function build(path_in, src_in, path_out, src_out, prefix)
     local main = true
     local deps = {}
     local deps_builded = {}
 
+    local src = util_fs.path(path_in, src_in)
+
     repeat
-        if src_in:sub(-4) == '.lua' then
+        if src then
             local index = 1
             local index_deps = #deps
-            local file_name = main and 'main.lua'
-            local new_deps = move(src_in, dist_path, file_name)
+            local out = src_out
+            if not main then
+                out = src.get_file()
+                out = prefix..src.get_unix_path():gsub('%./', ''):gsub('/', '_')..out
+            end
+            local srcfile = src.get_fullfilepath()
+            local outfile = util_fs.path(path_out, out).get_fullfilepath()
+            local new_deps = move(srcfile, outfile, prefix)
             while index <= #new_deps do
                 deps[index_deps + index] = new_deps[index]
                 index = index + 1
@@ -59,17 +77,20 @@ local function build(src_in, dist_path)
         end
 
         main = false
-        src_in = nil
-        local index = 1
-        while index <= #deps and not src_in do
-            local dep = deps[index]
-            if not deps_builded[dep] then
-                deps_builded[dep] = true
-                src_in = dep
+        src = nil
+
+        do
+            local index = 1
+            while index <= #deps and not src do
+                local dep = deps[index]
+                if not deps_builded[dep] then
+                    deps_builded[dep] = true
+                    src = util_fs.file(dep)
+                end
+                index = index + 1
             end
-            index = index + 1
         end
-    until not src_in
+    until not src
 end
 
 local P = {

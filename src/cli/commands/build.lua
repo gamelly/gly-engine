@@ -3,11 +3,12 @@ local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_meta = require('src/lib/cli/meta')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_fs = require('src/lib/util/fs')
 
 local function build(args)
     local bundler = ''
     local screen = args.screen
-    local dist = args.dist
+    local dist = util_fs.path(args.dist).get_unix_path()
 
     local core_list = {
         repl={
@@ -19,7 +20,7 @@ local function build(args)
             post_exe='love dist -'..'-screen '..screen
         },
         ginga={
-            src='ee/engine/core/ginga/main.lua',
+            src='ee/engine/core/ginga',
             post_exe='ginga dist/main.ncl -s '..screen,
             extras={
                 'ee/engine/meta/ginga/main.ncl'
@@ -107,15 +108,15 @@ local function build(args)
 
     -- move game
     if args.game then
-        local dir, file = args.game:match("(.*/)([^/]+)$")
-        zeebo_bundler.build(dir, file, dist..'game.lua')
+        local game = util_fs.file(args.game)
+        zeebo_builder.build(game.get_unix_path(), game.get_file(), dist..bundler, 'game.lua', 'game_')
     end
 
     -- core move
     local core = core_list[args.core]
     do
         local index = 1
-        zeebo_builder.build(core.src, dist..bundler)
+        zeebo_builder.build(core.src, 'main.lua', dist..bundler, 'main.lua', 'core_')
         if core.extras then
             while index <= #core.extras do
                 local file = core.extras[index]
@@ -128,6 +129,7 @@ local function build(args)
     -- combine files
     if #bundler > 0 then
         zeebo_bundler.build(dist..bundler, 'main.lua', dist..'main.lua')
+        zeebo_bundler.build(dist..bundler, 'game.lua', dist..'game.lua')
         zeebo_fs.clear(dist..bundler)
         os.remove(dist..bundler)
     end

@@ -41,10 +41,11 @@ local function get_fullfilepath(self, separator)
 end
 
 local function scan(type_file)
-    return function(src)
+    return function(src, src2)
         src = (src or ''):gsub('%s*$', '')
         if #src == 0 then return nil end
 
+        local hasfile = type_file
         local firstchar = src:sub(1,1)
         local windriver = string.match(src, '^([A-Z]):[/\\]')
         local separator = (mock_separator or (_G.package and _G.package.config) or '/'):sub(1,1)
@@ -72,7 +73,12 @@ local function scan(type_file)
             self.path[#self.path + 1] = part
         end)
 
-        if type_file then
+        if not type_file and src2 then
+            self.path[#self.path + 1] = src2
+            hasfile = true
+        end
+
+        if hasfile then
             self.filename, self.extension = self.path[#self.path]:match("^(.-)%.([^%.]+)$")
             self.filename = self.filename or self.path[#self.path]
             self.extension = self.extension or ''
