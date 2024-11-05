@@ -1,4 +1,6 @@
 local os = require('os')
+local util_cmd = require('src/lib/util/cmd')
+
 local ok = true
 
 local function create_file(filepath, content)
@@ -13,7 +15,7 @@ local function create_file(filepath, content)
 end
 
 local function create_directory(path)
-    local success = os.execute("mkdir " .. path)
+    local success = os.execute(util_cmd.mkdir()..path)
     if not success then
         print("Error while creating directory: " .. path)
         ok = false

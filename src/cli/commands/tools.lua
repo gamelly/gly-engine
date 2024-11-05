@@ -3,6 +3,8 @@ local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_package = require('src/lib/cli/package')
 local zeebo_filler = require('src/lib/cli/filler')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_fs = require('src/lib/util/fs')
+local util_cmd = require('src/lib/util/cmd')
 
 local function bundler(args)
     local path, file = args.file:match("(.-)([^/\\]+)$")
@@ -14,14 +16,16 @@ local function compiler(args)
 end
 
 local function love_zip(args)
-    os.execute('mkdir -p '..args.dist..'_love')
-    os.execute('mv '..args.path..'/* '..args.dist..'_love 2> /dev/null')
-    local zip_pid = io.popen('cd '..args.dist..'_love && zip -9 -r Game.love .')
+    local dist = util_fs.path(args.dist).get_fullfilepath()
+    local path = util_fs.path(args.path).get_fullfilepath()
+    os.execute(util_cmd.mkdir()..dist..'_love')
+    os.execute(util_cmd.move()..path..'* '..dist..'_love'..util_cmd.silent())
+    local zip_pid = io.popen('cd '..dist..'_love && zip -9 -r Game.love .')
     local stdout = zip_pid:read('*a')
-    local ok = zip_pid:close()    
-    zeebo_fs.move(args.dist..'_love/Game.love', args.dist..'Game.love')
-    zeebo_fs.clear(args.dist..'_love')
-    os.remove(args.dist..'_love')
+    local ok = zip_pid:close()
+    zeebo_fs.move(dist..'_love/Game.love', dist..'Game.love')
+    zeebo_fs.clear(dist..'_love')
+    os.remove(dist..'_love')
     return ok, stdout
 end
 

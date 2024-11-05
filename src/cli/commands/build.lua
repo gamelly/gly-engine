@@ -12,11 +12,11 @@ local function build(args)
 
     local core_list = {
         repl={
-            src='src/engine/core/repl/main.lua',
+            src='src/engine/core/repl',
             post_exe='lua dist/main.lua'
         },
         love={
-            src='src/engine/core/love/main.lua',
+            src='src/engine/core/love',
             post_exe='love dist -'..'-screen '..screen
         },
         ginga={
@@ -27,13 +27,13 @@ local function build(args)
             }
         },
         lite={
-            src='src/engine/core/lite/main.lua',
+            src='src/engine/core/lite',
         },
         native={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
         },
         html5_webos={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
             post_exe='webos24 $(pwd)/dist',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'appinfo.json'):pipe()
@@ -48,7 +48,7 @@ local function build(args)
             }
         },
         html5_tizen={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):file(dist..'config.xml'):pipe(),
                 function() os.execute('cd '..dist..';~/tizen-studio/tools/ide/bin/tizen.sh package -t wgt;true') end
@@ -64,7 +64,7 @@ local function build(args)
             }
         },
         html5_lite={
-            src='src/engine/core/lite/main.lua',
+            src='src/engine/core/lite',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
             },
@@ -75,7 +75,7 @@ local function build(args)
             }
         },
         html5={
-            src='src/engine/core/native/main.lua',
+            src='src/engine/core/native',
             pipeline={
                 zeebo_meta.late(dist..'game.lua'):file(dist..'index.html'):pipe()
             },
