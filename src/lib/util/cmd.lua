@@ -50,8 +50,7 @@ local P = {
     rmdir=rmdir,
     mkdir=mkdir,
     move=move,
-    del=del,
-    zip=zip
+    del=del
 }
 
 return P

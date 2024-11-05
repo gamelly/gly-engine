@@ -7,7 +7,7 @@ local function move(src_filename, out_filename, prefix)
     local out_file = src_file and io.open(out_filename, 'w')
     local pattern_require = 'local ([%w_%-]+) = require%([\'"]([%w_/-]+)[\'"]%)'
     local pattern_gameload = 'std%.node%.load%([\'"](.-)[\'"]%)'
-    local pattern_comment = '^--!'
+    local pattern_comment = '^-'..'-!'
 
     if src_file and out_file then
         repeat

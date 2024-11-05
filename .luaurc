@@ -17,6 +17,7 @@
     "load",
     "loadfile",
     "love",
+    "mock_separator",
     "native_dict_secret",
     "native_dict_game",
     "native_dict_http",
