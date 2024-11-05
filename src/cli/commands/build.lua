@@ -11,6 +11,9 @@ local function build(args)
     local dist = util_fs.path(args.dist).get_unix_path()
 
     local core_list = {
+        none = {
+
+        },
         repl={
             src='src/engine/core/repl',
             post_exe='lua dist/main.lua'
@@ -88,7 +91,7 @@ local function build(args)
     }
 
     -- clean dist
-    zeebo_fs.clear(args.dist)
+    zeebo_fs.clear(dist)
 
     -- check core
     if not core_list[args.core] then
@@ -116,7 +119,9 @@ local function build(args)
     local core = core_list[args.core]
     do
         local index = 1
-        zeebo_builder.build(core.src, 'main.lua', dist..bundler, 'main.lua', 'core_')
+        if core.src then
+            zeebo_builder.build(core.src, 'main.lua', dist..bundler, 'main.lua', 'core_')
+        end
         if core.extras then
             while index <= #core.extras do
                 local file = core.extras[index]
