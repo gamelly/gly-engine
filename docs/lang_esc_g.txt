@@ -1,0 +1,59 @@
+@defgroup Languages
+@{
+
+@defgroup lang_esc_g ESC G
+@{
+
+@par Backus–Naur Form 
+@startebnf
+protocol_esc_g = esc, "G", command (* 7 bits *), size (* MSB command\ndefines x1024 *), [ buffer ], checksum  (* DJB2 *);
+esc = "\x1b";
+command = byte;
+size = byte;
+buffer = 4 * byte | 1024 * byte;
+checksum = 4 * byte;
+@endebnf
+
+@par Commands
+
+|     | command name   | parameters      | sizes in bytes|
+| :-: | :------------- | :-------------- | :------------ |
+| 0   | hello          |                 | 0             |
+| 1   | hdmi cec       | command         | 4..20         |
+| 2   | press menu key |                 | 0             |
+| 3   | gamepad update | z,x,c,v,w,a,s,d | 8             |
+| 44  | set img index  | index,type,w,h  | 4 or 8        |
+| 45  | update image   | image           | 0..254000     |
+| 46  | set text index | index           | 4             |
+| 47  | update text    | text            | 0..254000     | 
+| 48  | draw mode      | m1, m2, s1, s2  | 4             |
+| 49  | draw color     | r, g, b, a      | 4             |
+| 50  | draw rect      | x, y, w, h      | 4, 8 or 16    |
+| 51  | draw line      | x1, y1, x2, y2  | 4, 8 or 16    |
+| 52  | draw text      | x, y, id, size  | 4             |
+| 52  | draw image     | x, y, id        | 4             |
+| 64..127  | custom    |                 | 0..254000     |
+
+@par Modes
+
+@li @b 0 tint fill
+@li @b 1 tint frame
+@li @b 2 tint open
+@li @b 4 tint save
+@li @b 5 erase fill
+@li @b 6 erase frame
+@li @b 7 erase open
+
+@par Image Types
+
+@li @b 0 RGB 15bits
+@li @b 1 RGBA 32bits
+@li @b 2 BMP
+@li @b 3 PNG 
+
+@par Examples
+
+@li @c std.draw.clear(0xAABBCCDD) @n ESC G 0x48 0x00000003 0x00000000 @n ESC G 0x49 0x01 0xAABBCCDD 0x00000000 @n ESC G 0x50 0x01 0x0000FFFFF 0x00000000
+
+@}
+@}

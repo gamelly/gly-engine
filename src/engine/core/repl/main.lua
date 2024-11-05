@@ -1,5 +1,9 @@
---! @short Read Eval Print Loop
---! @brief an interpreter to debuging the game via stdio.
+--! @defgroup Languages
+--! @{
+--! 
+--! @defgroup REPL
+--! @{
+--!
 --! @par Extended Backus-Naur Form
 --! @startebnf
 --! line = exit | frame_skip | [frame_skip], variable, ["=", value (* assignment *)];
@@ -7,6 +11,15 @@
 --! digit = { ? 0 - 9 ? }- ;
 --! exit = "?" ;
 --! @endebnf
+--!
+--! @par Usage
+--! @code{.sql}
+--! lua cli.lua run game.lua --core repl
+--! @endcode
+--!
+--! @}
+--! @}
+
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
