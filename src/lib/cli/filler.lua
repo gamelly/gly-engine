@@ -23,8 +23,46 @@ local function put(dest, size)
     return true
 end
 
+local function replace(src_in, game_in, out_dest, size)
+    local src_file, src_err = io.open(src_in, 'rb')
+    local game_file, game_err = io.open(game_in, 'rb')
+
+    if not src_file or not game_file then
+        return false, src_err or game_err
+    end
+
+    local src_content = src_file:read('*a')
+    local game_content = game_file:read('*a')
+
+    src_file:close()
+    game_file:close()
+
+    local start = src_content:find(template_prefix)
+    local final = size and (start + size) or (src_content:find(template_suffix) + #template_suffix - 2)
+    local template_size = final - start
+
+    if template_size < #game_content then
+        return false, 'maximum size: '..template_size..' bytes.'
+    end
+
+    local padding_size = template_size - #game_content
+    local padding = string.rep('\n', padding_size)
+    
+    local out_file, out_err = io.open(out_dest, 'wb')
+
+    if not out_file then
+        return false, out_err
+    end
+
+    out_file:write(src_content:sub(1, start - 1)..game_content..padding..src_content:sub(final))
+    out_file:close()
+
+    return true
+end
+
 local P = {
-    put=put
+    put=put,
+    replace=replace
 }
 
 return P
