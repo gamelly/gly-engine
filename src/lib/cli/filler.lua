@@ -38,7 +38,16 @@ local function replace(src_in, game_in, out_dest, size)
     game_file:close()
 
     local start = src_content:find(template_prefix)
-    local final = size and (start + size) or (src_content:find(template_suffix) + #template_suffix - 2)
+    local final = size and start and (start + size)
+
+    if not start then
+        return false, 'template not found!'
+    end
+
+    if not final then 
+        final = src_content:find(template_suffix) + #template_suffix - 2
+    end
+
     local template_size = final - start
 
     if template_size < #game_content then
