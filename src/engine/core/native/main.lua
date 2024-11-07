@@ -68,8 +68,9 @@ end
 
 --! @short std.draw.image
 local function image(src, pos_x, pos_y)
-    local ox, oy = engine.offset_x, engine.offset_y
-    native_draw_image(src, pos_x + ox, pos_y + oy)
+    local x = engine.offset_x + (pos_x or 0)
+    local y = engine.offset_y + (pos_y or 0)
+    native_draw_image(src, x, y)
 end
 
 --! @}
