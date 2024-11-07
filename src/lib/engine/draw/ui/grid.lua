@@ -97,6 +97,49 @@ local util_decorator = require('src/lib/util/decorator')
 --! @}
 --! @}
 
+--! @hideparam std
+--! @hideparam engine
+local function apply(std, engine, self)
+    local index = 1
+    local x, y = 0, 0
+
+    local index2 = 1
+    local pipeline = std.ui.style(self.classlist).pipeline
+
+    while index2 <= #pipeline do
+        pipeline[index2](std, self.node, self.node.config.parent, engine.root)
+        index2 = index2 + 1
+    end
+    
+    local hem = self.node.data.width / self.rows
+    local vem = self.node.data.height / self.cols
+
+    while index <= #self.items_node do
+        local node = self.items_node[index]
+        local size = self.items_size[index]
+        local ui = self.items_ui[node]
+
+        node.config.offset_x = x * hem
+        node.config.offset_y = y * vem
+        node.data.width = size * hem
+        node.data.height = vem
+
+        x = x + size
+        if x >= self.rows then
+            y = y + 1
+            x = 0
+        end
+
+        if ui then
+            ui:apply()
+        end
+       
+        index = index + 1
+    end
+
+    return self
+end
+
 local function component(std, engine, layout)
     local rows, cols = layout:match('(%d+)x(%d+)')
     local node = std.node.load({
@@ -115,7 +158,7 @@ local function component(std, engine, layout)
         add=util_decorator.prefix2(std, engine, ui_common.add),
         add_items=util_decorator.prefix2(std, engine, ui_common.add_items),
         style=ui_common.style,
-        apply=util_decorator.prefix2(std, engine, ui_common.apply),
+        apply=util_decorator.prefix2(std, engine, apply),
         get_item=ui_common.get_item
     }
 
@@ -125,11 +168,7 @@ local function component(std, engine, layout)
                 node.callbacks.resize = nil
                 return
             end
-            if self.px_height then
-                node.data.height = self.px_height
-            else
-                node.data.height = engine.root.data.height
-            end
+            node.data.height = engine.root.data.height
             node.data.width = engine.root.data.width
             self:apply()
         end

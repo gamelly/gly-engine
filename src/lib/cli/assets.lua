@@ -8,7 +8,6 @@ local function build(assets, dist)
         local separator = asset:find(':')
         local from = util_fs.file(separator and asset:sub(1, separator -1) or asset).get_fullfilepath()
         local to = util_fs.file(separator and asset:sub(separator + 1) or asset).get_fullfilepath():gsub('^./', '')
-        print(from, dist..to)
         zeebo_fs.move(from, dist..to)
         index = index + 1
     end

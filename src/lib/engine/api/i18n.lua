@@ -171,8 +171,8 @@ local function install(std, engine, system_language)
     std.i18n.get_text = get_text
     std.i18n.get_language = get_language
     std.i18n.set_language = set_language
-    std.i18n.back_language = back_language
-    std.i18n.next_language = next_language
+    std.i18n.back = back_language
+    std.i18n.next = next_language
 
     return {
         std={

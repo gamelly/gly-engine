@@ -47,51 +47,8 @@ local function get_item(self, id)
 end
 
 --! @renamefunc style
-local function style(self, classlist)
-    self.classlist = classlist
-    return self
-end
-
---! @hideparam std
---! @hideparam engine
-local function apply(std, engine, self)
-    local index = 1
-    local x, y = 0, 0
-
-    local index2 = 1
-    local pipeline = std.ui.style(self.classlist).pipeline
-
-    while index2 <= #pipeline do
-        pipeline[index2](std, self.node, self.node.config.parent, engine.root)
-        index2 = index2 + 1
-    end
-    
-    local hem = self.node.data.width / self.rows
-    local vem = self.node.data.height / self.cols
-
-    while index <= #self.items_node do
-        local node = self.items_node[index]
-        local size = self.items_size[index]
-        local ui = self.items_ui[node]
-
-        node.config.offset_x = x * hem
-        node.config.offset_y = y * vem
-        node.data.width = size * hem
-        node.data.height = vem
-
-        x = x + size
-        if x >= self.rows then
-            y = y + 1
-            x = 0
-        end
-
-        if ui then
-            ui:apply()
-        end
-       
-        index = index + 1
-    end
-
+local function style(classkey, self, classlist)
+    self[classkey] = classlist
     return self
 end
 
@@ -100,7 +57,6 @@ end
 
 local P = {
     add=add,
-    apply=apply,
     style=style,
     get_item=get_item,
     add_items=add_items,

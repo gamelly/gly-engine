@@ -159,7 +159,7 @@ local function build(args)
 
     if args.game then
         local game = zeebo_module.loadgame(dist..'game.lua')
-        zeebo_assets.build(game.assets, dist)
+        zeebo_assets.build(game and game.assets or {}, dist)
     end
 
     if args.run then
