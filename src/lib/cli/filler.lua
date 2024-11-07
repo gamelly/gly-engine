@@ -1,9 +1,9 @@
-local template_prefix = '-'..'-GLYSTART\n'
-local template_suffix = '\n-'..'-GLYEND'
-local template = 'return {meta={title=\'G\',author=\'G\',version=\'0.0.0\'},callbacks={draw=function(s) s.draw.rect(0,8,8,8,8) end}}'
+local template_prefix = '-'..'-GLYSTART '
+local template = 'return {meta={title=\'Gly\',author=\'Gly\',version=\'0.0.0\'},callbacks={draw=function(s) s.draw.rect(0,8,8,8,8) end}}'
 
 local function put(dest, size)
-    local template_size = #(template..template_prefix..template_suffix)
+    local text_size = tostring(size)
+    local template_size = #(template_prefix..template..text_size) + 2
     local padding_size = size - template_size
 
     if padding_size < 0 then
@@ -17,13 +17,13 @@ local function put(dest, size)
         return false, dest_error
     end
 
-    dest_file:write(template_prefix..template..padding..template_suffix)
+    dest_file:write(template_prefix..text_size..'\n'..template..padding..'\n')
     dest_file:close()
     
     return true
 end
 
-local function replace(src_in, game_in, out_dest, size)
+local function replace(src_in, game_in, out_dest)
     local src_file, src_err = io.open(src_in, 'rb')
     local game_file, game_err = io.open(game_in, 'rb')
 
@@ -38,16 +38,13 @@ local function replace(src_in, game_in, out_dest, size)
     game_file:close()
 
     local start = src_content:find(template_prefix)
-    local final = size and start and (start + size)
+    local size = start and src_content:sub(start):match('^'..template_prefix..'(%d+)')
 
-    if not start then
+    if not start or not size then
         return false, 'template not found!'
     end
 
-    if not final then 
-        final = src_content:find(template_suffix) + #template_suffix - 2
-    end
-
+    local final = start + tonumber(size)
     local template_size = final - start
 
     if template_size < #game_content then
