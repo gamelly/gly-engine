@@ -1,6 +1,8 @@
 local zeebo_pipeline = require('src/lib/util/pipeline')
 local application_default = require('src/lib/object/root')
 
+--! @todo refactore all!
+
 local function default(application, defaults)
     if not application then return nil end
     local index = 1    
@@ -22,6 +24,7 @@ local function default(application, defaults)
     end
 
     normalized_aplication.config.id = tostring(application) 
+    normalized_aplication.assets = application.assets or {}
 
     if application.callbacks then
         for event, handler in pairs(application.callbacks) do
@@ -50,12 +53,15 @@ local function normalize(application)
     local normalized_aplication = {
         data = {},
         meta = {},
+        assets = {},
         config = {},
         callbacks = {}
     }
 
     for key, value in pairs(application) do
-        if application_default.meta[key] then
+        if key == 'assets' then
+            normalized_aplication.assets = value
+        elseif application_default.meta[key] then
             normalized_aplication.meta[key] = value
         elseif application_default.config[key] then
             normalized_aplication.config[key] = value
