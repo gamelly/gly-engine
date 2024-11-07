@@ -1,6 +1,30 @@
 local ui_common = require('src/lib/engine/draw/ui/common')
 local util_decorator = require('src/lib/util/decorator')
 
+--! @defgroup std
+--! @{
+--! @defgroup ui
+--! @{
+--!
+--! @page ui_slide Slide System
+--! @details
+--! also known as carousel, it has similar behavior to grid but with visual selection of items.
+--! but it only accepts one-dimensional grids such as @c 1x1 @c 2x1 or @c 1x2 .
+--! @par Example
+--! @code{.java}
+--! std.ui.slide('6x1')
+--!     :add_items(my_items)
+--!     :apply()
+--! @endcode
+
+--! @renamefunc next
+--! @hideparam self
+--! @hideparam to
+--! @pre avaliable only in the @c std.ui.slide
+--! @par Example
+--! @code{.java}
+--! std.ui.slide('6x1'):add_items(items):next(2):apply()
+--! @endcode
 local function slider_next(self, to)
     local incr = to or 1
     self.index = self.index + incr
@@ -13,9 +37,19 @@ local function slider_next(self, to)
     return self
 end
 
+--! @renamefunc back
+--! @hideparam self
+--! @pre avaliable only in the @c std.ui.slide
+--! @par Example
+--! @code{.java}
+--! std.ui.slide('1x6'):add_items(items):back():apply()
+--! @endcode
 local function slider_back(self)
     return slider_next(self, -1)
 end
+
+--! @}
+--! @}
 
 --! @hideparam std
 --! @hideparam engine

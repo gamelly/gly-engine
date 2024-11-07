@@ -46,7 +46,8 @@ local function get_item(self, id)
     return self.items_node[id]
 end
 
---! @renamefunc style
+--! @hideparam classkey
+--! @hideparam self
 local function style(classkey, self, classlist)
     self[classkey] = classlist
     return self

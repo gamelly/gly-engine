@@ -46,6 +46,7 @@ local util_decorator = require('src/lib/util/decorator')
 --!     :add(btn1)
 --!     :add(btn2)
 --!     :add(btn3)
+--!     :apply()
 --! @endcode
 --!
 --! @par Columns
@@ -93,6 +94,7 @@ local util_decorator = require('src/lib/util/decorator')
 --!      :add(std.ui.grid('1x1')
 --!         :add(btn)
 --!      )
+--!     :apply()
 --! @endcode
 --! @}
 --! @}

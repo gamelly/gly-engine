@@ -100,38 +100,39 @@ local function set_language(l)
     end
 end
 
+--! @renamefunc next
+--! @hideparam to
 --! @par Example
 --! @code
---! if game.state == game.menu_lang and std.key.press.left then
---!     std.i18n.back_language()
+--! if game.state == game.menu_lang then
+--!     std.i18n.next(std.key.axis.y)
 --! end
 --! @endcode
-local function back_language()
+local function next_language(to)
     local index = language_inverse_list[language]
+    local incr = to or 1
     if index then
-        if index <= 1 then
-            index = #language_list + 1
+        index = index + incr
+        if index > #language_list then
+            index = 1
         end
-        index = index - 1
+        if index <= 0 then
+            index = #language_list
+        end
+        index = index == 0 and 1 or index
         set_language(language_list[index])
     end
 end
 
+--! @renamefunc back
 --! @par Example
 --! @code
---! if game.state == game.menu_lang and std.key.press.right then
---!     std.i18n.next_language()
+--! if game.state == game.menu_lang and std.key.press.left then
+--!     std.i18n.back()
 --! end
 --! @endcode
-local function next_language()
-    local index = language_inverse_list[language]
-    if index then
-        if index >= #language_list then
-            index = 0
-        end
-        index = index + 1
-        set_language(language_list[index])
-    end
+local function back_language()
+    next_language(-1)
 end
 
 --! @}
