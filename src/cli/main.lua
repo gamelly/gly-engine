@@ -62,6 +62,11 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('file', {required=true})
     .add_next_value('size', {required=true}) 
     --
+    .add_subcommand('tool-template-replace', commands_tools)
+    .add_next_value('src', {required=true})
+    .add_next_value('game', {required=true}) 
+    .add_next_value('output', {required=true})
+    --
     .add_subcommand('fs-copy', commands_fs)
     .add_next_value('file', {required=true})
     .add_next_value('dist', {required=true})

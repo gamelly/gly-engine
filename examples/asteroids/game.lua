@@ -243,7 +243,7 @@ local function loop(std, game)
                 game.graphics_fastest = std.math.clamp(game.graphics_fastest + keyh, 0, 1)
                 game.fps_max = 100
             elseif game.menu == 7 then
-                std.i18n.next_language()
+                std.i18n.next()
             elseif game.menu == 8 then
                 game.state = 2
             elseif game.menu == 9 then

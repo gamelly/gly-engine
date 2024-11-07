@@ -1,6 +1,8 @@
 local os = require('os')
+local zeebo_module = require('src/lib/common/module')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
+local zeebo_assets = require('src/lib/cli/assets')
 local zeebo_meta = require('src/lib/cli/meta')
 local zeebo_fs = require('src/lib/cli/fs')
 local util_fs = require('src/lib/util/fs')
@@ -153,6 +155,11 @@ local function build(args)
             end
             index = index + 1
         end
+    end
+
+    if args.game then
+        local game = zeebo_module.loadgame(dist..'game.lua')
+        zeebo_assets.build(game and game.assets or {}, dist)
     end
 
     if args.run then

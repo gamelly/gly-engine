@@ -75,6 +75,13 @@ local function template_fill(args)
     return zeebo_filler.put(args.file, tonumber(args.size))
 end
 
+local function template_replace(args)
+    local src = util_fs.file(args.src).get_fullfilepath()
+    local game = util_fs.file(args.game).get_fullfilepath()
+    local output = util_fs.file(args.output).get_fullfilepath()
+    return zeebo_filler.replace(src, game, output, args.size)
+end
+
 local P = {
     bundler = bundler,
     compiler = compiler,
@@ -82,7 +89,8 @@ local P = {
     ['tool-love-zip'] = love_zip,
     ['tool-love-exe'] = love_exe,
     ['tool-package-del'] = package_del,
-    ['tool-template-fill'] = template_fill
+    ['tool-template-fill'] = template_fill,
+    ['tool-template-replace'] = template_replace
 }
 
 return P
