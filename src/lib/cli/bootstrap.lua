@@ -123,6 +123,23 @@ local function build(...)
     output_file:write('local BOOTSTRAP = {}\nlocal BOOTSTRAP_DISABLE = false\n')
 
     do
+        local index = 1
+        local content = 'local BOOTSTRAP_DIRS = {'
+        while index <= #all_list_paths do
+            local file_name = all_list_paths[index]
+            local file_content = all_dict_files[file_name]
+            content = content..'\''..file_name..'\''
+            index = index + 1
+            if index <= #all_list_paths then
+                content = content..', '
+            else
+                content = content..'}\n'
+            end
+        end
+        output_file:write(content)
+    end
+
+    do
         index = 1
         local content = 'local BOOTSTRAP_LIST = {'
         while index <= #all_list_files do

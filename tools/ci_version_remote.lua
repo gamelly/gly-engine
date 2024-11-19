@@ -1,5 +1,5 @@
 local http_util = require('src/lib/util/http')
-local json = require('src/third_party/json/rxi')
+local json = require('third_party/json/rxi')
 
 local url = 'https://api.github.com/repos/gamelly/gly-engine/releases'
 local ver_file = io.open('src/version.lua')
