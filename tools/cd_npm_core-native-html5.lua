@@ -1,5 +1,5 @@
 local cmd = function(c) assert(require('os').execute(c), c) end
-local version = io.open('src/cli/commands/info.lua'):read('*a'):match('(%d+%.%d+%.%d+)')
+local version = io.open('src/version.lua'):read('*a'):match('(%d+%.%d+%.%d+)')
 
 cmd('rm -Rf ./dist')
 cmd('mkdir -p ./dist/dist')
