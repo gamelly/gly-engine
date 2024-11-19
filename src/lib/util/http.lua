@@ -33,7 +33,8 @@ local function create_request(method, uri)
         body_content = '',
         header_list = {},
         header_dict = {},
-        header_imutable = {}
+        header_imutable = {},
+        print_http_status = true
     }
 
     self.add_body_content = function (body)
@@ -82,6 +83,11 @@ local function create_request(method, uri)
         return self
     end
 
+    self.not_status = function()
+        self.print_http_status = false
+        return self
+    end
+
     self.to_http_protocol = function ()
         local index = 1
         local request = method..' '..uri..' HTTP/1.1\r\n'
@@ -104,7 +110,11 @@ local function create_request(method, uri)
 
     self.to_curl_cmd = function ()
         local index = 1
-        local request = 'curl -L -'..'-silent -'..'-insecure -w "\n%{http_code}" '
+        local request = 'curl -L -'..'-silent -'..'-insecure '
+
+        if print_http_status then
+            request = request..'-w "\n%{http_code}" '
+        end
 
         if method == 'HEAD' then
             request = request..'-'..'-HEAD '
@@ -124,35 +134,6 @@ local function create_request(method, uri)
         end
 
         request = request..uri
-
-        return request, function() end
-    end
-
-    self.to_wget_cmd = function ()
-        local parts = {'wget -'..'-quiet -'..'-output-document=-'}
-
-        if method == 'HEAD' then
-            table.insert(parts, '-'..'-method=HEAD')
-        elseif method ~= 'GET' then
-            table.insert(parts, '-'..'-method='..method)
-        end
-
-        for index, header in ipairs(self.header_list) do
-            local value = self.header_dict[header]
-            if value then
-                local escaped_value = value:gsub('"', '\\"')
-                table.insert(parts, '-'..'-header="'..header..': '..escaped_value..'"')
-            end
-        end
-
-        if method ~= 'GET' and method ~= 'HEAD' and #self.body_content > 0 then
-            local escaped_body = self.body_content:gsub('"', '\\"')
-            table.insert(parts, '-'..'-body-data="'..escaped_body..'"')
-        end
-
-        table.insert(parts, uri)
-
-        local request = table.concat(parts, ' ')
 
         return request, function() end
     end

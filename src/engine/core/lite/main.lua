@@ -1,3 +1,4 @@
+local version = require('src/version')
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
@@ -106,10 +107,10 @@ end
 
 local P = {
     meta={
-        title='gly-engine',
+        title='gly-engine-lite',
         author='RodrigoDornelles',
         description='native lite',
-        version='0.0.11'
+        version=version
     }
 }
 
