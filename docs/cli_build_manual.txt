@@ -31,88 +31,118 @@ By following these steps, you can effectively port the Gly Engine to any platfor
 @note the functions are represented in C, but just so you understand the typing,
 in fact you have to manipulate the Lua VM stack in most cases.
 
+@startuml
+note "work here" as work
+
+artifact game as "Game"
+
+file bin as "binary\t\t" {
+  artifact engine as "Gly\nEngine"
+  component api as "C API"
+  component lua as "Lua"
+  component json as "Json\nLibrary"
+  component http as "Http\nLibrary"
+  component media as "Media\nLibrary"
+  component graphics as "Graphics\nLibrary"
+}
+
+game --> engine
+engine <--> lua
+api <-up-> lua
+api ..left.. graphics
+api ..right..media
+api ..http
+api ..json
+api - work
+
+
+graphics -[hidden]- http
+@enduml
+
 @{
 
-@page framework_functions Global lua functions
+@par C API implementation
 
 Using the [Lua C API](https://www.lua.org/pil/contents.html#p4), you must expose these functions to your Lua VM,
 so that the engine can communicate with the low-level resources of the system.
 
-#### API Level 0
-
-Even if you have nothing to do in @c draw or @c loop of a game,
-these functions will be called to the microengine to know the start and end of the intention to paint each frame.
-
+@li **API FUNCTION LEVEL 1** @n estimated implementation time: 6 hours
 ```
 void native_draw_start()
 ```
-
 ```
 void native_draw_flush()
 ```
-
-#### API Level 1
-
 ```
 void native_draw_color(int color)
 ```
-
 ```
 void native_draw_clear(int color)
 ```
-
 ```
 void native_draw_rect(int mode, double x, double y, double width, double heigth)
 ```
-
-#### API Level 2
-
 ```
 void native_draw_line(double x1, double y1, double x1, double y1)
 ```
 
+@li **API FUNCTION LEVEL 2** @n estimated implementation time: 2 days
 ```
-void native_draw_text(double x, double y, char* text)
+void native_text_print(double x, double y, char* text)
+```
+```
+void native_text_font_size(int size)
+```
+```
+void native_text_font_name(char* name)
+```
+```
+void native_text_font_default(int font_id)
 ```
 
+@li **API FUNCTION LEVEL 3** @n estimated implementation time: 2~4 weaks
 ```
-void native_draw_font(int size)
+void native_media_load(int channel, char* url)
+```
+```
+void native_media_play(int channel)
+```
+```
+void native_media_pause(int channel)
+```
+```
+void native_media_resize(int channel, double width, double height)
+```
+```
+void native_media_position(int channel, double x, double y)
 ```
 
-```
-void native_draw_font(char* name, int size)
-```
-
-@page framework_callbacks Global lua callbacks
-
-#### API Level 1
-
+@li **API CALLBACK LEVEL 1** @n estimated implementation time: 4 hours
 ```
 void native_callback_loop(double dt)
 ```
-
 ```
 void native_callback_draw()
 ```
-
 ```
 void native_callback_keyboard(char* key, bool value)
 ```
-
 ```
 void native_callback_init(width, height, game_lua)
 ```
 
-#### API Level 2
-
+@li **API CALLBACK LEVEL 2** @n estimated implementation time: 2 hours
 ```
 void native_callback_resize(double width, double height)
 ```
+@li **API CALLBACK LEVEL 3** @n implementation time depends function API difficulty.
+```
+void native_callback_media(int channel, char* event)
+```
 
-@page framework_examples Examples
+@par Examples
 
-#### native_draw_line in SDL2
-
+@li @c native_draw_line @n (with SDL2)
 ```
 /// @short @c std.draw.line
 /// @param[in] x1 @c double
@@ -135,8 +165,7 @@ static int native_draw_line(lua_State *L) {
 }
 ```
 
-#### micro-engine start
-
+@li @c native_callback_init
 ```
 void gly_engine_start()
 {
@@ -153,8 +182,7 @@ void gly_engine_start()
 }
 ```
 
-#### micro-engine loop
-
+@li @c native_callback_loop and @c native_callback_draw
 ```
 void gly_engine_loop()
 {
@@ -162,8 +190,7 @@ void gly_engine_loop()
     lua_pushnumber(L, 16);
     lua_pcall(L, 1, 0, 0);
     lua_getglobal(L, "native_callback_draw");
-    lua_pushnumber(L, 16);
-    lua_pcall(L, 1, 0, 0);
+    lua_pcall(L, 0, 0, 0);
     usleep(16000);
 }
 ```

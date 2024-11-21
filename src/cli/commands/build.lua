@@ -48,6 +48,7 @@ local function build(args)
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
             }
@@ -64,6 +65,7 @@ local function build(args)
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
             }
@@ -76,6 +78,7 @@ local function build(args)
             extras={
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js'
             }
         },
@@ -87,6 +90,7 @@ local function build(args)
             extras={
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js'
             }
         }

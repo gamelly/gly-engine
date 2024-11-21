@@ -6,6 +6,7 @@ local engine_game = require('src/lib/engine/api/game')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
+local engine_media = require('src/lib/engine/api/media')
 local engine_key = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
@@ -25,6 +26,14 @@ local engine = {
     root = application_default,
     offset_x = 0,
     offset_y = 0
+}
+
+local cfg_media = {
+    position=native_media_position,
+    resize=native_media_resize,
+    pause=native_media_pause,
+    load=native_media_load,
+    play=native_media_play
 }
 
 --! @defgroup std
@@ -137,6 +146,7 @@ function native_callback_init(width, height, game_lua)
         :package('json', engine_encoder, native_dict_json)
         :package('xml', engine_encoder, native_dict_xml)
         :package('i18n', engine_i18n, native_get_system_lang)
+        :package('media', engine_media, cfg_media)
         :package('hash', engine_hash, {'native'})
         :run()
 

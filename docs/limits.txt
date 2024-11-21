@@ -12,6 +12,10 @@ so it's not possible to bring it in an optimized way to engine.
 @li polygon with 3 vertice are supported as open wireframes, but cannot be filled.
 @li to fill a polygon with 3 vertices, just make a 4th point that is aligned.
 
+@par Media
+
+Does not support displaying videos.
+
 ## Limits in Ginga
 
 Ginga doesn't have as much firepower, although it has a lot of available memory,
@@ -76,6 +80,10 @@ avoid filling the screen with text if you are playing a game and not reading a b
 @li prefer to write texts at the bottom of the screen
 @li code yours @c std.draw.text in end of the of @c draw callback
 
+@par Media
+
+Does not support displaying videos.
+
 ## Limits in SDL
 
 @par HTTPS
@@ -94,3 +102,7 @@ TLS 1.3 is not supported.
 @par Images
 
 Not supported.
+
+@par Media
+
+Does not support displaying videos.

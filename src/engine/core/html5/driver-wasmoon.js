@@ -10,6 +10,13 @@ gly.wasmoon = async (game_file) => {
     const lua = await factory.createEngine()
     const engine_response = await fetch(engine_file)
     const engine_lua = await engine_response.text()
+
+    lua.global.set('native_media_position', gly.global.get('native_media_position'))
+    lua.global.set('native_media_resize', gly.global.get('native_media_resize'))
+    lua.global.set('native_media_pause', gly.global.get('native_media_pause'))
+    lua.global.set('native_media_load', gly.global.get('native_media_load'))
+    lua.global.set('native_media_play', gly.global.get('native_media_play'))
+
     await lua.doString(engine_lua)
     
     gly.global.set('native_callback_init', lua.global.get('native_callback_init'))
