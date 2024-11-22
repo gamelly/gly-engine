@@ -118,6 +118,7 @@ local function run(self, host_args)
 
     if command == self.error_usage then
         args.params = self.param_list_value[args.command]
+        args.hidden = self.hidden[args.command] or {}
         args.option_get = self.param_list_option_get[args.command]
         args.option_has = self.param_list_option_has[args.command]
     end
@@ -128,6 +129,7 @@ end
 local function from(host_args)
     local cmd = {
         help = 'help',
+        hidden = {},
         error_usage = nil,
         error_not_found = nil,
         param_dict_option_get_required = {},
@@ -153,6 +155,12 @@ local function from(host_args)
     end
 
     cmd.add_option_has = function(param)
+        return add_option_has(cmd, param)
+    end
+
+    cmd.add_option_opt = function(param)
+        cmd.hidden[cmd.current] = cmd.hidden[cmd.current] or {}
+        cmd.hidden[cmd.current][param] = true
         return add_option_has(cmd, param)
     end
 

@@ -96,8 +96,23 @@ local function build(args)
         }
     }
 
+    -- must be pass a core or game
+    if not args.core and not args.game then
+        return false, 'usage: '..args[0]..' build [game] --core [core]'
+    end
+
+    -- default core
+    if not args.core then
+        args.core = 'html5'
+    end
+
     -- clean dist
     zeebo_fs.clear(dist)
+
+    -- license advice
+    if args.core == 'ginga' and not args.enterprise then
+        return false, 'please use flag --enterprise to use commercial modules'
+    end
 
     -- check core
     if not core_list[args.core] then

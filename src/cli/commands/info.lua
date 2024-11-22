@@ -90,7 +90,9 @@ local function correct_usage(args)
   index = 1
   while index <= #args.option_has do
     local option = args.option_has[index]
-    command = command..' --'..option
+    if not args.hidden[option] then
+      command = command..' --'..option
+    end
     index = index + 1
   end
 

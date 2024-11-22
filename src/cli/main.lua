@@ -20,9 +20,10 @@ local command = zeebo_argparse.from(arg)
     --
     .add_subcommand('build', commands_build)
     .add_next_value('game', {alias='@examples/{{game}}/game.lua'})
+    .add_option_get('core', {})
     .add_option_get('dist', {default='./dist/'})
-    .add_option_get('core', {default='ginga'})
     .add_option_get('screen', {default='1280x720'})
+    .add_option_opt('enterprise')
     .add_option_has('bundler')
     .add_option_has('run')
     --
