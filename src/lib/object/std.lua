@@ -18,10 +18,9 @@ local P = {
         poly = function () end,
         tui_text = function() end
     },
-    game = {
+    app = {
         width = 1280,
         height = 720,
-        register = function() end,
         title = function() end,
         reset = function () end,
         load = function() end,
