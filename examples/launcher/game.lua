@@ -31,15 +31,15 @@ local function draw(std, data)
     std.draw.clear(0x333333FF)
     std.draw.color(std.color.white)
     if not data._list then 
-        std.draw.tui_text(10, 10, 10, 'loading...')
+        std.text.put(10, 10, 10, 'loading...')
         return
     end
     local index = 1
-    std.draw.font(12)
+    std.text.font_size(12)
     while index <= #data._list do
-        std.draw.text(16, 8 + (index * 14), data._list[index].title)
-        std.draw.text(200, 8 + (index * 14), data._list[index].version)
-        std.draw.text(300, 8 + (index * 14), data._list[index].author)
+        std.text.print(16, 8 + (index * 14), data._list[index].title)
+        std.text.print(200, 8 + (index * 14), data._list[index].version)
+        std.text.print(300, 8 + (index * 14), data._list[index].author)
         index = index + 1
     end
     std.draw.color(std.color.red)

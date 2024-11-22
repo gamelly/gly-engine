@@ -72,7 +72,7 @@ function native_callback_init(width, height, game_lua)
     std.draw.clear=function(tint)
         native_draw_clear(tint, 0, 0, application.data.width, application.data.height)
     end
-    std.draw.tui_text=function(x, y, s, text)
+    std.text.put=function(x, y, s, text)
         native_draw_text_tui(x, y, 0, 0, application.data.width, application.data.height, s, text)
     end
 

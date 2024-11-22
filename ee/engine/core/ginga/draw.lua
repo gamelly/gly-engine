@@ -92,7 +92,7 @@ local function install(std, engine)
     std.draw.text = util_decorator.prefix3(std, engine, engine.canvas, text)
     std.draw.font = util_decorator.prefix3(std, engine, engine.canvas, font)
     std.draw.line = util_decorator.prefix3(std, engine, engine.canvas, line)
-    std.draw.tui_text = util_decorator.prefix3(std, engine, engine.canvas, tui_text)
+    std.text.put = util_decorator.prefix3(std, engine, engine.canvas, tui_text)
 
     return {
         draw=std.draw

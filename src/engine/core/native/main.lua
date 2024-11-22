@@ -54,22 +54,6 @@ local function rect(mode, pos_x, pos_y, width, height)
     native_draw_rect(mode, pos_x + ox, pos_y + oy, width, height)
 end
 
---! @short std.draw.tui_text
-local function tui_text(pos_x, pos_y, size, text)
-    local ox, oy = engine.offset_x, engine.offset_y
-    local width, height = engine.current.data.width, engine.current.data.height
-    native_draw_text_tui(pos_x, pos_y, ox, oy, width, height, size, text)
-end
-
---! @short std.draw.text
-local function text(pos_x, pos_y, text)
-    local ox, oy = engine.offset_x, engine.offset_y
-    if pos_x and pos_y then
-        return native_draw_text(pos_x + ox, pos_y + oy, text)
-    end
-    return native_draw_text(pos_x)
-end
-
 --! @short std.draw.line
 local function line(x1, y1, x2, y2)
     local ox, oy = engine.offset_x, engine.offset_y
@@ -82,6 +66,95 @@ local function image(src, pos_x, pos_y)
     local y = engine.offset_y + (pos_y or 0)
     native_draw_image(src, x, y)
 end
+
+--! @}
+--! @defgroup text
+--! @{
+--! @par Align text
+--! @code{.java}
+--! std.text.print_ex(240, 80, 'center', 0)
+--! std.text.print_ex(240, 80, 'right', -1)
+--! std.text.print_ex(240, 80, 'left', 1)
+--! @endcode
+--! @par Print and Mensure
+--! @code{.java}
+--! local w = std.text.print_ex(240, 80, 'foo')
+--! std.text.print(240, 80 + w, 'bar')
+--! @endcode
+--! 
+
+--! @renamefunc print
+--! @short std.text.print
+--! @par Alternatives
+--! @li @b std.text.print_ex returning @ref mensure and can align @b -1, @b 0 or @b 1
+--! @par Example
+--! @code{.java}
+--! std.text.put((std.app.width/4) * 3, 8, '1/4 text')
+--! @endcode
+local function text_print(pos_x, pos_y, text)
+    local ox, oy = engine.offset_x, engine.offset_y
+    if pos_x and pos_y then
+        return native_draw_text(pos_x + ox, pos_y + oy, text)
+    end
+    return native_draw_text(pos_x)
+end
+
+--! @renamefunc put
+--! @short std.text.put
+--! @brief @b TUI grid based text print
+--! @par Grid
+--! @startuml
+--! rectangle "\t\t\t\t\n\n\n\n" as terminal
+--! label "80" as columns
+--! label "24" as lines
+--! terminal <.u. columns
+--! terminal <.r. lines
+--! @enduml
+--! @par Equation
+--! @startmath
+--! \text{hem} = \frac{\text{width}}{80} \\
+--! \text{vem} = \frac{\text{height}}{24} \\
+--! f(\text{x}) = \text{x} \times \text{hem} \\
+--! f(\text{y}) = \text{y} \times \text{vem} \\
+--! f(\text{size}) = \text{size} \times \text{hem}
+--! @endmath
+--! @par Example
+--! @code{.java}
+--! std.text.put(1, 20, 1, '1/4 text')
+--! @endcode
+local function text_put(size, pos_x, pos_y, text)
+    local ox, oy = engine.offset_x, engine.offset_y
+    local width, height = engine.current.data.width, engine.current.data.height
+    native_draw_text_tui(pos_x, pos_y, ox, oy, width, height, size, text)
+end
+
+--! @short std.text.font_size
+--! @par Example
+--! @code{.java}
+--! std.text.font_size(8)
+--! @endcode
+--! @fakefunc font_size(size)
+
+--! @short std.text.font_name
+--! @par Example
+--! @code{.java}
+--! std.text.font_name('Comic Sans')
+--! @endcode
+--! @fakefunc font_name(name)
+
+--! @short std.text.font_default
+--! @par List
+--! @li @b 1 [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans)
+--! @li @b 2 [IBM Plex Sans](https://fonts.google.com/specimen/IBM+Plex+Sans)
+--!
+--! @par Example
+--! @code{.java}
+--! std.text.font_default(1)
+--! @endcode
+--! @fakefunc font_default(id)
+
+--! @short std.text.mensure
+--! @fakefunc mensure(text)
 
 --! @}
 --! @}
@@ -124,7 +197,7 @@ function native_callback_init(width, height, game_lua)
     std.draw.font=native_draw_font
     std.draw.clear=clear
     std.draw.text=text
-    std.draw.tui_text=tui_text
+    std.text.put=tui_text
     std.draw.rect=rect
     std.draw.line=line
     std.draw.image=image

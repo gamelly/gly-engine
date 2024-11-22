@@ -112,7 +112,7 @@ local function create_request(method, uri)
         local index = 1
         local request = 'curl -L -'..'-silent -'..'-insecure '
 
-        if print_http_status then
+        if self.print_http_status then
             request = request..'-w "\n%{http_code}" '
         end
 

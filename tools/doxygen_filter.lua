@@ -131,6 +131,7 @@ function main()
     local is_lua = arg[1]:sub(#arg[1] - 3) == '.lua'
     local is_game = arg[1]:sub(#arg[1] - 7) == 'game.lua' and arg[1]:find('examples')
     local renamefunc_pattern = '@renamefunc ([%w_]+)'
+    local fake_func_pattern = '@fakefunc ([%w_]+%b())'
     local hideparam_pattern = '@hideparam ([%w_]+)'
     local include_pattern = '^local [%w_%-]+ = require%(\'(.-)\'%)'
     local function_pattern = '^local function ([%w_]+%b())'
@@ -172,11 +173,16 @@ function main()
             local include = line:match(include_pattern)
             local clojure = line:match(function_pattern)
             local hideparam = line:match(hideparam_pattern)
+            local fake_func = line:match(fake_func_pattern)
             local rename_func = line:match(renamefunc_pattern)
             local variable, literal = line:match(literal_pattern)
 
             if is_lua and doxygen then
                 line = line:gsub(doxygen_pattern, '//!')
+            end
+
+            if fake_func then
+                clojure = fake_func
             end
 
             if rename_function and clojure then
