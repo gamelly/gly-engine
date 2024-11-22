@@ -34,6 +34,52 @@ function hardcore()
     
 end
 
+local color_css = [[
+//! <style>
+//! element  {
+//!     HorizontalAlignment center
+//!     MinimumWidth 100
+//!     RoundCorner 0
+//!     LineThickness 3
+//!     FontSize 18
+//! }
+//! agent {
+//!     FontColor white
+//! }
+//! </style>
+]]
+
+function color()
+    local content = color_css
+
+    local function is_dark(hex)
+        if hex <= 0 then return false end
+        return (0.2126 * ((hex >> 24) & 0xFF) + 0.7152 * ((hex >> 16) & 0xFF) + 0.0722 * ((hex >> 8) & 0xFF)) < 128
+    end
+    
+    for line in io.lines('src/lib/object/color.lua') do
+        local var, hex = line:match("local%s+([%w_]+)%s*=%s*(0x[0-9A-Fa-f]+)")
+        if var and hex then
+            local hex_value = tonumber(hex)
+            local prefix = is_dark(hex_value) and "agent" or "rectangle"
+            content = content..string.format('//! %s "%s" #%08X\n', prefix, var, hex_value)
+        end
+    end
+
+    return '//! @startuml\n'..content..'//! @enduml'
+end
+
+local in_code = false
+function code()
+    in_code = true
+    return '//! @code{.java}'
+end
+
+function endcode()
+    in_code = false
+    return '//! @endcode'
+end
+
 function ginga()
     return '@warning <strong>ginga is an enterprise part</strong>, using it in production requires a commercial license for the engine.'
 end
@@ -151,6 +197,8 @@ function main()
                 rename_function = rename_func
             elseif hideparam then
                 params_hiden[#params_hiden + 1] = hideparam
+            elseif in_code then
+                io.write(command == 'endcode' and _G[command]() or '//! '..line)
             elseif include then
                 io.write('#include "'..include..'.lua"')
             elseif is_game and not doxygen then
