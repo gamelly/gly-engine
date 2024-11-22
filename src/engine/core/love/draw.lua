@@ -104,8 +104,8 @@ local function event_bus(std, engine)
     std.bus.listen('resize', function(w, h)
         engine.root.data.width = w
         engine.root.data.height = h
-        std.game.width = w
-        std.game.height = h
+        std.app.width = w
+        std.app.height = h
     end)
 end
 

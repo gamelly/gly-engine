@@ -1,5 +1,5 @@
 local luaunit = require('luaunit')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 
 function test_game_reset()
     local index = 1

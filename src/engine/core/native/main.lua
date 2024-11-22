@@ -2,7 +2,7 @@ local version = require('src/version')
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
@@ -101,8 +101,8 @@ end
 function native_callback_resize(width, height)
     engine.root.data.width = width
     engine.root.data.height = height
-    std.game.width = width
-    std.game.height = height
+    std.app.width = width
+    std.app.height = height
     std.bus.emit('resize', width, height)
 end
 
@@ -116,8 +116,8 @@ function native_callback_init(width, height, game_lua)
     if application then
         application.data.width = width
         application.data.height = height
-        std.game.width = width
-        std.game.height = height
+        std.app.width = width
+        std.app.height = height
     end
 
     std.draw.color=native_draw_color
@@ -150,11 +150,11 @@ function native_callback_init(width, height, game_lua)
         :package('hash', engine_hash, {'native'})
         :run()
 
-    application.data.width, std.game.width = width, width
-    application.data.height, std.game.height = height, height
+    application.data.width, std.app.width = width, width
+    application.data.height, std.app.height = height, height
 
     std.node.spawn(application)
-    std.game.title(application.meta.title..' - '..application.meta.version)
+    std.app.title(application.meta.title..' - '..application.meta.version)
 
     engine.root = application
     engine.current = application

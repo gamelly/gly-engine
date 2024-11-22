@@ -23,7 +23,7 @@
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')

@@ -5,7 +5,7 @@ local zeebo_module = require('src/lib/common/module')
 local core_draw = require('src/engine/core/love/draw')
 local core_loop = require('src/engine/core/love/loop')
 local lib_api_encoder = require('src/lib/engine/api/encoder')
-local lib_api_game = require('src/lib/engine/api/game')
+local lib_api_game = require('src/lib/engine/api/app')
 local lib_api_hash = require('src/lib/engine/api/hash')
 local lib_api_http = require('src/lib/engine/api/http')
 local lib_api_i18n = require('src/lib/engine/api/i18n')
@@ -68,9 +68,9 @@ function love.load(args)
     end
 
     if application then
-        std.game.width = application.data.width
-        std.game.height = application.data.height
-        love.window.setMode(std.game.width, std.game.height, {
+        std.app.width = application.data.width
+        std.app.height = application.data.height
+        love.window.setMode(std.app.width, std.app.height, {
             fullscreen=fullscreen,
             resizable=true
         })
@@ -102,7 +102,7 @@ function love.load(args)
     engine.root = application
     engine.current = application
 
-    std.game.title(application.meta.title..' - '..application.meta.version)
+    std.app.title(application.meta.title..' - '..application.meta.version)
 
     love.update = std.bus.trigger('loop')
     love.resize = std.bus.trigger('resize')

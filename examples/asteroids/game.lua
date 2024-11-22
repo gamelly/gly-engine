@@ -230,7 +230,7 @@ local function loop(std, game)
             if game.menu == 1 then
                 game.state = 4
             elseif game.menu == 2 then
-                std.game.reset()
+                std.app.reset()
                 game.state = 4
                 game.score = 0
             elseif game.menu == 3 then
@@ -247,7 +247,7 @@ local function loop(std, game)
             elseif game.menu == 8 then
                 game.state = 2
             elseif game.menu == 9 then
-                std.game.exit()
+                std.app.exit()
             end
         end
         return
@@ -368,13 +368,13 @@ local function loop(std, game)
         game.state = 6
     end
     if game.state == 6 and std.milis > game.menu_time + 3000 then
-        std.game.reset()
+        std.app.reset()
         game.level = game.level + 1
         game.state = 4
     end
     -- restart 
     if game.state == 5 and std.milis > game.menu_time + 3000 then
-        std.game.reset()
+        std.app.reset()
         game.state = 4
         if game.lifes == 0 then
             game.score = 0

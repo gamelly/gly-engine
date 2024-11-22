@@ -2,7 +2,7 @@ local util_decorator = require('src/lib/util/decorator')
 
 --! @defgroup std
 --! @{
---! @defgroup game
+--! @defgroup app
 --! @{
 
 --! @hideparam std
@@ -37,7 +37,7 @@ end
 local function install(std, engine, config)
     std = std or {}
     config = config or {}
-    std.game = std.game or {}
+    std.app = std.app or {}
 
     std.bus.listen('post_quit', function()
         if config.quit then
@@ -45,12 +45,12 @@ local function install(std, engine, config)
         end
     end)
 
-    std.game.title = util_decorator.prefix1(config.set_title, title)
-    std.game.exit = util_decorator.prefix1(std, exit)
-    std.game.reset = util_decorator.prefix2(std, engine, reset)
-    std.game.get_fps = config.fps
+    std.app.title = util_decorator.prefix1(config.set_title, title)
+    std.app.exit = util_decorator.prefix1(std, exit)
+    std.app.reset = util_decorator.prefix2(std, engine, reset)
+    std.app.get_fps = config.fps
 
-    return std.game
+    return std.app
 end
 --! @endcond
 

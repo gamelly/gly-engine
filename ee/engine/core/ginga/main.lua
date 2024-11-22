@@ -4,7 +4,7 @@ local core_draw = require('ee/engine/core/ginga/draw')
 local core_keys = require('ee/engine/core/ginga/keys')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
@@ -120,7 +120,7 @@ local function install(evt, gamefile)
         :run()
 
     application.data.width, application.data.height = canvas:attrSize()
-    std.game.width, std.game.height = application.data.width, application.data.height
+    std.app.width, std.app.height = application.data.width, application.data.height
 
     std.node.spawn(application)
 

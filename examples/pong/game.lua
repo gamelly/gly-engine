@@ -32,7 +32,7 @@ local function loop(std, game)
             game.ball_spd_x = std.math.abs(game.ball_spd_x) * 1.1
             game.score = game.score + 1
         else
-            std.game.reset()
+            std.app.reset()
         end
     end
 end

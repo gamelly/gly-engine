@@ -2,7 +2,7 @@ local version = require('src/version')
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
@@ -38,8 +38,8 @@ end
 function native_callback_resize(width, height)
     application.data.width = width
     application.data.height = height
-    std.game.width = width
-    std.game.height = height
+    std.app.width = width
+    std.app.height = height
 end
 
 function native_callback_keyboard(key, value)
@@ -52,8 +52,8 @@ function native_callback_init(width, height, game_lua)
     if application then
         application.data.width = width
         application.data.height = height
-        std.game.width = width
-        std.game.height = height
+        std.app.width = width
+        std.app.height = height
     end
     
     std.bus = {
@@ -94,10 +94,10 @@ function native_callback_init(width, height, game_lua)
         :run()
 
 
-    application.data.width, std.game.width = width, width
-    application.data.height, std.game.height = height, height
+    application.data.width, std.app.width = width, width
+    application.data.height, std.app.height = height, height
 
-    std.game.title(application.meta.title..' - '..application.meta.version)
+    std.app.title(application.meta.title..' - '..application.meta.version)
 
     engine.root = application
     engine.current = application

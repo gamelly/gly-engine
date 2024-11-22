@@ -64,8 +64,8 @@ end
 --!     std.http.get(url)
 --!         :success(function(std, game)
 --!             std.mem.gc_clear_all()
---!             game.application = std.game.load(std.http.body)
---!             game.application.init(std, game)
+--!             game.application = std.node.load(std.http.body)
+--!             std.node.spawn(game.application)
 --!         end)
 --!         :run()
 --! end
