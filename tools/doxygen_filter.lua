@@ -129,7 +129,7 @@ function main()
 
     local is_txt = arg[1]:sub(#arg[1] - 3) == '.txt'
     local is_lua = arg[1]:sub(#arg[1] - 3) == '.lua'
-    local is_game = arg[1]:sub(#arg[1] - 7) == 'game.lua' and arg[1]:find('examples')
+    local is_game = arg[1]:sub(#arg[1] - 7) == 'game.lua' and arg[1]:find('samples')
     local renamefunc_pattern = '@renamefunc ([%w_]+)'
     local fake_func_pattern = '@fakefunc ([%w_]+%b())'
     local hideparam_pattern = '@hideparam ([%w_]+)'

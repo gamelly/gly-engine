@@ -32,7 +32,7 @@ OUTPUT_LANGUAGE        = English
 FILE_PATTERNS          = *.lua *.txt
 FILTER_PATTERNS        = *="lua tools/doxygen_filter.lua"
 EXTENSION_MAPPING      = .lua=C++
-INPUT                  = docs src examples
+INPUT                  = docs src samples
 MARKDOWN_ID_STYLE      = GITHUB
 ALIASES               += startjson=@startuml{json}
 ALIASES               += endjson=@enduml

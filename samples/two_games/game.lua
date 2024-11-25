@@ -2,8 +2,8 @@
 --! @see asteroids
 
 local function load(std, game)
-    local game1 = std.node.load('examples/pong/game.lua')
-    local game2 = std.node.load('examples/asteroids/game.lua')
+    local game1 = std.node.load('samples/pong/game.lua')
+    local game2 = std.node.load('samples/asteroids/game.lua')
 
     game.toggle = false
     game.ui_split = std.ui.grid('2x1')

@@ -95,7 +95,7 @@ end
 --! @return node
 --! @par Example
 --! @code{.java}
---! local game = std.node.load('examples/awesome/game.lua')
+--! local game = std.node.load('samples/awesome/game.lua')
 --! print(game.meta.title)
 --! @endcode
 local function load(application)
@@ -108,7 +108,7 @@ end
 --! @param [in/out] application
 --! @par Example
 --! @code{.java}
---! local game = std.node.load('examples/awesome/game.lua')
+--! local game = std.node.load('samples/awesome/game.lua')
 --! std.node.spawn(game)
 --! @endcode
 local function spawn(engine, application)
