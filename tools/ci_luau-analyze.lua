@@ -13,7 +13,7 @@ if core == 'cli' then
     return
 end
 
-cmd('./cli.sh build --bundler --core '..core)
+cmd('./cli.sh build --bundler --enterprise --core '..core)
 cmd(replace..' --format "function native_callback" --replace "local function _native_callback"')
-cmd('./cli.sh tool-package-del dist/main.lua core_src_third_party_json_rxi')
+cmd('./cli.sh tool-package-del dist/main.lua core_third_party_json_rxi')
 cmd('./cli.sh tool-package-del dist/main.lua core_src_lib_engine_api_encoder')
