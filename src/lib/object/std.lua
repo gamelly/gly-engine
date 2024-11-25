@@ -22,7 +22,7 @@ local P = {
         mensure = function() end,
         font_size = function() end,
         font_name = function() end,
-        font_defaullt = function() end
+        font_default = function() end
     },
     app = {
         width = 1280,

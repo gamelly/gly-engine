@@ -56,6 +56,9 @@ local util_decorator = require('src/lib/util/decorator')
 
 --! @short std.text.put
 --! @renamefunc put
+--! @hideparam std
+--! @hideparam engine
+--! @hideparam font_previous
 --! @brief print text grid in based 80x24
 --! @par Example
 --! @code{.java}

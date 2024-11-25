@@ -1,6 +1,7 @@
 local zeebo_module = require('src/lib/common/module')
 --
 local core_draw = require('ee/engine/core/ginga/draw')
+local core_text = require('ee/engine/core/ginga/text')
 local core_keys = require('ee/engine/core/ginga/keys')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
@@ -12,6 +13,7 @@ local engine_keys = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
+local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_bus = require('src/lib/engine/raw/bus')
 local engine_fps = require('src/lib/engine/raw/fps')
@@ -68,6 +70,10 @@ local cfg_fps_control = {
     uptime=event.uptime
 }
 
+local cfg_text = {
+    font_previous = core_text.font_previous
+}
+
 local system_language = function()
     return 'pt-BR'
 end
@@ -107,6 +113,8 @@ local function install(evt, gamefile)
         :package('@keys1', engine_keys)
         :package('@keys2', core_keys)
         :package('@draw', core_draw)
+        :package('@draw.text', core_text)
+        :package('@draw.text2', engine_draw_text, cfg_text)
         :package('@draw.ui', engine_draw_ui)
         :package('@draw.fps', engine_draw_fps)
         :package('@draw.poly', engine_draw_poly, cfg_poly)

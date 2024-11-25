@@ -30,7 +30,6 @@ end
 
 local function install(std, engine)
     std.text = std.text or {}
-    std.text.put = util_decorator.prefix2(std, engine, text_put)
     std.text.print = util_decorator.prefix2(std, engine, text_print)
     std.text.font_size = util_decorator.prefix2(std, engine, font_size)
     std.text.font_name = util_decorator.prefix2(std, engine, function() end)
