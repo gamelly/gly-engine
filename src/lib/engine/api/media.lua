@@ -8,6 +8,7 @@ local util_decorator = require('src/lib/util/decorator')
 --! @pre require @c media
 --! @details
 --!
+--! @todo support as a playlist
 --! @page media_video Video
 --! @par Example
 --! @code

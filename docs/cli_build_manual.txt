@@ -86,7 +86,7 @@ void native_draw_rect(int mode, double x, double y, double width, double heigth)
 void native_draw_line(double x1, double y1, double x1, double y1)
 ```
 
-@li **API FUNCTION LEVEL 2** @n estimated implementation time: 2 days
+@li **API FUNCTION LEVEL 2** @n estimated implementation time: 2~4 days
 ```
 void native_text_print(double x, double y, char* text)
 ```
@@ -98,6 +98,9 @@ void native_text_font_name(char* name)
 ```
 ```
 void native_text_font_default(int font_id)
+```
+```
+void native_draw_image(double x, double y, char* src)
 ```
 
 @li **API FUNCTION LEVEL 3** @n estimated implementation time: 2~4 weaks

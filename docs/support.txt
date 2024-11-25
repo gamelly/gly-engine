@@ -1,4 +1,4 @@
-@page why Features and Support
+@page support Features and Support
 
 ## Comparison between Game Engines
 

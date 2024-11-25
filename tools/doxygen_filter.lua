@@ -150,12 +150,17 @@ function main()
     if is_game then
         local game = dofile(arg[1])
         local game_name = arg[1]:match('([%w_]+)/game.lua$')
+        local game_link = game_name
         io.write(group('Examples', game_name, game.meta.title))
         io.write(game_requires(game))
         io.write('//! @short @c \\@'..game_name..'\n')
         io.write('//! @author '..game.meta.author..'\n')
         io.write('//! @version '..game.meta.version..'\n')
         io.write('//! @par Brief \n//! @details '..game.meta.description..'\n')
+        if game_link == 'two_games' then
+            game_link = '2games'
+        end
+        io.write('//! @par Play Online! \n//! @li https://'..game_link..'.gamely.com.br \n')
         io.write(game_screenshot(game))
         game_src = source(arg[1])
     end
@@ -197,6 +202,7 @@ function main()
                     index = index + 1
                 end
                 params_hiden = {}
+                clojure = clojure:gsub(',%s*%)', ')')
             end
 
             if rename_func then

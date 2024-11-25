@@ -23,7 +23,7 @@ local util_decorator = require('src/lib/util/decorator')
 --! @endcode
 --!
 --! @par Breakpoints
---! @todo comming soon
+--! @todo comming soon breakpoints
 --!
 --! |        | 1seg | SD 480 | HD 720  | FULL HD 1080 | QUAD HD 1440 | ULTRA HD 4K |
 --! | :----- |      | :----: | :-----: | :----------: | :----------: | :---------: |

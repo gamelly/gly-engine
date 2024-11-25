@@ -1,8 +1,8 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Gly Game Engine"
+PROJECT_NAME           = "GlyEngine"
 PROJECT_NUMBER         = 0.0.13
-PROJECT_BRIEF          = "Game engine in lua"
+PROJECT_BRIEF          = "Create games and apps with lua"
 PROJECT_LOGO           = assets/icon80x80.png
 GENERATE_RTF           = NO
 GENERATE_LATEX         = NO
@@ -16,7 +16,7 @@ EXTRACT_ALL            = YES
 USE_MATHJAX            = YES
 COMPACT_LATEX          = NO
 EXTRACT_STATIC         = NO
-SHORT_NAMES            = YES
+SHORT_NAMES            = NO
 INLINE_GROUPED_CLASSES = YES
 INLINE_SIMPLE_STRUCTS  = YES
 TYPEDEF_HIDES_STRUCT   = YES
