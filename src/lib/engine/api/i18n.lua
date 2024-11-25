@@ -139,13 +139,8 @@ end
 --! @}
 
 local function decorator_draw_text(func)
-    return function (x, y, text)
-        if text then
-            text = get_text(text)
-        else
-            x = get_text(x)
-        end
-        return func(x, y, text)
+    return function (x, y, text, a, b, c)
+        return func(x, y, get_text(text), a, b, c)
     end
 end
 
@@ -157,17 +152,21 @@ local function event_bus(std, engine)
 end
 
 local function install(std, engine, system_language)
-    if not (std and std.draw and std.draw.text) then
+    if not (std and std.text and std.text.print) then
         error('missing draw text')
     end
 
-    local old_draw_text = std.draw.text
+    local old_put = std.text.put
+    local old_print = std.text.print
+    local old_print_ex = std.text.print_ex
 
     if system_language then
         set_language(system_language())
     end
     
-    std.draw.text = decorator_draw_text(old_draw_text)
+    std.text.put = decorator_draw_text(old_put)
+    std.text.print = decorator_draw_text(old_print)
+    std.text.print_ex = decorator_draw_text(old_print_ex)
     std.i18n = {}
     std.i18n.get_text = get_text
     std.i18n.get_language = get_language

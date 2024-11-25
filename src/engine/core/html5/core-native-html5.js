@@ -10,6 +10,21 @@ const engine = {
         canvas: false,
         stop: false   
     },
+    font: {
+        previous_size: 8,
+        previous_name: 'sans',
+        change: true,
+        name: 'sans',
+        size: 8,
+        apply: () => {
+            engine.font.previous_name = engine.font.name
+            engine.font.previous_size = engine.font.size
+            engine.canvas_ctx.font = `${engine.font.size}px ${engine.font.name}`;
+            engine.canvas_ctx.textBaseline = 'top'
+            engine.canvas_ctx.textAlign = 'left'
+            engine.font.change = false
+        },
+    },
     images: {},
     listen: {},
     global: {
@@ -35,27 +50,34 @@ const engine = {
         native_draw_rect: (mode, x, y, w, h) => {
             mode === 1 ? engine.canvas_ctx.strokeRect(x, y, w, h) : engine.canvas_ctx.fillRect(x, y, w, h)
         },
-        native_draw_font: (name, size) => {
-            const font_size = size || name
-            const font_name = 'sans'
-            engine.canvas_ctx.font = `${font_size}px ${font_name}`;
-            engine.canvas_ctx.textBaseline = 'top'
-            engine.canvas_ctx.textAlign = 'left'
+        native_text_font_name: (name) => {
+            engine.font.name = name
+            engine.font.change = true
         },
-        native_draw_text_tui: (x, y, ox, oy, width, height, size, text) => {
-            const old_font = engine.canvas_ctx.font
-            const hem = width / 80
-            const vem = height / 24
-            const font_size = hem * size
-            engine.canvas_ctx.font = `${font_size}px sans`
-            engine.canvas_ctx.fillText(text, ox + (x * hem), oy + (y * vem))
-            engine.canvas_ctx.font = old_font
+        native_text_font_size: (size) => {
+            engine.font.size = size
+            engine.font.change = true
         },
-        native_draw_text: (x, y, text) => {
-            if (x && y) {
-                engine.canvas_ctx.fillText(text, x, y)
+        native_text_font_default: (font_id) => {
+            engine.font.name = 'sans'
+            engine.font.change = true
+        },
+        native_text_font_previous: () => {
+            engine.font.name = engine.font.previous_name
+            engine.font.size = engine.font.previous_size
+            engine.font.change = true
+        },
+        native_text_print: (x, y, text) => {
+            if (engine.font.change) {
+                engine.font.apply()
             }
-            const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = engine.canvas_ctx.measureText(text || x)
+            engine.canvas_ctx.fillText(text, x, y)
+        },
+        native_text_mensure: (text) => {
+            if (engine.font.change) {
+                engine.font.apply()
+            }
+            const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = engine.canvas_ctx.measureText(text)
             return [width, actualBoundingBoxAscent + actualBoundingBoxDescent]
         },
         native_draw_image: (src, x, y) => {
@@ -149,8 +171,10 @@ function errorController(func) {
             engine.global.native_draw_start()
             engine.global.native_draw_clear(0x0000FFFF)
             engine.global.native_draw_color(0xFFFFFFFF)
-            engine.global.native_draw_text(8, 16, 'Fatal ERROR')
-            engine.global.native_draw_text(8, 32, e.toString())
+            engine.global.native_text_font_size(8)
+            engine.global.native_text_font_default(1)
+            engine.global.native_text_print(8, 16, 'Fatal ERROR')
+            engine.global.native_text_print(8, 32, e.toString())
         }
         if (engine.error.callback) {
             engine.error.callback(e)

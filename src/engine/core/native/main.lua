@@ -1,4 +1,5 @@
 local version = require('src/version')
+local util_decorator = require('src/lib/util/decorator')
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
@@ -11,6 +12,7 @@ local engine_key = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
+local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_raw_bus = require('src/lib/engine/raw/bus')
 local engine_raw_node = require('src/lib/engine/raw/node')
@@ -36,6 +38,10 @@ local cfg_media = {
     play=native_media_play
 }
 
+local cfg_text = {
+    font_previous = native_text_font_previous
+}
+
 --! @defgroup std
 --! @{
 --! @defgroup draw
@@ -49,112 +55,13 @@ local function clear(tint)
 end
 
 --! @short std.draw.rect
-local function rect(mode, pos_x, pos_y, width, height)
-    local ox, oy = engine.offset_x, engine.offset_y
-    native_draw_rect(mode, pos_x + ox, pos_y + oy, width, height)
-end
+--! @fakefunc rect
 
 --! @short std.draw.line
-local function line(x1, y1, x2, y2)
-    local ox, oy = engine.offset_x, engine.offset_y
-    native_draw_line(x1 + ox, y1 + oy, x2 + ox, y2 + oy)
-end
+--! @fakefunc line
 
 --! @short std.draw.image
-local function image(src, pos_x, pos_y)
-    local x = engine.offset_x + (pos_x or 0)
-    local y = engine.offset_y + (pos_y or 0)
-    native_draw_image(src, x, y)
-end
-
---! @}
---! @defgroup text
---! @{
---! @par Align text
---! @code{.java}
---! std.text.print_ex(240, 80, 'center', 0)
---! std.text.print_ex(240, 80, 'right', -1)
---! std.text.print_ex(240, 80, 'left', 1)
---! @endcode
---! @par Print and Mensure
---! @code{.java}
---! local w = std.text.print_ex(240, 80, 'foo')
---! std.text.print(240, 80 + w, 'bar')
---! @endcode
---! 
-
---! @renamefunc print
---! @short std.text.print
---! @par Alternatives
---! @li @b std.text.print_ex returning @ref mensure and can align @b -1, @b 0 or @b 1
---! @par Example
---! @code{.java}
---! std.text.put((std.app.width/4) * 3, 8, '1/4 text')
---! @endcode
-local function text_print(pos_x, pos_y, text)
-    local ox, oy = engine.offset_x, engine.offset_y
-    if pos_x and pos_y then
-        return native_draw_text(pos_x + ox, pos_y + oy, text)
-    end
-    return native_draw_text(pos_x)
-end
-
---! @renamefunc put
---! @short std.text.put
---! @brief @b TUI grid based text print
---! @par Grid
---! @startuml
---! rectangle "\t\t\t\t\n\n\n\n" as terminal
---! label "80" as columns
---! label "24" as lines
---! terminal <.u. columns
---! terminal <.r. lines
---! @enduml
---! @par Equation
---! @startmath
---! \text{hem} = \frac{\text{width}}{80} \\
---! \text{vem} = \frac{\text{height}}{24} \\
---! f(\text{x}) = \text{x} \times \text{hem} \\
---! f(\text{y}) = \text{y} \times \text{vem} \\
---! f(\text{size}) = \text{size} \times \text{hem}
---! @endmath
---! @par Example
---! @code{.java}
---! std.text.put(1, 20, 1, '1/4 text')
---! @endcode
-local function text_put(size, pos_x, pos_y, text)
-    local ox, oy = engine.offset_x, engine.offset_y
-    local width, height = engine.current.data.width, engine.current.data.height
-    native_draw_text_tui(pos_x, pos_y, ox, oy, width, height, size, text)
-end
-
---! @short std.text.font_size
---! @par Example
---! @code{.java}
---! std.text.font_size(8)
---! @endcode
---! @fakefunc font_size(size)
-
---! @short std.text.font_name
---! @par Example
---! @code{.java}
---! std.text.font_name('Comic Sans')
---! @endcode
---! @fakefunc font_name(name)
-
---! @short std.text.font_default
---! @par List
---! @li @b 1 [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans)
---! @li @b 2 [IBM Plex Sans](https://fonts.google.com/specimen/IBM+Plex+Sans)
---!
---! @par Example
---! @code{.java}
---! std.text.font_default(1)
---! @endcode
---! @fakefunc font_default(id)
-
---! @short std.text.mensure
---! @fakefunc mensure(text)
+--! @fakefunc image
 
 --! @}
 --! @}
@@ -194,14 +101,16 @@ function native_callback_init(width, height, game_lua)
     end
 
     std.draw.color=native_draw_color
-    std.draw.font=native_draw_font
     std.draw.clear=clear
-    std.draw.text=text
-    std.text.put=tui_text
-    std.draw.rect=rect
-    std.draw.line=line
-    std.draw.image=image
-    
+    std.draw.rect=util_decorator.offset_xy2(engine, native_draw_rect)
+    std.draw.line=util_decorator.offset_xyxy1(engine, native_draw_line)
+    std.draw.image=util_decorator.offset_xy2(engine, native_draw_image)
+    std.text.print = util_decorator.offset_xy1(engine, native_text_print)
+    std.text.mensure=native_text_mensure
+    std.text.font_size=native_text_font_size
+    std.text.font_name=native_text_font_name
+    std.text.font_default=native_text_font_default
+
     zeebo_module.require(std, application, engine)
         :package('@bus', engine_raw_bus)
         :package('@node', engine_raw_node)
@@ -211,6 +120,7 @@ function native_callback_init(width, height, game_lua)
         :package('@key', engine_key, {})
         :package('@draw.ui', engine_draw_ui)
         :package('@draw.fps', engine_draw_fps)
+        :package('@draw.text', engine_draw_text, cfg_text)
         :package('@draw.poly', engine_draw_poly, native_dict_poly)
         :package('@color', color)
         :package('math', engine_math.clib)

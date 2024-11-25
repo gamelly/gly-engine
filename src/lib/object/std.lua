@@ -12,11 +12,17 @@ local P = {
         clear = function () end,
         color = function () end,
         rect = function () end,
-        text = function () end,
-        font = function () end,
         line = function () end,
         poly = function () end,
         tui_text = function() end
+    },
+    text = {
+        put = function() end,
+        print = function() end,
+        mensure = function() end,
+        font_size = function() end,
+        font_name = function() end,
+        font_defaullt = function() end
     },
     app = {
         width = 1280,

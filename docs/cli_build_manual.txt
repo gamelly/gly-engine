@@ -34,7 +34,7 @@ in fact you have to manipulate the Lua VM stack in most cases.
 @startuml
 note "work here" as work
 
-artifact game as "Game"
+artifact game as "Game\nor APP"
 
 file bin as "binary\t\t" {
   artifact engine as "Gly\nEngine"
@@ -98,6 +98,9 @@ void native_text_font_name(char* name)
 ```
 ```
 void native_text_font_default(int font_id)
+```
+```
+void native_text_font_previous()
 ```
 ```
 void native_draw_image(double x, double y, char* src)

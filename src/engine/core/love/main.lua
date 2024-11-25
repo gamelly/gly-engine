@@ -13,6 +13,7 @@ local lib_api_i18n = require('src/lib/engine/api/i18n')
 local lib_api_key = require('src/lib/engine/api/key')
 local lib_api_math = require('src/lib/engine/api/math')
 local lib_draw_fps = require('src/lib/engine/draw/fps')
+local lib_draw_text = require('src/lib/engine/draw/text')
 local lib_draw_poly = require('src/lib/engine/draw/poly')
 local lib_draw_ui = require('src/lib/engine/draw/ui')
 local lib_raw_bus = require('src/lib/engine/raw/bus')
@@ -55,6 +56,10 @@ local cfg_game_api = {
     quit = love.event.quit
 }
 
+local cfg_text = {
+    font_previous = core_text.font_previous
+}
+
 function love.load(args)
     local screen = util_arg.get(args, 'screen')
     local fullscreen = util_arg.has(args, 'fullscreen')
@@ -85,6 +90,7 @@ function love.load(args)
         :package('@math', lib_api_math)
         :package('@key', lib_api_key, cfg_keys)
         :package('@draw.text', core_text)
+        :package('@draw.text2', lib_draw_text, cfg_text)
         :package('@draw.poly', lib_draw_poly, cfg_poly)
         :package('@draw.fps', lib_draw_fps)
         :package('@draw.ui', lib_draw_ui)

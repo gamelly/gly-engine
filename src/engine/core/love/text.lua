@@ -1,21 +1,5 @@
 local util_decorator = require('src/lib/util/decorator')
-
-local function text_put(std, engine, size, pos_x, pos_y, text)
-    local hem = engine.current.data.width / 80
-    local vem = engine.current.data.height / 24
-    local x = engine.offset_x + (pos_x * hem)
-    local y = engine.offset_y + (pos_y * vem)
-    local font_size = hem * size
-
-    local old_font = love.graphics.getFont()
-    local new_font = std.mem.cache('font_tui'..tostring(font_size), function()
-        return love.graphics.newFont(font_size)
-    end)
-
-    love.graphics.setFont(new_font)
-    love.graphics.print(text, x, y)
-    love.graphics.setFont(old_font)
-end
+local old_font = nil
 
 local function text_print(std, engine, pos_x, pos_y, text)
     local x = engine.offset_x + pos_x
@@ -24,10 +8,15 @@ local function text_print(std, engine, pos_x, pos_y, text)
 end
 
 local function font_size(std, engine, size)
+    old_font = love.graphics.getFont()
     local f = std.mem.cache('font_'..tostring(size), function()
         return love.graphics.newFont(size)
     end)
     love.graphics.setFont(f)
+end
+
+local function font_previous()
+    love.graphics.setFont(old_font)
 end
 
 local function text_mensure(std, engine, text)
@@ -47,16 +36,11 @@ local function install(std, engine)
     std.text.font_name = util_decorator.prefix2(std, engine, function() end)
     std.text.font_default = util_decorator.prefix2(std, engine, function() end)
     std.text.mensure = util_decorator.prefix2(std, engine, text_mensure)
-    std.text.print_ex = function(x, y, text, align)
-        local w, h = text_mensure(std, engine, text)
-        local aligns = {w, w/2, 0}
-        text_print(std, engine, x - aligns[(align or 1) + 2], y, text)
-        return w, h
-    end
 end
 
 local P = {
-    install = install
+    install = install,
+    font_previous = font_previous
 }
 
 return P
