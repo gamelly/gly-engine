@@ -182,21 +182,24 @@ function errorController(func) {
     }
 }
 
-function resizeCanvas() {
-    if (engine.body_element.clientWidth > engine.body_element.clientHeight) {
-        engine.canvas_element.height = engine.body_element.clientHeight
-        engine.canvas_element.width = engine.body_element.clientWidth
+function resizeCanvas(w, h) {
+    let width = w ?? engine.body_element.clientWidth
+    let height = h ?? engine.body_element.clientHeight
+    if (width > height) {
+        engine.canvas_element.height = height
+        engine.canvas_element.width = width
     }
     else {
-        engine.canvas_element.height = Math.floor(engine.body_element.clientHeight / 2)
-        engine.canvas_element.width = engine.body_element.clientWidth
+        engine.canvas_element.height = Math.floor(height / 2)
+        engine.canvas_element.width = width
     }
 }
 
 const gly = {
     init: (canvas_selector) => {
+        const is_el = typeof canvas_selector !== 'string'
         engine.body_element = document.querySelector('body')
-        engine.canvas_element = document.querySelector(canvas_selector)
+        engine.canvas_element = is_el? canvas_selector: document.querySelector(canvas_selector)
         engine.canvas_ctx = engine.canvas_element.getContext("2d")
         engine.canvas_close = [
             () => engine.canvas_ctx.fill(),
@@ -227,8 +230,8 @@ const gly = {
         engine.error.stop = !silent && behavior.includes('stop')
         engine.error.callback = error_callback
     },
-    resize: () => {
-        resizeCanvas()
+    resize: (canvas_width, canvas_height) => {
+        resizeCanvas(canvas_width, canvas_height)
         const {width, height} = engine.canvas_element
         errorController(() => {
             engine.listen.native_callback_resize(width, height)
