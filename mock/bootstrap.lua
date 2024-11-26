@@ -106,6 +106,7 @@ end
 
 io.open = function(filename, mode)
     local file = real_io_open(filename, mode)
+    filename = (filename or ''):gsub('^./', '')
 
     if javascript_fs then
         file = javascript_io_open(filename, mode)
