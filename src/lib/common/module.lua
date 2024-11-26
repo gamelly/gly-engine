@@ -134,6 +134,8 @@ local function package(self, module_name, module, custom)
     self.pipeline[#self.pipeline + 1] = function ()
         if not self.list_exist(name) then return end
         if not system and not self.lib_required[name] then return end
+        if not system and self.engine.lib_installed[name] then return end
+        if system and self.engine.stdlib_installed[name] then return end
         
         local try_install = function()
             module.install(self.std, self.engine, custom, module_name)
@@ -149,9 +151,9 @@ local function package(self, module_name, module, custom)
         end
         
         if system then
-            self.stdlib_installed[name] = true
+            self.engine.stdlib_installed[name] = true
         else
-            self.lib_installed[name] = true
+            self.engine.lib_installed[name] = true
         end
     end
 
@@ -177,14 +179,17 @@ local function require(std, application, engine)
         lib_error = {},
         lib_optional = {},
         lib_required = {},
-        lib_installed = {},
         stdlib_required = {},
-        stdlib_installed = {},
         -- internal
         pipeline = {},
         pipe = zeebo_pipeline.pipe
     }
-    
+
+    if not engine.lib_installed then
+        engine.lib_installed = {}
+        engine.stdlib_installed = {}
+    end
+
     self.list_exist = function (name)
         return self.lib_optional[name] or self.lib_required[name] or self.stdlib_required[name]
     end
@@ -198,10 +203,10 @@ local function require(std, application, engine)
         zeebo_pipeline.run(self)
         while index <= #self.list do
             local name = self.list[index]
-            if self.stdlib_required[name] and not self.stdlib_installed[name] then
+            if self.stdlib_required[name] and not self.engine.stdlib_installed[name] then
                 error('system library not loaded: '..name..'\n'..(self.lib_error[name] or ''))
             end
-            if self.lib_required[name] and not self.lib_installed[name] then
+            if self.lib_required[name] and not self.engine.lib_installed[name] then
                 error('library not loaded: '..name..'\n'..(self.lib_error[name] or ''))
             end
             index = index + 1
