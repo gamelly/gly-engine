@@ -47,6 +47,7 @@ local function scan(type_file)
 
         local hasfile = type_file
         local firstchar = src:sub(1,1)
+        local secondchar = src:sub(2,2)
         local windriver = string.match(src, '^([A-Z]):[/\\]')
         local separator = (mock_separator or (_G.package and _G.package.config) or '/'):sub(1,1)
 
@@ -61,7 +62,7 @@ local function scan(type_file)
         if firstchar == '/' or firstchar == '\\' or windriver then
             self.windriver = windriver or 'C'
             self.absolute = true
-        else
+        elseif firstchar ~= '.' and secondchar ~= '/' then
             src = '.'..separator..src
         end
 
