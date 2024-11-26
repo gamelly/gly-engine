@@ -1,14 +1,18 @@
+local version = require('src/version')
+local util_decorator = require('src/lib/util/decorator')
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
+local engine_media = require('src/lib/engine/api/media')
 local engine_key = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
+local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_raw_bus = require('src/lib/engine/raw/bus')
 local engine_raw_node = require('src/lib/engine/raw/node')
@@ -26,6 +30,18 @@ local engine = {
     offset_y = 0
 }
 
+local cfg_media = {
+    position=native_media_position,
+    resize=native_media_resize,
+    pause=native_media_pause,
+    load=native_media_load,
+    play=native_media_play
+}
+
+local cfg_text = {
+    font_previous = native_text_font_previous
+}
+
 --! @defgroup std
 --! @{
 --! @defgroup draw
@@ -39,39 +55,13 @@ local function clear(tint)
 end
 
 --! @short std.draw.rect
-local function rect(mode, pos_x, pos_y, width, height)
-    local ox, oy = engine.offset_x, engine.offset_y
-    native_draw_rect(mode, pos_x + ox, pos_y + oy, width, height)
-end
-
---! @short std.draw.tui_text
-local function tui_text(pos_x, pos_y, size, text)
-    local ox, oy = engine.offset_x, engine.offset_y
-    local width, height = engine.current.data.width, engine.current.data.height
-    native_draw_text_tui(pos_x, pos_y, ox, oy, width, height, size, text)
-end
-
---! @short std.draw.text
-local function text(pos_x, pos_y, text)
-    local ox, oy = engine.offset_x, engine.offset_y
-    if pos_x and pos_y then
-        return native_draw_text(pos_x + ox, pos_y + oy, text)
-    end
-    return native_draw_text(pos_x)
-end
+--! @fakefunc rect
 
 --! @short std.draw.line
-local function line(x1, y1, x2, y2)
-    local ox, oy = engine.offset_x, engine.offset_y
-    native_draw_line(x1 + ox, y1 + oy, x2 + ox, y2 + oy)
-end
+--! @fakefunc line
 
 --! @short std.draw.image
-local function image(src, pos_x, pos_y)
-    local x = engine.offset_x + (pos_x or 0)
-    local y = engine.offset_y + (pos_y or 0)
-    native_draw_image(src, x, y)
-end
+--! @fakefunc image
 
 --! @}
 --! @}
@@ -91,8 +81,8 @@ end
 function native_callback_resize(width, height)
     engine.root.data.width = width
     engine.root.data.height = height
-    std.game.width = width
-    std.game.height = height
+    std.app.width = width
+    std.app.height = height
     std.bus.emit('resize', width, height)
 end
 
@@ -106,19 +96,21 @@ function native_callback_init(width, height, game_lua)
     if application then
         application.data.width = width
         application.data.height = height
-        std.game.width = width
-        std.game.height = height
+        std.app.width = width
+        std.app.height = height
     end
 
     std.draw.color=native_draw_color
-    std.draw.font=native_draw_font
     std.draw.clear=clear
-    std.draw.text=text
-    std.draw.tui_text=tui_text
-    std.draw.rect=rect
-    std.draw.line=line
-    std.draw.image=image
-    
+    std.draw.rect=util_decorator.offset_xy2(engine, native_draw_rect)
+    std.draw.line=util_decorator.offset_xyxy1(engine, native_draw_line)
+    std.draw.image=util_decorator.offset_xy2(engine, native_draw_image)
+    std.text.print = util_decorator.offset_xy1(engine, native_text_print)
+    std.text.mensure=native_text_mensure
+    std.text.font_size=native_text_font_size
+    std.text.font_name=native_text_font_name
+    std.text.font_default=native_text_font_default
+
     zeebo_module.require(std, application, engine)
         :package('@bus', engine_raw_bus)
         :package('@node', engine_raw_node)
@@ -128,6 +120,7 @@ function native_callback_init(width, height, game_lua)
         :package('@key', engine_key, {})
         :package('@draw.ui', engine_draw_ui)
         :package('@draw.fps', engine_draw_fps)
+        :package('@draw.text', engine_draw_text, cfg_text)
         :package('@draw.poly', engine_draw_poly, native_dict_poly)
         :package('@color', color)
         :package('math', engine_math.clib)
@@ -136,14 +129,15 @@ function native_callback_init(width, height, game_lua)
         :package('json', engine_encoder, native_dict_json)
         :package('xml', engine_encoder, native_dict_xml)
         :package('i18n', engine_i18n, native_get_system_lang)
+        :package('media', engine_media, cfg_media)
         :package('hash', engine_hash, {'native'})
         :run()
 
-    application.data.width, std.game.width = width, width
-    application.data.height, std.game.height = height, height
+    application.data.width, std.app.width = width, width
+    application.data.height, std.app.height = height, height
 
     std.node.spawn(application)
-    std.game.title(application.meta.title..' - '..application.meta.version)
+    std.app.title(application.meta.title..' - '..application.meta.version)
 
     engine.root = application
     engine.current = application
@@ -157,7 +151,7 @@ local P = {
         title='gly-engine',
         author='RodrigoDornelles',
         description='native core',
-        version='0.0.11'
+        version=version
     }
 }
 

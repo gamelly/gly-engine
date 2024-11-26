@@ -32,7 +32,7 @@ local function loop(std, game)
             game.ball_spd_x = std.math.abs(game.ball_spd_x) * 1.1
             game.score = game.score + 1
         else
-            std.game.reset()
+            std.app.reset()
         end
     end
 end
@@ -42,8 +42,8 @@ local function draw(std, game)
     std.draw.color(std.color.white)
     std.draw.rect(0, game.ball_size, game.player_pos, game.ball_size, game.player_size)
     std.draw.rect(0, game.ball_pos_x, game.ball_pos_y, game.ball_size, game.ball_size)
-    std.draw.tui_text(20, 1, 2, game.score)
-    std.draw.tui_text(60, 1, 2, game.highscore)
+    std.text.put(20, 1, game.score)
+    std.text.put(60, 1, game.highscore)
 end
 
 local function exit(std, game)

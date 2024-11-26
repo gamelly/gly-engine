@@ -1,3 +1,5 @@
+local version = require('src/version')
+
 local help_message = "Available commands:\n"
   .."- init: Initializes a new game project. Requires a game path.\n"
   .."- build: Builds the game for distribution. Defaults to the 'ginga' core.\n"
@@ -26,7 +28,7 @@ local help_message = "Available commands:\n"
   .."\n"
   .."Usage:\n"
   .."- To run a command, use: ./cli.sh <command> <game_path> [options]\n"
-  .."- Example: ./cli.sh build ./examples/asteroids/game.lua " .. "-" .. "-core ginga\n"
+  .."- Example: ./cli.sh build ./samples/asteroids/game.lua " .. "-" .. "-core ginga\n"
   .."\n"
   .."Available options:\n"
   .."-" .. "-dist <path>: Specifies the distribution directory (default: './dist/').\n"
@@ -39,18 +41,16 @@ local help_message = "Available commands:\n"
   .."\n"
   .."Examples:\n"
   .."- To initialize a new game: ./cli.sh init ./my_game\n"
-  .."- To build a game: ./cli.sh build ./examples/asteroids/game.lua " .. "-" .. "-core html5\n"
-  .."- To run a game: ./cli.sh run ./examples/asteroids/game.lua "  .. "-" .. "-core repl\n"
-  .."- To display metadata: ./cli.sh meta ./examples/asteroids/game.lua\n"
+  .."- To build a game: ./cli.sh build ./samples/asteroids/game.lua " .. "-" .. "-core html5\n"
+  .."- To run a game: ./cli.sh run ./samples/asteroids/game.lua "  .. "-" .. "-core repl\n"
+  .."- To display metadata: ./cli.sh meta ./samples/asteroids/game.lua\n"
 
-local version_message = '0.0.11'
-
-local function help()
+  local function help()
   return true, help_message
 end
 
-local function version()
-  return true, version_message
+local function version_message()
+  return true, version
 end
 
 local function meta()
@@ -58,7 +58,7 @@ local function meta()
   return {
     meta={
       title='gly-cli',
-      version=version_message,
+      version=version,
       author='RodrigoDornelles',
       description=description
     }
@@ -90,7 +90,9 @@ local function correct_usage(args)
   index = 1
   while index <= #args.option_has do
     local option = args.option_has[index]
-    command = command..' --'..option
+    if not args.hidden[option] then
+      command = command..' --'..option
+    end
     index = index + 1
   end
 
@@ -100,7 +102,7 @@ end
 local P = {
   meta = meta,
   help = help,
-  version = version,
+  version = version_message,
   ['not-found'] = not_found,
   ['correct-usage'] = correct_usage
 }

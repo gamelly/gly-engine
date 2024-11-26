@@ -10,7 +10,7 @@ local ClimaTV = {
         std.draw.color(std.color.red)
         std.draw.rect(1, 1, 1, data.width - 2, data.height - 2)
         local w, h = tostring(std.math.ceil(data.width)), tostring(std.math.ceil(data.height))
-        std.draw.text(8, 8, 'Clima TV\n'..w..'x'..h)
+        std.text.print(8, 8, 'Clima TV\n'..w..'x'..h)
     end
 }
 
@@ -19,7 +19,7 @@ local HoraTv = {
         std.draw.color(std.color.green)
         std.draw.rect(1, 1, 1, data.width - 2, data.height - 2)
         local w, h = tostring(std.math.ceil(data.width)), tostring(std.math.ceil(data.height))
-        std.draw.text(8, 8, 'Clima TV\n'..w..'x'..h)
+        std.text.print(8, 8, 'Clima TV\n'..w..'x'..h)
     end
 }
 
@@ -28,7 +28,7 @@ local TestTv = {
         std.draw.color(std.color.yellow)
         std.draw.rect(1, 1, 1, data.width - 2, data.height - 2)
         local w, h = tostring(std.math.ceil(data.width)), tostring(std.math.ceil(data.height))
-        std.draw.text(8, 8, 'Clima TV\n'..w..'x'..h)
+        std.text.print(8, 8, 'Clima TV\n'..w..'x'..h)
     end
 }
 
@@ -47,6 +47,7 @@ function App.load(std, data)
         )
         :add(TestTv, 3)
         :add(ClimaTV)
+        :apply()
 end
 
 return App

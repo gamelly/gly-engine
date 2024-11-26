@@ -1,20 +1,19 @@
 --! @defgroup std
 --! @{
---! @defgroup draw
+--! @defgroup app
 --! @{
 
---! @renamefunc fps 
+--! @renamefunc fps_show 
 --! @hideparam std
 --! @hideparam engine
---! @todo change std.draw.text to std.draw.tui
+--! @hideparam pos_x
+--! @hideparam pos_y
 --! @pre the <b>mode 3</b> require @c math
 --! 
 --! @param show @c integer
 --! @li mode 1: FPS
 --! @li mode 2: FPS / FPS Limit
 --! @li mode 3: FPS Real Time / FPS / FPS Limit
---! @param pos_x @c double
---! @param pos_y @c double
 local function draw_fps(std, engine, show, pos_x, pos_y)
     if show < 1 then return end
 
@@ -62,13 +61,10 @@ local function event_bus(std, engine)
 end
 
 local function install(std, engine)
-    std.draw.fps = function(show, x, y)
-        draw_fps(std, engine, show, x, y)
+    std.app = std.app or {}
+    std.app.fps_show = function(show)
+        engine.root.config.fps_show = show
     end
-
-    return {
-        std={draw={fps=draw_fps}}
-    }
 end
 
 local P = {

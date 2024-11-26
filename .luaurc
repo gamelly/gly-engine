@@ -34,6 +34,17 @@
     "native_draw_start",
     "native_draw_text_tui",
     "native_draw_text",
+    "native_media_load",
+    "native_media_pause",
+    "native_media_play",
+    "native_media_position",
+    "native_media_resize",
+    "native_text_font_default",
+    "native_text_font_name",
+    "native_text_font_previous",
+    "native_text_font_size",
+    "native_text_mensure",
+    "native_text_print",
     "native_get_system_lang",
     "package"
   ]

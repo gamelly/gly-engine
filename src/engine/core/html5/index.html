@@ -27,8 +27,17 @@
             align-items: start;
             background-color: gray;
         }
+        main {
+          position: relative;
+          width: 100%;
+          height: 100%;
+        }
+        video {
+          position: absolute;
+        }
         canvas {
-            image-rendering: pixelated;
+          position: absolute;
+          image-rendering: pixelated;
         }
     </style>
   </head>
@@ -37,6 +46,7 @@
       <canvas id="gameCanvas"></canvas>
     </main>
     <script src="core-native-html5.js"></script>
+    <script src="core-media-html5.js"></script>
     <script type="module" src="driver-wasmoon.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', async () => await gly.wasmoon('game.lua'))

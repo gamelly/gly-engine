@@ -1,11 +1,11 @@
-@mainpage
+@mainpage Powered by Gamely
 
 ## Documentation
 
 @li @ref helloworld
 @li @ref install
 @li @ref Examples "List of examples"
-@li @ref why "Plataform Support"
-@li @ref std "View Engine API Guide"
+@li @ref support "Plataform Support"
+@li @ref support "View Engine API Guide"
 @li [View the CLI/Engine source code](https://github.com/gamelly/gly-engine)
-@li @ref why "Comparison between Game Engines"
+@li @ref support "Comparison between Game Engines"

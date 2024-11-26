@@ -63,30 +63,20 @@ local function merge_dict_and_lists(list_out, dict_out, list_in, dict_in)
     end
 end
 
-local function build(...)
-    local args = {...}
-
+local function build(input_name, output_name, input_paths)
     if BOOTSTRAP then
         BOOTSTRAP_DISABLE = true
     end
 
-    local input_file = io.open(args[1], 'r')
-    local output_file = io.open(args[2], 'w')
+    local input_file = io.open(input_name, 'r')
+    local output_file = io.open(output_name, 'w')
 
-    if #args <= 2 then
-        return false, 'missing src\'s to bundle!'
-    end
-
-    if not input_file or not output_file then
-        return false, 'usage: lua bootstrap.lua ./dist/main.lua ./dist/cli.lua ./src ./assets'
-    end
-
-    local index = 3
+    local index = 1
     local all_list_paths = {}
     local all_list_files = {}
     local all_dict_files = {}
-    while index <= #args do
-        local path_src = args[index] or './src'
+    while index <= #input_paths do
+        local path_src = input_paths[index]
         local prefix_path = path_src:match("^(.-)/[^/]+$")
         local prefix_len = 0
         
@@ -121,6 +111,22 @@ local function build(...)
     end
 
     output_file:write('local BOOTSTRAP = {}\nlocal BOOTSTRAP_DISABLE = false\n')
+
+    do
+        index = 1
+        local content = 'local BOOTSTRAP_DIRS = {'
+        while index <= #all_list_paths do
+            local file_name = all_list_paths[index]
+            content = content..'\''..file_name..'\''
+            index = index + 1
+            if index <= #all_list_paths then
+                content = content..', '
+            else
+                content = content..'}\n'
+            end
+        end
+        output_file:write(content)
+    end
 
     do
         index = 1

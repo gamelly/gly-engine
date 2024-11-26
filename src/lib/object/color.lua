@@ -2,6 +2,15 @@
 --! @{
 --! @defgroup color
 --! @{
+--! @par Example
+--! @code{.java}
+--! std.draw.clear(std.color.black)
+--! std.draw.color(std.color.white)
+--! @endcode
+--! @par Pallete
+--! @call color
+--! @par List
+--! @call code
 
 local white = 0xFFFFFFFF
 local lightgray = 0xC8CCCCFF
@@ -29,6 +38,7 @@ local black = 0x000000FF
 local blank = 0x00000000
 local magenta = 0xFF00FFFF
 
+--! @call endcode
 --! @}
 --! @}
 

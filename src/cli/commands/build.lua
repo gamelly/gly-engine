@@ -48,6 +48,7 @@ local function build(args)
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
             }
@@ -64,6 +65,7 @@ local function build(args)
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js',
                 'assets/icon80x80.png'
             }
@@ -76,6 +78,7 @@ local function build(args)
             extras={
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js'
             }
         },
@@ -87,13 +90,29 @@ local function build(args)
             extras={
                 'src/engine/core/html5/index.html',
                 'src/engine/core/html5/driver-wasmoon.js',
+                'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js'
             }
         }
     }
 
+    -- must be pass a core or game
+    if not args.core and not args.game then
+        return false, 'usage: '..args[0]..' build [game] -'..'-core [core]'
+    end
+
+    -- default core
+    if not args.core then
+        args.core = 'html5'
+    end
+
     -- clean dist
     zeebo_fs.clear(dist)
+
+    -- license advice
+    if args.core == 'ginga' and not args.enterprise then
+        return false, 'please use flag -'..'-enterprise to use commercial modules'
+    end
 
     -- check core
     if not core_list[args.core] then

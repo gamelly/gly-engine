@@ -4,7 +4,25 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @{
 --! @defgroup http
 --! @pre require @c http
---! @par Methods
+--! @{
+--!
+--! @page http_get GET
+--! 
+--! @code{.java}
+--! std.http.get('https://api.github.com/zen')
+--!     :run()
+--! @endcode
+--!
+--! @page http_post POST
+--! 
+--! @code{.java}
+--! std.http.post('https://example.com.br')
+--!     :body('{"foo": "bar"}')
+--!     :run()
+--! @endcode
+--!
+--! @page http_request Http requests
+--! 
 --! @li @b std.http.get
 --! @li @b std.http.head
 --! @li @b std.http.post
@@ -12,7 +30,8 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @li @b std.http.delete
 --! @li @b std.http.patch
 --! 
---! @par Example
+--! @page http_response Http responses
+--!
 --! @li local handlers
 --! @code
 --! std.http.get('http://pudim.com.br')
@@ -41,7 +60,6 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --!     end
 --! end
 --! @endcode
---! @{
 
 --! @short reduced response
 --! @hideparam self

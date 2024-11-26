@@ -53,6 +53,7 @@ jobs:
     -
       run: |
         lua tools/ci_version_local.lua
+        lua tools/ci_version_remote.lua
 
   lint:
     if: github.event_name == 'push' || github.event.pull_request.draft == false

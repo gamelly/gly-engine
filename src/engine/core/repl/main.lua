@@ -23,7 +23,7 @@
 local zeebo_module = require('src/lib/common/module')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
@@ -38,7 +38,7 @@ local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
 --
-local cfg_json_rxi = require('src/third_party/json/rxi')
+local cfg_json_rxi = require('third_party/json/rxi')
 local cfg_http_curl = require('src/lib/protocol/http_curl')
 --
 local engine = {

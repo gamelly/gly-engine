@@ -1,10 +1,11 @@
 local zeebo_module = require('src/lib/common/module')
 --
 local core_draw = require('ee/engine/core/ginga/draw')
+local core_text = require('ee/engine/core/ginga/text')
 local core_keys = require('ee/engine/core/ginga/keys')
 --
 local engine_encoder = require('src/lib/engine/api/encoder')
-local engine_game = require('src/lib/engine/api/game')
+local engine_game = require('src/lib/engine/api/app')
 local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
@@ -12,13 +13,14 @@ local engine_keys = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
+local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_bus = require('src/lib/engine/raw/bus')
 local engine_fps = require('src/lib/engine/raw/fps')
 local engine_node = require('src/lib/engine/raw/node')
 local engine_memory = require('src/lib/engine/raw/memory')
 --
-local cfg_json_rxi = require('src/third_party/json/rxi')
+local cfg_json_rxi = require('third_party/json/rxi')
 local cfg_http_ginga = require('ee/lib/protocol/http_ginga')
 --
 local application_default = require('src/lib/object/root')
@@ -68,6 +70,10 @@ local cfg_fps_control = {
     uptime=event.uptime
 }
 
+local cfg_text = {
+    font_previous = core_text.font_previous
+}
+
 local system_language = function()
     return 'pt-BR'
 end
@@ -107,6 +113,8 @@ local function install(evt, gamefile)
         :package('@keys1', engine_keys)
         :package('@keys2', core_keys)
         :package('@draw', core_draw)
+        :package('@draw.text', core_text)
+        :package('@draw.text2', engine_draw_text, cfg_text)
         :package('@draw.ui', engine_draw_ui)
         :package('@draw.fps', engine_draw_fps)
         :package('@draw.poly', engine_draw_poly, cfg_poly)
@@ -120,7 +128,7 @@ local function install(evt, gamefile)
         :run()
 
     application.data.width, application.data.height = canvas:attrSize()
-    std.game.width, std.game.height = application.data.width, application.data.height
+    std.app.width, std.app.height = application.data.width, application.data.height
 
     std.node.spawn(application)
 

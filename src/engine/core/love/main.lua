@@ -2,23 +2,25 @@ local os = require('os')
 --
 local zeebo_module = require('src/lib/common/module')
 --
+local core_text = require('src/engine/core/love/text')
 local core_draw = require('src/engine/core/love/draw')
 local core_loop = require('src/engine/core/love/loop')
 local lib_api_encoder = require('src/lib/engine/api/encoder')
-local lib_api_game = require('src/lib/engine/api/game')
+local lib_api_game = require('src/lib/engine/api/app')
 local lib_api_hash = require('src/lib/engine/api/hash')
 local lib_api_http = require('src/lib/engine/api/http')
 local lib_api_i18n = require('src/lib/engine/api/i18n')
 local lib_api_key = require('src/lib/engine/api/key')
 local lib_api_math = require('src/lib/engine/api/math')
 local lib_draw_fps = require('src/lib/engine/draw/fps')
+local lib_draw_text = require('src/lib/engine/draw/text')
 local lib_draw_poly = require('src/lib/engine/draw/poly')
 local lib_draw_ui = require('src/lib/engine/draw/ui')
 local lib_raw_bus = require('src/lib/engine/raw/bus')
 local lib_raw_memory = require('src/lib/engine/raw/memory')
 local lib_raw_node = require('src/lib/engine/raw/node')
 --
-local cfg_json_rxi = require('src/third_party/json/rxi')
+local cfg_json_rxi = require('third_party/json/rxi')
 local cfg_http_curl_love = require('src/lib/protocol/http_curl_love')
 --
 local util_arg = require('src/lib/common/args')
@@ -54,6 +56,10 @@ local cfg_game_api = {
     quit = love.event.quit
 }
 
+local cfg_text = {
+    font_previous = core_text.font_previous
+}
+
 function love.load(args)
     local screen = util_arg.get(args, 'screen')
     local fullscreen = util_arg.has(args, 'fullscreen')
@@ -68,9 +74,9 @@ function love.load(args)
     end
 
     if application then
-        std.game.width = application.data.width
-        std.game.height = application.data.height
-        love.window.setMode(std.game.width, std.game.height, {
+        std.app.width = application.data.width
+        std.app.height = application.data.height
+        love.window.setMode(std.app.width, std.app.height, {
             fullscreen=fullscreen,
             resizable=true
         })
@@ -83,6 +89,8 @@ function love.load(args)
         :package('@game', lib_api_game, cfg_game_api)
         :package('@math', lib_api_math)
         :package('@key', lib_api_key, cfg_keys)
+        :package('@draw.text', core_text)
+        :package('@draw.text2', lib_draw_text, cfg_text)
         :package('@draw.poly', lib_draw_poly, cfg_poly)
         :package('@draw.fps', lib_draw_fps)
         :package('@draw.ui', lib_draw_ui)
@@ -102,7 +110,7 @@ function love.load(args)
     engine.root = application
     engine.current = application
 
-    std.game.title(application.meta.title..' - '..application.meta.version)
+    std.app.title(application.meta.title..' - '..application.meta.version)
 
     love.update = std.bus.trigger('loop')
     love.resize = std.bus.trigger('resize')

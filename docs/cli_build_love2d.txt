@@ -41,12 +41,12 @@ lua cli.lua tool-love-zip ./dist/
 
 @page ci_build_tool_love_exe Generating .exe file from Love2D
 
-@todo coming soon
+@todo coming soon tool-love-exe
 
 
 @page ci_build_tool_love_dump Unpacking .lua files from Love2D
 
-@todo coming soon
+@todo coming soon tool-love-unzip
 
 @}
 @}

@@ -12,16 +12,21 @@ local P = {
         clear = function () end,
         color = function () end,
         rect = function () end,
-        text = function () end,
-        font = function () end,
         line = function () end,
         poly = function () end,
         tui_text = function() end
     },
-    game = {
+    text = {
+        put = function() end,
+        print = function() end,
+        mensure = function() end,
+        font_size = function() end,
+        font_name = function() end,
+        font_default = function() end
+    },
+    app = {
         width = 1280,
         height = 720,
-        register = function() end,
         title = function() end,
         reset = function () end,
         load = function() end,
