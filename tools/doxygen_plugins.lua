@@ -24,12 +24,12 @@ local plugin_metadata = [[
 <meta property="og:title" content="$projectname Docs"/>
 <meta property="og:site_name" content="$projectbrief"/>
 <meta property="og:description" content="$title"/>
-<meta property="og:image" content="http://docs.gamely.com.br/icon80x80.png"/>
+<meta property="og:image" content="https://docs.gamely.com.br/icon80x80.png"/>
 
 <meta property="twitter:card" content="summary_large_image"/>
 <meta property="twitter:title" content="$projectname Docs"/>
 <meta property="twitter:description" content="$title"/>
-<meta property="twitter:image" content="http://docs.gamely.com.br/icon80x80.png"/>
+<meta property="twitter:image" content="https://docs.gamely.com.br/icon80x80.png"/>
 ]]
 
 header_file:close()
