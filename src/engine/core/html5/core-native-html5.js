@@ -182,16 +182,16 @@ function errorController(func) {
     }
 }
 
-function resizeCanvas(w, h) {
-    let width = w ?? engine.body_element.clientWidth
-    let height = h ?? engine.body_element.clientHeight
-    if (width > height) {
-        engine.canvas_element.height = height
-        engine.canvas_element.width = width
+function resizeCanvas(w, h, widescreen) {
+    const width = w ?? engine.body_element.clientWidth
+    const height = h ?? engine.body_element.clientHeight
+    if (widescreen === true && width <= height) {
+        engine.canvas_element.height = Math.floor(height / 2)
+        engine.canvas_element.width = Math.floor(width)
     }
     else {
-        engine.canvas_element.height = Math.floor(height / 2)
-        engine.canvas_element.width = width
+        engine.canvas_element.height = Math.floor(height)
+        engine.canvas_element.width = Math.floor(width)
     }
 }
 
@@ -232,6 +232,13 @@ const gly = {
     },
     resize: (canvas_width, canvas_height) => {
         resizeCanvas(canvas_width, canvas_height)
+        const {width, height} = engine.canvas_element
+        errorController(() => {
+            engine.listen.native_callback_resize(width, height)
+        })
+    },
+    resize_widescreen: (canvas_width, canvas_height) => {
+        resizeCanvas(canvas_width, canvas_height, true)
         const {width, height} = engine.canvas_element
         errorController(() => {
             engine.listen.native_callback_resize(width, height)
