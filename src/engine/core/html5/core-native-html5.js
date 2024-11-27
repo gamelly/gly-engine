@@ -8,7 +8,8 @@ const engine = {
         capture: false,
         console: false,
         canvas: false,
-        stop: false   
+        stop: false,
+        count: 0,
     },
     font: {
         previous_size: 8,
@@ -31,7 +32,10 @@ const engine = {
         native_draw_start: () => {
             engine.canvas_ctx.clearRect(0, 0, engine.canvas_element.width, engine.canvas_element.height)
         },
-        native_draw_flush: () => {},
+        native_draw_flush: () => {
+            engine.real_canvas_ctx.clearRect(0, 0, engine.real_canvas_element.width, engine.real_canvas_element.height)
+            engine.real_canvas_ctx.drawImage(engine.canvas_element, 0, 0)
+        },
         native_draw_clear: (color, x, y, w, h) => {
             engine.canvas_ctx.fillStyle = '#' + color.toString(16).padStart(8, '0')
             engine.canvas_ctx.fillRect(x, y, w, h)
@@ -151,7 +155,7 @@ const engine = {
 }
 
 function errorController(func) {
-    if (engine.stop) {
+    if (engine.error.stop && engine.error.count > 0) {
         return
     }
     if (!engine.error.capture) {
@@ -159,22 +163,36 @@ function errorController(func) {
     }
     try {
         func()
+        engine.error.count = 0
     }
     catch(e) {
+        engine.error.count++;
         if (engine.error.console) {
             console.log(e)
         }
-        if (engine.error.stop) {
-            engine.stop = true
-        }
         if (engine.error.canvas) {
-            engine.global.native_draw_start()
-            engine.global.native_draw_clear(0x0000FFFF)
-            engine.global.native_draw_color(0xFFFFFFFF)
-            engine.global.native_text_font_size(8)
-            engine.global.native_text_font_default(1)
-            engine.global.native_text_print(8, 16, 'Fatal ERROR')
-            engine.global.native_text_print(8, 32, e.toString())
+            const font_size = engine.real_canvas_element.width * 0.01;
+
+            if (engine.error.count <= 1) {
+                engine.real_canvas_ctx.fillStyle = 'rgba(90, 155, 212, 0.75)';
+                engine.real_canvas_ctx.fillRect(0, 0, engine.real_canvas_element.width, engine.real_canvas_element.height);
+            }
+        
+            engine.real_canvas_ctx.font = `${font_size}px sans`;
+            engine.real_canvas_ctx.fillStyle = '#FFFFFF';
+            engine.real_canvas_ctx.textBaseline = 'top'
+            engine.real_canvas_ctx.textAlign = 'left'
+
+            if (engine.error.count <= 1) {
+                engine.real_canvas_ctx.fillText('ERROR:', 8, 8);
+            }
+
+            const {actualBoundingBoxAscent, actualBoundingBoxDescent } = engine.real_canvas_ctx.measureText('A')
+            const padding = (actualBoundingBoxAscent + actualBoundingBoxDescent) * engine.error.count;
+
+            if (padding < engine.real_canvas_element.height) {
+                engine.real_canvas_ctx.fillText(toString(e), 8, 12 + padding);
+            }
         }
         if (engine.error.callback) {
             engine.error.callback(e)
@@ -182,24 +200,25 @@ function errorController(func) {
     }
 }
 
-function resizeCanvas(w, h) {
-    let width = w ?? engine.body_element.clientWidth
-    let height = h ?? engine.body_element.clientHeight
-    if (width > height) {
-        engine.canvas_element.height = height
-        engine.canvas_element.width = width
+function resizeCanvas(w, h, widescreen) {
+    let width = Math.floor(w ?? engine.body_element.clientWidth)
+    let height = Math.floor(h ?? engine.body_element.clientHeight)
+    if (widescreen === true && width <= height) {
+        height = Math.floor(height / 2)
     }
-    else {
-        engine.canvas_element.height = Math.floor(height / 2)
-        engine.canvas_element.width = width
-    }
+    engine.canvas_element.width = width
+    engine.canvas_element.height = height
+    engine.real_canvas_element.width = width
+    engine.real_canvas_element.height = height
 }
 
 const gly = {
     init: (canvas_selector) => {
         const is_el = typeof canvas_selector !== 'string'
         engine.body_element = document.querySelector('body')
-        engine.canvas_element = is_el? canvas_selector: document.querySelector(canvas_selector)
+        engine.real_canvas_element = is_el? canvas_selector: document.querySelector(canvas_selector)
+        engine.real_canvas_ctx = engine.real_canvas_element.getContext("2d")
+        engine.canvas_element = document.createElement('canvas')
         engine.canvas_ctx = engine.canvas_element.getContext("2d")
         engine.canvas_close = [
             () => engine.canvas_ctx.fill(),
@@ -230,8 +249,18 @@ const gly = {
         engine.error.stop = !silent && behavior.includes('stop')
         engine.error.callback = error_callback
     },
+    error_clear: () => {
+        engine.error.count = 0
+    },
     resize: (canvas_width, canvas_height) => {
         resizeCanvas(canvas_width, canvas_height)
+        const {width, height} = engine.canvas_element
+        errorController(() => {
+            engine.listen.native_callback_resize(width, height)
+        })
+    },
+    resize_widescreen: (canvas_width, canvas_height) => {
+        resizeCanvas(canvas_width, canvas_height, true)
         const {width, height} = engine.canvas_element
         errorController(() => {
             engine.listen.native_callback_resize(width, height)
