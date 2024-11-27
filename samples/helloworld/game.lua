@@ -7,7 +7,7 @@ end
 local function draw(std, game)
     std.draw.clear(std.color.black)
     std.draw.color(std.color.white)
-    std.text.print(8 , 8, 'Hello world!')
+    std.text.put(1, 1, 'Hello world!')
 end
 
 local function exit(std, game)
