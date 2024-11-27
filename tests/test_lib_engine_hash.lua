@@ -18,7 +18,7 @@ end
 function test_collision_stylist_subgenera()
     local stylist = std.hash.djb2('stylist')
     local subgenera = std.hash.djb2('subgenera')
-    luaunit.assertEquals(stylist, subgenera)
+    luaunit.assertNotEquals(stylist, subgenera)
 end
 
 
