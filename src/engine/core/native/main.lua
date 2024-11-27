@@ -91,6 +91,10 @@ function native_callback_keyboard(key, value)
 end
 
 function native_callback_init(width, height, game_lua)
+    if std.bus then
+        std.bus.emit('clear_all')
+    end
+
     application = zeebo_module.loadgame(game_lua)
 
     if application then

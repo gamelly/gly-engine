@@ -169,6 +169,17 @@ end
 --! @}
 --! @}
 
+local function clear_bus()
+    local index = 1
+    while index <= #buses.list do
+        local application = buses.list[index]
+        buses.inverse_list[application] = nil
+        application.config.parent = nil
+        buses.list[index] = nil
+        index = index + 1
+    end
+end
+
 --! note no remove
 local function event_bus(std, engine, key, a, b, c, d, e, f)
     local index = 1
@@ -206,6 +217,8 @@ local function install(std, engine)
     std.node.pause = pause
     std.node.resume = resume
     std.node.load = load
+
+    std.bus.listen('clear_all', clear_bus)
 
     std.node.spawn = function (application)
         spawn(engine, application)
