@@ -56,10 +56,16 @@ gly.wasmoon = async (game_file) => {
     }
 
     const keys = [
+        [13, 'a'],
+        [38, 'up'],
+        [37, 'left'],
+        [40, 'down'],
+        [39, 'right'],
         [403, 'a'],
         [404, 'b'],
         [405, 'c'],
         [406, 'd'],
+        [10009, 'menu'],
         ['KeyZ', 'a'],
         ['KeyX', 'b'],
         ['KeyC', 'c'],
@@ -69,6 +75,7 @@ gly.wasmoon = async (game_file) => {
         ['ArrowDown', 'down'],
         ['ArrowLeft', 'left'],
         ['ArrowRight', 'right'],
+        ['ShiftLeft', 'menu'],
     ];
 
     function updateSize() {
