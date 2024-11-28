@@ -50,6 +50,7 @@ local function build(args)
                 'src/engine/core/html5/driver-wasmoon.js',
                 'src/engine/core/html5/core-media-html5.js',
                 'src/engine/core/html5/core-native-html5.js',
+                'assets/icon512x423.png',
                 'assets/icon80x80.png'
             }
         },
