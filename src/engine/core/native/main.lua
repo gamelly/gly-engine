@@ -55,13 +55,13 @@ local function clear(tint)
 end
 
 --! @short std.draw.rect
---! @fakefunc rect
+--! @fakefunc rect(mode, pos_x, pos_y, width, height)
 
 --! @short std.draw.line
---! @fakefunc line
+--! @fakefunc line(x1, y1, y2, y1, y2)
 
 --! @short std.draw.image
---! @fakefunc image
+--! @fakefunc image(src, pos_x, pos_y)
 
 --! @}
 --! @}
