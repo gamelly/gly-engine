@@ -10,6 +10,7 @@ local function replace(src, meta, default)
             :gsub('{{company}}', meta.company or default.company)
             :gsub('{{version}}', meta.version or default.version)
             :gsub('{{description}}', meta.description or default.description)
+            :gsub('{{tizen_package}}', meta.tizen_package or default.tizen_package)
         )
     end
     return ''

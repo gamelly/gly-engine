@@ -9,6 +9,7 @@ local P = {
         author='',
         company='',
         description='',
+        tizen_package='',
         version=''
     },
     config = {
