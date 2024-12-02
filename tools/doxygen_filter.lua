@@ -215,9 +215,9 @@ function main()
                 io.write('#include "'..include..'.lua"')
             elseif is_game and not doxygen then
                 breakline = false
-            elseif clojure then
+            elseif clojure and not is_txt then
                 io.write('local function-'..clojure..';')
-            elseif variable and literal then
+            elseif variable and literal and not is_txt then
                 io.write('local '..variable..' = '..literal..';')
             elseif command and _G[command] then
                 io.write(_G[command](line))

@@ -24,13 +24,17 @@ local plugin_metadata = [[
 <meta property="og:title" content="$projectname Docs"/>
 <meta property="og:site_name" content="$projectbrief"/>
 <meta property="og:description" content="$title"/>
-<meta property="og:image" content="https://docs.gamely.com.br/icon80x80.png"/>
+<meta property="og:image" content="https://docs.gamely.com.br/$projectlogo"/>
 
 <meta property="twitter:card" content="summary_large_image"/>
 <meta property="twitter:title" content="$projectname Docs"/>
 <meta property="twitter:description" content="$title"/>
-<meta property="twitter:image" content="https://docs.gamely.com.br/icon80x80.png"/>
+<meta property="twitter:image" content="https://docs.gamely.com.br/$projectlogo"/>
 ]]
+
+local title1_pattern = '<title>$title</title>'
+local title2_pattern = '<title>$projectname: $title</title>'
+local plugin_title = '<title>$projectname Docs - $title</title>'
 
 header_file:close()
 
@@ -38,6 +42,8 @@ header_file = io.open('doxygen/header.html', 'w')
 header_content = header_content:gsub(copy_clipboard_pattern, text_clipboard..plugin_paragraph_link)
 header_content = header_content:gsub(copy_clipboard_pattern, text_clipboard..plugin_toggle_darkmode)
 header_content = header_content:gsub(icon_clipboard_pattern, icon_clipboard..plugin_metadata)
+header_content = header_content:gsub(title2_pattern, plugin_title)
+header_content = header_content:gsub(title1_pattern, '')
 
 header_file:write(header_content)
 header_file:close()

@@ -1,0 +1,15 @@
+@defgroup Languages
+@{
+
+@defgroup lua Lua
+@{
+
+@brief @brief Create game in Lua
+
+@li **Official site** https://www.lua.org
+@li **Online Lua REPL** https://lua.ceifa.dev
+@li **WIKI Lua 5.4 in english** https://www.lua.org/manual
+@li **WIKI Lua 5.1 in portuguese** https://www.lua.org/manual/5.1/pt @n (currently most @ref ginga "ginga" devices use lua 5.1)
+
+@}
+@}

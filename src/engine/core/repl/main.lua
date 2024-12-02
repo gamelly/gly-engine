@@ -1,10 +1,13 @@
 --! @defgroup Languages
 --! @{
 --! 
---! @defgroup REPL
+--! @defgroup dsl
+--! @{
+--! 
+--! @defgroup repl REPL
 --! @{
 --!
---! @par Extended Backus-Naur Form
+--! @par Backus-Naur Form
 --! @startebnf
 --! line = exit | frame_skip | [frame_skip], variable, ["=", value (* assignment *)];
 --! frame_skip = [digit], "!" ;
@@ -17,6 +20,7 @@
 --! lua cli.lua run game.lua --core repl
 --! @endcode
 --!
+--! @}
 --! @}
 --! @}
 

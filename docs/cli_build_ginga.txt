@@ -4,7 +4,7 @@
 @defgroup build
 @{
 
-@defgroup Ginga
+@defgroup ginga Ginga
 @{
 
 @short build apps for brazilian and latam televisors
@@ -23,7 +23,7 @@ lua cli.lua init my_tv_app --template @gridsystem
 @par How to build
 
 ```sql
-lua cli.lua build src/game.lua --core ginga
+lua cli.lua build src/game.lua --core ginga --enterprise
 ```
 
 @par How to simulate

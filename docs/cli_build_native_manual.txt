@@ -1,7 +1,4 @@
-@defgroup cli
-@{
-
-@defgroup build
+@defgroup native
 @{
 
 @defgroup manual
@@ -201,6 +198,5 @@ void gly_engine_loop()
 }
 ```
 
-@}
 @}
 @}
