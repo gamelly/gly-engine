@@ -77,7 +77,7 @@ local function build(src_path, src_filename, dest)
     local pattern_require = "local ([%w_%-]+) = require%('(.-)'%)"
     local from = 'main'
     local src_in = src_path..src_filename
-    local src_file = io.open(src_in, 'r')
+    local src_file, err_file = io.open(src_in, 'r')
     local relative_path = src_path:gsub('[%w_-]+', '..')
     local deps_imported = {}
     local deps_var_name = {}
@@ -88,6 +88,10 @@ local function build(src_path, src_filename, dest)
     local lib_module = nil
     local lib_name = nil
     local lib_var = nil
+
+    if not src_file then
+        return false, err_file
+    end
 
     repeat
         if from == 'system' then
