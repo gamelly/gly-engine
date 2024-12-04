@@ -2,10 +2,10 @@ local function draw_logo(std, game, height, anim)
     anim = anim or 0
     std.text.font_size(32)
     std.draw.color(std.color.white)
-    local s1 = std.text.mensure('FlappyTv')
-    std.text.print(game.width/2 - s1/2, height + anim, 'Flappy')
-    std.draw.color(std.color.red)
-    std.text.print(game.width/2 + s1/2 - std.text.mensure('Tv'), height - anim, 'Tv')
+    local s1 = std.text.mensure('CapyBird')
+    std.text.print(game.width/2 - s1/2, height + anim, 'Capy')
+    std.draw.color(std.color.yellow)
+    std.text.print(game.width/2 + s1/2 - std.text.mensure('Bird'), height - anim, 'Birdy')
     return s1
 end
 
@@ -138,7 +138,7 @@ local function loop(std, game)
 end
 
 local function draw(std, game)
-    std.draw.clear(std.color.black)
+    std.draw.clear(std.color.skyblue)
     
     if game.state == 1 then
         local h = game.height/16
@@ -164,24 +164,26 @@ local function draw(std, game)
         std.draw.color(std.color.green)
         for _, pipe in ipairs(game.pipes) do
             -- Top pipe
-            std.draw.rect(1, pipe.x, 0, game.pipe_width, pipe.y)
+            std.draw.rect(0, pipe.x, 0, game.pipe_width, pipe.y)
             -- Bottom pipe
-            std.draw.rect(1, pipe.x, pipe.y + game.pipe_gap, game.pipe_width, game.height - pipe.y - game.pipe_gap)
+            std.draw.rect(0, pipe.x, pipe.y + game.pipe_gap, game.pipe_width, game.height - pipe.y - game.pipe_gap)
         end
         
         -- Draw bird
-        std.draw.color(std.color.yellow)
+        std.draw.color(std.color.beige)
+        std.draw.rect(0, game.width/4, game.bird_y, 20, 20)
+        std.draw.color(std.color.darkbrown)
         std.draw.rect(1, game.width/4, game.bird_y, 20, 20)
         
         -- Score display
-        std.draw.color(std.color.white)
+        std.draw.color(std.color.yellow)
         std.text.font_size(16)
         std.text.print_ex(game.width - 100, 20, 'Score: ' .. game.score, 0)
     end
     
     -- Game over screen
     if game.state == 3 then
-        std.draw.color(std.color.red)
+        std.draw.color(std.color.black)
         std.text.font_size(32)
         std.text.print_ex(game.width/2, game.height/2, 'Game Over', 0)
     end
@@ -194,15 +196,13 @@ end
 
 local P = {
     meta={
-        title='FlappyTV',
+        title='CapyBird',
         author='Alex Oliveira',
         description='A simple Flappy Bird clone',
         version='1.0.0'
     },
     config = {
         require = 'math math.random',
-        fps_drop = 5,
-        fps_time = 5
     },
     callbacks={
         init=init,
