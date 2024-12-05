@@ -1,6 +1,5 @@
 local luaunit = require('luaunit')
 local engine_math = require('src/lib/engine/api/math')
-
 local zeebo_math = engine_math.install()
 
 function test_clamp()
@@ -71,6 +70,26 @@ function test_max()
     luaunit.assertEquals(zeebo_math.max({1, 2, 3, 4, 5}), 5)
 end
 
+
+function test_install()
+    local std ={}
+    local math_lib = engine_math.install(std)
+    luaunit.assertIsFunction(math_lib.abs)
+    luaunit.assertIsFunction(math_lib.clamp)
+    luaunit.assertIsFunction(math_lib.clamp2)
+    luaunit.assertIsFunction(math_lib.cycle)
+    luaunit.assertIsFunction(math_lib.dir)
+    luaunit.assertIsFunction(math_lib.dis)
+    luaunit.assertIsFunction(math_lib.dis2)
+    luaunit.assertIsFunction(math_lib.lerp)
+    luaunit.assertIsFunction(math_lib.map)
+    luaunit.assertIsFunction(math_lib.max)
+    luaunit.assertIsFunction(math_lib.min)
+    luaunit.assertIsFunction(math_lib.saw)
+    luaunit.assertEquals(math_lib, std.math)
+end
+
+
 function test_install_math_clib()
     local math_clib = engine_math.clib.install()
     luaunit.assertIsFunction(math_clib.pow)
@@ -79,6 +98,18 @@ end
 function test_install_math_clib_random()
     local math_clib = engine_math.clib_random.install()
     luaunit.assertIsFunction(math_clib.random)
+
+    local result = math_clib.random(1, 10)
+    luaunit.assertTrue(result >= 1 and result <= 10)
+
+    -- local result2 = math_clib.random(5)
+    -- luaunit.assertTrue(result >= 1 and result <= 5)
+
+    -- local result3 = math_clib.random()
+    -- luaunit.assertTrue(result >= 1)
+
+    -- local result4 = math_clib.random(nil, nil)
+    -- luaunit.assertTrue(result >= 1)
 end
 
 os.exit(luaunit.LuaUnit.run())

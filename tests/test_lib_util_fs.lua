@@ -1,6 +1,15 @@
 local luaunit = require('luaunit')
 local util_fs = require('src/lib/util/fs')
 
+function test_path_with_src2()
+    local path = util_fs.path('foo/bar', 'extra.txt')
+    luaunit.assertEquals(path.get_file(), 'extra.txt')
+    luaunit.assertEquals(path.get_filename(), 'extra')
+    luaunit.assertEquals(path.get_ext(), 'txt')
+    luaunit.assertEquals(path.get_win_path(), '.\\foo\\bar\\')
+    luaunit.assertEquals(path.get_unix_path(), './foo/bar/')
+end
+
 function test_unix_foo_bar_z_txt()
     local file = util_fs.file('foo/bar/z.txt')
     luaunit.assertEquals(file.get_file(), 'z.txt')

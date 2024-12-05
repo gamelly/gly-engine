@@ -1,6 +1,54 @@
 local luaunit = require('luaunit')
 local zeebo_util_http = require('src/lib/util/http')
 
+
+function test_is_ok_status()
+    luaunit.assertTrue(zeebo_util_http.is_ok(200))
+    luaunit.assertTrue(zeebo_util_http.is_ok(201))
+    luaunit.assertTrue(zeebo_util_http.is_ok(299))
+    luaunit.assertFalse(zeebo_util_http.is_ok(199))
+    luaunit.assertFalse(zeebo_util_http.is_ok(300))
+end
+
+function test_is_ok_header_with_valid_header()
+    local ok, status = zeebo_util_http.is_ok_header('HTTP/1.1 200 OK')
+    luaunit.assertTrue(ok)
+    luaunit.assertEquals(status, 200)
+end
+
+function test_is_ok_header_with_invalid_header()
+    local ok, status = zeebo_util_http.is_ok_header('invalid header')
+    luaunit.assertFalse(ok)
+    luaunit.assertNil (status)
+end
+
+function test_is_ok_header_with_redirect_status()
+    local ok, status = zeebo_util_http.is_ok_header("HTTP/1.1 302 Found")
+    luaunit.assertFalse(ok)
+    luaunit.assertEquals(status, 302)
+end
+
+function test_is_ok_header_with_client_error_status()
+    local ok, status = zeebo_util_http.is_ok_header("HTTP/1.1 404 Not Found")
+    luaunit.assertFalse(ok)
+    luaunit.assertEquals(status, 404)
+end
+
+function test_is_ok_header_with_server_error_status()
+    local ok, status = zeebo_util_http.is_ok_header("HTTP/1.1 500 Internal Server Error")
+    luaunit.assertFalse(ok)
+    luaunit.assertEquals(status, 500)
+end
+
+
+function test_is_redirect_valid()
+    luaunit.assertTrue(zeebo_util_http.is_redirect(300))
+    luaunit.assertTrue(zeebo_util_http.is_redirect(301))
+    luaunit.assertTrue(zeebo_util_http.is_redirect(399))
+    luaunit.assertFalse(zeebo_util_http.is_redirect(299))
+    luaunit.assertFalse(zeebo_util_http.is_redirect(400))
+end
+
 function test_no_params()
     local query = zeebo_util_http.url_search_param({}, {})
     luaunit.assertEquals(query, '')
@@ -103,6 +151,14 @@ function test_create_request_wget_head()
         .to_wget_cmd()
 
     luaunit.assertEquals(request, 'wget --quiet --output-document=- --method=HEAD http://example.com')
+end
+
+function test_not_status_disables_print_http_status()
+    local request = zeebo_util_http.create_request('GET', '/')
+        request.not_status()
+        local result = request:not_status()
+        luaunit.assertFalse(request.print_http_status)
+        luaunit.assertEquals(result, request)
 end
 
 os.exit(luaunit.LuaUnit.run())
