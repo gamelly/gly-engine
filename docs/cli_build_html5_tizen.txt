@@ -1,0 +1,31 @@
+@defgroup html5 HTML5
+@{
+
+@defgroup tizen
+@brief Build apps for Samsung televisors
+@{
+
+@todo We are in the process of publishing a game on the **Samsung Store**.
+As the validation steps progress, they are being thoroughly documented.
+
+page Create Tizen App
+
+@li **generate a project**
+This step is important for you to get valid `id` and `package` generated randomly, to use in your `meta`
+```text
+tizen create web-project -n YourAwesomeApplication -t WebBasicApplication -p tizen-8.0
+```
+
+@li **add metadata to your lua application**
+```
+local P = {
+    meta={
+        id='com.example.yourawesomeapplication-reverse-dns'
+        title='Your Awesome Application',
+        tizen_package='xxxxxxxxxxx'
+    }
+}
+```
+
+@}
+@}
