@@ -31,7 +31,7 @@ local function draw(std, data)
     std.draw.clear(0x333333FF)
     std.draw.color(std.color.white)
     if not data._list then 
-        std.text.put(10, 10, 10, 'loading...')
+        std.text.put(10, 10, 'loading...', 10)
         return
     end
     local index = 1
