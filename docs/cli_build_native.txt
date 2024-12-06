@@ -37,6 +37,7 @@ make -C build
  - @c "@template" @n use tool-template-fill to export a binary that can have the game added later without recompiling.
 
 @li -DENGINE=
+ - @c "@love" @n Reimplementation of @b Love2D by gamely. @n https://github.com/gamelly/love-engine
  - @c "@lite" @n reduced version of the engine to promote performance
  on limited devices and with small screens where certain features are not needed. @n
  <i>(removed: @c std.node @c std.bus @c std.ui)</i>
