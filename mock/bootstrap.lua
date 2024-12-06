@@ -89,6 +89,7 @@ local function javascript_io_open(filename, mode)
             self.content = self.content..content
         end,
         close = function(self)
+            if not (mode or ''):find('w') then return end
             javascript_fs.mkdirSync(javascript_path.dirname(filename), {recursive = true})
             if (mode or ''):find('b') then
                 local blob, index = {}, 1

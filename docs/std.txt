@@ -1,0 +1,22 @@
+@defgroup std
+@{
+
+@brief Standard API
+
+@page milis
+
+milliseconds elapsed of active time
+
+```cpp
+std.milis
+```
+
+@page delta
+
+milliseconds passed since the last frame
+
+```cpp
+std.delta
+```
+
+@}

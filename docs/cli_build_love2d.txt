@@ -4,12 +4,12 @@
 @defgroup build
 @{
 
-@defgroup Love2D
+@defgroup love Love2D
 @{
 
 @short wrapper arounds love library
 
-@page ci_build_love Building as Love2D
+@page love_build Building as Love2D
 
 Games made with Gly Engine can be transformed into Love2D games,
 with many extra high-level features that do not exist originally.
@@ -25,10 +25,10 @@ with many extra high-level features that do not exist originally.
 @par usage
 
 ```sql
-lua cli.lua build yourgame.lua --core love2d
+lua cli.lua build yourgame.lua --core love
 ```
 
-@page ci_build_tool_love_zip Generating .love file from Love2D
+@page love_zip Generating .love file from Love2D
 
 This command is a general purpose utility for games made in love, not necessarily made with the gly engine,
 it is just a utility to correctly zip your game and distribute it easily.
@@ -39,12 +39,12 @@ it is just a utility to correctly zip your game and distribute it easily.
 lua cli.lua tool-love-zip ./dist/
 ```
 
-@page ci_build_tool_love_exe Generating .exe file from Love2D
+@page love_exe Generating .exe file from Love2D
 
 @todo coming soon tool-love-exe
 
 
-@page ci_build_tool_love_dump Unpacking .lua files from Love2D
+@page love_dump Unpacking .lua files from Love2D
 
 @todo coming soon tool-love-unzip
 

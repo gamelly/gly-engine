@@ -138,9 +138,9 @@ local function package(self, module_name, module, custom)
         if system and self.engine.stdlib_installed[name] then return end
         
         local try_install = function()
-            module.install(self.std, self.engine, custom, module_name)
+            module.install(self.std, self.engine, custom, name)
             if module.event_bus then
-                module.event_bus(self.std, self.engine, custom, module_name)
+                module.event_bus(self.std, self.engine, custom, name)
             end
         end
         

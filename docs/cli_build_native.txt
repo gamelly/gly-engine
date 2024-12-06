@@ -1,0 +1,55 @@
+@defgroup build
+@{
+
+@defgroup native
+@{
+
+@short build native games and apps on each platform
+
+@page cmake Building from Cmake
+
+The engine has separate repositories to provide dedicated portability for each platform,
+you can find it as [core native](https://github.com/gamelly/?q=core-native).
+
+@par usage
+
+They all use @c CMakeLists.txt to make it easier to find the correct compilers,
+dependencies, and form a build recipe.
+
+```text
+git clone <source code>
+```
+
+```text
+cmake -Bbuild -H. -DGAME=path/to/your/game.lua
+```
+
+```text
+make -C build
+```
+
+@par cmake options
+
+@li -DGAME=
+ - @c "" @n no vendorized game
+ - @c "path/to/your/game.lua" @n bundler the game with binary
+ - @c "@pong" @n use @ref Examples "example" of gly engine game
+ - @c "@template" @n use tool-template-fill to export a binary that can have the game added later without recompiling.
+
+@li -DENGINE=
+ - @c "@love" @n Reimplementation of @b Love2D by gamely. @n https://github.com/gamelly/love-engine
+ - @c "@lite" @n reduced version of the engine to promote performance
+ on limited devices and with small screens where certain features are not needed. @n
+ <i>(removed: @c std.node @c std.bus @c std.ui)</i>
+ - @c "@native" @n complete engine
+
+
+@defgroup homebrew
+@short roms for videogames
+@{
+
+@}
+
+
+@}
+@}

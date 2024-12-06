@@ -1,0 +1,12 @@
+@defgroup html5
+@{
+
+@defgroup webos WebOS
+@brief Build apps for LG televisors
+@{
+
+@todo We are in the process of publishing a game on the **LG Store**.
+As the validation steps progress, they are being thoroughly documented.
+
+@}
+@}

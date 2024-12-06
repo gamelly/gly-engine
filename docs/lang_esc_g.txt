@@ -1,7 +1,12 @@
 @defgroup Languages
 @{
 
-@defgroup lang_esc_g ESC G
+@defgroup dsl Gly DSLs
+@{
+
+@short domain specific languages
+
+@defgroup escg ESC G
 @{
 
 @par Backus–Naur Form 
@@ -55,5 +60,6 @@ checksum = 4 * byte;
 
 @li @c std.draw.clear(0xAABBCCDD) @n ESC G 0x48 0x00000003 0x00000000 @n ESC G 0x49 0x01 0xAABBCCDD 0x00000000 @n ESC G 0x50 0x01 0x0000FFFFF 0x00000000
 
+@}
 @}
 @}

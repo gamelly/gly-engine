@@ -2,7 +2,7 @@
 
 ## Limits in Love2D
 
-love 2d would be the hardware of your computer or video game, it has no performance limitations but some features are unavailable.
+@ref love would be the hardware of your computer or video game, it has no performance limitations but some features are unavailable.
 
 @par Polygons
 
@@ -18,7 +18,7 @@ Does not support displaying videos.
 
 ## Limits in Ginga
 
-Ginga doesn't have as much firepower, although it has a lot of available memory,
+@ref ginga doesn't have as much firepower, although it has a lot of available memory,
 it is running at low CPU priority, which can significantly hinder the Lua language from running quickly.
 
 @par Polygons
@@ -31,7 +31,7 @@ does not support requests with SSL and also HTTP 2.0 or higher.
 
 ## Limits in Gameboy Advanced
 
-@ref build_gba does not have an FPU so the lua number type is emulated via software by the compiler, 
+@ref nintendo_gba does not have an FPU so the lua number type is emulated via software by the compiler, 
 it is also CPU is 16.78 MHz with 288 KB of RAM, so don't expect to make a big game, but it is a good hobby,
 if you make a well optimized code you can play at 30 or 60 FPS.
 
@@ -92,7 +92,7 @@ TLS 1.3 is not supported.
 
 ## Limits in Console TUI (ASCII)
 
-The engine supports TUI style games, @ref ci_build_ascii mode is to support any terminal,
+The engine supports TUI style games, @ref tui_ascii mode is to support any terminal,
 whether Windows or a POSIX system. The minimum resolution is 80x24, but you can expand the screen.
 
 @par HTTPS

@@ -42,10 +42,10 @@ core_html5 --> fengari
 
 export the engine natively to platforms or create support yourself @ref framework_functions "from scratch".
 
-@li @ref ci_build_gba
-@li @ref ci_build_nds
-@li @ref ci_build_wii
-@li @ref ci_build_ascii "Text User Interface ASCII"
+@li @ref nintendo_gba
+@li @ref nintendo_ds
+@li @ref nintendo_wii
+@li @ref tui_ascii "Text User Interface ASCII"
 
 ### Core HTML5
 
@@ -55,14 +55,14 @@ export the engine natively to platforms or create support yourself @ref framewor
 ### Core Ginga
 
 @li @ref limits-in-ginga
-@li @ref Ginga "Generating Ginga App"
+@li @ref ginga "Generating Ginga App"
 
 ### Core Love2D
 
 @li @ref limits-in-love2d
-@li @ref ci_build_tool_love_zip
-@li @ref ci_build_tool_love_exe
-@li @ref ci_build_tool_love_dump
+@li @ref love_build
+@li @ref love_zip
+@li @ref love_exe
 
 @}
 @}

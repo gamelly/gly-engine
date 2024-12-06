@@ -129,12 +129,13 @@ function main()
 
     local is_txt = arg[1]:sub(#arg[1] - 3) == '.txt'
     local is_lua = arg[1]:sub(#arg[1] - 3) == '.lua'
-    local is_game = arg[1]:sub(#arg[1] - 7) == 'game.lua' and arg[1]:find('samples')
+    local is_game = arg[1]:sub(#arg[1] - 7):find('%w%w%w%w%.lua') and arg[1]:find('samples')
     local renamefunc_pattern = '@renamefunc ([%w_]+)'
     local fake_func_pattern = '@fakefunc ([%w_]+%b())'
     local hideparam_pattern = '@hideparam ([%w_]+)'
     local include_pattern = '^local [%w_%-]+ = require%(\'(.-)\'%)'
     local function_pattern = '^local function ([%w_]+%b())'
+    local classfunc_pattern = '^function ([%w_%.]+%b())'
     local literal_pattern = '^local ([%w_%-]+) = ([%d%w\'"-_]+)'
     local command_pattern = '@call (%w+)'
     local doxygen_pattern = '%-%-%!'
@@ -149,7 +150,7 @@ function main()
 
     if is_game then
         local game = dofile(arg[1])
-        local game_name = arg[1]:match('([%w_]+)/game.lua$')
+        local game_name = arg[1]:match('([%w_]+)/%w%w%w%w.lua$')
         local game_link = game_name
         io.write(group('Examples', game_name, game.meta.title))
         io.write(game_requires(game))
@@ -177,6 +178,7 @@ function main()
             local doxygen = line:match(doxygen_pattern)
             local include = line:match(include_pattern)
             local clojure = line:match(function_pattern)
+            local classfunc = line:match(classfunc_pattern)
             local hideparam = line:match(hideparam_pattern)
             local fake_func = line:match(fake_func_pattern)
             local rename_func = line:match(renamefunc_pattern)
@@ -184,6 +186,10 @@ function main()
 
             if is_lua and doxygen then
                 line = line:gsub(doxygen_pattern, '//!')
+            end
+
+            if classfunc then
+                clojure = classfunc:gsub('%.', '_')
             end
 
             if fake_func then
@@ -215,9 +221,9 @@ function main()
                 io.write('#include "'..include..'.lua"')
             elseif is_game and not doxygen then
                 breakline = false
-            elseif clojure then
+            elseif clojure and not is_txt then
                 io.write('local function-'..clojure..';')
-            elseif variable and literal then
+            elseif variable and literal and not is_txt then
                 io.write('local '..variable..' = '..literal..';')
             elseif command and _G[command] then
                 io.write(_G[command](line))

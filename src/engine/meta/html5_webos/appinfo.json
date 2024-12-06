@@ -1,9 +1,10 @@
 {
     "id": "{{id}}",
     "version": "{{version}}",
-    "vendor": "{{company}}",
+    "vendor": "{{author}}",
     "type": "web",
     "main": "index.html",
     "title": "{{title}}",
-    "icon": "icon80x80.png"
+    "icon": "icon80x80.png",
+    "iconLarge": "icon512x423.png"
 }

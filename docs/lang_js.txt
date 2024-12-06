@@ -1,0 +1,14 @@
+@defgroup Languages
+@{
+
+@defgroup js Javascript
+@{
+
+@brief @brief Create game in Javascript
+
+@li **Pong Example** https://github.com/gamelly/game-pong-javascript
+
+@todo explain better about JS
+
+@}
+@}

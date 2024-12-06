@@ -3,13 +3,14 @@
 --! @defgroup math
 --! @{
 
---! @short abs module
+--! @short std.math.abs
+--! @brief module
 --! @par Equation
 --! @startmath
 --! |value|
 --! @endmath
 --! @param[in] value
---! @return number
+--! @retval value as positive number
 local function abs(value)
     if value < 0 then
         return -value
@@ -17,18 +18,13 @@ local function abs(value)
     return value
 end
 
---! @short clamp
---! @par Equation
---! @startmath
---! \begin{cases} 
---! value\_min, & \text{if } value \gt value\_min \\
---! value\_max, & \text{if } value \lt value\_max \\
---! value, & \text{if } value\_min \lt value \lt value\_max 
---! \end{cases}
---! @endmath
---! @param[in] value The value to clamstd.math.
+--! @short std.math.clamp
+--! @param[in] value The value to clamp
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
+--! @retval value @n `if value_min <= value <= value_max`
+--! @retval value_min @n `if value < value_min`
+--! @retval value_max @n `if value > value_max`
 local function clamp(value, value_min, value_max)
     if value < value_min then
         return value_min
@@ -39,27 +35,29 @@ local function clamp(value, value_min, value_max)
     end
 end
 
---! @short clamp
---! @note similar to @ref clamp but cyclical.
+--! @short std.math.clamp2
+--! @note similar to @ref clamp "std.math.clamp" but cyclical.
 --! @par Equation
 --! @startmath
 --! (value - value\_min) \mod (value\_max - value\_min + 1) + value\_min
 --! @endmath
---! @param[in] value The value to clamstd.math.
+--! @param[in] value The value to clamp
 --! @param[in] value_min The minimum value that value can be clamped to.
 --! @param[in] value_max The maximum value that value can be clamped to.
 local function clamp2(value, value_min, value_max)
     return (value - value_min) % (value_max - value_min + 1) + value_min
 end
 
---! @short periodic cycle
+--! @short std.math.cycle
+--! @brief periodic cycle
 --! @par Equation
---! @startmath
+--! @deprecated simplify, rename, move or even remove @c cycle
+--! @cond
 --! \begin{cases} 
 --! \frac{passed \mod duration}{duration}, & \text{if } (passed \mod duration \neq 0) \\\\
 --! \frac{passed \mod (2 \times duration)}{duration}, & \text{if } (passed \mod duration = 0)
 --! \end{cases}
---! @endmath
+--! @endcond
 --! @param[in] passed
 --! @param[in] duration
 --! @retval 0 start of period
@@ -75,22 +73,15 @@ local function cycle(passed, duration)
     return ((endtime == 0 and (passed % (duration * 2)) or endtime)) / duration
 end
 
---! @short direction
---! @par Equation
---! @startmath
---! \begin{cases}
---! -1, & \text{if } |value| \gt \alpha \land value \lt 0 \\
---! 1, & \text{if } |value| \gt \alpha \land value \gt 0 \\
---! 0, & \text{if } |value| \leq \alpha
---! \end{cases}
---! @endmath
+--! @short std.math.dir
+--! @brief direction
 --! @param[in] value
 --! @param[in] alpha @c default=0
---! @retval -1 less than alpha
---! @retval 0 when in alpha
---! @retval 1 greater than alpha
+--! @retval -1 less than alpha @n `if value < -alpha`
+--! @retval 1 greater than alpha @n `if value > alpha`
+--! @retval 0 when is in alpha @n `if abs(alpha) <= aplha`
 --! @par Example
---! @code
+--! @code{.java}
 --! local sprites = {
 --!   [-1] = game.spr_player_left,
 --!   [1] = game.spr_player_right,
@@ -109,6 +100,7 @@ local function dir(value, alpha)
     end
 end
 
+--! @short std.math.dis
 --! @brief euclidean distance
 --! @par Equation
 --! @startmath
@@ -123,8 +115,9 @@ local function dis(x1,y1,x2,y2)
     return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5
 end
 
+--! @short std.math.dis2
 --! @brief quadratic distance
---! @note this is an optimization of @ref dis but it cannot be used to calculate collisions.
+--! @note this is an optimization of @ref dis "std.math.dist" but it cannot be used to calculate collisions.
 --! @par Equation
 --! @startmath
 --! (x_2 - x_1)^2 + (y_2 - y_1)^2
@@ -138,6 +131,7 @@ local function dis2(x1,y1,x2,y2)
     return (x2 - x1) ^ 2 + (y2 - y1) ^ 2
 end
 
+--! @short std.math.lerp
 --! @brief linear interpolation
 --! @par Equation
 --! @startmath
@@ -151,6 +145,7 @@ local function lerp(a, b, alpha)
     return a + alpha * ( b - a )
 end 
 
+--! @short std.math.map
 --! @brief re-maps
 --! @li <https://www.arduino.cc/reference/en/language/functions/math/map>
 --!
@@ -168,11 +163,13 @@ local function map(value, in_min, in_max, out_min, out_max)
     return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 end
 
---! @short maximum
---! @par Equation
---! @startmath
---! \frac{N_1 + N_2 - | N_1 - N_2 |}{2}
---! @endmath
+--! @short std.math.max
+--! @brief biggest number
+--! @par Example
+--! @code{.java}
+--! local one = std.math.max(0, 1)
+--! local two = std.math.max({0, 1, 2})
+--! @endcode
 local function max(...)
     local args = {...}
     local index = 1
@@ -194,11 +191,13 @@ local function max(...)
     return max_value
 end
 
---! @short minimum
---! @par Equation
---! @startmath
---! \frac{N_1 + N_2 + | N_1 + N_2 |}{2}
---! @endmath
+--! @short std.math.min
+--! @brief smallest number
+--! @par Example
+--! @code{.java}
+--! local one = std.math.max(1, 2, 3)
+--! local two = std.math.max({2, 3, 4})
+--! @endcode
 local function min(...)
     local args = {...}
     local index = 1
@@ -220,16 +219,17 @@ local function min(...)
     return min_value
 end
 
+--! @short std.math.saw
 --! @brief sawtooth
---! @par Equation
---! @startmath
+--! @deprecated simplify, rename, move or even remove @c saw
+--! @cond
 --! \begin{cases}
 --! value \times 4, & \text{if } 0 \leq value < 0.25 \\
 --! 1 - ((value - 0.25) \times 4), & \text{if } 0.25 \leq value < 0.50 \\
 --! ((value - 0.50) \times 4) \times (-1), & \text{if } 0.50 \leq value < 0.75 \\
 --! ((value - 0.75) \times 4) - 1, & \text{if } 0.75 \leq value \leq 1 \\
 --! \end{cases}
---! @endmath
+--! @endcond
 local function saw(value)
     if value < 0.25 then
         return value * 4

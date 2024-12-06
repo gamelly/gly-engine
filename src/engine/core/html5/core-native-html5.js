@@ -191,7 +191,7 @@ function errorController(func) {
             const padding = (actualBoundingBoxAscent + actualBoundingBoxDescent) * engine.error.count;
 
             if (padding < engine.real_canvas_element.height) {
-                engine.real_canvas_ctx.fillText(toString(e), 8, 12 + padding);
+                engine.real_canvas_ctx.fillText(e.toString(), 8, 12 + padding);
             }
         }
         if (engine.error.callback) {
@@ -265,6 +265,9 @@ const gly = {
         errorController(() => {
             engine.listen.native_callback_resize(width, height)
         })
+    },
+    stroke: (size) => {
+        engine.canvas_ctx.lineWidth = size
     },
     pause: () => {
         engine.pause = true

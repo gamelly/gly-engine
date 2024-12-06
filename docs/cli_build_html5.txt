@@ -4,7 +4,7 @@
 @defgroup build
 @{
 
-@defgroup HTML5
+@defgroup html5 HTML5
 @{
 
 @short build web pages, pwa's and tv apps

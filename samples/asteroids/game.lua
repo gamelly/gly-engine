@@ -251,13 +251,13 @@ local function loop(std, game)
             end
         end
         return
-    elseif game.state == 2 and std.key.press.d then
+    elseif game.state == 2 and (std.key.press.d or std.key.press.menu) then
         game.menu_time = std.milis
         game.state = 1
         return
     end
     -- enter in the menu
-    if std.key.press.d then
+    if std.key.press.d or std.key.press.menu then
         game.state = 1
     end
     -- player move
@@ -502,9 +502,11 @@ end
 
 local P = {
     meta={
+        id='br.com.gamely.asteroids',
         title='AsteroidsTV',
         author='RodrigoDornelles',
         description='similar to the original but with lasers because televisions may have limited hardware.',
+        tizen_package='3202411037732',
         version='1.0.0'
     },
     config = {

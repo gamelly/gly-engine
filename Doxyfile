@@ -1,9 +1,9 @@
 # Custom Configs
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "GlyEngine"
-PROJECT_NUMBER         = 0.0.16
+PROJECT_NUMBER         = 0.0.17
 PROJECT_BRIEF          = "Create games and apps with lua"
-PROJECT_LOGO           = assets/icon80x80.png
+PROJECT_LOGO           = assets/icon512x423.png
 GENERATE_RTF           = NO
 GENERATE_LATEX         = NO
 OUTPUT_DIRECTORY       = .
@@ -13,7 +13,7 @@ STRIP_CODE_COMMENTS    = NO
 CALL_GRAPH             = NO
 HAVE_DOT               = NO
 EXTRACT_ALL            = YES
-USE_MATHJAX            = YES
+USE_MATHJAX            = NO
 COMPACT_LATEX          = NO
 EXTRACT_STATIC         = NO
 SHORT_NAMES            = NO
@@ -25,6 +25,7 @@ SOURCE_BROWSER         = NO
 VERBATIM_HEADERS       = NO
 REPEAT_BRIEF           = NO
 PREDEFINED             = DOXYGEN=
+IMAGE_PATH             = .
 PLANTUML_JAR_PATH      = $(PLANTUML_JAR_PATH)
 PLANTUML_CFG_FILE      =
 PLANTUML_INCLUDE_PATH  =
@@ -42,8 +43,8 @@ ALIASES               += startsalt=@startuml{salt}
 ALIASES               += endsalt=@enduml
 ALIASES               += startmindmap=@startuml{mindmap}
 ALIASES               += endmindmap=@enduml
-ALIASES               += startmath=@f(
-ALIASES               += endmath=@f)
+ALIASES               += startmath=@startuml{latex}
+ALIASES               += endmath=@enduml
 # Theme: https://jothepro.github.io/doxygen-awesome-css/
 GENERATE_TREEVIEW      = YES
 DISABLE_INDEX          = NO

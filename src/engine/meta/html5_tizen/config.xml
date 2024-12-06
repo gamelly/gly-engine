@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- TODO: improve ID and PACKAGE -->
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" version="1.0.0" viewmodes="maximized">
-  <tizen:application id="br.com.zebbo" package="6BIC3y92L2" required_version="8.0"/>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" version="{{version}}" viewmodes="maximized">
+  <tizen:application id="{{id}}" package="{{tizen_package}}" required_version="8.0"/>
   <feature name="http://tizen.org/feature/screen.size.all"/>
   <icon src="icon80x80.png"/>
   <content src="index.html"/>
   <name>{{title}}</name>
   <author>{{author}}</author>
-  <version>{{version}}</version>
   <description>{{description}}</description>
   <tizen:profile name="tizen"/>
 </widget>
