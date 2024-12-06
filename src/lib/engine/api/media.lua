@@ -63,7 +63,7 @@ end
 
 local channels = {}
 
-local function media_channel(handler)
+local function media_channel(std, handler)
     return function(id)
         id = id or 1
 
@@ -80,6 +80,24 @@ local function media_channel(handler)
                 resize = util_decorator.prefix1(handler.resize, media_resize),
                 position = util_decorator.prefix1(handler.position, media_position)
             }
+
+            if std.node then
+                channels[id].node = std.node.load({})
+                channels[id].apply = function()
+                    local node = channels[id].node
+                    local depth = 0
+                    local offset_x = 0
+                    local offset_y = 0
+                    while node and depth < 100 do
+                        offset_x = offset_x + node.config.offset_x
+                        offset_y = offset_y + node.config.offset_y
+                        node = node.config.parent
+                        depth = depth + 1
+                    end
+                    media_position(handler.position, channels[id], offset_x, offset_y)
+                    media_resize(handler.resize, channels[id], channels[id].node.data.width, channels[id].node.data.height)
+                end
+            end
         end
 
         return channels[id]
@@ -88,7 +106,7 @@ end
 
 local function install(std, engine, handlers)
     std.media = std.media or {}
-    std.media.video = media_channel(handlers)
+    std.media.video = media_channel(std, handlers)
 end
 
 local P = {

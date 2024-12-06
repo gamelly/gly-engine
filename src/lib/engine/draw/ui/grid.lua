@@ -53,6 +53,11 @@ local util_decorator = require('src/lib/util/decorator')
 --!
 --! You can add several different items to your grid: classes, nodes, offsets, entire applications and even another grid.
 --!
+--! @li @b media
+--! @code{.java}
+--! std.ui.grid('1x1'):add(std.media.video(1))
+--! @endcode
+--!
 --! @li @b class
 --! @code{.java}
 --! local btn = {
