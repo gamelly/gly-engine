@@ -25,7 +25,7 @@ with many extra high-level features that do not exist originally.
 @par usage
 
 ```sql
-lua cli.lua build yourgame.lua --core love2d
+lua cli.lua build yourgame.lua --core love
 ```
 
 @page love_zip Generating .love file from Love2D
