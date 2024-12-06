@@ -79,7 +79,7 @@ gly.wasmoon = async (game_file) => {
     ];
 
     function updateSize() {
-        gly.resize()
+        gly.resize_widescreen()
     }
 
     function updateKey(ev) {
