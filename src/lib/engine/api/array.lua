@@ -39,7 +39,7 @@ end
 --! @param [in] func
 --! @return new array
 local function array_filter(array, func)
-    func = func or (function(v) if v and v ~= 0 then return true end end)
+    func = func or (function(v) return v and v ~= 0 end)
     local res = {}
     local index = 1
     local length = #array
@@ -179,18 +179,16 @@ end
 --! @param [in] func
 --! @return boolean
 local function array_every(array, func)
-    local index, inc, final = 1, 1, #array
+    local index = 1
+    local length = #array
 
-    if reverse then
-        index, inc, final = #array, -1, 1
-    end
 
-    repeat
+    while index <= length do
         if not func(array[index], index) then
             return false
         end
-        index = index + inc
-    until (reverse and index < final) or (not reverse and index > final)
+        index = index + 1
+    end
     
     return true
 end
