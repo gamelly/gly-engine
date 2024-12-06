@@ -1,3 +1,17 @@
+--! @par Game FSM
+--! @startuml
+--! hide empty description
+--! state 1 as "menu"
+--! state 2 as "game_play"
+--! state 3 as "game_over"
+--! 
+--! [*] -> 2
+--! 1 --> 2
+--! 1 --> 3
+--! 2 --> 1
+--! 3 --> 2
+--! @enduml
+
 local function check_collision(std, game, bird_x, bird_y, pipe_x, pipe_y, pipe_gap)
     local bird_size = 20  -- Bird size
     local pipe_width = 50  -- Pipe width
