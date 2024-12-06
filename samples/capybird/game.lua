@@ -1,13 +1,16 @@
-local function draw_logo(std, game, height, anim)
-    anim = anim or 0
-    std.text.font_size(32)
-    std.draw.color(std.color.white)
-    local s1 = std.text.mensure('CapyBird')
-    std.text.print(game.width/2 - s1/2, height + anim, 'Capy')
-    std.draw.color(std.color.yellow)
-    std.text.print(game.width/2 + s1/2 - std.text.mensure('Bird'), height - anim, 'Birdy')
-    return s1
-end
+--! @par Game FSM
+--! @startuml
+--! hide empty description
+--! state 1 as "menu"
+--! state 2 as "game_play"
+--! state 3 as "game_over"
+--! 
+--! [*] -> 2
+--! 1 --> 2
+--! 1 --> 3
+--! 2 --> 1
+--! 3 --> 2
+--! @enduml
 
 local function check_collision(std, game, bird_x, bird_y, pipe_x, pipe_y, pipe_gap)
     local bird_size = 20  -- Bird size
@@ -141,21 +144,16 @@ local function draw(std, game)
     std.draw.clear(std.color.skyblue)
     
     if game.state == 1 then
-        local h = game.height/16
-        local hmenu = (h*(4+game.menu)) + 24
-        
-        local s = draw_logo(std, game, h*2)
-        std.text.font_size(16)
+        std.draw.color(std.color.yellow)
+        std.text.put(40, std.app.width <= 240 and 6 or 3, 'Bird', 4)
+        std.text.put(20, 8 + game.menu, 'X')
+
         std.draw.color(std.color.white)
-        
-        std.text.print(game.width/2 - s, h*6, 'New Game')
-        std.text.print(game.width/2 - s, h*7, 'Settings')
-        std.text.print(game.width/2 - s, h*8, 'Exit')
-        
-        std.draw.line(game.width/2 - s, hmenu, game.width/2 + s, hmenu)
-        
-        -- High score display
-        std.text.print_ex(game.width/2, h*10, 'High Score: ' .. (game.highscore or 0), 0)
+        std.text.put(30, 3, 'Capy', 4)
+        std.text.put(1, 10, 'New Game')
+        std.text.put(1, 11, 'Settings')
+        std.text.put(1, 12, 'Exit')
+        std.text.put(1, 16, 'High Score: ' .. (game.highscore or 0), 2)
         return
     end
     
@@ -177,15 +175,13 @@ local function draw(std, game)
         
         -- Score display
         std.draw.color(std.color.yellow)
-        std.text.font_size(16)
-        std.text.print_ex(game.width - 100, 20, 'Score: ' .. game.score, 0)
+        std.text.put(60, 1, 'Score: ' .. game.score)
     end
     
     -- Game over screen
     if game.state == 3 then
         std.draw.color(std.color.black)
-        std.text.font_size(32)
-        std.text.print_ex(game.width/2, game.height/2, 'Game Over', 0)
+        std.text.put(26, 8, 'Game Over', 5)
     end
 end
 
