@@ -266,6 +266,9 @@ const gly = {
             engine.listen.native_callback_resize(width, height)
         })
     },
+    stroke: (size) => {
+        engine.canvas_ctx.lineWidth = size
+    },
     pause: () => {
         engine.pause = true
     },
