@@ -1,9 +1,11 @@
 local util_cmd = require('src/lib/util/cmd')
 
 local function bootstrap()
-    local file = io.open('mock/bootstrap.lua', 'r')
-    local content = file:read('*a')
-    file:close()
+    local fmock = io.open('mock/io.lua', 'r')
+    local fbootstrap = io.open('mock/bootstrap.lua', 'r')
+    local content = fmock:read('*a'):match('%-%-! @bootstrap(.-)%-%-! @endbootstrap')..fbootstrap:read('*a')
+    fmock:close()
+    fbootstrap:close()
     return content
 end
 

@@ -21,36 +21,6 @@ if package and package.searchers and require then
     end
 end
 
-local function file_reader(self, mode, size, func)
-    if not self.content or #self.content == 0 then
-        self.content = func()
-    end
-
-    if self.pointer >= #self.content then
-        return nil
-    elseif size == '*a' then
-        return self.content
-    elseif size == nil then
-        local content = self.content
-        local line_index = content:find('\n', self.pointer)
-        if line_index then
-            local line = content:sub(self.pointer, line_index)
-            self.pointer = self.pointer + #line
-            return line
-        else
-            local line = content:sub(self.pointer)
-            self.pointer = self.pointer + #line
-            return line
-        end
-    elseif type(size) == 'number' then
-        local content = self.content:sub(self.pointer, self.pointer + size)
-        self.pointer = self.pointer + #content
-        return content
-    else
-        error("not implemented: "..tostring(size))
-    end
-end
-
 local function bootstrap_has_file(filename, mode)
     if not BOOTSTRAP then return false end
     if BOOTSTRAP_DISABLE then return false end
