@@ -92,6 +92,11 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('url', {required=true})
     .add_next_value('dist', {required=true})
     --
+    .add_subcommand('fs-mustache', commands_fs)
+    .add_next_value('json', {required=true})
+    .add_next_value('file', {required=true})
+    .add_next_value('dist', {required=true})
+    --
     .add_subcommand('cli-build', commands_cli)
     .add_option_get('dist', {default='./dist/'})
     .add_subcommand('cli-test', commands_cli)
