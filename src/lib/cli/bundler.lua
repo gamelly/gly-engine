@@ -144,7 +144,7 @@ local function build(src, dest)
             if line_package then
                 if not deps_dict[line_package] then
                     deps_list[#deps_list + 1] = line_package
-                    deps_dict[line_package]={line={}}
+                    deps_dict[line_package]={line={}, var={}, suffix={}}
                 end
                 if line_variable == '-' then
                     line = '-'..'- part '
@@ -160,8 +160,8 @@ local function build(src, dest)
 
                 line = line..lib_func..' '..line_variable..' '
                 deps_dict[line_package].line[index] = line
-                deps_dict[line_package].suffix = line_suffix
-                deps_dict[line_package].var = line_variable
+                deps_dict[line_package].var[index] = line_variable
+                deps_dict[line_package].suffix[index] = line_suffix
                 deps_dict[line_package].func = lib_func
             end
 
@@ -208,22 +208,22 @@ local function build(src, dest)
             index2 = 1
             local lib = deps_list[index1]
             while index2 <= #deps_dict[lib].line do
-                local line = deps_dict[lib].line[index2 ]..'\n'
+                local line = deps_dict[lib].line[index2]..'\n'
                 local lib_type = line:match('^-'..'- (%w+)')
                 if deps_dict[lib].imported == 'system' then
                     if not deps_dict[lib].header then
-                        main_before = 'local '..deps_dict[lib].var..' = ((function() local x, y = pcall(require, \''..lib
-                            ..'\'); return x and y end)()) or _G.'..deps_dict[lib].var..'\n'..main_before
+                        main_before = 'local '..deps_dict[lib].var[index2]..' = ((function() local x, y = pcall(require, \''..lib
+                            ..'\'); return x and y end)()) or _G.'..deps_dict[lib].var[index2]..'\n'..main_before
                         deps_dict[lib].header = true
                     end
                     main_after = main_after:gsub(line, '')
                     main_content = main_content:gsub(line, '')                    
                 elseif lib_type == 'part' then
-                    local replacer = deps_dict[lib].func..'()'..deps_dict[lib].suffix..'\n'
+                    local replacer = deps_dict[lib].func..'()'..deps_dict[lib].suffix[index2]..'\n'
                     main_after = main_after:gsub(line, replacer)
                     main_content = main_content:gsub(line, replacer)
                 else
-                    local replacer = deps_dict[lib].var..' = '..deps_dict[lib].func..'()'..deps_dict[lib].suffix..'\n'
+                    local replacer = deps_dict[lib].var[index2]..' = '..deps_dict[lib].func..'()'..deps_dict[lib].suffix[index2]..'\n'
                     if lib_type == 'local' then
                         replacer = 'local '..replacer
                     end
