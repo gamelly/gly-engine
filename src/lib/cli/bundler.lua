@@ -209,7 +209,7 @@ local function build(src, dest)
             local lib = deps_list[index1]
             while index2 <= #deps_dict[lib].line do
                 local line = deps_dict[lib].line[index2 ]..'\n'
-                local lib_type = line:match('^-- (%w+)')
+                local lib_type = line:match('^-'..'- (%w+)')
                 if deps_dict[lib].imported == 'system' then
                     if not deps_dict[lib].header then
                         main_before = 'local '..deps_dict[lib].var..' = ((function() local x, y = pcall(require, \''..lib
