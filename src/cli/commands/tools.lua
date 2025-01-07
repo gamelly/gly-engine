@@ -10,7 +10,7 @@ local function bundler(args)
     local d = util_fs.path(args.dist)
     local f = util_fs.file(args.file)
     zeebo_fs.clear(d.get_fullfilepath())
-    return zeebo_bundler.build(f.get_sys_path(), f.get_file(), d.get_sys_path()..f.get_file())
+    return zeebo_bundler.build(f.get_fullfilepath(), d.get_sys_path()..f.get_file())
 end
 
 local function compiler(args)

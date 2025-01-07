@@ -40,6 +40,7 @@ end
 local function open(files)
     local storage = {}
     return function (filename, mode)
+        filename = filename:gsub('^%./', '')
         if (mode or 'r'):find('r') and (files[filename] or storage[filename]) then
             return {
                 pointer = 1,

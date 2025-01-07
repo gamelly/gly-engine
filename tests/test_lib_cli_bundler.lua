@@ -20,7 +20,7 @@ io.open = mock_io.open({
 })
 
 function test_sample()
-    zeebo_bundler.build('src/', 'main.lua', 'dist/main1.lua')
+    zeebo_bundler.build('src/main.lua', 'dist/main1.lua')
     local dist_file = io.open('dist/main1.lua', 'r')
     local dist_text = dist_file and dist_file:read('*a')
     local dist_func = loadstring and loadstring(dist_text) or load(dist_text)
@@ -28,7 +28,7 @@ function test_sample()
 end
 
 function test_recursion()
-    zeebo_bundler.build('src/', 'biz.lua', 'dist/main2.lua')
+    zeebo_bundler.build('src/biz.lua', 'dist/main2.lua')
     local dist_file = io.open('dist/main2.lua', 'r')
     local dist_text = dist_file and dist_file:read('*a')
     assert(dist_text:match('_G.math'))
