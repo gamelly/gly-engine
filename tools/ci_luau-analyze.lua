@@ -15,5 +15,6 @@ end
 
 cmd('./cli.sh build --bundler --enterprise --core '..core)
 cmd(replace..' --format "function native_callback" --replace "local function _native_callback"')
-cmd('./cli.sh tool-package-del dist/main.lua core_third_party_json_rxi')
-cmd('./cli.sh tool-package-del dist/main.lua core_src_lib_engine_api_encoder')
+cmd('./cli.sh tool-package-del dist/main.lua third_party_json_rxi')
+cmd('./cli.sh tool-package-del dist/main.lua src_lib_engine_api_encoder')
+cmd('./cli.sh tool-package-del dist/main.lua third_party_lustache_olivinelabs')

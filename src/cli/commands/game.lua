@@ -8,7 +8,7 @@ end
 local function run(args)
     if args.core == 'repl' then
         arg = {args.game}
-        require('src/engine/core/repl/main')
+        pcall(require, 'src/engine/core/repl/main')
         return true
     elseif args.core == 'love' then
         if BOOTSTRAP then

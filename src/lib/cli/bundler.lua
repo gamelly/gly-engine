@@ -74,12 +74,11 @@ local util_fs = require('src/lib/util/fs')
 --! @endcode
 
 local function build(src, dest)
-    local count = 0
     local from = 'main'
     local src_path = util_fs.file(src)
     local dest_path = util_fs.file(dest)
     local relative = src_path and dest_path and src_path.get_unix_path()
-    local src_file, src_err = src_path and io.open(src_path.get_fullfilepath())
+    local src_file, src_err = io.open((src_path and src_path.get_fullfilepath()) or '')
     local pattern_identify = '^table: 0x(%w+)$'
     local pattern_require1 = '^%s*require%([\'"](.-)[\'"]%)(.*)'
     local pattern_require2 = '^%s*([%w_%-]+)%s*=%s*require%([\'"](.-)[\'"]%)(.*)'
@@ -94,9 +93,7 @@ local function build(src, dest)
     local main_content = ''
     local main_before = ''
     local main_after = ''
-    local lib_module = nil
     local lib_name = nil
-    local lib_var = nil
 
     if not src_file then
         return false, src_err or 'src is required'
@@ -134,7 +131,7 @@ local function build(src, dest)
             local line_suffix = line_require4[2] or line_require1[2]
 
             do
-                index = 1
+                local index = 1
                 while index <= #requires and not line_package do
                     line_variable, line_package, line_suffix = requires[index][1], requires[index][2], requires[index][3]
                     index = index + 1
