@@ -33,19 +33,19 @@ local function draw_fps(std, engine, show, pos_x, pos_y)
         std.draw.rect(0, x + 96, y, 40, 24)
     end
     std.draw.color(0x000000FF)
-    std.draw.font('Tiresias', 16)
+    std.text.font_size(16)
     if show >= 3 then
         local floor = std.math.floor or math.floor or function() return 'XX' end
         local fps =  floor((1/std.delta) * 1000)
-        std.draw.text(x + s, y, fps)
+        std.text.print(x + s, y, fps)
         s = s + 46
     end
     if show >= 1 then
-        std.draw.text(x + s, y, engine.fps)
+        std.text.print(x + s, y, engine.fps)
         s = s + 46
     end
     if show >= 2 then
-        std.draw.text(x + s, y, engine.root.config.fps_max)
+        std.text.print(x + s, y, engine.root.config.fps_max)
         s = s + 46
     end
 end
