@@ -13,7 +13,7 @@ local function build(args)
     zeebo_fs.clear(args.dist)
     zeebo_fs.mkdir(args.dist..'_bundler/')
 
-    local build_game = zeebo_buildsystem.from({core='game', bundler=args.bundler, dist=args.dist})
+    local build_game = zeebo_buildsystem.from({core='game', bundler=true, dist=args.dist})
         :add_core('game', {src=args.game, as='game.lua', prefix='game_', assets=true})
 
     local build_core = zeebo_buildsystem.from(args)
