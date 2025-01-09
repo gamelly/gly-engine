@@ -39,12 +39,45 @@
           position: absolute;
           image-rendering: pixelated;
         }
+        .gpz-btn4{
+          right: 0;
+          bottom: 0;
+        }
+        .gpz-joy {
+          left: 0;
+          bottom: 0;
+        }
     </style>
+    {{# args.gamepadzilla }}
+    <style>
+      .gpz-btn4{
+        right: 0;
+        bottom: 0;
+      }
+      .gpz-joy {
+        left: 0;
+        bottom: 0;
+      }
+    </style>
+    {{/ args.gamepadzilla }}
   </head>
   <body>
     <main>
       <canvas id="gameCanvas"></canvas>
+      {{# args.gamepadzilla }}
+      <canvas width="150" height="150"
+        class="gpz-joy"
+        data-gpz-bind="ArrowUp ArrowLeft ArrowDown ArrowRight">
+      </canvas>
+      <canvas width="150" height="150"
+        class="gpz-btn4"
+        data-gpz-bind="KeyC KeyV KeyZ KeyX">
+      </canvas>
+      {{/ args.gamepadzilla }}
     </main>
+    {{# args.gamepadzilla }}
+    <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1"></script>
+    {{/ args.gamepadzilla }}
     <script src="core-native-html5.js"></script>
     <script src="core-media-html5.js"></script>
     <script type="module" src="driver-wasmoon.js"></script>

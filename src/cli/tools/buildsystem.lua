@@ -78,7 +78,10 @@ local function add_meta(self, file_in, options)
         local game = zeebo_module.loadgame(self.args.dist..'game.lua')
         local content = input:read('*a')
         if game then 
-            content = lustache:render(content, {meta=game.meta})
+            content = lustache:render(content, {
+                args=self.args,
+                meta=game.meta
+            })
         end
         output:write(content)
         output:close()
