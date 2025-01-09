@@ -7,23 +7,27 @@ local function move(src_filename, out_filename, prefix)
     local out_file = src_file and io.open(out_filename, 'w')
     local pattern_require = 'local ([%w_%-]+) = require%([\'"]([%w_/-]+)[\'"]%)'
     local pattern_gameload = 'std%.node%.load%([\'"](.-)[\'"]%)'
+    local pattern_comment = '%-%-'
 
     if src_file and out_file then
         repeat
             local line = src_file:read()
 
             if line then
+                local pos_comment = line:find(pattern_comment)
+                local pos_require = line:find(pattern_require) or line:find(pattern_gameload)
+                local is_comment = pos_comment and pos_require and pos_comment < pos_require
                 local line_require = { line:match(pattern_require) }
                 local node_require = { line:match(pattern_gameload) }
 
-                if node_require and #node_require > 0 then     
+                if node_require and #node_require > 0 and not is_comment then     
                     local mod = util_fs.file(node_require[1])
                     local module_path = (mod.get_unix_path()..mod.get_filename()):gsub('%./', '')
                     local var_name = 'node_'..module_path:gsub('/', '_')
                     deps[#deps + 1] = module_path..'.lua'
                     content = 'local '..var_name..' = require(\''..prefix..module_path:gsub('/', '_')..'\')\n'..content
                     content = content..line:gsub(pattern_gameload, 'std.node.load('..var_name..')')..'\n'
-                elseif line_require and #line_require > 0 then
+                elseif line_require and #line_require > 0 and not is_comment then
                     local exist_as_file = io.open(line_require[2]..'.lua', 'r')
                     local var_name = line_require[1]
                     local module_path = line_require[2]
