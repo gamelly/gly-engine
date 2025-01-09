@@ -71,6 +71,10 @@ local function package_del(args)
     return zeebo_package.del(args.file, args.module)
 end
 
+local function package_mock(args)
+    return zeebo_package.mock(args.file, args.mock, args.module)
+end
+
 local function template_fill(args)
     return zeebo_filler.put(args.file, tonumber(args.size))
 end
@@ -89,6 +93,7 @@ local P = {
     ['tool-love-zip'] = love_zip,
     ['tool-love-exe'] = love_exe,
     ['tool-package-del'] = package_del,
+    ['tool-package-mock'] = package_mock,
     ['tool-template-fill'] = template_fill,
     ['tool-template-replace'] = template_replace
 }

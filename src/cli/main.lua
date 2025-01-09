@@ -61,6 +61,11 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('file', {required=true})   
     .add_next_value('module', {required=true})   
     --
+    .add_subcommand('tool-package-mock', commands_tools)
+    .add_next_value('mock', {required=true})
+    .add_next_value('file', {required=true})
+    .add_next_value('module', {required=true})
+    --
     .add_subcommand('tool-template-fill', commands_tools)
     .add_next_value('file', {required=true})
     .add_next_value('size', {required=true}) 
