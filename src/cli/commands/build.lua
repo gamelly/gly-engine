@@ -10,7 +10,8 @@ local function build(args)
         args.core = 'html5'
     end
 
-    zeebo_fs.clear(args.dist..'/_bundler')
+    zeebo_fs.clear(args.dist)
+    zeebo_fs.mkdir(args.dist..'_bundler/')
 
     local build_game = zeebo_buildsystem.from({core='game', bundler=args.bundler, dist=args.dist})
         :add_core('game', {src=args.game, as='game.lua', prefix='game_', assets=true})

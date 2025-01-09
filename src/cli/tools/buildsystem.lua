@@ -39,10 +39,10 @@ local function add_core(self, core_name, options)
         zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '')
     end
 
-    if #self.bundler > 0 then 
+    if #self.bundler > 0 and options.src then 
         self.pipeline[#self.pipeline + 1] = function()
-            local from = util_fs.file(options.src)
-            zeebo_bundler.build(options.src, self.args.dist..(options.as or from.get_file()))
+            local file = options.as or util_fs.file(options.src).get_file()
+            zeebo_bundler.build(self.args.dist..self.bundler..file, self.args.dist..file)
         end
     end
 
