@@ -233,14 +233,14 @@ local function build(src, dest)
         end
     end
 
+    if #main_content == 0 and #main_after == 0 and #main_before == 0 then
+        return false, 'nothing to do!'
+    end
+
     do
         local id = tostring(deps_dict):match(pattern_identify)
         main_content = 'local function main_'..id..'()\n'..main_content..'end\n'
         main_content = main_before..main_content..main_after..'return main_'..id..'()\n'
-    end
-
-    if #main_content == 0 and #main_after == 0 and #main_before == 0 then
-        return false, 'nothing to do!'
     end
 
     src_file, src_err = io.open(dest_path.get_fullfilepath(), 'w')
