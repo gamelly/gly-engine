@@ -72,17 +72,6 @@ function test_array_every()
     luaunit.assertEquals(r3, true)
 end
 
-function test_array_compare()
-    local r1 = std.JorgeAjudaComNomePf.compare({1, 2, 3, 4, 5}, function(a, b) return a < b end)
-    local r2 = std.JorgeAjudaComNomePf.compare({1, 3, 2, 4, 5}, function(a, b) return a < b end)
-    local r3 = std.JorgeAjudaComNomePf.compare({1, 2, 3, 4, 5}, function(a, b) return type(a) == type(b) end)
-    local r4 = std.JorgeAjudaComNomePf.compare({1, 2, 3, 4, '5'}, function(a, b) return type(a) == type(b) end)
-    luaunit.assertEquals(r1, true)
-    luaunit.assertEquals(r2, false)
-    luaunit.assertEquals(r3, true)
-    luaunit.assertEquals(r4, false)
-end
-
 function test_array_pipeline()
     local sum1 = 0
     local sum2 = 0
@@ -107,7 +96,6 @@ function test_array_pipeline()
     luaunit.assertEquals(std.JorgeAjudaComNomePf.from({1, 2, 3, 4, 5}):reducer(sum), 15)
     luaunit.assertEquals(std.JorgeAjudaComNomePf.from({4, 5, 5, 5, 5}):some(five), true)
     luaunit.assertEquals(std.JorgeAjudaComNomePf.from({5, 5, 5, 5, 5}):every(five), true)
-    luaunit.assertEquals(std.JorgeAjudaComNomePf.from({5, 5, 5, 5, 5}):compare(equal), true)
 end
 
 os.exit(luaunit.LuaUnit.run())

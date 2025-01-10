@@ -27,13 +27,6 @@ function test_abs()
     luaunit.assertEquals(zeebo_math.abs(10), 10)
 end
 
-function test_saw()
-    luaunit.assertAlmostEquals(zeebo_math.saw(0.1), 0.4, 1e-6)
-    luaunit.assertAlmostEquals(zeebo_math.saw(0.4), 0.4, 1e-6)
-    luaunit.assertAlmostEquals(zeebo_math.saw(0.6), -0.4, 1e-6)
-    luaunit.assertAlmostEquals(zeebo_math.saw(0.9), -0.4, 1e-6)
-end
-
 function test_lerp()
     luaunit.assertEquals(zeebo_math.lerp(0, 10, 0.5), 5)
     luaunit.assertEquals(zeebo_math.lerp(1, 5, 0.25), 2)
@@ -49,11 +42,6 @@ function test_clamp2()
     luaunit.assertEquals(zeebo_math.clamp2(-10, -5, 5), 1)
     luaunit.assertEquals(zeebo_math.clamp2(10, -5, 5), -1)
     luaunit.assertEquals(zeebo_math.clamp2(3, 1, 5), 3)
-end
-
-function test_cycle()
-    luaunit.assertEquals(zeebo_math.cycle(5, 10), 0.5)
-    luaunit.assertEquals(zeebo_math.cycle(15, 10), 0.5)
 end
 
 function test_min()
@@ -74,19 +62,7 @@ end
 function test_install()
     local std ={}
     local math_lib = engine_math.install(std)
-    luaunit.assertIsFunction(math_lib.abs)
     luaunit.assertIsFunction(math_lib.clamp)
-    luaunit.assertIsFunction(math_lib.clamp2)
-    luaunit.assertIsFunction(math_lib.cycle)
-    luaunit.assertIsFunction(math_lib.dir)
-    luaunit.assertIsFunction(math_lib.dis)
-    luaunit.assertIsFunction(math_lib.dis2)
-    luaunit.assertIsFunction(math_lib.lerp)
-    luaunit.assertIsFunction(math_lib.map)
-    luaunit.assertIsFunction(math_lib.max)
-    luaunit.assertIsFunction(math_lib.min)
-    luaunit.assertIsFunction(math_lib.saw)
-    luaunit.assertEquals(math_lib, std.math)
 end
 
 

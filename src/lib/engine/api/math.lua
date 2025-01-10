@@ -48,31 +48,6 @@ local function clamp2(value, value_min, value_max)
     return (value - value_min) % (value_max - value_min + 1) + value_min
 end
 
---! @short std.math.cycle
---! @brief periodic cycle
---! @par Equation
---! @deprecated simplify, rename, move or even remove @c cycle
---! @cond
---! \begin{cases} 
---! \frac{passed \mod duration}{duration}, & \text{if } (passed \mod duration \neq 0) \\\\
---! \frac{passed \mod (2 \times duration)}{duration}, & \text{if } (passed \mod duration = 0)
---! \end{cases}
---! @endcond
---! @param[in] passed
---! @param[in] duration
---! @retval 0 start of period
---! @retval 0.5 middle of period
---! @retval 1 end of period
---! @par Example
---! @code
---! local anim = std.math.cycle(game.millis, 1000) * 5
---! std.draw.text(x, y + anim, 'hello!')
---! @endcode
-local function cycle(passed, duration)
-    local endtime = (passed) % duration
-    return ((endtime == 0 and (passed % (duration * 2)) or endtime)) / duration
-end
-
 --! @short std.math.dir
 --! @brief direction
 --! @param[in] value
@@ -219,28 +194,6 @@ local function min(...)
     return min_value
 end
 
---! @short std.math.saw
---! @brief sawtooth
---! @deprecated simplify, rename, move or even remove @c saw
---! @cond
---! \begin{cases}
---! value \times 4, & \text{if } 0 \leq value < 0.25 \\
---! 1 - ((value - 0.25) \times 4), & \text{if } 0.25 \leq value < 0.50 \\
---! ((value - 0.50) \times 4) \times (-1), & \text{if } 0.50 \leq value < 0.75 \\
---! ((value - 0.75) \times 4) - 1, & \text{if } 0.75 \leq value \leq 1 \\
---! \end{cases}
---! @endcond
-local function saw(value)
-    if value < 0.25 then
-        return value * 4
-    elseif value < 0.50 then
-        return 1 - ((value - 0.25) * 4)
-    elseif value < 0.75 then
-        return ((value - 0.50) * 4) * (-1)
-    end
-    return ((value - 0.75) * 4) - 1
-end
-
 --! @}
 --! @}
 
@@ -250,7 +203,6 @@ local function install(std)
     std.math.abs=abs
     std.math.clamp=clamp
     std.math.clamp2=clamp2
-    std.math.cycle=cycle
     std.math.dir=dir
     std.math.dis=dis
     std.math.dis2=dis2
@@ -258,7 +210,6 @@ local function install(std)
     std.math.map=map
     std.math.max=max
     std.math.min=min
-    std.math.saw=saw
     return std.math
 end
 
