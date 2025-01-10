@@ -24,7 +24,7 @@ local function event_ginga(std, evt)
     std.bus.emit('rkey', key_bindings[evt.key], evt.type == 'press')
 end
 
-local function install()
+local function install(std)
     std.bus.listen_std('ginga', event_ginga)
 end
 

@@ -66,8 +66,8 @@ local cfg_poly = {
 }
 
 local cfg_fps_control = {
-    list={100, 60, 30, 20, 15, 10},
-    time={1, 10, 30, 40, 60, 90},
+    list={60, 30, 20, 15, 10},
+    time={10, 30, 40, 60, 90},
     uptime=event.uptime
 }
 
