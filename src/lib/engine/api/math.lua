@@ -77,6 +77,8 @@ end
 
 --! @short std.math.dis
 --! @brief euclidean distance
+--! @note when you are running in <b>Lua without <u>floating point</u> support</b>,@n
+--! the result will be like @ref dis2 "std.math.dis2" since there is no square root support. 
 --! @par Equation
 --! @startmath
 --! \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
@@ -87,7 +89,7 @@ end
 --! @param[in] y2 The y coordinate of the second point.
 --! @return distance between the two points (x1, y1) and (x2, y2).
 local function dis(x1,y1,x2,y2)
-    return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5
+    return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ (1/2)
 end
 
 --! @short std.math.dis2
