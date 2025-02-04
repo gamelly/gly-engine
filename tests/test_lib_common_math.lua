@@ -22,6 +22,10 @@ function test_dis2()
     assert(zeebo_math.dis2(0, 0, 3, 4) == 25)
 end
 
+function test_dis3()
+    assert(zeebo_math.dis3(0, 0, 3, 4) == 4)
+end
+
 function test_abs()
     assert(zeebo_math.abs(-5) == 5)
     assert(zeebo_math.abs(10) == 10)

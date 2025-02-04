@@ -89,7 +89,8 @@ end
 --! @param[in] y2 The y coordinate of the second point.
 --! @return distance between the two points (x1, y1) and (x2, y2).
 local function dis(x1,y1,x2,y2)
-    return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ (1/2)
+    local sqr = 1/2
+    return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ (sqr ~= 0 and sqr or 1)
 end
 
 --! @short std.math.dis2
@@ -106,6 +107,21 @@ end
 --! @return distance between the two points (x1, y1) and (x2, y2).
 local function dis2(x1,y1,x2,y2)
     return (x2 - x1) ^ 2 + (y2 - y1) ^ 2
+end
+
+--! @short std.math.dis3
+--! @brief metric used to determine the distance between two points in a grid-like path
+--! @par Equation
+--! @startmath
+--! |x_2 - x_1| + |y_2 - y_1|
+--! @endmath
+--! @param[in] x1 The x coordinate of the first point.
+--! @param[in] y1 The y coordinate of the first point.
+--! @param[in] x2 The x coordinate of the second point.
+--! @param[in] y2 The y coordinate of the second point.
+--! @return distance between the two points (x1, y1) and (x2, y2).
+local function dis3(x1,y1,x2,y2)
+    return abs(x1 - x2) + abs(x2 - y2)
 end
 
 --! @short std.math.lerp
@@ -208,6 +224,7 @@ local function install(std)
     std.math.dir=dir
     std.math.dis=dis
     std.math.dis2=dis2
+    std.math.dis3=dis3
     std.math.lerp=lerp
     std.math.map=map
     std.math.max=max
