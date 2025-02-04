@@ -17,8 +17,8 @@ local function build(args)
         :add_core('game', {src=args.game, as='game.lua', prefix='game_', assets=true})
 
     local build_core = zeebo_buildsystem.from(args)
-        :add_license('core=ginga', 'enterprise', 'commercial')
-        :add_license('gamepadzilla=true', 'gpl3', 'free software')
+        :add_rule('please use flag --enterprise to use commercial modules', 'core=ginga', 'enterprise=false')
+        :add_rule('please use flag --gpl3 to use free software modules', 'gamepadzilla=true', 'gpl3=false')
         --
         :add_core('none')
         --

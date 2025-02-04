@@ -90,11 +90,19 @@ local function add_meta(self, file_in, options)
     return self
 end
 
-local function add_license(self, arg_name_value, arg_require, license)
+local function add_rule(self, error_message, ...)
+    local arg_list = {...}
     self.pipeline[#self.pipeline + 1] = function()
-        local arg_name, arg_val = arg_name_value:match('(%w+)=(%w+)')
-        if arg_val == tostring(self.args[arg_name]) and not self.args[arg_require] then
-            error('please use flag -'..'-'..arg_require..' to use '..license..' modules', 0)
+        local index = 1
+        while index <= #arg_list do
+            local arg_name, arg_val = arg_list[index]:match('(%w+)=(%w+)')
+            if tostring(self.args[arg_name]) ~= arg_val then
+                error_message = nil
+            end
+            index = index + 1
+        end
+        if error_message then
+            error(error_message, 0)
         end
     end
     return self
@@ -109,7 +117,7 @@ local function from(args)
         add_core=add_core,
         add_file=add_file,
         add_meta=add_meta,
-        add_license=add_license,
+        add_rule=add_rule,
         pipeline={}
     }
 
