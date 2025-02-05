@@ -58,6 +58,7 @@ end
 
 local function add_file(self, file_in, options)
     if not self.selected then return self end
+    if options and not options.when then return self end
 
     self.pipeline[#self.pipeline + 1] = function()
         local from = util_fs.file(file_in)

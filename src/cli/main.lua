@@ -26,6 +26,7 @@ local command = zeebo_argparse.from(arg)
     .add_option_opt('gpl3')
     .add_option_opt('enterprise')
     .add_option_opt('gamepadzilla')
+    .add_option_opt('fengari')
     .add_option_has('bundler')
     .add_option_has('run')
     --

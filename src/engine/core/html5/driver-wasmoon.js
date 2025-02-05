@@ -4,7 +4,7 @@ if (!gly) {
     error('gly is not loaded!')
 }
 
-gly.wasmoon = async (game_file) => {
+gly.bootstrap = async (game_file) => {
     const factory = new LuaFactory()
     const engine_file = gly.engine.get()
     const lua = await factory.createEngine()

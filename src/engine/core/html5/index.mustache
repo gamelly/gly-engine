@@ -75,15 +75,21 @@
       </canvas>
       {{/ args.gamepadzilla }}
     </main>
+    <script src="core-native-html5.js"></script>
+    <script src="core-media-html5.js"></script>
     {{# args.gamepadzilla }}
     <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1"></script>
     {{/ args.gamepadzilla }}
-    <script src="core-native-html5.js"></script>
-    <script src="core-media-html5.js"></script>
+    {{# args.fengari }}
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@latest/dist/fengari-web.js"></script>
+    <script src="driver-fengari.js"></script>
+    {{/ args.fengari }}
+    {{^ args.fengari }}
     <script type="module" src="driver-wasmoon.js"></script>
+    {{/ args.fengari }}
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
-        await gly.wasmoon('game.lua')
+        await gly.bootstrap('game.lua')
         gly.stroke(2)
       })
     </script>

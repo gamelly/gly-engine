@@ -18,6 +18,7 @@ local function build(args)
 
     local build_core = zeebo_buildsystem.from(args)
         :add_rule('please use flag --enterprise to use commercial modules', 'core=ginga', 'enterprise=false')
+        :add_rule('please use flag --enterprise to use commercial modules', 'fengari=true', 'enterprise=false')
         :add_rule('please use flag --gpl3 to use free software modules', 'gamepadzilla=true', 'gpl3=false')
         --
         :add_core('none')
@@ -39,7 +40,8 @@ local function build(args)
         :add_core('html5', {src='src/engine/core/native/main.lua', force_bundler=true})
         :add_file('src/engine/core/html5/core-native-html5.js')
         :add_file('src/engine/core/html5/core-media-html5.js')
-        :add_file('src/engine/core/html5/driver-wasmoon.js')
+        :add_file('src/engine/core/html5/driver-wasmoon.js', {when=not args.fengari})
+        :add_file('ee/engine/core/html5/driver-fengari.js', {when=args.fengari})
         :add_file('assets/icon80x80.png')
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         --
