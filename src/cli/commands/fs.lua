@@ -1,5 +1,7 @@
 local zeebo_fs = require('src/lib/cli/fs')
+local zeebo_module = require('src/lib/common/module')
 local json = require('third_party/json/rxi')
+local version = require('src/version')
 local lustache = require('third_party/lustache/olivinelabs')
 
 local function replace(args)
@@ -29,12 +31,12 @@ local function copy(args)
 end
 
 local function mustache(args)
-    local file_json, ferr_json = io.open(args.json, 'r')
+    local file_json, ferr_json = io.open(args.game_or_json, 'r')
     local file_input, ferr_input = io.open(args.file, 'r')
     local file_output, ferr_output = io.open(args.dist, 'w')
 
     if not file_json then
-        return false, ferr_json or 'missing json'
+        return false, ferr_json or 'missing game or json'
     end
 
     if not file_input then
@@ -47,7 +49,35 @@ local function mustache(args)
 
     local content_json = file_json:read('*a')
     local content_input = file_input:read('*a')
-    local metatable_json = json.decode(content_json)
+    local metatable_json = {}
+
+    if not args.game then
+        metatable_json = json.decode(content_json)
+    else
+        local game = zeebo_module.loadgame(content_json)
+        metatable_json = {
+            meta = game.meta,
+            config = game.config,
+            engine = {
+                version = version
+            },
+            asset = {
+                list = game.assets,
+                from = function(self)
+                    return self:match('^(.+):.+$')
+                end,
+                to = function(self)
+                    return self:match('^.+:(.+)$')
+                end
+            },
+            fn = {
+                msdos_case = function(text, render)
+                    return render(text:upper():gsub('[^%a%d]', ''))
+                end
+            }
+        }
+    end
+
     local ok, content = pcall(lustache.render, lustache, content_input, metatable_json)
 
     if not ok then
