@@ -22,8 +22,12 @@ gly.bootstrap = async (game_file) => {
     const define_lua_func = (func_name, func_decorator) => {
         const func_native = gly.global.get(func_name);
         fengari.lua.lua_pushcfunction(fengari.L, () => {
-            const res = func_decorator(func_native);
-            return res ?? 0;
+            try {
+                const res = func_decorator(func_native);
+                return res ?? 0;
+            } catch (e) {
+                throw `${e} in ${func_name}`
+            }
         });
         fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring(func_name));
     }
@@ -68,7 +72,10 @@ gly.bootstrap = async (game_file) => {
     });
     
     define_lua_func('native_draw_image', (func) => {
-        //func();
+        const src = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 1));
+        const x = fengari.lua.lua_tonumber(fengari.L, 2);
+        const y = fengari.lua.lua_tonumber(fengari.L, 3);
+        func(src, x, y)
     });
     
     define_lua_func('native_text_print', (func) => {
@@ -99,8 +106,8 @@ gly.bootstrap = async (game_file) => {
     define_lua_func('native_text_mensure', (func) => {
         const text = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 1));
         const [width, height] = func(text);
-        lua.lua_pushnumber(fengari.L, width);
-        lua.lua_pushnumber(fengari.L, height);
+        fengari.lua.lua_pushnumber(fengari.L, width);
+        fengari.lua.lua_pushnumber(fengari.L, height);
         return 2;
     });
 
