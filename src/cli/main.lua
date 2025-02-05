@@ -100,7 +100,7 @@ local command = zeebo_argparse.from(arg)
     .add_next_value('game_or_json', {required=true})
     .add_next_value('file', {required=true})
     .add_next_value('dist', {required=true})
-    .add_option_has('game', {required=true})
+    .add_option_has('game')
     --
     .add_subcommand('cli-build', commands_cli)
     .add_option_get('dist', {default='./dist/'})

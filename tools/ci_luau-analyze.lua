@@ -10,10 +10,11 @@ if core == 'cli' then
     cmd(replace..' --format "string.dump" --replace "string.format"')
     cmd(replace..' --format "arg = {args.game}" --replace ""')    
     cmd(replace..' --format "arg = nil" --replace ""')    
+    cmd('./cli.sh tool-package-mock mock/json.lua dist/main.lua third_party_json_rxi')
+    cmd('./cli.sh tool-package-mock mock/lustache.lua dist/main.lua third_party_lustache_olivinelabs')
     return
 end
 
 cmd('./cli.sh build --bundler --enterprise --core '..core)
 cmd(replace..' --format "function native_callback" --replace "local function _native_callback"')
 cmd('./cli.sh tool-package-mock mock/json.lua dist/main.lua third_party_json_rxi')
-cmd('./cli.sh tool-package-mock mock/lustache.lua dist/main.lua third_party_lustache_olivinelabs')

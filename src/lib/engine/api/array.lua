@@ -222,7 +222,6 @@ local function array_pipeline(std, array)
         last = decorator_reduce(array_last),
         some = decorator_reduce(array_some),
         every = decorator_reduce(array_every),
-        compare = decorator_reduce(array_compare),
         table = function(self) return self.array end,
         json = function(self) return std.json.encode(self.array) end
     }

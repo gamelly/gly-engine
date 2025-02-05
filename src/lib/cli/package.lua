@@ -40,7 +40,7 @@ local function module_mock(src_in, mock_in, module_name)
 end
 
 local P = {
-    del = module_del
+    mock = module_mock
 }
 
 return P
