@@ -1,7 +1,8 @@
 local luaunit = require('luaunit')
 local engine_hash = require('src/lib/engine/api/hash')
 
-local std = engine_hash.install(nil, nil, {'awesome', function() return 42 end})
+local std ={}
+engine_hash.install(std, nil, {get_secret = function() return 'awesome42' end })
 
 function test_fingerprint()
     local expected = std.hash.djb2('awesome42')

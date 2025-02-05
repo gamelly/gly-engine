@@ -31,6 +31,15 @@ local engine = {
     offset_y = 0
 }
 
+local cfg_system = {
+    exit = native_system_exit,
+    reset = native_system_reset,
+    title = native_system_title,
+    get_fps = native_system_get_fps,
+    get_secret = native_system_get_secret,
+    get_language = native_system_get_language
+}
+
 local cfg_media = {
     position=native_media_position,
     resize=native_media_resize,
@@ -49,6 +58,26 @@ local cfg_poly = {
     poly2 = native_draw_poly2,
     poly = native_draw_poly,
     line = native_draw_line
+}
+
+local cfg_http = {
+    ssl = native_http_has_ssl,
+    handler = native_http_handler
+}
+
+local cfg_base64 = {
+    decode = native_base64_decode,
+    encode = native_base64_encode
+}
+
+local cfg_json = {
+    decode = native_json_decode,
+    encode = native_json_encode
+}
+
+local cfg_xml = {
+    decode = native_xml_decode,
+    encode = native_xml_encode
 }
 
 local cfg_text = {
@@ -132,7 +161,7 @@ function native_callback_init(width, height, game_lua)
         :package('@bus', engine_raw_bus)
         :package('@node', engine_raw_node)
         :package('@memory', engine_raw_memory)
-        :package('@game', engine_game, native_dict_game)
+        :package('@game', engine_game, cfg_system)
         :package('@math', engine_math)
         :package('@array', engine_array)
         :package('@key', engine_key, {})
@@ -143,12 +172,13 @@ function native_callback_init(width, height, game_lua)
         :package('@color', color)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
-        :package('http', engine_http, native_dict_http)
-        :package('json', engine_encoder, native_dict_json)
-        :package('xml', engine_encoder, native_dict_xml)
-        :package('i18n', engine_i18n, native_get_system_lang)
+        :package('http', engine_http, cfg_http)
+        :package('base64', engine_encoder, cfg_base64)
+        :package('json', engine_encoder, cfg_json)
+        :package('xml', engine_encoder, cfg_xml)
+        :package('i18n', engine_i18n, cfg_system)
         :package('media', engine_media, cfg_media)
-        :package('hash', engine_hash, {'native'})
+        :package('hash', engine_hash, cfg_system)
         :run()
 
     application.data.width, std.app.width = width, width

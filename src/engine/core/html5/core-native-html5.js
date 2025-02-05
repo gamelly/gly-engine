@@ -113,41 +113,35 @@ const engine = {
             }
             engine.canvas_close[mode]()
         },
-        native_get_system_language: () => {
+        native_system_get_language: () => {
             return navigator.language
         },
-        native_dict_http: {
-            handler: (self) => {
-                const method = self.method
-                const headers = new Headers(self.headers_dict)
-                const params = new URLSearchParams(self.params_dict)
-                const url = `${self.url}` + '?' + params.toString()
-                const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
-                self.promise()
-                fetch(url, {
-                    body: body,
-                    method: method,
-                    headers: headers
-                })
-                .then((response) => {
-                    self.set('ok', response.ok)
-                    self.set('status', response.status)
-                    return response.text()
-                })
-                .then((content) => {
-                    self.set('body', content)
-                    self.resolve()
-                })
-                .catch((error) => {
-                    self.set('ok', false)
-                    self.set('error', `${error}`)
-                    self.resolve()
-                })
-            }
-        },
-        native_dict_json: {
-            encode: JSON.stringify,
-            decode: JSON.parse
+        native_http_handler: (self) => {
+            const method = self.method
+            const headers = new Headers(self.headers_dict)
+            const params = new URLSearchParams(self.params_dict)
+            const url = `${self.url}` + '?' + params.toString()
+            const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
+            self.promise()
+            fetch(url, {
+                body: body,
+                method: method,
+                headers: headers
+            })
+            .then((response) => {
+                self.set('ok', response.ok)
+                self.set('status', response.status)
+                return response.text()
+            })
+            .then((content) => {
+                self.set('body', content)
+                self.resolve()
+            })
+            .catch((error) => {
+                self.set('ok', false)
+                self.set('error', `${error}`)
+                self.resolve()
+            })
         }
     }    
 }

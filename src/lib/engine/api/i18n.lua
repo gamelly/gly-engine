@@ -151,7 +151,7 @@ local function event_bus(std, engine)
     std.bus.emit_next('i18n')
 end
 
-local function install(std, engine, system_language)
+local function install(std, engine, cfg)
     if not (std and std.text and std.text.print) then
         error('missing draw text')
     end
@@ -160,8 +160,8 @@ local function install(std, engine, system_language)
     local old_print = std.text.print
     local old_print_ex = std.text.print_ex
 
-    if system_language then
-        set_language(system_language())
+    if cfg and cfg.get_language then
+        set_language(cfg.get_language())
     end
     
     std.text.put = decorator_draw_text(old_put)

@@ -9,6 +9,7 @@ local engine_i18n = require('src/lib/engine/api/i18n')
 local engine_key = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_array = require('src/lib/engine/api/array')
+local engine_media = require('src/lib/engine/api/media')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
 local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
@@ -25,6 +26,23 @@ local engine = {
     root = application_default
 }
 
+local cfg_system = {
+    exit = native_system_exit,
+    reset = native_system_reset,
+    title = native_system_title,
+    get_fps = native_system_get_fps,
+    get_secret = native_system_get_secret,
+    get_language = native_system_get_language
+}
+
+local cfg_media = {
+    position=native_media_position,
+    resize=native_media_resize,
+    pause=native_media_pause,
+    load=native_media_load,
+    play=native_media_play
+}
+
 local cfg_poly = {
     repeats = {
         native_cfg_poly_repeat_0 or false,
@@ -39,6 +57,26 @@ local cfg_poly = {
 
 local cfg_text = {
     font_previous = native_text_font_previous
+}
+
+local cfg_http = {
+    ssl = native_http_has_ssl,
+    handler = native_http_handler
+}
+
+local cfg_base64 = {
+    decode = native_base64_decode,
+    encode = native_base64_encode
+}
+
+local cfg_json = {
+    decode = native_json_decode,
+    encode = native_json_encode
+}
+
+local cfg_xml = {
+    decode = native_xml_decode,
+    encode = native_xml_encode
 }
 
 function native_callback_loop(dt)
@@ -97,7 +135,7 @@ function native_callback_init(width, height, game_lua)
 
     zeebo_module.require(std, application, engine)
         :package('@memory', engine_raw_memory)
-        :package('@game', engine_game, native_dict_game)
+        :package('@game', engine_game, cfg_system)
         :package('@math', engine_math)
         :package('@array', engine_array)
         :package('@key', engine_key, {})
@@ -107,11 +145,13 @@ function native_callback_init(width, height, game_lua)
         :package('@color', color)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
-        :package('http', engine_http, native_dict_http)
-        :package('json', engine_encoder, native_dict_json)
-        :package('xml', engine_encoder, native_dict_xml)
-        :package('i18n', engine_i18n, native_get_system_lang)
-        :package('hash', engine_hash, native_dict_secret)
+        :package('http', engine_http, cfg_http)
+        :package('base64', engine_encoder, cfg_base64)
+        :package('json', engine_encoder, cfg_json)
+        :package('xml', engine_encoder, cfg_xml)
+        :package('i18n', engine_i18n, cfg_system)
+        :package('hash', engine_hash, cfg_system)
+        :package('media', engine_media, cfg_media)
         :run()
 
     application.data.width, std.app.width = width, width

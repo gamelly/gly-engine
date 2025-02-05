@@ -26,35 +26,15 @@ local function djb2(digest)
     return hash
 end
 
---! @short std.hash.fingerprint
---! @todo copulate each color with unique data
---! @hideparam all_your_secrets
---! @return integer 32bit
-local function fingerprint(all_your_secrets)
-    local index = 1
-    local digest = ''
-    while index <= #all_your_secrets do
-        local value = all_your_secrets[index]
-        if type(value) == 'function' then
-            digest = digest..tostring(value())
-        else
-            digest = digest..tostring(value)
-        end
-        index = index + 1
-    end
-    return djb2(digest)
-end
-
 --! @}
 --! @}
 
-local function install(std, engine, all_your_secrets)
-    local id = fingerprint(all_your_secrets or {'not secret!'})
+local function install(std, engine, cfg_system)
+    local id = djb2(cfg_system.get_secret())
     std = std or {}
     std.hash = std.hash or {}
     std.hash.djb2 = djb2
     std.hash.fingerprint = function() return id end
-    return {hash=std.hash}
 end
 
 local P = {

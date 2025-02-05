@@ -24,8 +24,6 @@ gly.bootstrap = async (game_file) => {
     lua.global.set('native_draw_line', gly.global.get('native_draw_line'))
     lua.global.set('native_draw_image', gly.global.get('native_draw_image'))
     lua.global.set('native_draw_poly2', gly.global.get('native_draw_poly2'))
-    lua.global.set('native_dict_http', gly.global.get('native_dict_http'))
-    lua.global.set('native_dict_json', gly.global.get('native_dict_json'))
     lua.global.set('native_text_print', gly.global.get('native_text_print'))
     lua.global.set('native_text_font_size', gly.global.get('native_text_font_size'))
     lua.global.set('native_text_font_name', gly.global.get('native_text_font_name'))
@@ -35,6 +33,13 @@ gly.bootstrap = async (game_file) => {
         const native_draw_text = gly.global.get('native_text_mensure')
         return LuaMultiReturn.from(native_draw_text(x, y, text))
     })
+    lua.global.set('native_system_get_language', gly.global.get('native_system_get_language'))
+    lua.global.set('native_http_handler', gly.global.get('native_http_handler'))
+    lua.global.set('native_http_has_ssl', true)
+    lua.global.set('native_json_encode', JSON.stringify)
+    lua.global.set('native_json_decode', JSON.parse)
+    lua.global.set('native_base64_encode', atob)
+    lua.global.set('native_base64_decode', btoa)
 
     await lua.doString(engine_lua)
 

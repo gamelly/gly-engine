@@ -104,7 +104,8 @@ local function failed(self, handler_func)
 end
 
 --! @hideparam self
-local function error(self, handler_func)
+--! @rename_func error
+local function http_error(self, handler_func)
     self.error_handler = handler_func
     return self
 end
@@ -145,7 +146,7 @@ local function request(method, std, engine, protocol_handler)
             header = header,
             success = success,
             failed = failed,
-            error = error,
+            error = http_error,
             run = zeebo_pipeline.run,
             -- internal
             protocol_handler = protocol_handler
@@ -200,7 +201,11 @@ end
 --! @endcond
 
 local function install(std, engine, protocol)
-    local protocol_handler = protocol.handler
+    local protocol_handler = protocol and protocol.handler
+
+    if not protocol_handler then
+        error('missing protocol handler')
+    end
     
     std.http = std.http or {}
     std.http.get=request('GET', std, engine, protocol_handler)

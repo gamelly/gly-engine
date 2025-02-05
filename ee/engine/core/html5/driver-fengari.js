@@ -129,18 +129,24 @@ gly.bootstrap = async (game_file) => {
         return 2;
     });
 
+    define_lua_func('native_system_get_language', (func) => {
+        fengari.lua.lua_pushnumber(fengari.L, func());
+        return 1;
+    });
+
     if (typeof engine_lua === 'string' && !engine_lua.includes('\n')) {
         const engine_response = await fetch(engine_lua)
         engine_lua = await engine_response.text()
     }
 
-    fengari.lauxlib.luaL_loadbuffer(fengari.L, fengari.to_luastring(engine_lua), engine_lua.lenght, 'E');
+    fengari.lauxlib.luaL_loadbuffer(fengari.L, fengari.to_luastring(engine_lua), engine_lua.lenght, 'engine');
     fengari.lua.lua_pcall(fengari.L, 0, 0, 0);
 
     define_lua_callback('native_callback_init', (width, height, game) => {
         fengari.lua.lua_pushnumber(fengari.L, width);
         fengari.lua.lua_pushnumber(fengari.L, height);
-        fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(game));
+        fengari.lauxlib.luaL_loadbuffer(fengari.L, fengari.to_luastring(game), game.lenght, 'game');
+        fengari.lua.lua_pcall(fengari.L, 0, 1, 0);
         return 3;
     })
 
