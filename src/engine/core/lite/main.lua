@@ -25,6 +25,18 @@ local engine = {
     root = application_default
 }
 
+local cfg_poly = {
+    repeats = {
+        native_cfg_poly_repeat_0 or false,
+        native_cfg_poly_repeat_1 or false,
+        native_cfg_poly_repeat_2 or false
+    },
+    triangle = native_draw_triangle,
+    poly2 = native_draw_poly2,
+    poly = native_draw_poly,
+    line = native_draw_line
+}
+
 local cfg_text = {
     font_previous = native_text_font_previous
 }
@@ -91,7 +103,7 @@ function native_callback_init(width, height, game_lua)
         :package('@key', engine_key, {})
         :package('@draw.fps', engine_draw_fps)
         :package('@draw.text', engine_draw_text, cfg_text)
-        :package('@draw.poly', engine_draw_poly, native_dict_poly)
+        :package('@draw.poly', engine_draw_poly, cfg_poly)
         :package('@color', color)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
