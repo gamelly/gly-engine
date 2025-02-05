@@ -37,7 +37,7 @@ gly.bootstrap = async (game_file) => {
     });
     
     define_lua_func('native_draw_clear', (func) => {
-        const color = fengari.lua.lua_tointeger(fengari.L, 1);
+        const color = fengari.lua.lua_tointeger(fengari.L, 1) >>> 0;;
         const x = fengari.lua.lua_tonumber(fengari.L, 2);
         const y = fengari.lua.lua_tonumber(fengari.L, 3);
         const w = fengari.lua.lua_tonumber(fengari.L, 4);
@@ -46,10 +46,8 @@ gly.bootstrap = async (game_file) => {
     });
     
     define_lua_func('native_draw_color', (func) => {
-        const color1 = fengari.lua.lua_tointeger(fengari.L, 1);
-        const color2 = fengari.lua.lua_tointeger(fengari.L, 2);
-        console.log(color1, color1.toString(2));
-        func(0xFFFFFFFF);
+        const color = fengari.lua.lua_tointeger(fengari.L, 1) >>> 0;
+        func(color);
     });
     
     define_lua_func('native_draw_rect', (func) => {
