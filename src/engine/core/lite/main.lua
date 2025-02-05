@@ -133,6 +133,7 @@ function native_callback_init(width, height, game_lua)
         native_draw_clear(tint, 0, 0, application.data.width, application.data.height)
     end
 
+    engine.root = application
     zeebo_module.require(std, application, engine)
         :package('@memory', engine_raw_memory)
         :package('@game', engine_game, cfg_system)
@@ -158,8 +159,6 @@ function native_callback_init(width, height, game_lua)
     application.data.height, std.app.height = height, height
 
     std.app.title(application.meta.title..' - '..application.meta.version)
-
-    engine.root = application
     engine.current = application
 
     application.callbacks.init(std, application.data)

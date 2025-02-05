@@ -130,7 +130,7 @@ gly.bootstrap = async (game_file) => {
     });
 
     define_lua_func('native_system_get_language', (func) => {
-        fengari.lua.lua_pushnumber(fengari.L, func());
+        fengari.lua.lua_pushstring(fengari.L, func());
         return 1;
     });
 

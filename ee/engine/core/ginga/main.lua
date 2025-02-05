@@ -55,8 +55,8 @@ local engine = {
 --! @brief GINGA?
 _ENV = nil
 
-local cfg_app = {
-
+local cfg_system = {
+    get_language = function() return 'pt-BR' end
 }
 
 local cfg_poly = {
@@ -109,7 +109,7 @@ local function install(evt, gamefile)
         :package('@node', engine_node)
         :package('@fps', engine_fps, cfg_fps_control)
         :package('@memory', engine_memory)
-        :package('@game', engine_game, cfg_app)
+        :package('@game', engine_game, cfg_system)
         :package('@math', engine_math)
         :package('@array', engine_array)
         :package('@keys1', engine_keys)
@@ -126,7 +126,7 @@ local function install(evt, gamefile)
         :package('math.random', engine_math.clib_random)
         :package('json', engine_encoder, cfg_json_rxi)
         :package('http', engine_http, cfg_http_ginga)
-        :package('i18n', engine_i18n, system_language)
+        :package('i18n', engine_i18n, cfg_system)
         :run()
 
     application.data.width, application.data.height = canvas:attrSize()

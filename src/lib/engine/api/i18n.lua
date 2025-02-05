@@ -144,13 +144,6 @@ local function decorator_draw_text(func)
     end
 end
 
-local function event_bus(std, engine)
-    std.bus.listen('ret_i18n', function(result)
-        update_languages(result)
-    end)
-    std.bus.emit_next('i18n')
-end
-
 local function install(std, engine, cfg)
     if not (std and std.text and std.text.print) then
         error('missing draw text')
@@ -160,8 +153,18 @@ local function install(std, engine, cfg)
     local old_print = std.text.print
     local old_print_ex = std.text.print_ex
 
-    if cfg and cfg.get_language then
-        set_language(cfg.get_language())
+    local callback_lang = function(result)
+        update_languages(result)
+        if cfg and cfg.get_language then
+            set_language(cfg.get_language())
+        end
+    end
+
+    if not std.node and engine.root.callbacks.i18n then
+        callback_lang(engine.root.callbacks.i18n())
+    else
+        std.bus.listen('ret_i18n', callback_lang)
+        std.bus.emit_next('i18n')
     end
     
     std.text.put = decorator_draw_text(old_put)
@@ -173,19 +176,9 @@ local function install(std, engine, cfg)
     std.i18n.set_language = set_language
     std.i18n.back = back_language
     std.i18n.next = next_language
-
-    return {
-        std={
-            i18n=std.i18n,
-            draw={
-                text=std.draw.text
-            }
-        }
-    }
 end
 
 local P = {
-    event_bus=event_bus,
     install=install
 }
 
