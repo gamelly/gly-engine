@@ -9,6 +9,7 @@ end
 if game == 'gridsystem' then
     cmd('./cli.sh build @'..game..' --core html5 --dist ./html/')
 elseif game == 'launcher' then
+    cmd('./cli.sh build @'..game..' --core html5 --dist ./html/')
     cmd('./cli.sh fs-replace ./html/game.lua ./html/game.lua --format http: --replace https:')
 else
     cmd('./cli.sh build @'..game..' --core html5_lite --dist ./html/ --fengari --enterprise')
