@@ -77,6 +77,24 @@ gly.bootstrap = async (game_file) => {
         const y = fengari.lua.lua_tonumber(fengari.L, 3);
         func(src, x, y)
     });
+
+    define_lua_func('native_draw_poly2', (func) => {
+        let i = 1;
+        const mode = fengari.lua.lua_tointeger(fengari.L, 1);
+        const verts = [];
+        const x = fengari.lua.lua_tonumber(fengari.L, 3);
+        const y = fengari.lua.lua_tonumber(fengari.L, 4);
+        const scale = fengari.lua.lua_tonumber(fengari.L, 5);
+        const angle = fengari.lua.lua_tonumber(fengari.L, 6);
+        const ox = fengari.lua.lua_tonumber(fengari.L, 7);
+        const oy = fengari.lua.lua_tonumber(fengari.L, 8);
+        while (fengari.lua.lua_rawgeti(fengari.L, 2, i) !== fengari.lua.LUA_TNIL) {
+            verts.push(fengari.lua.lua_tonumber(fengari.L, -1));
+            fengari.lua.lua_pop(fengari.L, 1);
+            i++;
+        }
+        func(mode, verts, x, y, scale, angle, ox, oy)
+    });
     
     define_lua_func('native_text_print', (func) => {
         const x = fengari.lua.lua_tonumber(fengari.L, 1);

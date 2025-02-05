@@ -96,27 +96,25 @@ const engine = {
                 engine.canvas_ctx.drawImage(engine.images[src], x, y)
             }
         },
+        native_draw_poly2: (mode, verts, x, y, scale, angle, ox, oy) => {
+            let index = 0
+            engine.canvas_ctx.beginPath()
+            while (index < verts.length) {
+                const px = verts[index];
+                const py = verts[index + 1];
+                const xx = x + ((ox - px) * -scale * Math.cos(angle)) - ((oy - py) * -scale * Math.sin(angle));
+                const yy = y + ((oy - px) * -scale * Math.sin(angle)) + ((ox - py) * -scale * Math.cos(angle));
+                if (index < 2) {
+                    engine.canvas_ctx.moveTo(xx, yy)
+                } else {
+                    engine.canvas_ctx.lineTo(xx, yy)
+                }
+                index += 2;
+            }
+            engine.canvas_close[mode]()
+        },
         native_get_system_language: () => {
             return navigator.language
-        },
-        native_dict_poly: {
-            poly2: (mode, verts, x, y, scale, angle, ox, oy) => {
-                let index = 0
-                engine.canvas_ctx.beginPath()
-                while (index < verts.length) {
-                    const px = verts[index];
-                    const py = verts[index + 1];
-                    const xx = x + ((ox - px) * -scale * Math.cos(angle)) - ((oy - py) * -scale * Math.sin(angle));
-                    const yy = y + ((oy - px) * -scale * Math.sin(angle)) + ((ox - py) * -scale * Math.cos(angle));
-                    if (index < 2) {
-                        engine.canvas_ctx.moveTo(xx, yy)
-                    } else {
-                        engine.canvas_ctx.lineTo(xx, yy)
-                    }
-                    index += 2;
-                }
-                engine.canvas_close[mode]()
-            }
         },
         native_dict_http: {
             handler: (self) => {
