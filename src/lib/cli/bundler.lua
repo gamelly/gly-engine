@@ -88,8 +88,6 @@ local function build(src, dest)
     local pattern_require6 = '^%s*local%s*([%w_%-]+)%s*=%s*require%s*[\'"](.-)[\'"](.*)'
     local deps_list = {}
     local deps_dict = {}
-    local deps_system = {}
-    local deps_imported = {}
     local main_content = ''
     local main_before = ''
     local main_after = ''
