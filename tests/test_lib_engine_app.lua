@@ -153,7 +153,7 @@ function test_app_install()
         set_title = function(window_name)
             luaunit.assertEquals(window_name, "Test Window")
         end,
-        fps = 60,
+        get_fps = 60,
         quit = function()
             quit_called = true  
         end

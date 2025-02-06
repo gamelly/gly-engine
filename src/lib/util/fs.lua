@@ -40,6 +40,21 @@ local function get_fullfilepath(self, separator)
     end
 end
 
+local function luapath(func)
+    return function(src)
+        if src then
+            return func(src
+                :gsub('^%./', '')
+                :gsub('^%.\\', '')
+                :gsub('%.', '/')
+                :gsub('%.lua$', '')
+                ..'.lua'
+            )
+        end
+        return nil
+    end
+end
+
 local function scan(type_file)
     return function(src, src2)
         src = (src or ''):gsub('%s*$', '')
@@ -100,7 +115,8 @@ end
 
 local P = {
     file = scan(true),
-    path = scan(false)
+    path = scan(false),
+    lua = luapath(scan(true))
 }
 
 return P

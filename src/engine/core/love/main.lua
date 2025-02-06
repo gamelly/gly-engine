@@ -49,7 +49,8 @@ local cfg_keys = {
     v='d'
 }
 
-local cfg_game_api = {
+local cfg_system = {
+    get_language = util_lua.get_sys_lang,
     set_fullscreen = love.window.setFullscreen,
     get_fullscreen = love.window.getFullscreen,
     set_title = love.window.setTitle,
@@ -87,7 +88,7 @@ function love.load(args)
         :package('@bus', lib_raw_bus)
         :package('@node', lib_raw_node)
         :package('@memory', lib_raw_memory)
-        :package('@game', lib_api_game, cfg_game_api)
+        :package('@game', lib_api_game, cfg_system)
         :package('@math', lib_api_math)
         :package('@array', lib_api_array)
         :package('@key', lib_api_key, cfg_keys)
@@ -103,8 +104,8 @@ function love.load(args)
         :package('math.random', lib_api_math.clib_random)
         :package('http', lib_api_http, cfg_http_curl_love)
         :package('json', lib_api_encoder, cfg_json_rxi)
-        :package('i18n', lib_api_i18n, util_lua.get_sys_lang)
-        :package('hash', lib_api_hash, {'love'})
+        :package('i18n', lib_api_i18n, cfg_system)
+        :package('hash', lib_api_hash, cfg_system)
         :run()
 
     std.node.spawn(application)

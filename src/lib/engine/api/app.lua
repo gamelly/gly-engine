@@ -48,7 +48,7 @@ local function install(std, engine, config)
     std.app.title = util_decorator.prefix1(config.set_title, title)
     std.app.exit = util_decorator.prefix1(std, exit)
     std.app.reset = util_decorator.prefix2(std, engine, reset)
-    std.app.get_fps = config.fps
+    std.app.get_fps = config.get_fps
 
     return std.app
 end

@@ -17,6 +17,11 @@ local function ls(src_path)
     return ls_files
 end
 
+local function mkdir(src_path)
+    local p = util_fs.path(src_path).get_fullfilepath()
+    os.execute(util_cmd.mkdir()..p..util_cmd.silent())
+end
+
 local function rmdir(src_path)
     local p = util_fs.path(src_path).get_fullfilepath()
     os.execute(util_cmd.rmdir()..p..util_cmd.silent())
@@ -55,7 +60,8 @@ local P = {
     ls = ls,
     move = move,
     clear = clear,
-    rmdir = rmdir
+    rmdir = rmdir,
+    mkdir = mkdir
 }
 
 return P

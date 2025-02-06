@@ -96,60 +96,52 @@ const engine = {
                 engine.canvas_ctx.drawImage(engine.images[src], x, y)
             }
         },
-        native_get_system_language: () => {
+        native_draw_poly2: (mode, verts, x, y, scale, angle, ox, oy) => {
+            let index = 0
+            engine.canvas_ctx.beginPath()
+            while (index < verts.length) {
+                const px = verts[index];
+                const py = verts[index + 1];
+                const xx = x + ((ox - px) * -scale * Math.cos(angle)) - ((oy - py) * -scale * Math.sin(angle));
+                const yy = y + ((oy - px) * -scale * Math.sin(angle)) + ((ox - py) * -scale * Math.cos(angle));
+                if (index < 2) {
+                    engine.canvas_ctx.moveTo(xx, yy)
+                } else {
+                    engine.canvas_ctx.lineTo(xx, yy)
+                }
+                index += 2;
+            }
+            engine.canvas_close[mode]()
+        },
+        native_system_get_language: () => {
             return navigator.language
         },
-        native_dict_poly: {
-            poly2: (mode, verts, x, y, scale, angle, ox, oy) => {
-                let index = 0
-                engine.canvas_ctx.beginPath()
-                while (index < verts.length) {
-                    const px = verts[index];
-                    const py = verts[index + 1];
-                    const xx = x + ((ox - px) * -scale * Math.cos(angle)) - ((oy - py) * -scale * Math.sin(angle));
-                    const yy = y + ((oy - px) * -scale * Math.sin(angle)) + ((ox - py) * -scale * Math.cos(angle));
-                    if (index < 2) {
-                        engine.canvas_ctx.moveTo(xx, yy)
-                    } else {
-                        engine.canvas_ctx.lineTo(xx, yy)
-                    }
-                    index += 2;
-                }
-                engine.canvas_close[mode]()
-            }
-        },
-        native_dict_http: {
-            handler: (self) => {
-                const method = self.method
-                const headers = new Headers(self.headers_dict)
-                const params = new URLSearchParams(self.params_dict)
-                const url = `${self.url}` + '?' + params.toString()
-                const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
-                self.promise()
-                fetch(url, {
-                    body: body,
-                    method: method,
-                    headers: headers
-                })
-                .then((response) => {
-                    self.set('ok', response.ok)
-                    self.set('status', response.status)
-                    return response.text()
-                })
-                .then((content) => {
-                    self.set('body', content)
-                    self.resolve()
-                })
-                .catch((error) => {
-                    self.set('ok', false)
-                    self.set('error', `${error}`)
-                    self.resolve()
-                })
-            }
-        },
-        native_dict_json: {
-            encode: JSON.stringify,
-            decode: JSON.parse
+        native_http_handler: (self) => {
+            const method = self.method
+            const headers = new Headers(self.headers_dict)
+            const params = new URLSearchParams(self.params_dict)
+            const url = `${self.url}` + '?' + params.toString()
+            const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
+            self.promise()
+            fetch(url, {
+                body: body,
+                method: method,
+                headers: headers
+            })
+            .then((response) => {
+                self.set('ok', response.ok)
+                self.set('status', response.status)
+                return response.text()
+            })
+            .then((content) => {
+                self.set('body', content)
+                self.resolve()
+            })
+            .catch((error) => {
+                self.set('ok', false)
+                self.set('error', `${error}`)
+                self.resolve()
+            })
         }
     }    
 }

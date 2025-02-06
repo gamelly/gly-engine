@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>{{title}} - {{version}}</title>
+    <title>{{ meta.title }} - {{ meta.version }}</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta name="theme-color" content="#000000"/>
-    <meta name="description" content="{{description}}"/>
+    <meta name="description" content="{{ meta.description }}"/>
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="{{title}}" />
-    <meta property="og:description" content="{{description}}"/>
-    <meta property="twitter:title" content="{{title}}" />
-    <meta property="twitter:description" content="{{description}}" />
+    <meta property="og:title" content="{{ meta.title }}" />
+    <meta property="og:description" content="{{ meta.description }}"/>
+    <meta property="twitter:title" content="{{ meta.title }}" />
+    <meta property="twitter:description" content="{{ meta.description }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <style>
         *, *::after, *::before {
@@ -40,17 +40,48 @@
           image-rendering: pixelated;
         }
     </style>
+    {{# args.gamepadzilla }}
+    <style>
+      .gpz-btn4{
+        right: 0;
+        bottom: 0;
+      }
+      .gpz-joy {
+        left: 0;
+        bottom: 0;
+      }
+    </style>
+    {{/ args.gamepadzilla }}
   </head>
   <body>
     <main>
       <canvas id="gameCanvas"></canvas>
+      {{# args.gamepadzilla }}
+      <canvas width="150" height="150"
+        class="gpz-joy"
+        data-gpz-bind="ArrowUp ArrowLeft ArrowDown ArrowRight">
+      </canvas>
+      <canvas width="150" height="150"
+        class="gpz-btn4"
+        data-gpz-bind="KeyC KeyV KeyZ KeyX">
+      </canvas>
+      {{/ args.gamepadzilla }}
     </main>
     <script src="core-native-html5.js"></script>
     <script src="core-media-html5.js"></script>
+    {{# args.gamepadzilla }}
+    <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1"></script>
+    {{/ args.gamepadzilla }}
+    {{# args.fengari }}
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@latest/dist/fengari-web.js"></script>
+    <script src="driver-fengari.js"></script>
+    {{/ args.fengari }}
+    {{^ args.fengari }}
     <script type="module" src="driver-wasmoon.js"></script>
+    {{/ args.fengari }}
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
-        await gly.wasmoon('game.lua')
+        await gly.bootstrap('game.lua')
         gly.stroke(2)
       })
     </script>

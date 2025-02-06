@@ -106,6 +106,18 @@ local util_decorator = require('src/lib/util/decorator')
 
 --! @hideparam std
 --! @hideparam engine
+--! @hideparam self
+--! @param mode direction items
+--! @li @c 0 left to right / up to down
+--! @li @c 1 up to down / left to right
+local function dir(std, engine, self, mode)
+    self.direction = mode
+    return self
+end
+
+--! @hideparam std
+--! @hideparam engine
+--! @hideparam self
 local function apply(std, engine, self)
     local index = 1
     local x, y = 0, 0
@@ -121,7 +133,30 @@ local function apply(std, engine, self)
     local hem = self.node.data.width / self.rows
     local vem = self.node.data.height / self.cols
 
-    while index <= #self.items_node do
+    while self.direction == 1 and index <= #self.items_node do
+        local node = self.items_node[index]
+        local size = self.items_size[index]
+        local ui = self.items_ui[node]
+    
+        node.config.offset_x = x * hem
+        node.config.offset_y = y * vem
+        node.data.width = hem
+        node.data.height = size * vem
+    
+        y = y + size
+        if y >= self.cols then
+            x = x + 1
+            y = 0
+        end
+    
+        if ui then
+            ui:apply()
+        end
+    
+        index = index + 1
+    end    
+
+    while self.direction == 0 and index <= #self.items_node do
         local node = self.items_node[index]
         local size = self.items_size[index]
         local ui = self.items_ui[node]
@@ -155,6 +190,7 @@ local function component(std, engine, layout)
     })
     
     local self = {
+        direction=0,
         rows=tonumber(rows),
         cols=tonumber(cols),
         items_node = {},
@@ -162,12 +198,17 @@ local function component(std, engine, layout)
         items_ui = {},
         node=node,
         classlist='',
+        dir=util_decorator.prefix2(std, engine, dir),
         add=util_decorator.prefix2(std, engine, ui_common.add),
         add_items=util_decorator.prefix2(std, engine, ui_common.add_items),
         style=ui_common.style,
         apply=util_decorator.prefix2(std, engine, apply),
         get_item=ui_common.get_item
     }
+
+    if self.rows == 1 and self.cols > 1 then
+        self.direction = 1
+    end
 
     if engine.root == engine.current then
         node.callbacks.resize = function()

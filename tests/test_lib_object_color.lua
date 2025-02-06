@@ -1,10 +1,11 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local zeebo_color = require('src/lib/object/color')
 
-zeebo_color = zeebo_color.install()
+local std = {}
+zeebo_color.install(std)
 
 function test_color_install()
-    luaunit.assertEquals(zeebo_color.white, 0xFFFFFFFF)
+    assert(std.color.white == 0xFFFFFFFF)
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)

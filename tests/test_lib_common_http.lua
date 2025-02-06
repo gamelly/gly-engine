@@ -172,6 +172,7 @@ end
 function test_protocol_with_install()
     local install_called = false
     local protocol = {
+        handler = function() end,
         install = function(std, engine)
             install_called = true
             luaunit.assertNotNil(std)

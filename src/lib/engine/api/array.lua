@@ -193,31 +193,6 @@ local function array_every(array, func)
     return true
 end
 
---! @short std.array.compare
---! @brief compares the value of A with B, and B with C and so on, and checks if they are all true
---! @renamefunc compare
---! @param [in] array
---! @param [in] func
---! @return boolean
---! 
---! @code{.java}
---! local array = {1, 2, 3, 4, 5, 6}
---! local same_type = std.array.compare(array, function(val1, val2) return type(val1) == type(val2) end)
---! local order_is_asc = std.array.compare(array, function(val1, val2) return val1 < val2 end)
---! local order_is_desc = std.array.compare(array, function(val1, val2) return val1 > val2 end)
---! @endcode
-local function array_compare(array, func)
-    local index = 1
-    local length = #array 
-    while index < length do
-        if not func(array[index], array[index + 1]) then
-            return false
-        end
-        index = index + 1
-    end
-    return true
-end
-
 --! @cond
 local function array_pipeline(std, array)
     
@@ -247,7 +222,6 @@ local function array_pipeline(std, array)
         last = decorator_reduce(array_last),
         some = decorator_reduce(array_some),
         every = decorator_reduce(array_every),
-        compare = decorator_reduce(array_compare),
         table = function(self) return self.array end,
         json = function(self) return std.json.encode(self.array) end
     }
@@ -270,7 +244,6 @@ local function install(std, engine, library, name)
     lib.last = array_last
     lib.some = array_some
     lib.every = array_every
-    lib.compare = array_compare
     lib.from = util_decorator.prefix1(std, array_pipeline)
     std[name] = lib
 end

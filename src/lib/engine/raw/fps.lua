@@ -1,3 +1,5 @@
+local math = require('math')
+
 local function fps_counter(fps_limit, fps_tracker, current_time)
     if current_time >= fps_tracker.last_check + 1000 then
         fps_tracker.last_check = current_time
@@ -53,7 +55,9 @@ local function install(std, engine, config_fps)
                 engine.root.config.fps_max = config_fps.list[index + 1]
             end
         end
-        engine.delay = config_fps.time[index]
+
+        local delay = config_fps.time[index]
+        engine.delay = math.max(1, delay - math.max(0, fps_obj.time_delta - delay))
     end)
 end
 

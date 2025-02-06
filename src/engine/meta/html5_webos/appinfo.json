@@ -1,10 +1,10 @@
 {
-    "id": "{{id}}",
-    "version": "{{version}}",
-    "vendor": "{{author}}",
+    "id": "{{ meta.id }}",
+    "version": "{{ meta.version }}",
+    "vendor": "{{ meta.author }}",
     "type": "web",
     "main": "index.html",
-    "title": "{{title}}",
+    "title": "{{ meta.title }}",
     "icon": "icon80x80.png",
     "iconLarge": "icon512x423.png"
 }

@@ -167,9 +167,11 @@ end
 
 --! @cond
 local function http_error(self)
-    self.set('ok', false)
-    self.set('error', self.evt and self.evt.error or 'unknown error')
-    self.resolve()
+    if self and self.set and self.resolve then
+        self.set('ok', false)
+        self.set('error', self.evt and self.evt.error or 'unknown error')
+        self.resolve()
+    end
 end
 --! @endcond
 

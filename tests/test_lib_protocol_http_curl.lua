@@ -2,7 +2,7 @@ local luaunit = require('luaunit')
 local mock_io = require('mock/io')
 local protocol_http = require('src/lib/protocol/http_curl')
 
-local mock_popen = mock_io.open({
+local mock_popen = mock_io.popen({
     ['curl -L --silent --insecure -w "\n%{http_code}" -X GET pudim.com.br'] = {
         read=function () return 'i love pudim!\n200' end,
         close=function () return true, nil end

@@ -1,10 +1,17 @@
+--! @par Reference
+--! @details
+--! This Pong game is inspired by "Paredão" a game from the first-generation
+--! Brazilian console Philco-Ford Telejogo. (1977)
+--! @li https://www.vgdb.com.br/telejogo/jogos/paredao
+--!
+
 local function init(std, game)
     game.highscore = game.highscore or 0
     game.player_pos = game.height/2
     game.ball_pos_x = game.width/2
     game.ball_pos_y = game.height/2
-    game.ball_spd_x = 500
-    game.ball_spd_y = 300
+    game.ball_spd_x = 50
+    game.ball_spd_y = 30
     game.score = 0
 end
 
@@ -12,8 +19,8 @@ local function loop(std, game)
     -- moves
     game.ball_size = std.math.max(game.width, game.height) / 160
     game.player_size = std.math.min(game.width, game.height) / 8
-    game.ball_pos_x = game.ball_pos_x + (game.width * game.ball_spd_x * std.delta)/1000000
-    game.ball_pos_y = game.ball_pos_y + (game.height * game.ball_spd_y * std.delta)/1000000
+    game.ball_pos_x = game.ball_pos_x + (game.width * game.ball_spd_x * std.delta)/100000
+    game.ball_pos_y = game.ball_pos_y + (game.height * game.ball_spd_y * std.delta)/100000
     game.player_pos = std.math.clamp(game.player_pos + (std.key.axis.y * game.ball_size), 0, game.height - game.player_size)  
 
     -- colisions
@@ -28,8 +35,8 @@ local function loop(std, game)
     end
     if game.ball_pos_x <= 0 then 
         if std.math.clamp(game.ball_pos_y, game.player_pos, game.player_pos + game.player_size) == game.ball_pos_y then
-            game.ball_spd_y = game.ball_spd_y + 500 - (std.milis % 1000)
-            game.ball_spd_x = std.math.abs(game.ball_spd_x) * 1.1
+            game.ball_spd_y = game.ball_spd_y + game.ball_spd_x - (std.milis % (game.ball_spd_x*2))
+            game.ball_spd_x = std.math.abs(game.ball_spd_x + (game.ball_spd_x/10))
             game.score = game.score + 1
         else
             std.app.reset()

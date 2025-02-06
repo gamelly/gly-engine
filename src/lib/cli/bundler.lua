@@ -1,3 +1,5 @@
+local util_fs = require('src/lib/util/fs')
+
 --! @defgroup cli
 --! @{
 --! @defgroup bundler
@@ -70,70 +72,105 @@
 --! 
 --! main()
 --! @endcode
---! @}
---! @}
 
-local function build(src_path, src_filename, dest)
-    local pattern_require = "local ([%w_%-]+) = require%('(.-)'%)"
+local function build(src, dest)
     local from = 'main'
-    local src_in = src_path..src_filename
-    local src_file, err_file = io.open(src_in, 'r')
-    local relative_path = src_path:gsub('[%w_-]+', '..')
-    local deps_imported = {}
-    local deps_var_name = {}
-    local deps_module_path = {}
+    local src_path = util_fs.file(src)
+    local dest_path = util_fs.file(dest)
+    local relative = src_path and dest_path and src_path.get_unix_path()
+    local src_file, src_err = io.open((src_path and src_path.get_fullfilepath()) or '')
+    local pattern_identify = '^table: 0x(%w+)$'
+    local pattern_require1 = '^%s*require%([\'"](.-)[\'"]%)(.*)'
+    local pattern_require2 = '^%s*([%w_%-]+)%s*=%s*require%([\'"](.-)[\'"]%)(.*)'
+    local pattern_require3 = '^%s*local%s*([%w_%-]+)%s*=%s*require%([\'"](.-)[\'"]%)(.*)'
+    local pattern_require4 = '^%s*require%s*[\'"](.-)[\'"](.*)'
+    local pattern_require5 = '^%s*([%w_%-]+)%s*=%s*require%s*[\'"](.-)[\'"](.*)'
+    local pattern_require6 = '^%s*local%s*([%w_%-]+)%s*=%s*require%s*[\'"](.-)[\'"](.*)'
+    local deps_list = {}
+    local deps_dict = {}
     local main_content = ''
     local main_before = ''
     local main_after = ''
-    local lib_module = nil
     local lib_name = nil
-    local lib_var = nil
 
     if not src_file then
-        return false, err_file
+        return false, src_err or 'src is required'
     end
 
-    repeat
-        if from == 'system' then
-            main_before = 'local '..lib_var..' = ((function() local x, y = pcall(require, \''..lib_module
-                ..'\'); return x and y end)()) or _G.'..lib_var..'\n'..main_before
+    if not dest_path then
+        return false, 'dest is required'
+    end
+
+    while src_file do
+        if from == 'lib' then
+            main_before = main_before..'local '..lib_name..' = nil\n'
+            main_after = main_after..lib_name..' = function()\n'
         end
-        if src_file then
-            if from == 'lib' then
-                main_before = main_before..'local '..lib_name..' = nil\n'
-                main_after = main_after..lib_name..' = function()\n'
+        repeat
+            local line = src_file and src_file:read()
+            local eof = not line
+
+            line = (line or ''):gsub('\n', '')
+            line = line:gsub('^%s*', '')
+            line = line:gsub('*%s$', '')
+            line = line:gsub('^%-%-$', '')
+            line = line:gsub('^_ENV = nil$', '')
+            line = line:gsub('%s*%-%-([^\'\"%[%]].*)$', '')
+
+            local line_require1 = { line:match(pattern_require1) }
+            local line_require2 = { line:match(pattern_require2) }
+            local line_require3 = { line:match(pattern_require3) }
+            local line_require4 = { line:match(pattern_require4) }
+            local line_require5 = { line:match(pattern_require5) }
+            local line_require6 = { line:match(pattern_require6) }
+            local requires = {line_require2, line_require3, line_require5, line_require6}
+            local line_variable = '-'
+            local line_package = line_require4[1] or line_require1[1]
+            local line_suffix = line_require4[2] or line_require1[2]
+
+            do
+                local index = 1
+                while index <= #requires and not line_package do
+                    line_variable, line_package, line_suffix = requires[index][1], requires[index][2], requires[index][3]
+                    index = index + 1
+                end
             end
-            repeat
-                local line = src_file:read()
-                if line then
-                    line = line:gsub('\n', '')
-                    line = line:gsub('^%s*', '')
-                    line = line:gsub('*%s$', '')
-                    line = line:gsub('^%-%-$', '')
-                    line = line:gsub('^_ENV = nil$', '')
-                    line = line:gsub('%s*%-%-([^\'\"%[%]].*)$', '')
+
+            if line_package then
+                if not deps_dict[line_package] then
+                    deps_list[#deps_list + 1] = line_package
+                    deps_dict[line_package]={line={}, var={}, suffix={}}
+                end
+                if line_variable == '-' then
+                    line = '-'..'- part '
+                elseif line:find('local') then
+                    line = '-'..'- local '
+                else
+                    line = '-'..'- global '
                 end
 
-                local line_require = line and { line:match(pattern_require) }
+                local index = #deps_dict[line_package].line + 1
+                local lib_id = tostring(deps_dict[line_package]):match(pattern_identify)
+                local lib_func = line_package:gsub('/', '_'):gsub('%.', '_'):gsub('\\', '_')..'_'..lib_id
 
-                if line_require and #line_require > 0 then
-                    local index = #deps_var_name + 1
-                    deps_var_name[index] = line_require[1]
-                    deps_module_path[index] = line_require[2]
-                    if from == 'main' then
-                        main_content = main_content..'-'..'-'..line_require[2]..line_require[1]..'-'..'-\n'
-                    else
-                        main_after = main_after..'-'..'-'..line_require[2]..line_require[1]..'-'..'-\n'
-                    end
-                elseif line and #line > 0 and from == 'main' then
+                line = line..lib_func..' '..line_variable..' '
+                deps_dict[line_package].line[index] = line
+                deps_dict[line_package].var[index] = line_variable
+                deps_dict[line_package].suffix[index] = line_suffix
+                deps_dict[line_package].func = lib_func
+            end
+
+            if not eof and line and #line > 0 then
+                if from == 'main' then
                     main_content = main_content..line..'\n'
-                elseif line and #line > 0 and from == 'lib' then
+                else
                     main_after = main_after..line..'\n'
                 end
-            until not line
-            if from == 'lib' then
-                main_after = main_after..'end\n-'..'-\n'
             end
+        until eof
+    
+        if from == 'lib' then
+            main_after = main_after..'end\n-'..'-\n'
         end
 
         if src_file then
@@ -141,56 +178,83 @@ local function build(src_path, src_filename, dest)
             src_file = nil
         end
 
-        local index = 1
-        src_in = nil
-        while not src_in and index <= #deps_var_name do
-            lib_module = deps_module_path[index]
-            lib_var = deps_var_name[index]
-            local lib =  lib_module and lib_var and lib_module..lib_var
-            if lib and not deps_imported[lib] then
-                lib_name = lib_module:gsub('/', '_')
-                src_in = src_path..lib_module..'.lua'
-                src_file = io.open(src_in, 'r') or io.open(lib_module..'.lua', 'r')
-                src_file = src_file or io.open(src_path..relative_path..lib_module..'.lua')
-                from = src_file and 'lib' or 'system'
-                deps_imported[lib] = from
+        do
+            lib_name = nil
+            local index = 1
+            while index <= #deps_list and not lib_name do
+                local lib = deps_list[index]
+                if not deps_dict[lib].imported then
+                    local file1 = util_fs.lua(lib).get_fullfilepath()
+                    local file2 = util_fs.lua(relative..lib).get_fullfilepath()
+                    src_file = io.open(file1, 'r') or io.open(file2, 'r')
+                    from = src_file and 'lib' or 'system'
+                    lib_name = src_file and deps_dict[lib].func
+                    deps_dict[lib].imported = from
+                end
+                index = index + 1
             end
-            index = index + 1
         end
-    until not src_in
-
-    local index = 1
-    while index <= #deps_var_name do
-        lib_module = deps_module_path[index]
-        lib_name = lib_module:gsub('/', '_')
-        lib_var = deps_var_name[index]
-        local lib = lib_module and lib_var and lib_module..lib_var
-        if lib and deps_imported[lib] then
-            local search = '%-%-'..lib_module..lib_var..'%-%-\n'
-            local replace = 'local '..lib_var..' = '..lib_name..'()\n'
-            local replacer = deps_imported[lib] == 'system' and '' or replace
-            main_after = main_after:gsub(search, replacer)
-            main_content = main_content:gsub(search, replacer)
-        end
-        index = index + 1
     end
 
     do
-        main_content = 'local function main()\n'..main_content..'end\n'
-        main_content = main_before..main_content..main_after
-        main_content = main_content..'return main()\n'
+        local index1 = 1
+        local index2 = 1
+        while index1 <= #deps_list do
+            index2 = 1
+            local lib = deps_list[index1]
+            while index2 <= #deps_dict[lib].line do
+                local line = deps_dict[lib].line[index2]..'\n'
+                local lib_type = line:match('^-'..'- (%w+)')
+                if deps_dict[lib].imported == 'system' then
+                    if not deps_dict[lib].header then
+                        main_before = 'local '..deps_dict[lib].var[index2]..' = ((function() local x, y = pcall(require, \''..lib
+                            ..'\'); return x and y end)()) or _G.'..deps_dict[lib].var[index2]..'\n'..main_before
+                        deps_dict[lib].header = true
+                    end
+                    main_after = main_after:gsub(line, '')
+                    main_content = main_content:gsub(line, '')                    
+                elseif lib_type == 'part' then
+                    local replacer = deps_dict[lib].func..'()'..deps_dict[lib].suffix[index2]..'\n'
+                    main_after = main_after:gsub(line, replacer)
+                    main_content = main_content:gsub(line, replacer)
+                else
+                    local replacer = deps_dict[lib].var[index2]..' = '..deps_dict[lib].func..'()'..deps_dict[lib].suffix[index2]..'\n'
+                    if lib_type == 'local' then
+                        replacer = 'local '..replacer
+                    end
+                    main_after = main_after:gsub(line, replacer)
+                    main_content = main_content:gsub(line, replacer)
+                end
+                index2 = index2 + 1
+            end
+            index1 = index1 + 1
+        end
     end
 
-    local dest_file, dest_err = io.open(dest, 'w')
-    if not dest_file then
-        return false, dest_err
+    if #main_content == 0 and #main_after == 0 and #main_before == 0 then
+        return false, 'nothing to do!'
     end
 
-    dest_file:write(main_content)
-    dest_file:close()
+    do
+        local id = tostring(deps_dict):match(pattern_identify)
+        main_content = 'local function main_'..id..'()\n'..main_content..'end\n'
+        main_content = main_before..main_content..main_after..'return main_'..id..'()\n'
+    end
+
+    src_file, src_err = io.open(dest_path.get_fullfilepath(), 'w')
     
+    if not src_file then
+        return false, src_err or 'cannot write bundle file'
+    end
+
+    src_file:write(main_content)
+    src_file:close()
+
     return true
 end
+
+--! @}
+--! @}
 
 local P = {
     build=build

@@ -10,7 +10,7 @@ local function bundler(args)
     local d = util_fs.path(args.dist)
     local f = util_fs.file(args.file)
     zeebo_fs.clear(d.get_fullfilepath())
-    return zeebo_bundler.build(f.get_sys_path(), f.get_file(), d.get_sys_path()..f.get_file())
+    return zeebo_bundler.build(f.get_fullfilepath(), d.get_sys_path()..f.get_file())
 end
 
 local function compiler(args)
@@ -67,8 +67,8 @@ local function haxe_build(args)
     return true
 end
 
-local function package_del(args)
-    return zeebo_package.del(args.file, args.module)
+local function package_mock(args)
+    return zeebo_package.mock(args.file, args.mock, args.module)
 end
 
 local function template_fill(args)
@@ -88,7 +88,7 @@ local P = {
     ['tool-haxe-build'] = haxe_build,
     ['tool-love-zip'] = love_zip,
     ['tool-love-exe'] = love_exe,
-    ['tool-package-del'] = package_del,
+    ['tool-package-mock'] = package_mock,
     ['tool-template-fill'] = template_fill,
     ['tool-template-replace'] = template_replace
 }

@@ -261,7 +261,7 @@ local function loop(std, game)
         game.state = 1
     end
     -- player move
-    game.player_angle = std.math.cycle(game.player_angle + (std.key.axis.x * 0.1), std.math.pi * 2) * std.math.pi * 2
+    game.player_angle = (game.player_angle + (std.key.axis.x * 0.1)) % (std.math.pi * 2)
     game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * std.delta)
     game.player_pos_y = game.player_pos_y + (game.player_spd_y/16 * std.delta)
     if not std.key.press.up and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
@@ -418,7 +418,7 @@ local function draw(std, game)
         return
     elseif game.state == 2 then
         local height = game.height/4
-        local anim = std.math.cos(std.math.cycle(std.milis, 200) * std.math.pi*2)
+        local anim = std.math.cos(std.milis/100) * 5
         draw_logo(std, game, height, anim) 
         std.text.font_size(16)
         std.draw.color(std.color.white)
@@ -510,9 +510,7 @@ local P = {
         version='1.0.0'
     },
     config = {
-        require = 'math math.random i18n',
-        fps_drop = 5,
-        fps_time = 5
+        require = 'math math.random i18n'
     },
     callbacks={
         i18n=i18n,
