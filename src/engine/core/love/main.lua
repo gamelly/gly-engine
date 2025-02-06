@@ -49,7 +49,7 @@ local cfg_keys = {
     v='d'
 }
 
-local cfg_game_api = {
+local cfg_system = {
     get_language = util_lua.get_sys_lang,
     set_fullscreen = love.window.setFullscreen,
     get_fullscreen = love.window.getFullscreen,
