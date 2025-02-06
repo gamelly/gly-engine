@@ -9,3 +9,12 @@
 @li @ref support "View Engine API Guide"
 @li [View the CLI/Engine source code](https://github.com/gamelly/gly-engine)
 @li @ref support "Comparison between Game Engines"
+
+## Requirements
+
+| specification | CPU      | ram    | description |
+| :------------ | -------: | -----: | :------------
+| baseline      | 16.8 MHz | 288 KB | run simplistic applications like an Atari 2600 style game
+| minimum       | 400 MHz  | 32 MB  | 1080i media and run applications without slowdowns
+| recommended   | 1.8 Ghz  | 2 GB   | 1080p media and run applications very fast
+| enhanced      | 3.0 Ghz  | 8 GB   | multiples 1080p medias and run multi applications at same time

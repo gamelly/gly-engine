@@ -29,6 +29,30 @@ filled pylogons are not supported.
 
 does not support requests with SSL and also HTTP 2.0 or higher.
 
+## Limits in Sony PlayStation 1
+
+@par Images
+
+Currently not supported, but will be worked on in the future.
+
+@par Math
+
+Currently not supported, but will be worked on in the future.
+
+@par Math Random
+
+Currently not supported, but will be worked on in the future.
+
+@par Float points
+
+Currently not supported, but will be worked on in the future.
+
+## Limits in Nintendo DS
+
+@par Images
+
+Currently not supported, but will be worked on in the future.
+
 ## Limits in Gameboy Advanced
 
 @ref nintendo_gba does not have an FPU so the lua number type is emulated via software by the compiler, 

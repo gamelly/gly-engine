@@ -42,6 +42,7 @@ core_html5 --> fengari
 
 export the engine natively to platforms or create support yourself @ref framework_functions "from scratch".
 
+@li @ref sony_ps1
 @li @ref nintendo_gba
 @li @ref nintendo_ds
 @li @ref nintendo_wii
