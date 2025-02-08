@@ -73,7 +73,7 @@ function test_sys_lang_with_env()
     local lua_util33 = require ('src/lib/util/lua')
     without_locale = false
 
-	assert(lua_util33.get_sys_lang() == 'en-ES')
+    assert(lua_util33.get_sys_lang() == 'en-ES')
 end
 
 function test_sys_lang_nil_os()
@@ -81,19 +81,19 @@ function test_sys_lang_nil_os()
     local lua_util2 = require('src/lib/util/lua')
     without_os = false
 
-	assert(lua_util2.get_sys_lang() == 'en-US')
+    assert(lua_util2.get_sys_lang() == 'en-US')
 end
 
 function test_sys_lang_with_locale()	
-	assert(lua_util.get_sys_lang() == 'pt-BR')
+    assert(lua_util.get_sys_lang() == 'pt-BR')
 end
 
 function test_sys_lang_no_locale_no_env()
     without_env_locale = true
     local lua_util2 = require('src/lib/util/lua')
     without_env_locale = false
-	
-	assert(lua_util2.get_sys_lang() == 'en-US')
+    
+    assert(lua_util2.get_sys_lang() == 'en-US')
 end
 
 test.unit(_G)

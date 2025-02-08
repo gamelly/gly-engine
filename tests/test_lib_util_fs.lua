@@ -5,19 +5,19 @@ local test = require('src/lib/util/test')
 function test_path_with_src2()
 	local path = util_fs.path('foo/bar', 'extra.txt')
 
-	assert(path.get_file() == 'extra.txt')
-	assert(path.get_filename() == 'extra')
-	assert(path.get_ext() == 'txt')
-	assert(path.get_win_path() == '.\\foo\\bar\\')
-	assert(path.get_unix_path() == './foo/bar/')
+    assert(path.get_file() == 'extra.txt')
+    assert(path.get_filename() == 'extra')
+    assert(path.get_ext() == 'txt')
+    assert(path.get_win_path() == '.\\foo\\bar\\')
+    assert(path.get_unix_path() == './foo/bar/')
 end
 
 
 function test_unix_foo_bar_z_txt()
     local file = util_fs.file('foo/bar/z.txt')
 
-	assert(file.get_file() == 'z.txt')
-	assert(file.get_filename() == 'z')
+    assert(file.get_file() == 'z.txt')
+    assert(file.get_filename() == 'z')
     assert(file.get_ext() == 'txt')
     assert(file.get_win_path() == '.\\foo\\bar\\')
     assert(file.get_unix_path() == './foo/bar/')
@@ -26,7 +26,7 @@ end
 function test_win_baz_bar_y_txt()
     local file = util_fs.file('baz\\bar\\y.exe')
 
-	assert(file.get_file() == 'y.exe')
+    assert(file.get_file() == 'y.exe')
     assert(file.get_filename() == 'y')
     assert(file.get_ext() == 'exe')
     assert(file.get_win_path() == '.\\baz\\bar\\')
@@ -48,7 +48,7 @@ end
 function test_win_absolute()
     local file = util_fs.file('\\Windows\\System32\\drivers\\etc\\hosts')
 
-	assert(file.get_file() == 'hosts')
+    assert(file.get_file() == 'hosts')
     assert(file.get_filename() == 'hosts')
     assert(file.get_ext() == '')
     assert(file.get_win_path() == 'C:\\Windows\\System32\\drivers\\etc\\')
@@ -58,7 +58,7 @@ end
 function test_win_absolute_with_driver()
     local file = util_fs.file('D:\\Windows\\System32\\drivers\\etc\\hosts')
 
-	assert(file.get_file() == 'hosts')
+    assert(file.get_file() == 'hosts')
     assert(file.get_filename() == 'hosts')
     assert(file.get_ext() == '')
     assert(file.get_win_path() == 'D:\\Windows\\System32\\drivers\\etc\\')
@@ -68,7 +68,7 @@ end
 function test_unix_path()
     local file = util_fs.path('/etc/bin')
 
-	assert(file.get_file() == '')
+    assert(file.get_file() == '')
     assert(file.get_filename() == '')
     assert(file.get_ext() == '')
     assert(file.get_win_path() == 'C:\\etc\\bin\\')
@@ -78,7 +78,7 @@ end
 function test_win_path()
     local file = util_fs.path('C:/win32/program files')
 
-	assert(file.get_file() == '')
+    assert(file.get_file() == '')
     assert(file.get_filename() == '')
     assert(file.get_ext() == '')
     assert(file.get_win_path() == 'C:\\win32\\program files\\')

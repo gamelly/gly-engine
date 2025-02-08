@@ -4,7 +4,7 @@ local zeebo_util_http = require('src/lib/util/http')
 
 
 function test_is_ok_status()
-	assert(zeebo_util_http.is_ok(200) == true)
+    assert(zeebo_util_http.is_ok(200) == true)
     assert(zeebo_util_http.is_ok(201) == true)
     assert(zeebo_util_http.is_ok(299) == true)
     assert(zeebo_util_http.is_ok(199) == false)
@@ -13,13 +13,13 @@ end
 
 function test_is_ok_header_with_valid_header()
     local ok, status = zeebo_util_http.is_ok_header('HTTP/1.1 200 OK')
-	assert(ok == true)
+    assert(ok == true)
     assert(status == 200)
 end
 
 function test_is_ok_header_with_invalid_header()
     local ok, status = zeebo_util_http.is_ok_header('invalid header')
-	assert(ok == false)
+    assert(ok == false)
     assert(status == nil)
 end
 
@@ -31,7 +31,7 @@ end
 
 function test_is_ok_header_with_client_error_status()
     local ok, status = zeebo_util_http.is_ok_header("HTTP/1.1 404 Not Found")
-	assert(ok == false)
+    assert(ok == false)
     assert(status == 404)
 end
 
@@ -87,7 +87,7 @@ function test_create_request_overrides()
         .add_mutable_header('h7', '16')
         .to_http_protocol()
 
-	assert(request == 'GET / HTTP/1.1\r\nh1: 1\r\nh2: 4\r\nh3: 6\r\nh4: 9\r\nh5: 10\r\nh6: 15\r\nh7: 16\r\n\r\n')
+    assert(request == 'GET / HTTP/1.1\r\nh1: 1\r\nh2: 4\r\nh3: 6\r\nh4: 9\r\nh5: 10\r\nh6: 15\r\nh7: 16\r\n\r\n')
 end
 
 function test_create_request_conditions()
@@ -100,7 +100,7 @@ function test_create_request_conditions()
         .add_mutable_header('h6', '6', true)
         .to_http_protocol()
 
-	assert(request == 'HEAD / HTTP/1.1\r\nh1: 1\r\nh3: 3\r\nh4: 4\r\nh6: 6\r\n\r\n')
+    assert(request == 'HEAD / HTTP/1.1\r\nh1: 1\r\nh3: 3\r\nh4: 4\r\nh6: 6\r\n\r\n')
 end
 
 function test_create_request_add_body_post()
@@ -109,14 +109,14 @@ function test_create_request_add_body_post()
         .add_body_content('foo bar z')
         .to_http_protocol()
 
-	assert(request == 'POST / HTTP/1.1\r\nContent-Length: 9\r\n\r\nfoo bar z\r\n\r\n')
+    assert(request == 'POST / HTTP/1.1\r\nContent-Length: 9\r\n\r\nfoo bar z\r\n\r\n')
 end
 
 function test_create_request_no_body_in_get()
     local request = zeebo_util_http.create_request('GET', '/')
         .add_body_content('foo bar z')
         .to_http_protocol()
-	assert(request == 'GET / HTTP/1.1\r\n\r\n')
+    assert(request == 'GET / HTTP/1.1\r\n\r\n')
 end
 
 function test_create_request_wget_get()
@@ -131,7 +131,7 @@ function test_create_request_wget_post_with_body()
         .add_imutable_header('Content-Type', 'application/json')
         .add_body_content('{"key": "value"}')
         .to_wget_cmd()
-	assert(request == 'wget --quiet --output-document=- --method=POST --header="Content-Type: application/json" --body-data="{\\"key\\": \\"value\\"}" http://example.com')
+    assert(request == 'wget --quiet --output-document=- --method=POST --header="Content-Type: application/json" --body-data="{\\"key\\": \\"value\\"}" http://example.com')
 end
 
 function test_create_request_wget_with_headers()
@@ -141,21 +141,21 @@ function test_create_request_wget_with_headers()
         .add_body_content('{"name": "test"}')
         .to_wget_cmd()
 
-	assert(request == 'wget --quiet --output-document=- --method=PUT --header="Authorization: Bearer token" --header="Content-Type: application/json" --body-data="{\\"name\\": \\"test\\"}" http://example.com')
+    assert(request == 'wget --quiet --output-document=- --method=PUT --header="Authorization: Bearer token" --header="Content-Type: application/json" --body-data="{\\"name\\": \\"test\\"}" http://example.com')
 end
 
 function test_create_request_wget_head()
     local request = zeebo_util_http.create_request('HEAD', 'http://example.com')
         .to_wget_cmd()
-	assert(request == 'wget --quiet --output-document=- --method=HEAD http://example.com')
+    assert(request == 'wget --quiet --output-document=- --method=HEAD http://example.com')
 end
 
 function test_not_status_disables_print_http_status()
     local request = zeebo_util_http.create_request('GET', '/')
         request.not_status()
         local result = request:not_status()
-		assert(request.print_http_status == false)
-        assert(result == request)
+    assert(request.print_http_status == false)
+    assert(result == request)
 end
 
 test.unit(_G)
