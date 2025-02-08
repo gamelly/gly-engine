@@ -3,7 +3,7 @@ local test = require('src/lib/util/test')
 
 
 function test_path_with_src2()
-	local path = util_fs.path('foo/bar', 'extra.txt')
+    local path = util_fs.path('foo/bar', 'extra.txt')
 
     assert(path.get_file() == 'extra.txt')
     assert(path.get_filename() == 'extra')
@@ -35,7 +35,7 @@ end
 
 
 function test_unix_absolute()
-	local file = util_fs.file('/etc/hosts')
+    local file = util_fs.file('/etc/hosts')
 	
     assert(file.get_file() == 'hosts')
     assert(file.get_filename() == 'hosts')
