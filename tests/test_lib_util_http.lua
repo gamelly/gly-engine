@@ -152,8 +152,8 @@ end
 
 function test_not_status_disables_print_http_status()
     local request = zeebo_util_http.create_request('GET', '/')
-        request.not_status()
-        local result = request:not_status()
+    request.not_status()
+    local result = request:not_status()
     assert(request.print_http_status == false)
     assert(result == request)
 end

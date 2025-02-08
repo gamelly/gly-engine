@@ -1,4 +1,3 @@
---local luaunit = require('luaunit')
 local test = require('src/lib/util/test')
 local mock_require = require('mock/require')
 local without_os = false
@@ -50,23 +49,23 @@ local lua_util = require('src/lib/util/lua')
 function test_no_support_utf8()
     jit = nil
     _VERSION = 'Lua 5.1'
-    --luaunit.assertEquals(lua_util.has_support_utf8(), false)
+
+    assert(lua_util.has_support_utf8() == false)
 end
 
 function test_lua_jit_support_utf8()
     jit = true
     _VERSION = 'Lua 5.1'
-  --  luaunit.assertEquals(lua_util.has_support_utf8(), true)
+
+    assert(lua_util.has_support_utf8() == true)
 end
 
 function test_lua_5_3_support_utf8()
     jit = nil
     _VERSION = 'Lua 5.3'
---    luaunit.assertEquals(lua_util.has_support_utf8(), true)
+
+    assert(lua_util.has_support_utf8() == true)
 end
-
-
-
 
 function test_sys_lang_with_env()
     without_locale = true
@@ -97,4 +96,3 @@ function test_sys_lang_no_locale_no_env()
 end
 
 test.unit(_G)
---os.exit(luaunit.LuaUnit.run())
