@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local mock_require = require('mock/require')
 local without_os = false
 local without_locale = false
@@ -49,47 +49,50 @@ local lua_util = require('src/lib/util/lua')
 function test_no_support_utf8()
     jit = nil
     _VERSION = 'Lua 5.1'
-    luaunit.assertEquals(lua_util.has_support_utf8(), false)
+
+    assert(lua_util.has_support_utf8() == false)
 end
 
 function test_lua_jit_support_utf8()
     jit = true
     _VERSION = 'Lua 5.1'
-    luaunit.assertEquals(lua_util.has_support_utf8(), true)
+
+    assert(lua_util.has_support_utf8() == true)
 end
 
 function test_lua_5_3_support_utf8()
     jit = nil
     _VERSION = 'Lua 5.3'
-    luaunit.assertEquals(lua_util.has_support_utf8(), true)
+
+    assert(lua_util.has_support_utf8() == true)
 end
-
-
-
 
 function test_sys_lang_with_env()
     without_locale = true
     local lua_util33 = require ('src/lib/util/lua')
     without_locale = false
-    luaunit.assertEquals(lua_util33.get_sys_lang(), 'en-ES')
+
+    assert(lua_util33.get_sys_lang() == 'en-ES')
 end
 
 function test_sys_lang_nil_os()
     without_os = true
     local lua_util2 = require('src/lib/util/lua')
     without_os = false
-    luaunit.assertEquals(lua_util2.get_sys_lang(), 'en-US')
+
+    assert(lua_util2.get_sys_lang() == 'en-US')
 end
 
-function test_sys_lang_with_locale()
-    luaunit.assertEquals(lua_util.get_sys_lang(), 'pt-BR')
+function test_sys_lang_with_locale()	
+    assert(lua_util.get_sys_lang() == 'pt-BR')
 end
 
 function test_sys_lang_no_locale_no_env()
     without_env_locale = true
     local lua_util2 = require('src/lib/util/lua')
     without_env_locale = false
-    luaunit.assertEquals(lua_util2.get_sys_lang(), 'en-US')
+    
+    assert(lua_util2.get_sys_lang() == 'en-US')
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)
