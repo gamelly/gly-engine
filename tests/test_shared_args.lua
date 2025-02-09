@@ -62,4 +62,3 @@ function test_shared_args_param_single_argument()
 end
 
 test.unit(_G)
---os.exit(luaunit.LuaUnit.run())
