@@ -1,4 +1,3 @@
-local luaunit = require ('luaunit')
 local pipeline = require ('src/lib/util/pipeline')
 local test = require('src/lib/util/test')
 
