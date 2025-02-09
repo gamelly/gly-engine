@@ -1,5 +1,4 @@
 local test = require('src/lib/util/test')
-local luaunit = require('luaunit')
 local zeebo_args = require('src/lib/common/args')
 
 function test_shared_args_get_basic()

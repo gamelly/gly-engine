@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local mock_io = require('mock/io')
 
@@ -34,4 +34,4 @@ function test_recursion()
     assert(dist_text:match('_G.math'))
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)
