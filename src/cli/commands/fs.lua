@@ -72,7 +72,7 @@ local function mustache(args)
             },
             fn = {
                 msdos_case = function(text, render)
-                    return render(text:upper():gsub('[^%a%d]', ''))
+                    return render(text):upper():gsub('[^%a%d]', '')
                 end
             }
         }
