@@ -1,4 +1,4 @@
-local test = require('src/lib/util/test')
+local luaunit = require('luaunit')
 local protocol_http = require('ee/lib/protocol/http_ginga')
 
 event = {
@@ -52,10 +52,10 @@ function test_http_fast_post_201()
         connection=1
     })
     
-    assert(response.ok == true)
-    assert(response.status == 201)
-    assert(response.body == '')
-    assert(response.error == nil)
+    luaunit.assertEquals(response.ok, true)
+    luaunit.assertEquals(response.status, 201)
+    luaunit.assertEquals(response.body, '')
+    luaunit.assertEquals(response.error, nil)
 end
 
 function test_http_get_200()
@@ -103,10 +103,10 @@ function test_http_get_200()
         connection=1
     })
     
-    assert(response.ok == true)
-    assert(response.status == 200)
-    assert(response.body == 'eu amo pudim!')
-    assert(response.error == nil)
+    luaunit.assertEquals(response.ok, true)
+    luaunit.assertEquals(response.status, 200)
+    luaunit.assertEquals(response.body, 'eu amo pudim!')
+    luaunit.assertEquals(response.error, nil)
 end
 
 function test_http_redirect_300()
@@ -155,10 +155,10 @@ function test_http_redirect_300()
         connection=2
     })
     
-    assert(response.ok == true)
-    assert(response.status == 200)
-    assert(response.body == 'eu amo pudim!') -- same
-    assert(response.error == nil)
+    luaunit.assertEquals(response.ok, true)
+    luaunit.assertEquals(response.status, 200)
+    luaunit.assertEquals(response.body, 'eu amo pudim!')
+    luaunit.assertEquals(response.error, nil)
 end
 
 function test_http_simultaneous_requests()
@@ -271,9 +271,9 @@ function test_http_simultaneous_requests()
         connection=1
     })
 
-    assert(response1.body == 'amo pudim de chocolate!')
-    assert(response2.body == 'amo pudim de doce de leite!')
-    assert(response3.body == 'amo pudim de leite!')
+    luaunit.assertEquals(response1.body, 'amo pudim de chocolate!')
+    luaunit.assertEquals(response2.body, 'amo pudim de doce de leite!')
+    luaunit.assertEquals(response3.body, 'amo pudim de leite!')
 end
 
 function test_http_get_200_samsung()
@@ -395,10 +395,10 @@ function test_http_error_http()
     http_handler(http)
     application.internal.fixed_loop[1]()
     
-    assert(response.ok == false)
-    assert(response.status == nil)
-    assert(response.body == nil)
-    assert(response.error == 'HTTPS is not supported!')
+    luaunit.assertEquals(response.ok, false)
+    luaunit.assertEquals(response.status, nil)
+    luaunit.assertEquals(response.body, nil)
+    luaunit.assertEquals(response.error, 'HTTPS is not supported!')
 end
 
 function test_http_error_https_redirect()
@@ -433,12 +433,11 @@ function test_http_error_https_redirect()
         value='HTTP/1.1 300 Redirect\r\nLocation: https://pudim.com.br\r\n\r\n',
         connection=1
     })
-    --[[TODO: some headers are returning nil under util_test framework, check this later.
-    assert(response.ok == false)
-    assert(response.status == nil)
-    assert(response.body == nil)
-    assert(response.error == 'HTTPS is not supported!')
-	]]--
+    
+    luaunit.assertEquals(response.ok, false)
+    luaunit.assertEquals(response.status, nil)
+    luaunit.assertEquals(response.body, nil)
+    luaunit.assertEquals(response.error, 'HTTPS is not supported!')
 end
 
 function test_http_error_too_many_redirect()
@@ -474,12 +473,11 @@ function test_http_error_too_many_redirect()
         value='HTTP/1.1 300 Redirect\r\nLocation: http://pudim.com.br/\r\n\r\n',
         connection=1
     })
-	--[[ TODO: some headers are returning nil under util_test framework, check this later.
-    assert(response.ok == false)
-    assert(response.status == nil)
-    assert(response.body == nil)
-    assert(response.error == 'Too Many Redirects!')
-	]]--
+    
+    luaunit.assertEquals(response.ok, false)
+    luaunit.assertEquals(response.status, nil)
+    luaunit.assertEquals(response.body, nil)
+    luaunit.assertEquals(response.error, 'Too Many Redirects!')
 end
 
 function test_http_fast_empty_status_error()
@@ -515,10 +513,10 @@ function test_http_fast_empty_status_error()
         connection=1
     })
     
-    assert(response.ok == false)
-    assert(response.status == nil)
-    assert(response.body == nil)
-    assert(response.error == 'some error')
+    luaunit.assertEquals(response.ok, false)
+    luaunit.assertEquals(response.status, nil)
+    luaunit.assertEquals(response.body, nil)
+    luaunit.assertEquals(response.error, 'some error')
 end
 
 function test_http_dns_error()
@@ -548,10 +546,10 @@ function test_http_dns_error()
         error='cannot resolve pudim.com'
     })
 
-    assert(response.ok == false)
-    assert(response.status == nil)
-    assert(response.body == nil)
-    assert(response.error == 'cannot resolve pudim.com')
+    luaunit.assertEquals(response.ok, false)
+    luaunit.assertEquals(response.status, nil)
+    luaunit.assertEquals(response.body, nil)
+    luaunit.assertEquals(response.error, 'cannot resolve pudim.com')
 end
 
 function test_http_data_error()
@@ -594,5 +592,4 @@ function test_http_data_error()
 ]]
 end
 
-test.unit(_G)
-
+os.exit(luaunit.LuaUnit.run())
