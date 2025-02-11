@@ -1,6 +1,5 @@
-local luaunit = require ('luaunit')
 local pipeline = require ('src/lib/util/pipeline')
-
+local test = require('src/lib/util/test')
 
 function test_pipe()
     local test_obj = {
@@ -11,7 +10,7 @@ function test_pipe()
     }
     local task = pipeline.pipe(test_obj)
     task()
-    luaunit.assertTrue(test_obj.run_called)
+    assert(test_obj.run_called == true)
 end
 
 function test_stop_pipe()
@@ -20,8 +19,8 @@ function test_stop_pipe()
         pipeline2 = false
     }
     pipeline.stop(test_obj)
-    luaunit.assertTrue(test_obj.pipeline2)
-    luaunit.assertNil(test_obj.pipeline)
+    assert(test_obj.pipeline2 == true)
+    assert(test_obj.pipeline == nil)
 end
 
 function test_resume_pipe()
@@ -33,7 +32,7 @@ function test_resume_pipe()
         end
     }
     pipeline.resume(test_obj)
-    luaunit.assertTrue(test_obj.pipeline)
+    assert(test_obj.pipeline == true)
 end
 
 function test_reset_pipe()
@@ -43,9 +42,9 @@ function test_reset_pipe()
         pipeline2 = 1,
     }
     pipeline.reset(test_obj)
-    luaunit.assertNil(test_obj.pipeline_current)
-    luaunit.assertNil(test_obj.pipeline2)
-    luaunit.assertEquals(test_obj.pipeline, 1)  
+    assert(test_obj.pipeline_current == nil)
+    assert(test_obj.pipeline2 == nil)
+    assert(test_obj.pipeline == 1)  
 end
 
 function test_run_pipe()
@@ -58,12 +57,11 @@ function test_run_pipe()
         }
     }
     pipeline.run(test_obj)
-    luaunit.assertEquals(test_obj.pipeline_current, 4)
+    assert(test_obj.pipeline_current == 4)
 end
 
 
 function test_clear_pipe()
-    
     
     local test_obj = {
         pipeline_current = 1,
@@ -71,10 +69,10 @@ function test_clear_pipe()
         pipeline = 1,
     }
     pipeline.clear(test_obj)
-    luaunit.assertNil(test_obj.pipeline_current)
-    luaunit.assertNil(test_obj.pipeline)
-    luaunit.assertNil(test_obj.pipeline2)
+    assert(test_obj.pipeline_current == nil)
+    assert(test_obj.pipeline == nil)
+    assert(test_obj.pipeline2 == nil)
     
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)

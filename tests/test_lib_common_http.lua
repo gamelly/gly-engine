@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local zeebo_http = require('src/lib/engine/api/http')
 local mock_http = require('mock/protocol_http')
 local zeebo_pipeline = require('src/lib/util/pipeline')
@@ -43,9 +43,8 @@ function test_http_head_200()
         :failed(function (std) ok, status = false, std.http.status end)
         :error(function() ok, status = false, -1 end)
         :run()
-
-    luaunit.assertEquals(ok, true)
-    luaunit.assertEquals(status, 200)
+    assert(ok == true)
+    assert(status == 200)
 end
 
 function test_http_get_500()
@@ -58,8 +57,8 @@ function test_http_get_500()
         :error(function() ok, status = false, -1 end)
         :run()
 
-    luaunit.assertEquals(status, 500)
-    luaunit.assertEquals(ok, false) 
+    assert(status == 500)
+    assert(ok == false) 
 end
 
 function test_http_head_404()
@@ -72,8 +71,8 @@ function test_http_head_404()
         :error(function() ok, status = false, -1 end)
         :run()
 
-    luaunit.assertEquals(ok, false)
-    luaunit.assertEquals(status, 404)
+    assert(ok == false)
+    assert(status == 404)
 end
 
 function test_http_head_error()
@@ -87,9 +86,9 @@ function test_http_head_error()
         :error(function() ok, status, message = false, -1, std.http.error end)
         :run()
 
-    luaunit.assertEquals(ok, false)
-    luaunit.assertEquals(status, -1)
-    luaunit.assertEquals(message, 'URL not set!')
+    assert(ok == false)
+    assert(status == -1)
+    assert(message == 'URL not set!')
 end
 
 function test_http_get_201()
@@ -110,8 +109,8 @@ function test_http_get_201()
         :error(function() status = -1 end)
         :run()
 
-    luaunit.assertEquals(status, 201)
-    luaunit.assertEquals(body, 'foobarz')
+    assert(status == 201)
+    assert(body == 'foobarz')
 end
 
 function test_http_post_body()
@@ -125,21 +124,21 @@ function test_http_post_body()
         :run()
 
 
-    luaunit.assertEquals(ok, true)
-    luaunit.assertEquals(status, 201)
-    luaunit.assertEquals(body, 'foobarz')
+    assert(ok == true)
+    assert(status == 201)
+    assert(body == 'foobarz')
 end
 
 function test_http_fast()
     local request = std.http.get('example.com/status200')
     request:fast()
-    luaunit.assertEquals(request.speed, '_fast')
+    assert(request.speed == '_fast')
 end
 
 function test_http_header()
     local request = std.http.get('example.com/status200')
     request:header('Content-Type', 'application/json')
-    luaunit.assertEquals(request.header_dict['Content-Type'], 'application/json')
+    assert(request.header_dict['Content-Type'] == 'application/json')
 end
 
 function test_http_promise()
@@ -147,7 +146,7 @@ function test_http_promise()
     zeebo_pipeline.stop = function(self) stop_called = true end
     local request = std.http.get('example.com/status200')
     request:promise()
-    luaunit.assertTrue(stop_called)
+    assert(stop_called == true)
 end
 
 function test_http_resolve()
@@ -155,7 +154,7 @@ function test_http_resolve()
     zeebo_pipeline.resume = function(self) resume_called = true end
     local request = std.http.get('example.com/status200')
     request:resolve()
-    luaunit.assertTrue(resume_called)
+    assert(resume_called == true)
 end
 
 
@@ -166,7 +165,7 @@ function test_http_set()
         mock_std.http[key] = value
     end
     set_function('timeout', 5000)
-    luaunit.assertEquals(mock_std.http.timeout, 5000)
+    assert(mock_std.http.timeout == 5000)
 end
 
 function test_protocol_with_install()
@@ -175,8 +174,8 @@ function test_protocol_with_install()
         handler = function() end,
         install = function(std, engine)
             install_called = true
-            luaunit.assertNotNil(std)
-            luaunit.assertNotNil(engine)
+            assert(std ~= nil)
+            assert(engine ~= nil)
         end
     }
     local std = {}
@@ -184,7 +183,7 @@ function test_protocol_with_install()
     
     local http_module = require('src/lib/engine/api/http')
     http_module.install(std, engine, protocol)
-    luaunit.assertTrue(install_called)
+    assert(install_called == true)
 end
 
 function test_protocol_without_install()
@@ -195,11 +194,8 @@ function test_protocol_without_install()
     if protocol.install then 
         protocol.install(std, engine)
     end
-    luaunit.assertTrue(true)
+    assert(true) -- ??
 
 end
 
-
-
-
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)

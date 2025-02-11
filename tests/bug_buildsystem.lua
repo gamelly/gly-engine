@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_buildsystem = require('src/cli/tools/buildsystem')
 local mock_io = require('mock/io')
@@ -35,4 +35,4 @@ function test_bug_104_builder_includes_commented_libs()
     assert(not dist_text:find('bar'))
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)

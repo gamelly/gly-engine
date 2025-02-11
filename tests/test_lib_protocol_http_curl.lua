@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local mock_io = require('mock/io')
 local protocol_http = require('src/lib/protocol/http_curl')
 
@@ -35,10 +35,10 @@ function test_http_get_200()
         method = 'GET'
     })
 
-    luaunit.assertEquals(std.http.ok, true)
-    luaunit.assertEquals(std.http.error, nil)
-    luaunit.assertEquals(std.http.status, 200)
-    luaunit.assertEquals(std.http.body, 'i love pudim!')
+    assert(std.http.ok == true)
+    assert(std.http.error == nil)
+    assert(std.http.status == 200)
+    assert(std.http.body == 'i love pudim!') -- same
 end
 
 function test_http_post_201()
@@ -57,10 +57,10 @@ function test_http_post_201()
         method = 'POST'
     })
 
-    luaunit.assertEquals(std.http.ok, true)
-    luaunit.assertEquals(std.http.error, nil)
-    luaunit.assertEquals(std.http.status, 201)
-    luaunit.assertEquals(std.http.body, 'me too!')
+    assert(std.http.ok == true)
+    assert(std.http.error == nil)
+    assert(std.http.status == 201)
+    assert(std.http.body == 'me too!')
 end
 
 function test_http_post_403()
@@ -75,10 +75,10 @@ function test_http_post_403()
         method = 'POST'
     })
 
-    luaunit.assertEquals(std.http.ok, false)
-    luaunit.assertEquals(std.http.error, nil)
-    luaunit.assertEquals(std.http.status, 403)
-    luaunit.assertEquals(std.http.body, 'method not allowed!')
+    assert(std.http.ok == false)
+    assert(std.http.error == nil)
+    assert(std.http.status == 403)
+    assert(std.http.body == 'method not allowed!')
 end
 
 function test_http_head_error()
@@ -91,10 +91,10 @@ function test_http_head_error()
         method = 'HEAD'
     })
 
-    luaunit.assertEquals(std.http.ok, false)
-    luaunit.assertEquals(std.http.error, 'no URL specified!')
-    luaunit.assertEquals(std.http.status, nil)
-    luaunit.assertEquals(std.http.body, nil)
+    assert(std.http.ok == false)
+    assert(std.http.error == 'no URL specified!')
+    assert(std.http.status == nil)
+    assert(std.http.body == nil)
 end
 
 function test_http_popen_error()
@@ -107,10 +107,10 @@ function test_http_popen_error()
         method = 'GET'
     })
 
-    luaunit.assertEquals(std.http.ok, false)
-    luaunit.assertEquals(std.http.error, 'failed to spawn process!')
-    luaunit.assertEquals(std.http.status, nil)
-    luaunit.assertEquals(std.http.body, nil)
+    assert(std.http.ok == false)
+    assert(std.http.error == 'failed to spawn process!')
+    assert(std.http.status == nil)
+    assert(std.http.body == nil)
 end
 
 function test_http_post_with_body()
@@ -124,10 +124,10 @@ function test_http_post_with_body()
         body_content = 'UPPERCASE_CONTENT'
     })
 
-    luaunit.assertEquals(std.http.ok, true)
-    luaunit.assertEquals(std.http.error, nil)
-    luaunit.assertEquals(std.http.status, 201)
-    luaunit.assertEquals(std.http.body, 'uppercase_content')
+    assert(std.http.ok == true)
+    assert(std.http.error == nil)
+    assert(std.http.status == 201)
+    assert(std.http.body == 'uppercase_content')
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)
