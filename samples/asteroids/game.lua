@@ -103,6 +103,16 @@ local function asteroid_nest(std, game, x, y, id)
     return false
 end
 
+local function asteroids_resize(std, game)
+    if (game.width <= 400) then
+        local div = function(v) return std.math.ceil(v * (game.width/800)) end
+        game.asteroid_large = std.array.map(game.asteroid_large, div)
+        game.asteroid_mid = std.array.map(game.asteroid_mid, div)
+        game.asteroid_small = std.array.map(game.asteroid_small, div)
+        game.asteroid_mini = std.array.map(game.asteroid_mini, div)
+    end
+end
+
 local function asteroids_rain(std, game)
     local index = 1
     local attemps = 1
@@ -178,6 +188,7 @@ local function init(std, game)
     game.asteroids_max = game.asteroids_max or 60
     game.graphics_fastest = game.graphics_fastest or 0
     -- player
+    game.player_size = std.math.clamp(game.width/100, 1, 3)
     game.player_pos_x = game.width/2
     game.player_pos_y = game.height/2
     game.player_spd_x = 0
@@ -206,6 +217,7 @@ local function init(std, game)
     game.asteroid_small = {3, 0, 0, 3, 3, 9, 3, 12, 0, 18, 6, 21, 12, 21, 18, 18, 21, 15, 21, 3, 12, 3, 9, 6}
     game.asteroid_mini = {6, 0, 6, 6, 0, 6, 0, 12, 3, 18, 6, 18, 6, 15, 15, 15, 18, 9, 12, 6, 12, 0}
     game.spaceship = {-2,3, 0,-2, 2,3}
+    asteroids_resize(std, game)
     -- sizes
     game.asteroid_large_size = std.math.max(game.asteroid_large)
     game.asteroid_mid_size = std.math.max(game.asteroid_mid)
@@ -449,7 +461,7 @@ local function draw(std, game)
     if game.state ~= 5 then
         -- triangle
         std.draw.color(std.color.yellow)
-        std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
+        std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, game.player_size, game.player_angle)
         -- laser bean
         if game.laser_enabled and std.milis < game.laser_last_fire + game.laser_time_fire then
             std.draw.color(std.color.green)
@@ -471,20 +483,16 @@ local function draw(std, game)
         end
     end
     -- draw gui
-    local w = game.width/16
-    std.draw.color(std.color.black)  
-    std.draw.rect(0, 0, 0, game.width, 32)
+    local w, h = std.text.mensure('a')
+    w = game.width/6
+    std.draw.color(std.color.black)
+    std.draw.rect(0, 0, 0, game.width, h)
     std.draw.color(std.color.white)
-    s=std.text.print_ex(8, 8, 'lifes:')
-    std.text.print(8+s, 8, game.lifes)
-    s=std.text.print_ex(w*2, 8, 'level:')
-    std.text.print(w*2+s, 8, game.level)
-    s=std.text.print_ex(w*4, 8, 'asteroids:')
-    std.text.print(w*4+s, 8, game.asteroids_count)
-    s=std.text.print_ex(w*9, 8, 'score:')
-    std.text.print(w*9+s, 8, game.score)
-    s=std.text.print_ex(w*12, 8, 'highscore:')
-    std.text.print(w*12+s, 8, game.highscore)
+    std.text.print_ex(w*1, 2, 'lifes: '..tostring(game.lifes), 0)
+    std.text.print_ex(w*2, 2, 'level: '..tostring(game.level), 0)
+    std.text.print_ex(w*3, 2, 'asteroids: '..tostring(game.asteroids_count), 0)
+    std.text.print_ex(w*4, 2, 'score: '..tostring(game.score), 0)
+    std.text.print_ex(w*5, 2, 'highscore: '..tostring(game.highscore), 0)
 end
 
 local function exit(std, game)
