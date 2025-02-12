@@ -47,7 +47,7 @@ end
 
 local function draw_logo(std, game, height, anim)
     anim = anim or 0
-    std.text.font_size(32)
+    std.text.font_size(std.math.max(game.height/24, game.width/36, 4))
     std.draw.color(std.color.white)
     local s1 = std.text.mensure('AsteroidsTv')
     local s2 = std.text.mensure('Tv')
@@ -401,32 +401,32 @@ local function draw(std, game)
     std.draw.clear(death_anim and std.color.white or std.color.black)
     local s = 0
     if game.state == 1 then
-        local s2 = 0
-        local h = game.height/16
-        local hmenu = (h*(4+game.menu)) + 24
+        local h = game.height/24
+        local hmenu = (game.menu*h) + (h*11) - (h/3)
         local language = std.i18n.get_language()
         local graphics = game.graphics_fastest == 1 and 'fast' or 'pretty'
-        local s = draw_logo(std, game, h*2)
-        std.text.font_size(16)
+        local s = std.math.min(game.width/4, draw_logo(std, game, h*4))
+        local w1, w2 = (game.width/2 - s), (game.width/2 + s)
+        std.text.font_size(h/2)
         std.draw.color(std.color.white)
         if game.player_pos_x ~= (game.width/2) then
-            std.text.print(game.width/2 - s, h*5, 'Continue')
+            std.text.print(game.width/2 - s, h*11, 'Continue')
         end
-        std.text.print(game.width/2 - s, h*6, 'New Game')
-        std.text.print(game.width/2 - s, h*7, 'Dificulty')
-        std.text.print(game.width/2 - s, h*8, 'Invincibility')
-        std.text.print(game.width/2 - s, h*9, 'Object Limit')
-        std.text.print(game.width/2 - s, h*10, 'Graphics')
-        std.text.print(game.width/2 - s, h*11, 'Language')
-        std.text.print(game.width/2 - s, h*12, 'Credits')
-        std.text.print(game.width/2 - s, h*13, 'Exit')
-        std.draw.line(game.width/2 - s, hmenu, game.width/2 + s, hmenu)
+        std.text.print(w1, h*12, 'New Game')
+        std.text.print(w1, h*13, 'Dificulty')
+        std.text.print(w1, h*14, 'Invincibility')
+        std.text.print(w1, h*15, 'Object Limit')
+        std.text.print(w1, h*16, 'Graphics')
+        std.text.print(w1, h*17, 'Language')
+        std.text.print(w1, h*18, 'Credits')
+        std.text.print(w1, h*19, 'Exit')
+        std.draw.line(w1, hmenu, w2, hmenu)
         std.draw.color(std.color.red)
-        std.text.print_ex(game.width/2 + s, h*7, game.level, -1)
-        std.text.print_ex(game.width/2 + s, h*8, game.imortal, -1)
-        std.text.print_ex(game.width/2 + s, h*9, game.asteroids_max, -1)
-        std.text.print_ex(game.width/2 + s, h*10, graphics, -1)
-        std.text.print_ex(game.width/2 + s, h*11, language, -1)
+        std.text.print_ex(w2, h*12, game.level, -1)
+        std.text.print_ex(w2, h*13, game.imortal, -1)
+        std.text.print_ex(w2, h*14, game.asteroids_max, -1)
+        std.text.print_ex(w2, h*15, graphics, -1)
+        std.text.print_ex(w2, h*16, language, -1)
         return
     elseif game.state == 2 then
         local height = game.height/4
