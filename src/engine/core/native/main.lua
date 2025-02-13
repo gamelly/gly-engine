@@ -139,7 +139,7 @@ end
 
 function native_callback_http(id, key, data)
     if cfg_http.has_callback then
-        return callback_http.func(engine['http_requests'][id], key, data)
+        return callback_http.func(engine['http_requests'][id], key, data, std)
     end
     return nil
 end

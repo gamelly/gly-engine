@@ -16,7 +16,7 @@ local callbacks = {
     ['get-method'] = function(self)
         return self.method
     end,
-    ['get-body-data'] = function(self)
+    ['get-body'] = function(self)
         return self.body_content
     end,
     ['get-param-count'] = function(self)
@@ -44,7 +44,10 @@ local callbacks = {
     ['set-error'] = function(self, data)
         self.set('error', data)
     end,
-    ['set-body-data'] = function(self, data)
+    ['set-ok'] = function(self, data)
+        self.set('ok', data)
+    end,
+    ['set-body'] = function(self, data)
         self.set('body', data)
     end,
     ['add-body-data'] = function(self, data, std)
@@ -53,6 +56,9 @@ local callbacks = {
 }
 
 local function native_http_callback(self, evt, data, std)
+    if not callbacks[evt] then
+        error('http evt '..evt..' not exist!')
+    end
     return callbacks[evt](self, data, std)
 end
 

@@ -32,6 +32,28 @@ gly.bootstrap = async (game_file) => {
         fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring(func_name));
     }
 
+    const httplua = (reqid, key, data) => {
+        const params = data !== undefined? 3: 2
+        fengari.lua.lua_getglobal(fengari.L, fengari.to_luastring('native_callback_http'))
+        fengari.lua.lua_pushinteger(fengari.L, reqid);
+        fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(key));
+        if (typeof data == 'string') {
+            fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(data));
+        }
+        if (typeof data == 'number') {
+            fengari.lua.lua_pushnumber(fengari.L, data);
+        }
+        if (typeof data == 'boolean') {
+            fengari.lua.lua_pushboolean(fengari.L, data);
+        }
+        if(fengari.lua.lua_pcall(fengari.L, params, 1, 0) !== 0){
+            throw fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, -1))
+        }
+        if (fengari.lua.lua_type(fengari.L, -1) == fengari.lua.LUA_TSTRING) {
+            return fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, -1));
+        }
+    }
+
     define_lua_func('native_draw_start', (func) => {
         func();
     });
@@ -167,7 +189,26 @@ gly.bootstrap = async (game_file) => {
     define_lua_func('native_media_pause', (func) => {
         func(fengari.lua.lua_tonumber(fengari.L, 1));
     });
+    
+    define_lua_func('native_http_handler', (func) => {
+        const request_id = fengari.lua.lua_tonumber(fengari.L, 2);
+        func({
+            param_dict: {},
+            header_dict: {},
+            set: (key, value) => httplua(request_id, `set-${key}`, value),
+            promise: () => httplua(request_id, 'async-promise'),
+            resolve: () => httplua(request_id, 'async-resolve'),
+            method: httplua(request_id, 'get-method'),
+            body: httplua(request_id, 'get-body'),
+            url: httplua(request_id, 'get-fullurl')
+        })
+    });
 
+    fengari.lua.lua_pushboolean(fengari.L, true)
+    fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_has_callback'))
+
+    fengari.lua.lua_pushboolean(fengari.L, true)
+    fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_has_ssl'))
 
     if (typeof engine_lua === 'string' && !engine_lua.includes('\n')) {
         const engine_response = await fetch(engine_lua)
