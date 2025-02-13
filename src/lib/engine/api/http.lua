@@ -208,6 +208,11 @@ end
 local function install(std, engine, protocol)
     assert(protocol.handler, 'missing protocol handler')
 
+    if protocol.has_callback then
+        engine.http_count = 0
+        engine.http_requests = {}
+    end
+
     std.http = std.http or {}
     std.http.get=request('GET', std, engine, protocol)
     std.http.head=request('HEAD', std, engine, protocol)
@@ -215,12 +220,7 @@ local function install(std, engine, protocol)
     std.http.put=request('PUT', std, engine, protocol)
     std.http.delete=request('DELETE', std, engine, protocol)
     std.http.patch=request('PATCH', std, engine, protocol)
-
-    if protocol.has_callback then
-        engine.http_count = 0
-        engine.http_requests = {}
-    end
-
+    
     if protocol.install then
         protocol.install(std, engine)
     end

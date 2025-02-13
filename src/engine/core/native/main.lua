@@ -63,7 +63,7 @@ local cfg_poly = {
 }
 
 local cfg_http = {
-    install = native_http_protocol,
+    install = native_http_install,
     handler = native_http_handler,
     has_ssl = native_http_has_ssl,
     has_callback = native_http_has_callback,
@@ -137,9 +137,9 @@ function native_callback_keyboard(key, value)
     std.bus.emit('rkey', key, value)
 end
 
-function native_http_callback(id, key, data)
-    if engine.http_requests then
-        return callback_http.func(engine.http_requests[id], key, data, std)
+function native_callback_http(id, key, data)
+    if cfg_http.has_callback then
+        return callback_http.func(engine['http_requests'][id], key, data)
     end
     return nil
 end
