@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local engine_hash = require('src/lib/engine/api/hash')
 
 local std ={}
@@ -7,13 +7,13 @@ engine_hash.install(std, nil, {get_secret = function() return 'awesome42' end })
 function test_fingerprint()
     local expected = std.hash.djb2('awesome42')
     local result = std.hash.fingerprint()
-    luaunit.assertEquals(expected, result)
+    assert(expected == result)
 end
 
 function test_diff_hash_foo_bar()
     local foo = std.hash.djb2('foo')
     local bar = std.hash.djb2('bar')
-    luaunit.assertNotEquals(foo, bar)
+    assert(foo ~= bar)
 end
 
 function test_collision_stylist_subgenera()
@@ -22,7 +22,7 @@ function test_collision_stylist_subgenera()
     end
     local stylist = std.hash.djb2('stylist')
     local subgenera = std.hash.djb2('subgenera')
-    luaunit.assertEquals(stylist, subgenera)
+    assert(stylist == subgenera)
 end
 
-os.exit(luaunit.LuaUnit.run())
+test.unit(_G)

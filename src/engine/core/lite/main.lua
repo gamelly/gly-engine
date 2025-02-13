@@ -15,6 +15,8 @@ local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_raw_memory = require('src/lib/engine/raw/memory')
 --
+local callback_http = require('src/lib/protocol/http_callback')
+--
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
@@ -60,8 +62,11 @@ local cfg_text = {
 }
 
 local cfg_http = {
-    ssl = native_http_has_ssl,
-    handler = native_http_handler
+    install = native_http_install,
+    handler = native_http_handler,
+    has_ssl = native_http_has_ssl,
+    has_callback = native_http_has_callback,
+    force_protocol = native_http_force_protocol
 }
 
 local cfg_base64 = {
@@ -100,6 +105,13 @@ end
 
 function native_callback_keyboard(key, value)
     engine.keyboard(std, engine, key, value)
+end
+
+function native_callback_http(id, key, data)
+    if cfg_http.has_callback then
+        return callback_http.func(engine['http_requests'][id], key, data)
+    end
+    return nil
 end
 
 function native_callback_init(width, height, game_lua)
