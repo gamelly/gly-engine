@@ -118,8 +118,8 @@ const engine = {
         },
         native_http_handler: (self) => {
             const method = self.method
-            const headers = new Headers(self.headers_dict)
-            const params = new URLSearchParams(self.params_dict)
+            const headers = new Headers(self.header_dict)
+            const params = new URLSearchParams(self.param_dict)
             const url = `${self.url}` + '?' + params.toString()
             const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
             self.promise()
