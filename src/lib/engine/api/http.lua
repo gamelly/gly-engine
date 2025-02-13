@@ -180,7 +180,7 @@ local function request(method, std, engine, protocol)
                 -- local handlers
                 if std.http.ok then
                     self.success_handler(std, game)
-                elseif self.std.http.error or not std.http.status then
+                elseif std.http.error or not std.http.status then
                     self.error_handler(std, game)
                 else
                     self.failed_handler(std, game)
