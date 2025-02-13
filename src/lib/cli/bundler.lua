@@ -14,13 +14,20 @@ local util_fs = require('src/lib/util/fs')
 --! @li minification by removing comments, extrabreaklines and tabulations.
 --! @li compatibility with lua distributions that do not expose standard libs in require.
 --!
---! @par Instalation
+--! @par Downloads
 --!
---! @todo coming soon, just bundler as a utility `.lua` script to use in your CI system. @n (without the engine)
+--! @li <https://get.gamely.com.br/bundler.lua>
+--! @li <https://get.gamely.com.br/bundler_cli.lua>
 --!
 --! @par Usage
+--! @li gly engine cli
 --! @code{.sql}
 --! lua cli.lua bundler src/main.lua --dist ./dist
+--! @endcode
+--! 
+--! @li bundler cli
+--! @code{.sql}
+--! lua bundler_cli.lua src/main.lua dist/main.lua
 --! @endcode
 --!
 --! @par Result
@@ -73,6 +80,17 @@ local util_fs = require('src/lib/util/fs')
 --! main()
 --! @endcode
 
+--! @short bundler library
+--! @par Example
+--! @code{.java}
+--! local bundler = require('bundler')
+--! 
+--! local ok, msg = bundler.build('src/main.lua', 'dist/main.lua')
+--! 
+--! if not ok then
+--!     error(msg)
+--! end
+--! @endcode
 local function build(src, dest)
     local from = 'main'
     local src_path = util_fs.file(src)

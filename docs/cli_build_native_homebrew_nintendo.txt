@@ -1,27 +1,10 @@
 @defgroup homebrew
 @{
 
-@page sony_ps1 PlayStation 1
+@defgroup nintendo
+@{
 
-You can make your Lua games for nintendo ds using the Gly engine,
-but as limitations of only fixed point and without cmath library,
-as it has not been worked on yet.
-
- - online IDE <https://playground.gamely.com.br>
- - source code <https://github.com/gamelly/core-native-ps1>
- - @ref cmake "more details"
-
-```text
-git clone https://github.com/gamelly/core-native-ps1
-```
-
-```text
-cmake -Bbuild -H. -DGAME=path/to/your/game.lua
-```
-
-```text
-make -C build
-```
+@short consoles: gba, nds, wii
 
 @page nintendo_gba Nintendo GBA
 
@@ -64,12 +47,12 @@ cmake -Bbuild -H. -DGAME=path/to/your/game.lua
 make -C build
 ```
 
-@todo comming soon NDS roms
-
 @page nintendo_wii Nintendo Wii
 
 You can make your games in Lua for Nintendo Wii using Gly Engine, including support for motion controls.
 
 @todo comming soon WII roms
+
+@}
 
 @}

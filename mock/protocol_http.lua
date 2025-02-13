@@ -11,15 +11,15 @@ local function http_handler(requests)
             body = body(self)
         end
 
-        self.std.http.ok = request and request.ok or false
-        self.std.http.status = status
-        self.std.http.body = body
-        self.std.http.error = nil
+        self.set('ok', request and request.ok or false)
+        self.set('status', status)
+        self.set('body', body)
+        self.set('error', nil)
 
         if not self.url then
-            self.std.http.error = 'URL not set!'
+            self.set('error', 'URL not set!')
         elseif not request then
-            self.std.http.status = 404    
+            self.set('status', 404) 
         end
     end
 end
