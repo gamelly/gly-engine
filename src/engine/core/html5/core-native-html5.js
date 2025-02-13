@@ -120,7 +120,7 @@ const engine = {
             const method = self.method
             const headers = new Headers(self.header_dict)
             const params = new URLSearchParams(self.param_dict)
-            const url = `${self.url}` + '?' + params.toString()
+            const url = params.toString() ? `${self.url}?${params.toString()}` : self.url;
             const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
             self.promise()
             fetch(url, {
