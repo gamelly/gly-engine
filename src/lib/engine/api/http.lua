@@ -114,16 +114,25 @@ end
 --! @}
 
 --! @cond
-local function request(method, std, engine, protocol_handler)
+local function request(method, std, engine, protocol)
     local callback_handler = function()
-        std.node.emit(engine.current, 'http')
+        if std.node then
+            std.node.emit(engine.current, 'http')
+        elseif engine.current.callbacks.http then
+            engine.current.callbacks.http(std, engine.current.data)
+        end
     end
 
     return function (url)
+        if protocol.has_callback then
+            engine.http_count = engine.http_count + 1
+        end
+
         local game = engine.current.data
 
         local self = {
             -- content
+            id = engine.http_count,
             url = url,
             speed = '',
             method = method,
@@ -132,13 +141,9 @@ local function request(method, std, engine, protocol_handler)
             header_dict = {},
             param_list = {},
             param_dict = {},
-            callback_handler = callback_handler,
             success_handler = function (std, game) end,
             failed_handler = function (std, game) end,
             error_handler = function (std, game) end,
-            -- objects
-            std = std,
-            game = game,
             -- functions
             fast = fast,
             body = body,
@@ -148,8 +153,6 @@ local function request(method, std, engine, protocol_handler)
             failed = failed,
             error = http_error,
             run = zeebo_pipeline.run,
-            -- internal
-            protocol_handler = protocol_handler
         }
 
         self.promise = function()
@@ -161,36 +164,38 @@ local function request(method, std, engine, protocol_handler)
         end
 
         self.set = function (key, value)
-            self.std.http[key] = value
+            std.http[key] = value
         end
 
         self.pipeline = {
             -- eval
             function()
-                self:protocol_handler()
+                if protocol.has_callback then engine.http_requests[self.id] = self end
+                protocol.handler(self, self.id)
             end,
             -- callbacks
             function()
                 -- global handler
-                self.callback_handler(self.std, self.game)
+                callback_handler(std, game)
                 -- local handlers
-                if self.std.http.ok then
-                    self.success_handler(self.std, self.game)
-                elseif self.std.http.error or not self.std.http.status then
-                    self.error_handler(self.std, self.game)
+                if std.http.ok then
+                    self.success_handler(std, game)
+                elseif self.std.http.error or not std.http.status then
+                    self.error_handler(std, game)
                 else
-                    self.failed_handler(self.std, self.game)
+                    self.failed_handler(std, game)
                 end
             end,
             -- clean http
             function ()
-                self.std.http.ok = nil
-                self.std.http.body = nil
-                self.std.http.error = nil
-                self.std.http.status = nil
+                std.http.ok = nil
+                std.http.body = nil
+                std.http.error = nil
+                std.http.status = nil
             end,
             -- reset request
             function()
+                if protocol.has_callback then engine.http_requests[self.id] = nil end
                 zeebo_pipeline.reset(self)
             end
         }
@@ -201,27 +206,24 @@ end
 --! @endcond
 
 local function install(std, engine, protocol)
-    local protocol_handler = protocol and protocol.handler
+    assert(protocol.handler, 'missing protocol handler')
 
-    if not protocol_handler then
-        error('missing protocol handler')
-    end
-    
     std.http = std.http or {}
-    std.http.get=request('GET', std, engine, protocol_handler)
-    std.http.head=request('HEAD', std, engine, protocol_handler)
-    std.http.post=request('POST', std, engine, protocol_handler)
-    std.http.put=request('PUT', std, engine, protocol_handler)
-    std.http.delete=request('DELETE', std, engine, protocol_handler)
-    std.http.patch=request('PATCH', std, engine, protocol_handler)
-    
+    std.http.get=request('GET', std, engine, protocol)
+    std.http.head=request('HEAD', std, engine, protocol)
+    std.http.post=request('POST', std, engine, protocol)
+    std.http.put=request('PUT', std, engine, protocol)
+    std.http.delete=request('DELETE', std, engine, protocol)
+    std.http.patch=request('PATCH', std, engine, protocol)
+
+    if protocol.has_callback then
+        engine.http_count = 0
+        engine.http_requests = {}
+    end
+
     if protocol.install then
         protocol.install(std, engine)
     end
-
-    return {
-        std={http=std.http}
-    }
 end
 
 local P = {
