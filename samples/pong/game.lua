@@ -1,6 +1,6 @@
 --! @par Reference
 --! @details
---! This Pong game is inspired by "Paredão" a game from the first-generation
+--! This Pong game is inspired by "Paredao" a game from the first-generation
 --! Brazilian console Philco-Ford Telejogo. (1977)
 --! @li https://www.vgdb.com.br/telejogo/jogos/paredao
 --!
