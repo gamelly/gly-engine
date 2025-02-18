@@ -3,4 +3,5 @@
 *.sh linguist-generated
 *.bat linguist-generated
 *.txt linguist-language=Dox
+*.xml linguist-language=Mustache
 .luaurc linguist-language=Json

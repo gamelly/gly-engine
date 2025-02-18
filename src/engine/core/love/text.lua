@@ -8,6 +8,7 @@ local function text_print(std, engine, pos_x, pos_y, text)
 end
 
 local function font_size(std, engine, size)
+    size = size < 1 and 1 or size
     old_font = love.graphics.getFont()
     local f = std.mem.cache('font_'..tostring(size), function()
         return love.graphics.newFont(size)

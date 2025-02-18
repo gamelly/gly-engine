@@ -148,12 +148,19 @@ function main()
         local game = dofile(arg[1])
         local game_name = arg[1]:match('([%w_]+)/%w%w%w%w.lua$')
         local game_link = game_link == 'two_games' and '2games' or game_name 
+        if not game.meta then
+            game.meta, game.require = game, game.require
+        end
         io.write(group('Examples', game_name, game.meta.title))
         io.write('//! @short @c \\@'..game_name..' @brief https://'..game_link..'.gamely.com.br\n')
         io.write(game_requires(game))
-        io.write('//! @author '..game.meta.author..'\n')
+        if game.meta.author and #game.meta.author > 0 then
+            io.write('//! @author '..game.meta.author..'\n')
+        end
         io.write('//! @version '..game.meta.version..'\n')
-        io.write('//! @par Brief \n//! @details '..game.meta.description..'\n')
+        if game.meta.description then
+            io.write('//! @par Brief \n//! @details '..game.meta.description..'\n')
+        end
         game_src = source(arg[1])
     end
 

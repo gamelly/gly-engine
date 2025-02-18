@@ -1,8 +1,16 @@
 local function load(std, data)
     data._menu = 1
+    data._msg = 'loading...'
     std.http.get('http://t.gamely.com.br/games.json')
+        :error(function()
+            data._msg = std.http.error
+        end)
+        :failed(function()
+            data._msg = tostring(std.http.status)
+        end)
         :success(function()
             data._list = std.json.decode(std.http.body)
+            data._msg = nil
         end)
         :run()
 end
@@ -30,25 +38,25 @@ local function draw(std, data)
     if data._game then return end
     std.draw.clear(0x333333FF)
     std.draw.color(std.color.white)
-    if not data._list then 
-        std.text.put(10, 10, 'loading...', 10)
+    if data._msg then 
+        std.text.put(1, 1, data._msg)
         return
     end
     local index = 1
-    std.text.font_size(12)
     while index <= #data._list do
-        std.text.print(16, 8 + (index * 14), data._list[index].title)
-        std.text.print(200, 8 + (index * 14), data._list[index].version)
-        std.text.print(300, 8 + (index * 14), data._list[index].author)
+        std.text.put(3, index, data._list[index].title)
+        std.text.put(32, index, data._list[index].version)
+        std.text.put(40, index, data._list[index].author)
         index = index + 1
     end
     std.draw.color(std.color.red)
-    std.draw.rect(1, 16, 9 + (data._menu * 14), data.width - 32, 16)
+    std.text.put(1, data._menu, '>', 1)
 end
 
 local function quit(std, data)
     std.bus.abort()
     std.node.kill(data._game)
+    data._msg = 'loading angain...'
     data._game = nil
 end
 

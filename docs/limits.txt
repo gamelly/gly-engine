@@ -31,6 +31,9 @@ does not support requests with SSL and also HTTP 2.0 or higher.
 
 ## Limits in Sony PlayStation 1
 
+@ref sony_ps1 It is a difficult hardware to work, **lua puc rio** cannot be used natively and a modified third-party version is used,
+because it is an outdated version 5.2 _(fixedpoint only)_ there are slowness problems caused by the garbage collector and no support for `float`.
+
 @par Images
 
 Currently not supported, but will be worked on in the future.
@@ -122,10 +125,6 @@ whether Windows or a POSIX system. The minimum resolution is 80x24, but you can 
 @par HTTPS
 
 TLS 1.3 is not supported.
-
-@par Images
-
-Not supported.
 
 @par Media
 

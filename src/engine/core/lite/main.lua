@@ -15,6 +15,8 @@ local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_raw_memory = require('src/lib/engine/raw/memory')
 --
+local callback_http = require('src/lib/protocol/http_callback')
+--
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
@@ -36,6 +38,7 @@ local cfg_system = {
 }
 
 local cfg_media = {
+    bootstrap=native_media_bootstrap,
     position=native_media_position,
     resize=native_media_resize,
     pause=native_media_pause,
@@ -60,8 +63,11 @@ local cfg_text = {
 }
 
 local cfg_http = {
-    ssl = native_http_has_ssl,
-    handler = native_http_handler
+    install = native_http_install,
+    handler = native_http_handler,
+    has_ssl = native_http_has_ssl,
+    has_callback = native_http_has_callback,
+    force_protocol = native_http_force_protocol
 }
 
 local cfg_base64 = {
@@ -100,6 +106,13 @@ end
 
 function native_callback_keyboard(key, value)
     engine.keyboard(std, engine, key, value)
+end
+
+function native_callback_http(id, key, data)
+    if cfg_http.has_callback then
+        return callback_http.func(engine['http_requests'][id], key, data)
+    end
+    return nil
 end
 
 function native_callback_init(width, height, game_lua)
@@ -152,7 +165,10 @@ function native_callback_init(width, height, game_lua)
         :package('xml', engine_encoder, cfg_xml)
         :package('i18n', engine_i18n, cfg_system)
         :package('hash', engine_hash, cfg_system)
-        :package('media', engine_media, cfg_media)
+        :package('media.video', engine_media, cfg_media)
+        :package('media.audio', engine_media, cfg_media)
+        :package('mock.video', engine_media)
+        :package('mock.audio', engine_media)
         :run()
 
     application.data.width, std.app.width = width, width
