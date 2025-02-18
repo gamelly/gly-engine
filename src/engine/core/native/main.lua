@@ -8,6 +8,7 @@ local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
 local engine_media = require('src/lib/engine/api/media')
+local engine_log = require('src/lib/engine/api/log')
 local engine_key = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_array = require('src/lib/engine/api/array')
@@ -69,6 +70,14 @@ local cfg_http = {
     has_ssl = native_http_has_ssl,
     has_callback = native_http_has_callback,
     force_protocol = native_http_force_protocol
+}
+
+local cfg_log = {
+    fatal = native_log_fatal,
+    error = native_log_error,
+    warn = native_log_warn,
+    info = native_log_info,
+    debug = native_log_debug
 }
 
 local cfg_base64 = {
@@ -183,6 +192,7 @@ function native_callback_init(width, height, game_lua)
         :package('@draw.text', engine_draw_text, cfg_text)
         :package('@draw.poly', engine_draw_poly, cfg_poly)
         :package('@color', color)
+        :package('@log', engine_log, cfg_log)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
         :package('http', engine_http, cfg_http)
