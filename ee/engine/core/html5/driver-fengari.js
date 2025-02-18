@@ -156,38 +156,51 @@ gly.bootstrap = async (game_file) => {
         return 1;
     });
 
+
+    define_lua_func('native_media_bootstrap', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const mediatype = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 2));
+        func(mediaid, mediatype)
+    });
+
     define_lua_func('native_media_load', (func) => {
-        const channel = fengari.lua.lua_tonumber(fengari.L, 1);
-        const src = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 2));
-        func(channel, src)
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const src = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 3));
+        func(mediaid, channel, src)
     });
 
     define_lua_func('native_media_position', (func) => {
-        const channel = fengari.lua.lua_tonumber(fengari.L, 1);
-        const x = fengari.lua.lua_tonumber(fengari.L, 2);
-        const y = fengari.lua.lua_tonumber(fengari.L, 3);
-        func(channel, x, y)
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const x = fengari.lua.lua_tonumber(fengari.L, 3);
+        const y = fengari.lua.lua_tonumber(fengari.L, 4);
+        func(mediaid, channel, x, y)
     });
 
     define_lua_func('native_media_resize', (func) => {
-        const channel = fengari.lua.lua_tonumber(fengari.L, 1);
-        const w = fengari.lua.lua_tonumber(fengari.L, 2);
-        const h = fengari.lua.lua_tonumber(fengari.L, 3);
-        func(channel, w, h)
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const w = fengari.lua.lua_tonumber(fengari.L, 3);
+        const h = fengari.lua.lua_tonumber(fengari.L, 4);
+        func(mediaid, channel, w, h)
     });
 
     define_lua_func('native_media_time', (func) => {
-        const channel = fengari.lua.lua_tonumber(fengari.L, 1);
-        const time = fengari.lua.lua_tonumber(fengari.L, 2);
-        func(channel, Math.floor(time));
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const time = fengari.lua.lua_tonumber(fengari.L, 3);
+        func(mediaid, channel, Math.floor(time));
     });
 
     define_lua_func('native_media_play', (func) => {
-        func(fengari.lua.lua_tonumber(fengari.L, 1));
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        func(mediaid, fengari.lua.lua_tonumber(fengari.L, 2));
     });
 
     define_lua_func('native_media_pause', (func) => {
-        func(fengari.lua.lua_tonumber(fengari.L, 1));
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        func(mediaid, fengari.lua.lua_tonumber(fengari.L, 2));
     });
     
     define_lua_func('native_http_handler', (func) => {

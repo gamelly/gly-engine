@@ -11,6 +11,7 @@ gly.bootstrap = async (game_file) => {
     const engine_response = await fetch(engine_file)
     const engine_lua = await engine_response.text()
 
+    lua.global.set('native_media_bootstrap', gly.global.get('native_media_bootstrap'))
     lua.global.set('native_media_position', gly.global.get('native_media_position'))
     lua.global.set('native_media_resize', gly.global.get('native_media_resize'))
     lua.global.set('native_media_pause', gly.global.get('native_media_pause'))
