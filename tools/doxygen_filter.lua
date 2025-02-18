@@ -34,6 +34,23 @@ function hardcore()
     
 end
 
+function listlibmath()
+    local content = ''
+    local started = false
+    for line in io.lines('src/lib/engine/api/math.lua') do
+        if line:find('std.math.acos') then
+            started = true
+        end
+        local func = line:match('std%.math%.(%w+)')
+        if started and func then
+            content = content..'//! @c std.math.'..func..'\n'
+        else
+            started = false
+        end
+    end
+    return content
+end
+
 local color_css = [[
 //! <style>
 //! element  {

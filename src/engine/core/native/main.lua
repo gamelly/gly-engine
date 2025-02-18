@@ -120,6 +120,9 @@ end
 --! @short std.draw.image
 --! @fakefunc image(src, pos_x, pos_y)
 
+--! @short std.draw.poly
+--! @fakefunc poly(mode, pos_x, pos_y, scale, angle, origin_x, origin_y)
+
 --! @}
 --! @}
 

@@ -104,7 +104,7 @@ local function failed(self, handler_func)
 end
 
 --! @hideparam self
---! @rename_func error
+--! @renamefunc error
 local function http_error(self, handler_func)
     self.error_handler = handler_func
     return self
