@@ -83,7 +83,7 @@ gly.bootstrap = async (game_file) => {
     ];
 
     function updateSize() {
-        gly.resize_widescreen()
+        gly.resize()
     }
 
     function updateKey(ev) {
