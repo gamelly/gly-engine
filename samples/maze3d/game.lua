@@ -1,3 +1,10 @@
+--! @par Reference
+--! @details
+--! This demo shows the engine's ability to create a pseudo 3D raycast,
+--! inspired by Microsoft's screensaver.
+--! @lihttps://en.wikipedia.org/wiki/3D_Maze
+--!
+
 local function wolf_getmap(std, game, x, y)
     local mapX = std.math.floor(x)
     local mapY = std.math.floor(y)
@@ -25,6 +32,21 @@ local function wolf_raycast(std, game, angle)
         end
     end
     return dist, hitX, hitY, hitType
+end
+
+local function wolf_newmap(std)
+    local mapWidth, mapHeight = 20, 20
+    local grid = {}
+    for y = 1, mapHeight do
+        for x = 1, mapWidth do
+            grid[(y-1)*mapWidth+x] = (x==1 or x==mapWidth or y==1 or y==mapHeight) and 1 or (math.random()<0.2 and 1 or 0)
+        end
+    end
+    grid[(3-1)*mapWidth+3] = 0
+    local finalY = std.math.floor(mapHeight/2)
+    grid[(finalY-1)*mapWidth+mapWidth] = 2
+
+    return {width=mapWidth, height=mapHeight, grid=grid}
 end
 
 local function bot_bfs(std, game, startX, startY, goalX, goalY)
@@ -67,19 +89,7 @@ end
 local function init(std, game)
     game.player = {x=3, y=3, angle=0, fov=std.math.pi/3, speed=5, turn_speed=1.5}
     game.bot = {timer=0, angle=game.player.angle, path=nil, targetIndex=1, state="turning"}
-    
-    local mapWidth, mapHeight = 20, 20
-    local grid = {}
-    for y = 1, mapHeight do
-        for x = 1, mapWidth do
-            grid[(y-1)*mapWidth+x] = (x==1 or x==mapWidth or y==1 or y==mapHeight) and 1 or (math.random()<0.2 and 1 or 0)
-        end
-    end
-    grid[(3-1)*mapWidth+3] = 0
-    local finalY = std.math.floor(mapHeight/2)
-    grid[(finalY-1)*mapWidth+mapWidth] = 2
-
-    game.map = {width=mapWidth, height=mapHeight, grid=grid}
+    game.map = wolf_newmap(std) 
     game.num_rays = 100
     game.max_distance = 30
     game.ray_step = 0.1
