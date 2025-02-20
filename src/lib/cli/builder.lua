@@ -1,10 +1,13 @@
 local util_fs = require('src/lib/util/fs')
 
-local function optmizer(content)
+local function optmizer(content, srcname, args)
+    if args.telemedia190 and srcname == 'eeenginecoregingakeyslua' then
+        content = content:gsub('evt%.type == \'press\'', 'evt.type ~= \'press\'')
+    end
     return content:split('\n')
 end
 
-local function move(src_filename, out_filename, prefix)
+local function move(src_filename, out_filename, prefix, args)
     local deps = {}
     local content = ''
     local src_file = io.open(src_filename, 'r')
@@ -15,7 +18,7 @@ local function move(src_filename, out_filename, prefix)
 
     if src_file and out_file then
         local file_content = src_file:read('*a')
-        local lines = optmizer(file_content)
+        local lines = optmizer(file_content, src_filename:gsub('[^%a]', ''), args)
         
         local index = 1
         while index <= #lines do
@@ -61,7 +64,7 @@ local function move(src_filename, out_filename, prefix)
     return deps
 end
 
-local function build(path_in, src_in, path_out, src_out, prefix)
+local function build(path_in, src_in, path_out, src_out, prefix, args)
     local main = true
     local deps = {}
     local deps_builded = {}
@@ -79,7 +82,7 @@ local function build(path_in, src_in, path_out, src_out, prefix)
             end
             local srcfile = src.get_fullfilepath()
             local outfile = util_fs.path(path_out, out).get_fullfilepath()
-            local new_deps = move(srcfile, outfile, prefix)
+            local new_deps = move(srcfile, outfile, prefix, args)
             while index <= #new_deps do
                 deps[index_deps + index] = new_deps[index]
                 index = index + 1

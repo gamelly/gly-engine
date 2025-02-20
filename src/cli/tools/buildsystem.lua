@@ -36,7 +36,7 @@ local function add_core(self, core_name, options)
         if not options.src then return end
         local from = util_fs.file(options.src)
         local to = util_fs.path(self.args.dist..self.bundler, options.as or from.get_file())
-        zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '')
+        zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '', self.args)
     end
 
     if #self.bundler > 0 and options.src then 

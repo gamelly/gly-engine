@@ -27,6 +27,7 @@ local command = zeebo_argparse.from(arg)
     .add_option_opt('enterprise')
     .add_option_opt('gamepadzilla')
     .add_option_opt('fengari')
+    .add_option_opt('telemedia190')
     .add_option_has('bundler')
     .add_option_has('run')
     --
