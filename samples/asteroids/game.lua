@@ -422,11 +422,11 @@ local function draw(std, game)
         std.text.print(w1, h*19, 'Exit')
         std.draw.line(w1, hmenu, w2, hmenu)
         std.draw.color(std.color.red)
-        std.text.print_ex(w2, h*12, game.level, -1)
-        std.text.print_ex(w2, h*13, game.imortal, -1)
-        std.text.print_ex(w2, h*14, game.asteroids_max, -1)
-        std.text.print_ex(w2, h*15, graphics, -1)
-        std.text.print_ex(w2, h*16, language, -1)
+        std.text.print_ex(w2, h*13, game.level, -1)
+        std.text.print_ex(w2, h*14, game.imortal, -1)
+        std.text.print_ex(w2, h*15, game.asteroids_max, -1)
+        std.text.print_ex(w2, h*16, graphics, -1)
+        std.text.print_ex(w2, h*17, language, -1)
         return
     elseif game.state == 2 then
         local height = game.height/4
