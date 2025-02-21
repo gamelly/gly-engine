@@ -118,7 +118,7 @@ local function media_channel(std, handler, mediatype, mediaid, max_channels)
 end
 
 local function install(std, engine, handlers, name)
-    handler = handler or {}
+    handlers = handlers or {}
     std.media = std.media or {}
     std.media.types = std.media.types or {}
     std.media.channels = std.media.channels or {}
