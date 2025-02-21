@@ -8,8 +8,8 @@ function test_path_with_src2()
     assert(path.get_file() == 'extra.txt')
     assert(path.get_filename() == 'extra')
     assert(path.get_ext() == 'txt')
-    assert(path.get_win_path() == '.\\foo\\bar\\')
-    assert(path.get_unix_path() == './foo/bar/')
+    assert(path.get_win_path() == 'foo\\bar\\')
+    assert(path.get_unix_path() == 'foo/bar/')
 end
 
 
@@ -19,8 +19,8 @@ function test_unix_foo_bar_z_txt()
     assert(file.get_file() == 'z.txt')
     assert(file.get_filename() == 'z')
     assert(file.get_ext() == 'txt')
-    assert(file.get_win_path() == '.\\foo\\bar\\')
-    assert(file.get_unix_path() == './foo/bar/')
+    assert(file.get_win_path() == 'foo\\bar\\')
+    assert(file.get_unix_path() == 'foo/bar/')
 end
 
 function test_win_baz_bar_y_txt()
@@ -29,8 +29,8 @@ function test_win_baz_bar_y_txt()
     assert(file.get_file() == 'y.exe')
     assert(file.get_filename() == 'y')
     assert(file.get_ext() == 'exe')
-    assert(file.get_win_path() == '.\\baz\\bar\\')
-    assert(file.get_unix_path() == './baz/bar/')
+    assert(file.get_win_path() == 'baz\\bar\\')
+    assert(file.get_unix_path() == 'baz/bar/')
 end
 
 

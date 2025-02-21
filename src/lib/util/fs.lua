@@ -26,6 +26,9 @@ local function get_path(self, separator)
         if self.absolute and separator == '\\' then
             content = self.windriver..':'..content
         end
+        if not self.absolute and self.path[index] == '.' then
+            index = index + 1
+        end
         while index <= #self.path do
             content = content..self.path[index]..separator
             index = index + 1
