@@ -63,6 +63,7 @@ local function add_file(self, file_in, options)
     self.pipeline[#self.pipeline + 1] = function()
         local from = util_fs.file(file_in)
         local to = util_fs.path(self.args.dist, (options and options.as) or from.get_file())
+        zeebo_fs.mkdir(to.get_sys_path())
         zeebo_fs.move(from.get_fullfilepath(), to.get_fullfilepath())
     end
 
