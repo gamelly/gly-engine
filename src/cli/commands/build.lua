@@ -1,7 +1,10 @@
 local zeebo_buildsystem = require('src/cli/tools/buildsystem')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_fs = require('src/lib/util/fs')
 
 local function build(args)
+    args.dist = util_fs.path(args.dist).get_fullfilepath()
+
     if not args.core and not args.game then
         return false, 'usage: '..args[0]..' build [game] -'..'-core [core]'
     end
