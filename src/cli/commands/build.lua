@@ -1,7 +1,10 @@
 local zeebo_buildsystem = require('src/cli/tools/buildsystem')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_fs = require('src/lib/util/fs')
 
 local function build(args)
+    args.dist = util_fs.path(args.dist).get_fullfilepath()
+
     if not args.core and not args.game then
         return false, 'usage: '..args[0]..' build [game] -'..'-core [core]'
     end
@@ -42,6 +45,7 @@ local function build(args)
         :add_file('src/engine/core/html5/core-media-html5.js')
         :add_file('src/engine/core/html5/driver-wasmoon.js', {when=not args.fengari})
         :add_file('ee/engine/core/html5/driver-fengari.js', {when=args.fengari})
+        :add_file('third_party/json/rxi.lua', {as='jsonrxi.lua', when=args.fengari})
         :add_file('assets/icon80x80.png')
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         --
@@ -50,6 +54,7 @@ local function build(args)
         :add_file('src/engine/core/html5/core-media-html5.js')
         :add_file('src/engine/core/html5/driver-wasmoon.js', {when=not args.fengari})
         :add_file('ee/engine/core/html5/driver-fengari.js', {when=args.fengari})
+        :add_file('third_party/json/rxi.lua', {as='jsonrxi.lua', when=args.fengari})
         :add_file('assets/icon80x80.png')
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         --
@@ -58,6 +63,7 @@ local function build(args)
         :add_file('src/engine/core/html5/core-media-html5.js')
         :add_file('src/engine/core/html5/driver-wasmoon.js', {when=not args.fengari})
         :add_file('ee/engine/core/html5/driver-fengari.js', {when=args.fengari})
+        :add_file('third_party/json/rxi.lua', {as='jsonrxi.lua', when=args.fengari})
         :add_file('assets/icon80x80.png')
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         :add_meta('src/engine/meta/html5_tizen/config.xml')
@@ -69,6 +75,7 @@ local function build(args)
         :add_file('src/engine/core/html5/core-media-html5.js')
         :add_file('src/engine/core/html5/driver-wasmoon.js', {when=not args.fengari})
         :add_file('ee/engine/core/html5/driver-fengari.js', {when=args.fengari})
+        :add_file('third_party/json/rxi.lua', {as='jsonrxi.lua', when=args.fengari})
         :add_file('assets/icon80x80.png')
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         :add_meta('src/engine/meta/html5_webos/appinfo.json')

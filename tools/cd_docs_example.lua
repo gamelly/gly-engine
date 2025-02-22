@@ -6,7 +6,7 @@ if game == '2games' then
     game = 'two_games'
 end
 
-if game == 'gridsystem' then
+if game == 'gridsystem' or game == 'maze3d' then
     cmd('./cli.sh build @'..game..' --core html5 --dist ./html/')
 elseif game == 'launcher' then
     cmd('./cli.sh build @'..game..' --core html5 --dist ./html/')

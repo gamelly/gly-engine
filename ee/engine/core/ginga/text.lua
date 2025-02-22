@@ -9,7 +9,7 @@ local current_font_size = 8
 local function apply_font()
     previous_font_name = current_font_name
     previous_font_size = current_font_size
-    canvas:attrFont(current_font_name, current_font_size)
+    canvas:attrFont(current_font_name, current_font_size/1.34)
 end
 
 local function text_print(std, engine, canvas, pos_x, pos_y, text)
@@ -41,9 +41,7 @@ local function font_default(std, engine, font_id)
 end
 
 local function font_previous()
-    current_font_name = previous_font_name
-    current_font_size = previous_font_size
-    canvas:attrFont(current_font_name, current_font_size)
+    current_font_name, previous_font_size = previous_font_name, current_font_name
 end
 
 local function install(std, engine)

@@ -27,12 +27,12 @@ local command = zeebo_argparse.from(arg)
     .add_option_opt('enterprise')
     .add_option_opt('gamepadzilla')
     .add_option_opt('fengari')
+    .add_option_opt('telemedia190')
     .add_option_has('bundler')
     .add_option_has('run')
     --
     .add_subcommand('run', commands_game)
     .add_next_value('game', {required=true, alias='@samples/{{game}}/game.lua'})
-    .add_option_get('core', {default='love'})
     .add_option_get('screen', {})
     --
     .add_subcommand('meta', commands_game)

@@ -1,6 +1,6 @@
 --! @par Reference
 --! @details
---! This Pong game is inspired by "Paredão" a game from the first-generation
+--! This Pong game is inspired by "Paredao" a game from the first-generation
 --! Brazilian console Philco-Ford Telejogo. (1977)
 --! @li https://www.vgdb.com.br/telejogo/jogos/paredao
 --!
@@ -18,9 +18,9 @@ end
 local function loop(std, game)
     -- moves
     game.ball_size = std.math.max(game.width, game.height) / 160
-    game.player_size = std.math.min(game.width, game.height) / 8
-    game.ball_pos_x = game.ball_pos_x + (game.width * game.ball_spd_x * std.delta)/100000
-    game.ball_pos_y = game.ball_pos_y + (game.height * game.ball_spd_y * std.delta)/100000
+    game.player_size = (std.math.min(game.width, game.height) / 8) + 2
+    game.ball_pos_x = std.math.clamp(game.ball_pos_x + (game.width * game.ball_spd_x * std.delta)/100000, 0, game.width)
+    game.ball_pos_y = std.math.clamp(game.ball_pos_y + (game.height * game.ball_spd_y * std.delta)/100000, 0, game.height)
     game.player_pos = std.math.clamp(game.player_pos + (std.key.axis.y * game.ball_size), 0, game.height - game.player_size)  
 
     -- colisions

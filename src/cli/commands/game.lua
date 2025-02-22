@@ -6,23 +6,16 @@ local function init(args)
 end
 
 local function run(args)
-    if args.core == 'repl' then
-        arg = {args.game}
-        pcall(require, 'src/engine/core/repl/main')
-        return true
-    elseif args.core == 'love' then
-        if BOOTSTRAP then
-            return false, 'core love2d is not avaliable in bootstraped CLI.'
-        end
-        local love = 'love'
-        local screen = args['screen'] and ('-'..'-screen '..args.screen) or ''
-        local command = love..' src/engine/core/love '..screen..' '..args.game
-        if not os or not os.execute then
-            return false, 'cannot can execute'
-        end
-        return os.execute(command)
+    if BOOTSTRAP then
+        return false, 'core love2d is not avaliable in bootstraped CLI.'
     end
-    return false, 'this core cannot be runned!'
+    local love = 'love'
+    local screen = args['screen'] and ('-'..'-screen '..args.screen) or ''
+    local command = love..' src/engine/core/love '..screen..' '..args.game
+    if not os or not os.execute then
+        return false, 'cannot can execute'
+    end
+    return os.execute(command)
 end
 
 local function meta(args)

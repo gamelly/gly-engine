@@ -38,6 +38,8 @@ local function real_key(std, engine, rkey, rvalue)
         
         std.bus.emit('key')
     end
+    local a = std.key.axis
+    std.key.press.any = (a.left + a.right + a.down + a.up + a.a + a.b + a.c + a.d + a.menu) > 0
 end
 
 local function real_keydown(std, engine, key)

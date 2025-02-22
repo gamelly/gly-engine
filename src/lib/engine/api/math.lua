@@ -2,6 +2,13 @@
 --! @{
 --! @defgroup math
 --! @{
+--! @details 
+--! @pre @b require @c math.random to use: @n @n
+--! @c std.math.random
+--!
+--! @n
+--! @pre @b require @c math to use: @n @n
+--! @call listlibmath
 
 --! @short std.math.abs
 --! @brief module

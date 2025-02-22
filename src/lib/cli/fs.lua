@@ -36,7 +36,7 @@ end
 
 local function move(src_in, dist_out)
     local src_file = io.open(src_in, "rb")
-    local dist_file = io.open(dist_out, "wb")
+    local dist_file = src_file and io.open(dist_out, "wb")
 
     if src_file and dist_file then
         repeat

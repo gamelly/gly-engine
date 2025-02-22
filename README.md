@@ -39,11 +39,12 @@ lua cli.lua build @asteroids --core html5
 | Tier 2 | Love2D                    | main plataform for development and tests
 | Tier 3 | Tizen 8                   | full support WIP
 | Tier 4 | WebOS 6                   | coming soon
-| Tier 5 | Native Core SDL2          | full support, not available for download yet
+| Tier 5 | Native Core Desktop       | full support, not available for download yet
 | Tier 6 | Native Core Arduino       | coming soon
 | Tier 7 | Ginga                     | support
-| Tier 8 | Console TUI (ASCII)       | support, except images
+| Tier 8 | Console TUI (ASCII)       | support
 | Tier 9 | Play Station 2            | coming soon
 | Tier 9 | Nintendo Wii              | support is reworking
-| Tier 10 | Nintendo DS              | coming soon
-| Tier 11 | Nintendo GBA             | limited support
+| Tier 10 | Nintendo DS              | support, except images
+| Tier 11 | Nintendo GBA             | support, except images
+| Tier 12 | Play Station 1           | support, very limited
