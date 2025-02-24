@@ -66,6 +66,10 @@ local color_css = [[
 //! </style>
 ]]
 
+function divcpp()
+    return '*/\n/**\n*\n'
+end
+
 function color()
     local content = color_css
 
@@ -236,6 +240,8 @@ function main()
                 io.write('#include "'..include..'.lua"')
             elseif is_game and not doxygen then
                 breakline = false
+            elseif clojure and fake_func and is_txt then
+                io.write('*/\nlocal function-'..clojure..';\n/**')
             elseif clojure and not is_txt then
                 io.write('local function-'..clojure..';')
             elseif variable and literal and not is_txt then

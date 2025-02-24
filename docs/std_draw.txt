@@ -1,0 +1,57 @@
+@defgroup std
+@{
+
+@defgroup draw
+@{
+
+@warning There is no support for 
+@ref sony_ps1 "ps1",
+@ref nintendo_gba "gba" 
+and @ref nintendo_ds "nds" to draw images,
+as they use a specific bitmap and it is necessary to implement a
+[sprite conversion tool](https://github.com/RodrigoDornelles/ultimate-sprite-sheet-replacer/).
+
+@par Design Decision
+
+There is no @b std.draw.pixel or @b std.draw.circle, nor plans to add them, due to frontend design decisions.
+The engine is designed to be multiplatform, ensuring code runs on all devices while respecting their processing and memory limits.
+
+@li @c std.draw.pixel @n there are no optimizations to be done in many cases it would just be a @b std.draw.rect(x, y, 1, 1),
+so leave this as a user task.
+
+@li @c std.draw.circle @n The @ref ginga "ginga" does not have the ability to draw circles on most televisions devices, @n
+and older video games like @ref nintendo_gba "gba" and @ref nintendo_ds "nds" are very expensive to resize them every frame.
+
+@par Tool IMG Gen
+@details It is possible to create logos or any images using the engine's real-time drawing API while writing the rendering code and clicking download.
+@li source: https://github.com/gamelly/tool-img-gen
+@li website: https://gamelly.github.io/tool-img-gen
+
+@call divcpp
+@short std.draw.clear
+@fakefunc clear(color)
+
+@call divcpp
+@short std.draw.rect
+@fakefunc rect(mode, pos_x, pos_y, width, height)
+
+@call divcpp
+@short std.draw.line
+@fakefunc line(x1, y1, y2, y1, y2)
+
+@call divcpp
+@deprecated @c std.draw.image is moving to @c std.image.draw
+@short std.draw.image
+@fakefunc image(src, pos_x, pos_y)
+
+@call divcpp
+@short std.draw.poly
+@par Example
+```java
+local spaceship = {-2,3, 0,-2, 2,3}
+std.draw.poly(0, game.player_x, game.player_y, 1, player_angle)
+```
+@fakefunc poly(mode, pos_x, pos_y, scale, angle, origin_x, origin_y)
+
+@}
+@}

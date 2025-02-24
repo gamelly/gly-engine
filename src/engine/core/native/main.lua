@@ -99,32 +99,11 @@ local cfg_text = {
     font_previous = native_text_font_previous
 }
 
---! @defgroup std
---! @{
---! @defgroup draw
---! @{
-
---! @short std.draw.clear
 local function clear(tint)
     local x, y = engine.offset_x, engine.offset_y
     local width, height = engine.current.data.width, engine.current.data.height
     native_draw_clear(tint, x, y, width, height)
 end
-
---! @short std.draw.rect
---! @fakefunc rect(mode, pos_x, pos_y, width, height)
-
---! @short std.draw.line
---! @fakefunc line(x1, y1, y2, y1, y2)
-
---! @short std.draw.image
---! @fakefunc image(src, pos_x, pos_y)
-
---! @short std.draw.poly
---! @fakefunc poly(mode, pos_x, pos_y, scale, angle, origin_x, origin_y)
-
---! @}
---! @}
 
 function native_callback_loop(dt)
     std.milis = std.milis + dt
