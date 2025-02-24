@@ -223,6 +223,9 @@ gly.bootstrap = async (game_file) => {
     fengari.lua.lua_pushboolean(fengari.L, true)
     fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_has_ssl'))
 
+    fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(window.location.protocol == 'https:'? 'https': 'http'))
+    fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_force_protocol'))
+
     const json_file = 'jsonrxi.lua'
     const json_response = await fetch(json_file)
     const json_code = (await json_response.text())

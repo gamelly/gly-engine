@@ -128,6 +128,10 @@ local function request(method, std, engine, protocol)
             engine.http_count = engine.http_count + 1
         end
 
+        if protocol.force then
+            url = url:gsub("^[^:]+://", protocol.force.."://")
+        end
+
         local game = engine.current.data
 
         local self = {

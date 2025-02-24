@@ -37,6 +37,7 @@ gly.bootstrap = async (game_file) => {
     lua.global.set('native_system_get_language', gly.global.get('native_system_get_language'))
     lua.global.set('native_http_handler', gly.global.get('native_http_handler'))
     lua.global.set('native_http_has_ssl', true)
+    lua.global.set('native_http_force_protocol', window.location.protocol == 'https:'? 'https': 'http')
     lua.global.set('native_json_encode', JSON.stringify)
     lua.global.set('native_json_decode', JSON.parse)
     lua.global.set('native_base64_encode', atob)

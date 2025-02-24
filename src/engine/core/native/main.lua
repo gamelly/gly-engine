@@ -69,7 +69,7 @@ local cfg_http = {
     handler = native_http_handler,
     has_ssl = native_http_has_ssl,
     has_callback = native_http_has_callback,
-    force_protocol = native_http_force_protocol
+    force = native_http_force_protocol
 }
 
 local cfg_log = {
