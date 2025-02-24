@@ -2,7 +2,7 @@ if (!gly) {
     error('gly is not loaded!')
 }
 
-gly.bootstrap = async (game_file) => {
+gly.bootstrap = async (game_file, fetch_jsonrxi = true) => {
     let engine_lua = gly.engine.get()
 
     fengari.lualib.luaL_openlibs(fengari.L);
@@ -226,13 +226,15 @@ gly.bootstrap = async (game_file) => {
     fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(window.location.protocol == 'https:'? 'https': 'http'))
     fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_force_protocol'))
 
-    const json_file = 'jsonrxi.lua'
-    const json_response = await fetch(json_file)
-    const json_code = (await json_response.text())
-        .replace('json.encode', 'native_json_encode')
-        .replace('json.decode', 'native_json_decode')
-    fengari.lauxlib.luaL_loadbuffer(fengari.L, fengari.to_luastring(json_code), json_code.lenght, json_file);
-    fengari.lua.lua_pcall(fengari.L, 0, 0, 0);    
+    if (fetch_jsonrxi) {
+        const json_file = 'jsonrxi.lua'
+        const json_response = await fetch(json_file)
+        const json_code = (await json_response.text())
+            .replace('json.encode', 'native_json_encode')
+            .replace('json.decode', 'native_json_decode')
+        fengari.lauxlib.luaL_loadbuffer(fengari.L, fengari.to_luastring(json_code), json_code.lenght, json_file);
+        fengari.lua.lua_pcall(fengari.L, 0, 0, 0);    
+    }
 
     if (typeof engine_lua === 'string' && !engine_lua.includes('\n')) {
         const engine_response = await fetch(engine_lua)
