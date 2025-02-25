@@ -8,6 +8,17 @@ local memory_list = {}
 --! @{
 --! @details A Garbage Collector System and also mangament manual of memory.
 
+local function cache_get(key)
+    return memory_dict[key]
+end
+
+local function cache_set(key, load_func, unload_func)
+    local value = load_func()
+    memory_list[#memory_list + 1] = key
+    memory_dict_unload[key] = unload_func
+    memory_dict[key] = value
+end
+
 --! @par Example
 --! @code
 --! local function slow_function()
@@ -22,17 +33,11 @@ local memory_list = {}
 --! end
 --! @endcode
 local function cache(key, load_func, unload_func)
-    if memory_dict[key] then
-        return memory_dict[key]
-    end
-    if not load_func then
-        return nil
-    end
-
-    local value = load_func()
-    memory_list[#memory_list + 1] = key
-    memory_dict_unload[key] = unload_func
-    memory_dict[key] = value
+    local value = cache_get(key)
+    if value == nil then
+        cache_set(key, load_func, unload_func)
+        value = cache_get(key)
+    end    
     return value
 end
 
@@ -91,6 +96,8 @@ local function install(std)
     std = std or {}
     std.mem = std.mem or {}
     std.mem.cache = cache
+    std.mem.cache_get = cache_get
+    std.mem.cache_set = cache_set
     std.mem.unset = unset
     std.mem.gc_clear_all = gc_clear_all
 
