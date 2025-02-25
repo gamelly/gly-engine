@@ -455,6 +455,7 @@ local function install(std, engine)
 end
 
 local P = {
+    force = 'http',
     handler = http_handler,
     install = install
 }

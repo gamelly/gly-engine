@@ -37,6 +37,9 @@ end
 
 local function image(std, engine, canvas, src, pos_x, pos_y)
     local image = std.mem.cache('image'..src, function()
+        local file = io.open(src, 'rb')
+        if not file then return nil end
+        file:close()
         return canvas:new(src)
     end)
     if image then

@@ -7,6 +7,7 @@ local engine_hash = require('src/lib/engine/api/hash')
 local engine_http = require('src/lib/engine/api/http')
 local engine_i18n = require('src/lib/engine/api/i18n')
 local engine_key = require('src/lib/engine/api/key')
+local engine_log = require('src/lib/engine/api/log')
 local engine_math = require('src/lib/engine/api/math')
 local engine_array = require('src/lib/engine/api/array')
 local engine_media = require('src/lib/engine/api/media')
@@ -14,6 +15,8 @@ local engine_draw_fps = require('src/lib/engine/draw/fps')
 local engine_draw_text = require('src/lib/engine/draw/text')
 local engine_draw_poly = require('src/lib/engine/draw/poly')
 local engine_raw_memory = require('src/lib/engine/raw/memory')
+--
+local callback_http = require('src/lib/protocol/http_callback')
 --
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
@@ -36,6 +39,7 @@ local cfg_system = {
 }
 
 local cfg_media = {
+    bootstrap=native_media_bootstrap,
     position=native_media_position,
     resize=native_media_resize,
     pause=native_media_pause,
@@ -60,8 +64,19 @@ local cfg_text = {
 }
 
 local cfg_http = {
-    ssl = native_http_has_ssl,
-    handler = native_http_handler
+    install = native_http_install,
+    handler = native_http_handler,
+    has_ssl = native_http_has_ssl,
+    has_callback = native_http_has_callback,
+    force = native_http_force_protocol
+}
+
+local cfg_log = {
+    fatal = native_log_fatal,
+    error = native_log_error,
+    warn = native_log_warn,
+    info = native_log_info,
+    debug = native_log_debug
 }
 
 local cfg_base64 = {
@@ -100,6 +115,13 @@ end
 
 function native_callback_keyboard(key, value)
     engine.keyboard(std, engine, key, value)
+end
+
+function native_callback_http(id, key, data)
+    if cfg_http.has_callback then
+        return callback_http.func(engine['http_requests'][id], key, data)
+    end
+    return nil
 end
 
 function native_callback_init(width, height, game_lua)
@@ -144,6 +166,7 @@ function native_callback_init(width, height, game_lua)
         :package('@draw.text', engine_draw_text, cfg_text)
         :package('@draw.poly', engine_draw_poly, cfg_poly)
         :package('@color', color)
+        :package('@log', engine_log, cfg_log)
         :package('math', engine_math.clib)
         :package('math.random', engine_math.clib_random)
         :package('http', engine_http, cfg_http)
@@ -152,7 +175,10 @@ function native_callback_init(width, height, game_lua)
         :package('xml', engine_encoder, cfg_xml)
         :package('i18n', engine_i18n, cfg_system)
         :package('hash', engine_hash, cfg_system)
-        :package('media', engine_media, cfg_media)
+        :package('media.video', engine_media, cfg_media)
+        :package('media.audio', engine_media, cfg_media)
+        :package('mock.video', engine_media)
+        :package('mock.audio', engine_media)
         :run()
 
     application.data.width, std.app.width = width, width

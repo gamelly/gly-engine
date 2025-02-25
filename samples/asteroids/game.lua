@@ -47,7 +47,7 @@ end
 
 local function draw_logo(std, game, height, anim)
     anim = anim or 0
-    std.text.font_size(32)
+    std.text.font_size(std.math.max(game.height/24, game.width/36, 4))
     std.draw.color(std.color.white)
     local s1 = std.text.mensure('AsteroidsTv')
     local s2 = std.text.mensure('Tv')
@@ -101,6 +101,16 @@ local function asteroid_nest(std, game, x, y, id)
         index = index + 1
     end
     return false
+end
+
+local function asteroids_resize(std, game)
+    if (game.width <= 400) then
+        local div = function(v) return std.math.ceil(v * (game.width/800)) end
+        game.asteroid_large = std.array.map(game.asteroid_large, div)
+        game.asteroid_mid = std.array.map(game.asteroid_mid, div)
+        game.asteroid_small = std.array.map(game.asteroid_small, div)
+        game.asteroid_mini = std.array.map(game.asteroid_mini, div)
+    end
 end
 
 local function asteroids_rain(std, game)
@@ -178,6 +188,7 @@ local function init(std, game)
     game.asteroids_max = game.asteroids_max or 60
     game.graphics_fastest = game.graphics_fastest or 0
     -- player
+    game.player_size = std.math.clamp(game.width/100, 1, 3)
     game.player_pos_x = game.width/2
     game.player_pos_y = game.height/2
     game.player_spd_x = 0
@@ -206,6 +217,7 @@ local function init(std, game)
     game.asteroid_small = {3, 0, 0, 3, 3, 9, 3, 12, 0, 18, 6, 21, 12, 21, 18, 18, 21, 15, 21, 3, 12, 3, 9, 6}
     game.asteroid_mini = {6, 0, 6, 6, 0, 6, 0, 12, 3, 18, 6, 18, 6, 15, 15, 15, 18, 9, 12, 6, 12, 0}
     game.spaceship = {-2,3, 0,-2, 2,3}
+    asteroids_resize(std, game)
     -- sizes
     game.asteroid_large_size = std.math.max(game.asteroid_large)
     game.asteroid_mid_size = std.math.max(game.asteroid_mid)
@@ -389,32 +401,32 @@ local function draw(std, game)
     std.draw.clear(death_anim and std.color.white or std.color.black)
     local s = 0
     if game.state == 1 then
-        local s2 = 0
-        local h = game.height/16
-        local hmenu = (h*(4+game.menu)) + 24
+        local h = game.height/24
+        local hmenu = (game.menu*h) + (h*11) - (h/3)
         local language = std.i18n.get_language()
         local graphics = game.graphics_fastest == 1 and 'fast' or 'pretty'
-        local s = draw_logo(std, game, h*2)
-        std.text.font_size(16)
+        local s = std.math.min(game.width/4, draw_logo(std, game, h*4))
+        local w1, w2 = (game.width/2 - s), (game.width/2 + s)
+        std.text.font_size(h/2)
         std.draw.color(std.color.white)
         if game.player_pos_x ~= (game.width/2) then
-            std.text.print(game.width/2 - s, h*5, 'Continue')
+            std.text.print(game.width/2 - s, h*11, 'Continue')
         end
-        std.text.print(game.width/2 - s, h*6, 'New Game')
-        std.text.print(game.width/2 - s, h*7, 'Dificulty')
-        std.text.print(game.width/2 - s, h*8, 'Invincibility')
-        std.text.print(game.width/2 - s, h*9, 'Object Limit')
-        std.text.print(game.width/2 - s, h*10, 'Graphics')
-        std.text.print(game.width/2 - s, h*11, 'Language')
-        std.text.print(game.width/2 - s, h*12, 'Credits')
-        std.text.print(game.width/2 - s, h*13, 'Exit')
-        std.draw.line(game.width/2 - s, hmenu, game.width/2 + s, hmenu)
+        std.text.print(w1, h*12, 'New Game')
+        std.text.print(w1, h*13, 'Dificulty')
+        std.text.print(w1, h*14, 'Invincibility')
+        std.text.print(w1, h*15, 'Object Limit')
+        std.text.print(w1, h*16, 'Graphics')
+        std.text.print(w1, h*17, 'Language')
+        std.text.print(w1, h*18, 'Credits')
+        std.text.print(w1, h*19, 'Exit')
+        std.draw.line(w1, hmenu, w2, hmenu)
         std.draw.color(std.color.red)
-        std.text.print_ex(game.width/2 + s, h*7, game.level, -1)
-        std.text.print_ex(game.width/2 + s, h*8, game.imortal, -1)
-        std.text.print_ex(game.width/2 + s, h*9, game.asteroids_max, -1)
-        std.text.print_ex(game.width/2 + s, h*10, graphics, -1)
-        std.text.print_ex(game.width/2 + s, h*11, language, -1)
+        std.text.print_ex(w2, h*13, game.level, -1)
+        std.text.print_ex(w2, h*14, game.imortal, -1)
+        std.text.print_ex(w2, h*15, game.asteroids_max, -1)
+        std.text.print_ex(w2, h*16, graphics, -1)
+        std.text.print_ex(w2, h*17, language, -1)
         return
     elseif game.state == 2 then
         local height = game.height/4
@@ -449,7 +461,7 @@ local function draw(std, game)
     if game.state ~= 5 then
         -- triangle
         std.draw.color(std.color.yellow)
-        std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, 3, game.player_angle)
+        std.draw.poly(2, game.spaceship, game.player_pos_x, game.player_pos_y, game.player_size, game.player_angle)
         -- laser bean
         if game.laser_enabled and std.milis < game.laser_last_fire + game.laser_time_fire then
             std.draw.color(std.color.green)
@@ -471,20 +483,16 @@ local function draw(std, game)
         end
     end
     -- draw gui
-    local w = game.width/16
-    std.draw.color(std.color.black)  
-    std.draw.rect(0, 0, 0, game.width, 32)
+    local w, h = std.text.mensure('a')
+    w = game.width/6
+    std.draw.color(std.color.black)
+    std.draw.rect(0, 0, 0, game.width, h)
     std.draw.color(std.color.white)
-    s=std.text.print_ex(8, 8, 'lifes:')
-    std.text.print(8+s, 8, game.lifes)
-    s=std.text.print_ex(w*2, 8, 'level:')
-    std.text.print(w*2+s, 8, game.level)
-    s=std.text.print_ex(w*4, 8, 'asteroids:')
-    std.text.print(w*4+s, 8, game.asteroids_count)
-    s=std.text.print_ex(w*9, 8, 'score:')
-    std.text.print(w*9+s, 8, game.score)
-    s=std.text.print_ex(w*12, 8, 'highscore:')
-    std.text.print(w*12+s, 8, game.highscore)
+    std.text.print_ex(w*1, 2, 'lifes: '..tostring(game.lifes), 0)
+    std.text.print_ex(w*2, 2, 'level: '..tostring(game.level), 0)
+    std.text.print_ex(w*3, 2, 'asteroids: '..tostring(game.asteroids_count), 0)
+    std.text.print_ex(w*4, 2, 'score: '..tostring(game.score), 0)
+    std.text.print_ex(w*5, 2, 'highscore: '..tostring(game.highscore), 0)
 end
 
 local function exit(std, game)

@@ -5,21 +5,6 @@ local javascript_path = jsRequire and jsRequire('path')
 local javascript_fs = jsRequire and jsRequire('fs')
 local javascript_ps = jsRequire and jsRequire('child_process')
 local real_io_open = io and io.open
-local real_require = require
-
-if package and package.searchers and require then
-    require = function(module_name)
-        local file_name = module_name..'.lua'
-        if package.preload[module_name] then
-            return package.preload[module_name]
-        end
-        if BOOTSTRAP[file_name] then
-            package.preload[module_name] = load(BOOTSTRAP[file_name])()
-            return package.preload[module_name]
-        end
-        return real_require(module_name)
-    end
-end
 
 local function bootstrap_has_file(filename, mode)
     if not BOOTSTRAP then return false end

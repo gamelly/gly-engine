@@ -235,6 +235,7 @@ end
 
 local function install(std, engine, library, name)
     local lib = std[name] or {}
+    lib.map = array_map
     lib.filter = array_filter
     lib.unique = array_unique
     lib.each = array_foreach

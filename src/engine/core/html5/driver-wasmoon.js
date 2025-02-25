@@ -11,6 +11,7 @@ gly.bootstrap = async (game_file) => {
     const engine_response = await fetch(engine_file)
     const engine_lua = await engine_response.text()
 
+    lua.global.set('native_media_bootstrap', gly.global.get('native_media_bootstrap'))
     lua.global.set('native_media_position', gly.global.get('native_media_position'))
     lua.global.set('native_media_resize', gly.global.get('native_media_resize'))
     lua.global.set('native_media_pause', gly.global.get('native_media_pause'))
@@ -36,6 +37,7 @@ gly.bootstrap = async (game_file) => {
     lua.global.set('native_system_get_language', gly.global.get('native_system_get_language'))
     lua.global.set('native_http_handler', gly.global.get('native_http_handler'))
     lua.global.set('native_http_has_ssl', true)
+    lua.global.set('native_http_force_protocol', window.location.protocol == 'https:'? 'https': 'http')
     lua.global.set('native_json_encode', JSON.stringify)
     lua.global.set('native_json_decode', JSON.parse)
     lua.global.set('native_base64_encode', atob)
@@ -83,7 +85,7 @@ gly.bootstrap = async (game_file) => {
     ];
 
     function updateSize() {
-        gly.resize_widescreen()
+        gly.resize()
     }
 
     function updateKey(ev) {

@@ -3,6 +3,7 @@ const engine = {
     file: './main.lua',
     milis: null,
     pause: false,
+    widescreen: false,
     error: {
         callback: null,
         capture: false,
@@ -118,9 +119,9 @@ const engine = {
         },
         native_http_handler: (self) => {
             const method = self.method
-            const headers = new Headers(self.headers_dict)
-            const params = new URLSearchParams(self.params_dict)
-            const url = `${self.url}` + '?' + params.toString()
+            const headers = new Headers(self.header_dict)
+            const params = new URLSearchParams(self.param_dict)
+            const url = params.toString() ? `${self.url}?${params.toString()}` : self.url;
             const body = ['HEAD', 'GET'].includes(method) ? null : self.body_content
             self.promise()
             fetch(url, {
@@ -192,7 +193,8 @@ function errorController(func) {
     }
 }
 
-function resizeCanvas(w, h, widescreen) {
+function resizeCanvas(w, h) {
+    const widescreen = engine.widescreen
     let width = Math.floor(w ?? engine.body_element.clientWidth)
     let height = Math.floor(h ?? engine.body_element.clientHeight)
     if (widescreen === true && width <= height) {
@@ -251,12 +253,8 @@ const gly = {
             engine.listen.native_callback_resize(width, height)
         })
     },
-    resize_widescreen: (canvas_width, canvas_height) => {
-        resizeCanvas(canvas_width, canvas_height, true)
-        const {width, height} = engine.canvas_element
-        errorController(() => {
-            engine.listen.native_callback_resize(width, height)
-        })
+    widescreen: (toggle) => {
+        engine.widescreen = toggle
     },
     stroke: (size) => {
         engine.canvas_ctx.lineWidth = size

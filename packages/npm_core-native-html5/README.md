@@ -80,9 +80,9 @@ tick()
  * **gly.load(game_file_text)**
  * **gly.input(key, value)** 
  * **gly.error(behavior)**
+ * **gly.widescreen(toggle)**
  * **gly.resize(width, height)**
  * **gly.update()**
- * **gly.update_dt(milis)**
  * **gly.update_uptime(milis)**
  * **gly.global.set(name, value)**
  * **gly.global.get(name)**
@@ -91,16 +91,18 @@ tick()
 
  * **native_draw_start()**
  * **native_draw_flush()**
- * **native_draw_clear(color)**
+ * **native_draw_clear(color, x, y, w, h)**
  * **native_draw_color(color)**
  * **native_draw_font(name, size)**
  * **native_draw_rect(mode, x, y, width, heigth)**
  * **native_draw_line(x1, y1, x2, y2)**
- * **native_draw_text(x, y, text)**
- * **native_draw_text_tui(x, y, ox, oy, width, height, size, text)**
  * **native_draw_poly2(mode, verts, x, y, scale, angle, ox, oy)**
- * **native_dict_http**
- * **native_dict_json**
+ * **native_text_print(x, y, text)**
+ * **native_text_font_size(size)**
+ * **native_text_font_name(name)**
+ * **native_text_font_default(font_id)**
+ * **native_text_font_previous()**
+ * **native_http_handler**
 
 ### Callbacks
 
@@ -108,4 +110,4 @@ tick()
  * **native_callback_draw()**
  * **native_callback_resize(width, height)**
  * **native_callback_keyboard(key, value)**
- * **native_callback_init(width, height, game)**
+ * **native_callback_http(self, req_id)**

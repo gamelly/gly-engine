@@ -2,7 +2,7 @@ if (!gly) {
     error('gly is not loaded!')
 }
 
-gly.bootstrap = async (game_file) => {
+gly.bootstrap = async (game_file, fetch_jsonrxi = true) => {
     let engine_lua = gly.engine.get()
 
     fengari.lualib.luaL_openlibs(fengari.L);
@@ -30,6 +30,28 @@ gly.bootstrap = async (game_file) => {
             }
         });
         fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring(func_name));
+    }
+
+    const httplua = (reqid, key, data) => {
+        const params = data !== undefined? 3: 2
+        fengari.lua.lua_getglobal(fengari.L, fengari.to_luastring('native_callback_http'))
+        fengari.lua.lua_pushinteger(fengari.L, reqid);
+        fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(key));
+        if (typeof data == 'string') {
+            fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(data));
+        }
+        if (typeof data == 'number') {
+            fengari.lua.lua_pushnumber(fengari.L, data);
+        }
+        if (typeof data == 'boolean') {
+            fengari.lua.lua_pushboolean(fengari.L, data);
+        }
+        if(fengari.lua.lua_pcall(fengari.L, params, 1, 0) !== 0){
+            throw fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, -1))
+        }
+        if (fengari.lua.lua_type(fengari.L, -1) == fengari.lua.LUA_TSTRING) {
+            return fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, -1));
+        }
     }
 
     define_lua_func('native_draw_start', (func) => {
@@ -134,6 +156,86 @@ gly.bootstrap = async (game_file) => {
         return 1;
     });
 
+
+    define_lua_func('native_media_bootstrap', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const mediatype = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 2));
+        func(mediaid, mediatype)
+    });
+
+    define_lua_func('native_media_load', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const src = fengari.to_jsstring(fengari.lua.lua_tostring(fengari.L, 3));
+        func(mediaid, channel, src)
+    });
+
+    define_lua_func('native_media_position', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const x = fengari.lua.lua_tonumber(fengari.L, 3);
+        const y = fengari.lua.lua_tonumber(fengari.L, 4);
+        func(mediaid, channel, x, y)
+    });
+
+    define_lua_func('native_media_resize', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const w = fengari.lua.lua_tonumber(fengari.L, 3);
+        const h = fengari.lua.lua_tonumber(fengari.L, 4);
+        func(mediaid, channel, w, h)
+    });
+
+    define_lua_func('native_media_time', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        const channel = fengari.lua.lua_tonumber(fengari.L, 2);
+        const time = fengari.lua.lua_tonumber(fengari.L, 3);
+        func(mediaid, channel, Math.floor(time));
+    });
+
+    define_lua_func('native_media_play', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        func(mediaid, fengari.lua.lua_tonumber(fengari.L, 2));
+    });
+
+    define_lua_func('native_media_pause', (func) => {
+        const mediaid = fengari.lua.lua_tonumber(fengari.L, 1);
+        func(mediaid, fengari.lua.lua_tonumber(fengari.L, 2));
+    });
+    
+    define_lua_func('native_http_handler', (func) => {
+        const request_id = fengari.lua.lua_tonumber(fengari.L, 2);
+        func({
+            param_dict: {},
+            header_dict: {},
+            set: (key, value) => httplua(request_id, `set-${key}`, value),
+            promise: () => httplua(request_id, 'async-promise'),
+            resolve: () => httplua(request_id, 'async-resolve'),
+            method: httplua(request_id, 'get-method'),
+            body: httplua(request_id, 'get-body'),
+            url: httplua(request_id, 'get-fullurl')
+        })
+    });
+
+    fengari.lua.lua_pushboolean(fengari.L, true)
+    fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_has_callback'))
+
+    fengari.lua.lua_pushboolean(fengari.L, true)
+    fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_has_ssl'))
+
+    fengari.lua.lua_pushstring(fengari.L, fengari.to_luastring(window.location.protocol == 'https:'? 'https': 'http'))
+    fengari.lua.lua_setglobal(fengari.L, fengari.to_luastring('native_http_force_protocol'))
+
+    if (fetch_jsonrxi) {
+        const json_file = 'jsonrxi.lua'
+        const json_response = await fetch(json_file)
+        const json_code = (await json_response.text())
+            .replace('json.encode', 'native_json_encode')
+            .replace('json.decode', 'native_json_decode')
+        fengari.lauxlib.luaL_loadbuffer(fengari.L, fengari.to_luastring(json_code), json_code.lenght, json_file);
+        fengari.lua.lua_pcall(fengari.L, 0, 0, 0);    
+    }
+
     if (typeof engine_lua === 'string' && !engine_lua.includes('\n')) {
         const engine_response = await fetch(engine_lua)
         engine_lua = await engine_response.text()
@@ -202,7 +304,7 @@ gly.bootstrap = async (game_file) => {
     ];
 
     function updateSize() {
-        gly.resize_widescreen()
+        gly.resize()
     }
 
     function updateKey(ev) {
