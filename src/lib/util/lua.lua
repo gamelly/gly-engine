@@ -1,5 +1,3 @@
-local os = require('os')
-
 local function has_support_utf8()
     if jit then
         return true
@@ -12,27 +10,24 @@ local function has_support_utf8()
     return false
 end
 
-local function get_sys_lang()
-    if not os then
-        return 'en-US'
+local function eval(script)
+    local loader = loadstring or load
+    if not loader then
+        error('eval not allowed')
     end
-    
-    local lang, country = (os.setlocale() or ''):match('LC_CTYPE=(%a%a).(%a%a)')
-
-    if not lang then
-        lang, country = (os.getenv('LANG') or ''):match('(%a%a).(%a%a)')
+    local ok, chunk = pcall(loader, script)
+    if not ok then
+        return false, chunk
     end
-
-    if not lang then
-        lang, country = 'en', 'US'
+    if type(chunk) ~= 'function' then
+        return false, 'failed to eval'
     end
-    
-    return string.lower(lang)..'-'..string.upper(country)
+    return pcall(chunk)
 end
 
 local P = {
-    has_support_utf8=has_support_utf8,
-    get_sys_lang=get_sys_lang
+    eval = eval,
+    has_support_utf8=has_support_utf8
 }
 
 return P

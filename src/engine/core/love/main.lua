@@ -28,7 +28,7 @@ local cfg_http_curl_love = require('src/lib/protocol/http_curl_love')
 local cfg_logsystem = require('src/lib/protocol/logsystem_print')
 --
 local util_arg = require('src/lib/common/args')
-local util_lua = require('src/lib/util/lua')
+local util_envruntime = require('src/lib/util/env_runtime')
 --
 local color = require('src/lib/object/color')
 local std = require('src/lib/object/std')
@@ -53,7 +53,7 @@ local cfg_keys = {
 }
 
 local cfg_system = {
-    get_language = util_lua.get_sys_lang,
+    get_language = util_envruntime.get_sys_lang,
     set_fullscreen = love.window.setFullscreen,
     get_fullscreen = love.window.getFullscreen,
     set_title = love.window.setTitle,

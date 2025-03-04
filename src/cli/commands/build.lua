@@ -28,6 +28,8 @@ local function build(args)
         --
         :add_core('lite', {src='src/engine/core/lite/main.lua'})
         --
+        :add_core('micro', {src='src/engine/core/micro/main.lua'})
+        --
         :add_core('native', {src='src/engine/core/native/main.lua'})
         --
         :add_core('repl', {src='src/engine/core/repl/main.lua'})
