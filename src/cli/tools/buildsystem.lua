@@ -36,20 +36,20 @@ local function add_core(self, core_name, options)
         if not options.src then return end
         local from = util_fs.file(options.src)
         local to = util_fs.path(self.args.dist..self.bundler, options.as or from.get_file())
-        zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '', self.args)
+        assert(zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '', self.args))
     end
 
     if #self.bundler > 0 and options.src then 
         self.pipeline[#self.pipeline + 1] = function()
             local file = options.as or util_fs.file(options.src).get_file()
-            zeebo_bundler.build(self.args.dist..self.bundler..file, self.args.dist..file)
+            assert(zeebo_bundler.build(self.args.dist..self.bundler..file, self.args.dist..file))
         end
     end
 
     if options.assets then
         self.pipeline[#self.pipeline + 1] = function()
             local game = zeebo_module.loadgame(self.args.dist..'game.lua')
-            zeebo_assets.build(game and game.assets or {}, self.args.dist)
+            assert(zeebo_assets.build(game and game.assets or {}, self.args.dist))
         end
     end
 

@@ -104,6 +104,8 @@ local function build(path_in, src_in, path_out, src_out, prefix, args)
             end
         end
     until not src
+
+    return true
 end
 
 local P = {

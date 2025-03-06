@@ -83,8 +83,13 @@ local function build(args)
         :add_meta('src/engine/meta/html5_webos/appinfo.json')
         :add_step('webos24 $(pwd)/dist', {when=args.run})
 
-    build_game:run()
-    local ok, message =  build_core:run()
+    local ok, message = build_game:run()
+
+    if not ok then
+        return false, message
+    end
+
+    ok, message =  build_core:run()
     
     zeebo_fs.rmdir(args.dist..'_bundler/')
 
