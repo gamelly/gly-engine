@@ -104,17 +104,18 @@ end
 
 --! @cond
 local function http_connect_dns(self)
-    if self.p_host == self.evt.host then
+    if self.p_host == self.evt.host then -- behavior when mixing ip and domain???
         application_internal.http.dns_state = 2
     else
         application_internal.http.context.dns(self)
         application_internal.http.dns_state = 3
     end
-    event.post({
+    ---! LG 2024 not working close contection with ID 0
+    --[[event.post({
         class      = 'tcp',
         type       = 'disconnect',
         connection =  self.evt.connection,
-    })
+    })]]--
 end
 --! @endcond
 
@@ -397,15 +398,16 @@ end
 --! @short resolve request
 local function event_loop(evt)
     if evt.class ~= 'tcp' then return end
-
+    if evt.type == 'disconnect' then return end
     local self = application_internal.http.context.pull(evt)
 
     local value = tostring(evt.value)
     local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:sub(1, (value:find('\n') or 30) - 2)
 
-    if self then
+    if self and self.evt and self.evt.type then
         local index = 'http_'..self.evt.type..self.speed
-        application_internal.http.callbacks[index](self)
+        local callback = application_internal.http.callbacks[index]
+        pcall(callback, self)
     end
 end
 
