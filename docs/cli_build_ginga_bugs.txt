@@ -1,0 +1,76 @@
+@defgroup ginga
+@{
+
+@defgroup ginga_bugs Ginga Issues
+@{
+
+@page ginga_bug_samsung_host HTTP host identification Samsung 2021
+
+@b problem: 
+Some Samsung television models from 2021 onwards have the behavior of returning the TCP class to the host with IP even if you have passed a domain,
+when working with multiple requests at the same time this makes it impossible to identify the origin of the request.
+(confirmed)
+
+@n @b solution: 
+The first request made with a domain is used to check for the existence of this behavior. When detected,
+each new domain is blocked by multiple requests to make a request just to resolve the DNS. After that,
+it is cached to ensure there is an understanding between the connection ID, host and IP.
+
+@page ginga_bug_155 HTTP disconnect crash LG 2024
+
+@li https://github.com/gamelly/gly-engine/issues/155
+
+@b problem: 
+LGs have incremental connection IDs starting from 0.
+There appears to be an issue where posting a disconnect event with ID 0 in the TCP class of the Ginga
+implemented by LG causes the application to crash. It is not possible to capture this with pcall in Lua.
+(not confirmed)
+
+@n @b solution: 
+The engine's legacy http protocol already chose to make a first separate request to test DNS and Network,
+the alternative was to just comment on this first connection, it is up to the server to disconnect the socket.
+
+@page ginga_bug_190 Telemedia swaped key events
+
+@li https://github.com/TeleMidia/ginga/issues/190
+@li https://github.com/TeleMidia/ginga/issues/173
+
+@b problem: 
+For some mysterious reason, the [Telemidia Ginga simulator](https://github.com/TeleMidia/ginga) has swapped the `pressed` and `released` events.
+However, this issue only occurs in the `ginga` (CLI) command and not in `gingagui` which uses the same codebase but with an interface. 
+(confirmed)
+
+@n @b solution: 
+For testing purposes with the engine (CLI), there is the `--telemedia190` building flag,
+which compiles the engine with the swapped events. This can be useful when combined with the `--run` flag to immediately test after the build.
+
+@page bug_ginga_gc_clean Lua GC clear in Sony/TOTVS
+
+@b problem:
+the lua `collectgarbage()` function causes the black screen.
+
+@n @b solution:
+dont use it.
+
+@page bug_ginga_canvas_samsung NCL Canvas opacity Samsung
+
+@b problem:
+In all Samsung models, when painting a rectangle with an opaque color in front of a PNG image, the image is clipped and ends up with 100% transparency.
+This behavior appears to be the result of a misconfigured blend mode.
+(confirmed)
+
+@n @b solution:
+use another image of a solid square in the desired color if possible, or a color similar to the PNG that is not opaque.
+
+@page bug_ginga_resolution_percentage NCL resolution percentage
+
+@b problem: 
+Old sony televison (no longer sold in brazil) do not recognize percentages in the `region` parameter when associeated with the `descriptor`
+used by a `media` with the source `sbtvd-ts://video` instead, they interprete it as pixel size, which causes the video to appear small on the screen.
+(not confirmed)
+
+@n @b solution:
+pixel size should be used, or the `sbtvd-ts://video` media should be omitted, you are not required to declare if you dont want to interact with attributes.
+
+@}
+@}
