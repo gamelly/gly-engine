@@ -110,7 +110,7 @@ local function http_connect_dns(self)
         application_internal.http.context.dns(self)
         application_internal.http.dns_state = 3
     end
-    ---! LG 2024 not working close contection with ID 0
+    -- LG 2024 not working 
     --[[event.post({
         class      = 'tcp',
         type       = 'disconnect',
@@ -214,11 +214,12 @@ local function http_data(self)
         local evt = self.evt
         application_internal.http.context.remove(self.evt)
         application_internal.http.callbacks.http_resolve(self)
-        event.post({
-            class      = 'tcp',
-            type       = 'disconnect',
-            connection =  evt.connection,
-        })
+        ---! @bug LG 2024 not working close contection with ID 0
+        -- event.post({
+        --     class      = 'tcp',
+        --     type       = 'disconnect',
+        --     connection =  evt.connection,
+        -- })
     end
 end
 --! @endcond
