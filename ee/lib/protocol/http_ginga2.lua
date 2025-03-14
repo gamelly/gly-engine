@@ -1,6 +1,3 @@
---! @note protocol is ready for testing,
---! but has not been confirmed on any television with new http ginga class.
-
 local http_util = require('src/lib/util/http')
 local request_dict = {}
 local data_dict = {}
@@ -8,6 +5,7 @@ local data_dict = {}
 local function handler(self)
     local uri = self.url..http_util.url_search_param(self.param_list, self.param_dict)
     local allow_body = self.method ~= 'GET' and self.method ~= 'HEAD'
+    local method = string.lower(self.method)
     local body = allow_body and self.body
     local headers = self.header_dict
     local session = self.id
@@ -20,7 +18,7 @@ local function handler(self)
         class = 'http',
         type = 'request',
         method = method,
-        uri = url,
+        uri = uri,
         headers = headers,
         body = body,
         session = session
@@ -69,3 +67,4 @@ local P = {
 }
 
 return P
+''
