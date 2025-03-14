@@ -39,7 +39,7 @@ local function build(args)
         :add_step('love '..args.dist, {when=args.run})
         --
         :add_core('ginga', {src='ee/engine/core/ginga/main.lua'})
-        :add_file('ee/engine/meta/ginga/main.ncl')
+        :add_meta('ee/engine/meta/ginga/ncl.mustache', {as='main.ncl'})
         :add_step('ginga dist/main.ncl', {when=args.run})
         --
         :add_core('html5', {src='src/engine/core/native/main.lua', force_bundler=true})
