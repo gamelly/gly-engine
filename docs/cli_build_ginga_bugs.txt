@@ -4,6 +4,19 @@
 @defgroup ginga_bugs Ginga Issues
 @{
 
+@page ginga_bug_capabilities Capabilities are falsely in all devices
+
+@li variable: settings.system.luaSupportedEventClasses
+@li Ginga CCWS: /dtv/platform-capabilities
+
+@b problem:
+This affects all devices regardless of brand, allowing for the indication of *unsupported working features*
+while also claiming *support for a non-existent feature* in the middleware.
+(Samsung and LG are confirmed)
+
+@n @b solution:
+Anything that doesn't crash should be tested instead of asking support.
+
 @page ginga_bug_samsung_host HTTP host identification Samsung 2021
 
 @b problem: 
@@ -71,6 +84,16 @@ used by a `media` with the source `sbtvd-ts://video` instead, they interprete it
 
 @n @b solution:
 pixel size should be used, or the `sbtvd-ts://video` media should be omitted, you are not required to declare if you dont want to interact with attributes.
+
+@page bug_ginga_lua_starting_media NCL start media using lua
+
+@b problem: 
+The activation process, triggered by an NCL event posted by Lua, is excessively complicated and not supported on Samsung and LG TVs at least until 2021.
+However, there is evidence that the encoding is correct, as the Telemedia simulator is working.
+(confirmed)
+
+@n @b solution:
+not resolved. <!-- make the L -->
 
 @}
 @}
