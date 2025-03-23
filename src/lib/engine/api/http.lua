@@ -184,7 +184,10 @@ local function request(method, std, engine, protocol)
                 -- local handlers
                 if std.http.ok then
                     self.success_handler(std, game)
-                elseif std.http.error or not std.http.status then
+                elseif std.http.error then
+                    self.error_handler(std, game)
+                elseif not std.http.status then
+                    self.set('error', 'missing protocol response')
                     self.error_handler(std, game)
                 else
                     self.failed_handler(std, game)
@@ -210,7 +213,7 @@ end
 --! @endcond
 
 local function install(std, engine, protocol)
-    assert(protocol.handler, 'missing protocol handler')
+    assert(protocol and protocol.handler, 'missing protocol handler')
 
     if protocol.has_callback then
         engine.http_count = 0

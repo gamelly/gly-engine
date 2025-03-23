@@ -78,6 +78,7 @@ local application_internal = {}
 --! @cond
 local function http_connect(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
+    msg2=self.p_host..self.p_uri..params
     local request, cleanup = http_util.create_request(self.method, self.p_uri..params)
         .add_imutable_header('Host', self.p_host)
         .add_imutable_header('Cache-Control', 'max-age=0')
@@ -215,11 +216,13 @@ local function http_data(self)
         application_internal.http.context.remove(self.evt)
         application_internal.http.callbacks.http_resolve(self)
         ---! @bug LG 2024 not working close contection with ID 0
-        -- event.post({
-        --     class      = 'tcp',
-        --     type       = 'disconnect',
-        --     connection =  evt.connection,
-        -- })
+        if tostring(evt.connection) ~= '0' then
+            event.post({
+                class      = 'tcp',
+                type       = 'disconnect',
+                connection =  evt.connection,
+            })
+        end
     end
 end
 --! @endcond
@@ -403,7 +406,8 @@ local function event_loop(evt)
     local self = application_internal.http.context.pull(evt)
 
     local value = tostring(evt.value)
-    local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:sub(1, (value:find('\n') or 30) - 2)
+    local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:gsub('\n', ''):sub(1, 90)
+    msg3 = debug
 
     if self and self.evt and self.evt.type then
         local index = 'http_'..self.evt.type..self.speed

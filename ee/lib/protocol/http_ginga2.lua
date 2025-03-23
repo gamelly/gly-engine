@@ -1,4 +1,5 @@
 local http_util = require('src/lib/util/http')
+local ginga_support = require('ee/lib/util/support')
 local request_dict = {}
 local data_dict = {}
 
@@ -30,7 +31,7 @@ local function callback(evt)
     local session = evt.session
     local self = request_dict[session]
 
-    if evt.error then
+    if evt.error and #evt.error > 0 then
         self.set('error', evt.error)
     end
 
@@ -55,7 +56,11 @@ local function callback(evt)
     end
 end
 
-local function install(std)
+local function install(std)    
+    if not ginga_support.class('http') then
+        error('old device!')
+    end
+    httptunado = true
     std.bus.listen('ginga', callback)
 end
 
@@ -67,4 +72,3 @@ local P = {
 }
 
 return P
-''
