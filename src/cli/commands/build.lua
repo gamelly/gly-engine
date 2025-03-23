@@ -1,6 +1,7 @@
 local zeebo_buildsystem = require('src/cli/tools/buildsystem')
 local zeebo_fs = require('src/lib/cli/fs')
 local util_fs = require('src/lib/util/fs')
+local env_build = require('src/env/build')
 
 local function build(args)
     args.dist = util_fs.path(args.dist).get_fullfilepath()
@@ -40,7 +41,7 @@ local function build(args)
         --
         :add_core('ginga', {src='ee/engine/core/ginga/main.lua'})
         :add_meta('ee/engine/meta/ginga/ncl.mustache', {as='main.ncl'})
-        :add_step('ginga dist/main.ncl', {when=args.run})
+        :add_step('ginga dist/main.ncl '..env_build.screen_ginga(args), {when=args.run})
         --
         :add_core('html5', {src='src/engine/core/native/main.lua', force_bundler=true})
         :add_file('src/engine/core/html5/core-native-html5.js')
