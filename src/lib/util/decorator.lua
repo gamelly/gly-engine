@@ -42,13 +42,22 @@ local function decorator_offset_xy1(object, func)
     end
 end
 
+function table_prefix1(prefix, fn_table)
+    local new_table = {}
+    for name, fn in pairs(fn_table) do
+        new_table[name] = decorator_prefix1(prefix, fn)
+    end
+    return new_table
+end
+
 local P = {
     offset_xy1 = decorator_offset_xy1,
     offset_xy2 = decorator_offset_xy2,
     offset_xyxy1 = decorator_offset_xyxy1,
     prefix3 = decorator_prefix3,
     prefix2 = decorator_prefix2,
-    prefix1 = decorator_prefix1
+    prefix1 = decorator_prefix1,
+    prefix1_t = table_prefix1
 }
 
 return P

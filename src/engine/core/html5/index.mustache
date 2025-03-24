@@ -67,23 +67,38 @@
       </canvas>
       {{/ args.gamepadzilla }}
     </main>
-    <script src="core-native-html5.js"></script>
-    <script src="core-media-html5.js"></script>
+    {{# core.html5_ginga }}
+    <script src="index.js"></script>
+    {{/ core.html5_ginga }}
+    <script src="https://cdn.jsdelivr.net/npm/@gamely/core-native-html5@0.0.21"></script>
     {{# args.gamepadzilla }}
     <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1"></script>
     {{/ args.gamepadzilla }}
     {{# args.fengari }}
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@latest/dist/fengari-web.js"></script>
-    <script src="driver-fengari.js"></script>
     {{/ args.fengari }}
     {{^ args.fengari }}
-    <script type="module" src="driver-wasmoon.js"></script>
+    <script type="module">
+    import { LuaFactory, LuaMultiReturn } from 'https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/+esm'
+    window.LuaFactory = LuaFactory
+    window.LuaMultiReturn = LuaMultiReturn
+    </script>
     {{/ args.fengari }}
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
-        gly.widescreen(true)
-        await gly.bootstrap('game.lua')
-        gly.stroke(2)
+        const gly = await core_native_html5()
+          .set_el_root('main')
+          .set_el_canvas('#gameCanvas')
+          .set_library('wasmoon', window.LuaFactory, window.LuaMultiReturn)
+          .set_library('fengari', window.fengari)
+          .set_library('fengari-jsonrxi', 'https://cdn.jsdelivr.net/gh/rxi/json.lua/json.lua')
+          .set_library('runtime', {unfocus_pause: true})
+          .set_library('gamepad')
+          .set_library('keyboard')
+          .set_library('resize')
+          .set_engine(`{{ env.build.html5_src_engine }}`)
+          .set_game(`{{ env.build.html5_src_game }}`)
+          .build()
       })
     </script>
   </body>

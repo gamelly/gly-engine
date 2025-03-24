@@ -5,8 +5,20 @@ local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_assets = require('src/lib/cli/assets')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_decorator = require('src/lib/util/decorator')
 local util_fs = require('src/lib/util/fs')
+local env_build = require('src/env/build')
 local lustache = require('third_party/lustache/olivinelabs')
+
+local function add_func(self, func, options)
+    if not self.selected then return self end
+    if options and not options.when then return self end
+    self.pipeline[#self.pipeline + 1] = function()
+        local ok, msg = func()
+        if not ok then error(msg or 'func error', 0) end
+    end
+    return self
+end
 
 local function add_step(self, command, options)
     if not self.selected then return self end
@@ -81,6 +93,12 @@ local function add_meta(self, file_in, options)
         local content = input:read('*a')
         if game then 
             content = lustache:render(content, {
+                core={
+                    [self.args.core] = true
+                },
+                env={
+                    build=util_decorator.prefix1_t(self.args, env_build)
+                },
                 args=self.args,
                 meta=game.meta
             })
@@ -97,7 +115,7 @@ local function add_rule(self, error_message, ...)
     self.pipeline[#self.pipeline + 1] = function()
         local index = 1
         while index <= #arg_list do
-            local arg_name, arg_val = arg_list[index]:match('(%w+)=(%w+)')
+            local arg_name, arg_val = arg_list[index]:match('(%w+)=([%w_]+)')
             if tostring(self.args[arg_name]) ~= arg_val then
                 error_message = nil
             end
@@ -115,6 +133,7 @@ local function from(args)
         args=args,
         found=false,
         selected=false,
+        add_func=add_func,
         add_step=add_step,
         add_core=add_core,
         add_file=add_file,
