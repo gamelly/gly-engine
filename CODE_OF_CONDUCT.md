@@ -1,8 +1,13 @@
-# Code Of Conduct
+# Code of Conduct
 
-This project adheres to both the [Google Open Source Code of Conduct](https://opensource.google/documentation/reference/releasing/template/CODE_OF_CONDUCT) and the [Google Community Guidelines](https://opensource.google.com/conduct/).
-In essence, we ask all contributors to act with respect and courtesy toward one another. Disagreements and conflicts should be addressed in a calm, constructive, and peaceful manner, with the goal of finding mutually agreeable solutions.
-It is essential that no one engages in behavior or language that could cause discomfort, embarrassment, or harm to others. Participants are also expected to refrain from making inappropriate jokes or comments about colleagues, as well as from any unwanted physical contact.
+This project follows the [Google Community Guidelines](https://opensource.google.com/conduct/).
 
-We strive to maintain a welcoming, inclusive, and safe environment for everyone, embracing diverse perspectives and experiences.
-All voices are valued, and we encourage open, respectful discussions, ensuring that everyone feels heard and supported, regardless of background, experience, or role.
+We expect all contributors to engage with respect, kindness, and professionalism toward one another. Disagreements and conflicts should be addressed thoughtfully, calmly, and constructively, with the intention of finding mutually respectful solutions. Everyone is expected to contribute in a manner that fosters positive, collaborative interactions.
+
+Behavior or language that may cause harm, discomfort, or embarrassment to others is unacceptable. This includes but is not limited to, discrimination, harassment, and hate speech based on race, gender, sexual orientation, disability, or any other identity. Specifically, behaviors such as racism, sexism, ableism, or any form of harmful exclusion or stereotyping are not tolerated.
+
+Participants should avoid making inappropriate jokes or comments about their colleagues, as well as engaging in any form of unwanted physical contact. This ensures we create a respectful environment for everyone, regardless of their background, identity, or experiences.
+
+In situations where harmful behavior occurs, disciplinary actions may be taken. One possible consequence could be temporary or permanent silencing within the community to protect individuals from harm and to maintain a safe space for all. Our aim is to create a welcoming, inclusive, and supportive environment where all participants feel respected and valued.
+
+We embrace diverse perspectives and experiences, encouraging open and respectful discussions, so that all voices are heard and supported.
