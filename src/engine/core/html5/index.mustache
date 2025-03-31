@@ -70,7 +70,7 @@
     {{# core.html5_ginga }}
     <script src="index.js"></script>
     {{/ core.html5_ginga }}
-    <script src="https://cdn.jsdelivr.net/npm/@gamely/core-native-html5@0.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@gamely/core-native-html5@0.1.1"></script>
     {{# args.gamepadzilla }}
     <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1"></script>
     {{/ args.gamepadzilla }}
@@ -86,12 +86,13 @@
     {{/ args.fengari }}
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
-        const gly = await core_native_html5()
+        window.gly = await core_native_html5()
           .set_el_root('main')
           .set_el_canvas('#gameCanvas')
           .set_library('wasmoon', window.LuaFactory, window.LuaMultiReturn)
           .set_library('fengari', window.fengari)
           .set_library('fengari-jsonrxi', 'https://cdn.jsdelivr.net/gh/rxi/json.lua/json.lua')
+          .set_library('fengari-or-wasmoon-check')
           .set_library('runtime', {unfocus_pause: true})
           .set_library('gamepad')
           .set_library('keyboard')
