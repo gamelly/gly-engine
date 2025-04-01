@@ -23,7 +23,7 @@ local function loop(std, data)
         data.menu = std.math.clamp2(data.menu + std.key.axis.y, 1, #data.list)
         data.time = std.milis
         if std.key.press.a then
-            std.media.video():src(data.list[data.menu])
+            std.media.video():src(data.list[data.menu]):play()
         end
         if std.key.press.b then
             std.media.video():resume()

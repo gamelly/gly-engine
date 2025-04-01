@@ -47,9 +47,11 @@ local cfg_media = {
     bootstrap=native_media_bootstrap,
     position=native_media_position,
     resize=native_media_resize,
+    resume=native_media_resume,
+    source=native_media_source,
     pause=native_media_pause,
-    load=native_media_load,
-    play=native_media_play
+    play=native_media_play,
+    stop=native_media_stop
 }
 
 local cfg_poly = {

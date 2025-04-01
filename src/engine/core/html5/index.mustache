@@ -70,6 +70,12 @@
     {{# core.html5_ginga }}
     <script src="index.js"></script>
     {{/ core.html5_ginga }}
+    {{# args.videofake }}
+    <script>window.videofake=100</script>
+    {{/ args.videofake }}
+    {{# args.videojs }}
+    <script src="https://cdn.jsdelivr.net/npm/video.js@8.22.0/dist/video.min.js"></script>
+    {{/ args.videojs }}
     <script src="https://cdn.jsdelivr.net/npm/@gamely/core-native-html5@0.1.1"></script>
     {{# args.gamepadzilla }}
     <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1"></script>
@@ -97,6 +103,10 @@
           .set_library('gamepad')
           .set_library('keyboard')
           .set_library('resize')
+          .set_library('player-html5')
+          .set_library('player-youtube')
+          .set_library('player-fake', window.videofake)
+          .set_library('player-videojs', window.videojs)
           .set_engine(`{{ env.build.html5_src_engine }}`)
           .set_game(`{{ env.build.html5_src_game }}`)
           .build()
