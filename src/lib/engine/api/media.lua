@@ -87,7 +87,7 @@ local function install(std, engine, handler, name)
     local mediatype = name:match('%w+%.(%w+)')
     if not std.media[mediatype] then
         local channels = handler.bootstrap and handler.bootstrap(mediatype)
-        if not channels or channels == 0 then
+        if (not channels or channels == 0) and handler.bootstrap then
             error('media '..mediatype..' is not supported!')
         end
         local node = std.node and std.node.load({})
