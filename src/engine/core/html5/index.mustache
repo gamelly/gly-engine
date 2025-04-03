@@ -25,7 +25,6 @@
             overflow: hidden;
             justify-content: center;
             align-items: start;
-            background-color: gray;
         }
         main {
           position: relative;
@@ -40,6 +39,13 @@
           image-rendering: pixelated;
         }
     </style>
+    {{^ core.html5_ginga }}
+    <style>
+      body {
+        background-color: gray;
+      }
+    </style>
+    {{/ args.fengari }}
     {{# args.gamepadzilla }}
     <style>
       .gpz-btn4{
