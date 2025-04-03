@@ -11,5 +11,63 @@
 @li **WIKI Lua 5.4 in english** https://www.lua.org/manual
 @li **WIKI Lua 5.1 in portuguese** https://www.lua.org/manual/5.1/pt @n (currently most @ref ginga "ginga" devices use lua 5.1)
 
+@par Template
+
+@li class
+```java
+local Game = {
+    title = 'Your Awesome Game',
+    author = 'IntellectualAuthor',
+    description = 'The best game in the world made in GlyEngine',
+    version = '1.0.0'
+}
+
+function Game.init(std, data)
+end
+
+function Game.loop(std, data)
+end
+
+function Game.draw(std, data)
+end
+
+function Game.exit(std, data)
+end
+
+return Game
+```
+
+@li function
+```java
+local function init(std, data)
+end
+
+local function loop(std, data)
+end
+
+local function draw(std, data)
+end
+
+local function exit(std, data)
+end
+
+local P = {
+    meta={
+        title = 'Your Awesome Game',
+        author = 'IntellectualAuthor',
+        description = 'The best game in the world made in GlyEngine',
+        version = '1.0.0'
+    },
+    callbacks={
+        init=init,
+        loop=loop,
+        draw=draw,
+        exit=exit
+    }
+}
+
+return P;
+```
+
 @}
 @}
