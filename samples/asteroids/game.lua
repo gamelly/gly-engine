@@ -399,7 +399,6 @@ end
 local function draw(std, game)
     local death_anim = game.state == 5 and std.milis < game.menu_time + 50 
     std.draw.clear(death_anim and std.color.white or std.color.black)
-    local s = 0
     if game.state == 1 then
         local h = game.height/24
         local hmenu = (game.menu*h) + (h*11) - (h/3)

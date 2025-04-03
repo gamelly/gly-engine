@@ -79,7 +79,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        core: ['cli', 'repl', 'lite', 'micro', 'native', 'love']
+        core: [
+          'cli', 'repl', 'lite', 'micro', 'native', 'love',
+          'pong', 'asteroids'
+        ]
     steps:
     -
       uses: actions/checkout@master
