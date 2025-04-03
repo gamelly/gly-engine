@@ -2,25 +2,27 @@ local zeebo_args = require('src/lib/common/args')
 
 local function add_next_value(self, param, opt)
     local index = #self.param_list_value[self.current]
-    self.param_list_value[self.current][index + 1] = param 
+    self.param_list_value[self.current][index + 1] = param
     self.param_dict_value_alias[self.current][param] = opt.alias
-    self.param_dict_value_default[self.current][param] = opt and opt.default
-    self.param_dict_value_required[self.current][param] = (opt and opt.required) == true
+    self.param_dict_value_default[self.current][param] = opt.default
+    self.param_dict_value_required[self.current][param] = opt.required == true
     return self
 end
 
 local function add_option_get(self, param, opt)
     local index = #self.param_list_option_get[self.current]
+    self.hidden[self.current][param] = opt.hidden == true
     self.param_list_option_get[self.current][index + 1] = param 
     self.param_dict_option_get_alias[self.current][param] = opt.alias
-    self.param_dict_option_get_default[self.current][param] = opt and opt.default
-    self.param_dict_option_get_required[self.current][param] = (opt and opt.required) == true
+    self.param_dict_option_get_default[self.current][param] = opt.default
+    self.param_dict_option_get_required[self.current][param] = opt.required == true
     return self
 end
 
-local function add_option_has(self, param)
-    local index = #self.param_list_option_has[self.current] 
-    self.param_list_option_has[self.current][index + 1] = param 
+local function add_option_has(self, param, opt)
+    local index = #self.param_list_option_has[self.current]
+    self.param_list_option_has[self.current][index + 1] = param
+    self.hidden[self.current][param] = opt.hidden == true
     return self
 end
 
@@ -34,6 +36,7 @@ local function add_subcommand(self, cmd_name, cmd_collection)
     self.param_dict_value_default[cmd_name] = {}
     self.param_dict_value_alias[cmd_name] = {}
     self.param_list_value[cmd_name] = {}
+    self.hidden[cmd_name] = {}
     self.cmd_execution[cmd_name] = cmd_collection[cmd_name]
     self.commands[#self.commands + 1] = cmd_name
     self.current = cmd_name
@@ -147,21 +150,15 @@ local function from(host_args)
     }
 
     cmd.add_next_value = function(param, opt)
-        return add_next_value(cmd, param, opt)
+        return add_next_value(cmd, param, opt or {})
     end
 
     cmd.add_option_get = function(param, opt)
-        return add_option_get(cmd, param, opt)
+        return add_option_get(cmd, param, opt or {})
     end
 
-    cmd.add_option_has = function(param)
-        return add_option_has(cmd, param)
-    end
-
-    cmd.add_option_opt = function(param)
-        cmd.hidden[cmd.current] = cmd.hidden[cmd.current] or {}
-        cmd.hidden[cmd.current][param] = true
-        return add_option_has(cmd, param)
+    cmd.add_option_has = function(param, opt)
+        return add_option_has(cmd, param, opt or {})
     end
 
     cmd.add_subcommand = function(cmd_name, cmd_collection)
