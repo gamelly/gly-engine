@@ -52,14 +52,18 @@ local function build(args)
         :add_file('assets/icon80x80.png')
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         --
-        :add_core('html5_ginga', {src='src/engine/core/native/main.lua', force_bundler=true})
-        :add_file('assets/icon80x80.png')
-        :add_func(atobify.builder('engine_code', args.dist..'main.lua', args.dist..'index.js', true))
-        :add_func(atobify.builder('game_code', args.dist..'game.lua', args.dist..'index.js', false))
-        :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
-        --
         :add_core('html5_lite', {src='src/engine/core/lite/main.lua', force_bundler=true})
         :add_file('assets/icon80x80.png')
+        :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
+        --
+        :add_core('html5_micro', {src='src/engine/core/micro/main.lua', force_bundler=true})
+        :add_file('assets/icon80x80.png')
+        :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
+        --
+        :add_core('html5_ginga', {src='src/engine/core/native/main.lua', force_bundler=true})
+        :add_file('assets/icon80x80.png')
+        :add_func(atobify.builder('engine_code', args.dist..'main.lua', args.dist..'index.js'),{when=not args.enginecdn})
+        :add_func(atobify.builder('game_code', args.dist..'game.lua', args.dist..'index.js'))
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         --
         :add_core('html5_tizen', {src='src/engine/core/native/main.lua', force_bundler=true})
@@ -74,6 +78,9 @@ local function build(args)
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         :add_meta('src/engine/meta/html5_webos/appinfo.json')
         :add_step('webos24 $(pwd)/dist', {when=args.run})
+        --
+        :add_common_func(zeebo_fs.lazy_del(args.dist..'main.lua'), {when=args.core=='html5_ginga' or args.enginecdn})
+        :add_common_func(zeebo_fs.lazy_del(args.dist..'game.lua'), {when=args.core=='html5_ginga'})
 
     local ok, message = build_game:run()
 

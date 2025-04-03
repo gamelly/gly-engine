@@ -30,6 +30,7 @@ local command = zeebo_argparse.from(arg)
     .add_option_has('telemedia190', {hidden=true})
     .add_option_has('videojs', {hidden=true})
     .add_option_has('videofake', {hidden=true})
+    .add_option_has('enginecdn', {hidden=true})
     .add_option_has('bundler')
     .add_option_has('run')
     --

@@ -11,8 +11,6 @@ local env_build = require('src/env/build')
 local lustache = require('third_party/lustache/olivinelabs')
 
 local function add_func(self, func, options)
-    if not self.selected then return self end
-    if options and not options.when then return self end
     self.pipeline[#self.pipeline + 1] = function()
         local ok, msg = func()
         if not ok then error(msg or 'func error', 0) end
@@ -21,8 +19,6 @@ local function add_func(self, func, options)
 end
 
 local function add_step(self, command, options)
-    if not self.selected then return self end
-    if options and not options.when then return self end
     self.pipeline[#self.pipeline + 1] = function()
         os.execute(command)
     end
@@ -69,9 +65,6 @@ local function add_core(self, core_name, options)
 end
 
 local function add_file(self, file_in, options)
-    if not self.selected then return self end
-    if options and not options.when then return self end
-
     self.pipeline[#self.pipeline + 1] = function()
         local from = util_fs.file(file_in)
         local to = util_fs.path(self.args.dist, (options and options.as) or from.get_file())
@@ -83,7 +76,6 @@ local function add_file(self, file_in, options)
 end
 
 local function add_meta(self, file_in, options)
-    if not self.selected then return self end
     self.pipeline[#self.pipeline + 1] = function()
         local from = util_fs.file(file_in)
         local to = util_fs.path(self.args.dist, (options and options.as) or from.get_file())
@@ -129,16 +121,26 @@ local function add_rule(self, error_message, ...)
 end
 
 local function from(args)
+    local decorator = function(func, for_all)
+        return function(self, step, options)
+            if not self.selected and not for_all then return self end
+            if options and options.when ~= nil and not options.when then return self end
+            return func(self, step, options)
+        end        
+    end
+
     local self = {
         args=args,
         found=false,
         selected=false,
-        add_func=add_func,
-        add_step=add_step,
-        add_core=add_core,
-        add_file=add_file,
-        add_meta=add_meta,
         add_rule=add_rule,
+        add_core=add_core,
+        add_func=decorator(add_func),
+        add_step=decorator(add_step),
+        add_file=decorator(add_file),
+        add_meta=decorator(add_meta),
+        add_common_func=decorator(add_func, true),
+        add_common_step=decorator(add_step, true),
         pipeline={}
     }
 

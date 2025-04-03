@@ -107,8 +107,8 @@
           .set_library('player-youtube')
           .set_library('player-fake', window.videofake)
           .set_library('player-videojs', window.videojs)
-          .set_engine(`{{ env.build.html5_src_engine }}`)
-          .set_game(`{{ env.build.html5_src_game }}`)
+          .set_engine(`{{& env.build.html5_src_engine }}`)
+          .set_game(`{{& env.build.html5_src_game }}`)
           .build()
       })
     </script>
