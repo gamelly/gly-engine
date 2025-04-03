@@ -9,6 +9,7 @@
     "bugs": "https://github.com/gamelly/gly-engine/issues",
     "description": "create your own game-engine with just javascript.",
     "main": "dist/index.js",
+    "types": "types/main.d.ts",
     "keywords": [
         "game engine",
         "game",
