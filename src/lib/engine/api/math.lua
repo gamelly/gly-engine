@@ -262,7 +262,6 @@ end
 --! @}
 
 local function install(std)
-    std = std or {}
     std.math = std.math or {}
     std.math.abs=abs
     std.math.clamp=clamp
@@ -275,7 +274,6 @@ local function install(std)
     std.math.map=map
     std.math.max=max
     std.math.min=min
-    return std.math
 end
 
 local function install_wave(std)
@@ -287,7 +285,6 @@ local function install_wave(std)
 end
 
 local function install_clib(std)
-    std = std or {}
     local math = require('math')
     std.math = std.math or {}
     std.math.acos=math.acos
@@ -315,19 +312,16 @@ local function install_clib(std)
     std.math.sqrt=math.sqrt
     std.math.tan=math.tan
     std.math.tanh=math.tanh
-    return std.math
 end
 
 local function install_clib_random(std)
     local math = require('math')
-    std = std or {}
     std.math = std.math or {}
     std.math.random = function(a, b)
         a = a and math.floor(a)
         b = b and math.floor(b)
         return math.random(a, b)
     end
-    return std.math
 end
 
 local P = {

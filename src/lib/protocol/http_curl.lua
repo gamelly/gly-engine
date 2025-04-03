@@ -24,7 +24,7 @@ local function http_handler(self)
         end        
     else 
         self.set('ok', false)
-        self.set('ok', 'failed to spawn process!')
+        self.set('error', 'failed to spawn process!')
     end
 
     cleanup()

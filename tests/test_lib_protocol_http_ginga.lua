@@ -1,4 +1,4 @@
-local luaunit = require('luaunit')
+--local luaunit = require('luaunit')
 local protocol_http = require('ee/lib/protocol/http_ginga')
 
 event = {
@@ -592,4 +592,5 @@ function test_http_data_error()
 ]]
 end
 
-os.exit(luaunit.LuaUnit.run())
+--os.exit(luaunit.LuaUnit.run())
+--! @todo use default test module

@@ -25,11 +25,18 @@ local mock_popen = mock_io.popen({
     },
 })
 
+local function set(std)
+    return function(key, value)
+        std.http[key] = value
+    end
+end
+
 function test_http_get_200()
     local std = {http={}}
     io.popen = mock_popen
     
     protocol_http.handler({
+        set = set(std),
         std = std,
         url = 'pudim.com.br',
         method = 'GET'
@@ -46,6 +53,7 @@ function test_http_post_201()
     io.popen = mock_popen
     
     protocol_http.handler({
+        set = set(std),
         std = std,
         param_list = {'foo', 'bar', 'z'},
         param_dict = {
@@ -68,6 +76,7 @@ function test_http_post_403()
     io.popen = mock_popen
     
     protocol_http.handler({
+        set = set(std),
         std = std,
         header_list = {'Authorization'},
         header_dict = {['Authorization'] = 'bearer secret'},
@@ -86,6 +95,7 @@ function test_http_head_error()
     io.popen = mock_popen
     
     protocol_http.handler({
+        set = set(std),
         std = std,
         url = '',
         method = 'HEAD'
@@ -102,6 +112,7 @@ function test_http_popen_error()
     io.popen = nil
     
     protocol_http.handler({
+        set = set(std),
         std = std,
         url = 'pudim.com.br',
         method = 'GET'
@@ -118,6 +129,7 @@ function test_http_post_with_body()
     io.popen = mock_popen
     
     protocol_http.handler({
+        set = set(std),
         std = std,
         url = 'pudim.com.br',
         method = 'POST',
