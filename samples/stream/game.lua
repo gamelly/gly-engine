@@ -69,8 +69,8 @@ end
 
 local P = {
     meta={
-        title='Media Streamming',
-        description='play videos',
+        title='Streamming',
+        description='play videos online!',
         author='Rodrigo Dornelles',
         version='1.0.0'
     },

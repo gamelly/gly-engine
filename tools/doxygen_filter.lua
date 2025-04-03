@@ -172,6 +172,9 @@ function main()
         if not game.meta then
             game.meta, game.require = game, game.require
         end
+        if game_link == 'stream' then
+            game_link = 'fakestream.gamely.com.br @n https://videostream'
+        end
         io.write(group('Examples', game_name, game.meta.title))
         io.write('//! @short @c \\@'..game_name..' @brief https://'..game_link..'.gamely.com.br\n')
         io.write(game_requires(game))
