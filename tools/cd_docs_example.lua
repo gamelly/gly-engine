@@ -6,11 +6,12 @@ if game == '2games' then
     game = 'two_games'
 end
 
-if game == 'gridsystem' or game == 'maze3d' then
-    cmd('./cli.sh build @'..game..' --core html5 --dist ./html/')
-elseif game == 'launcher' then
-    cmd('./cli.sh build @'..game..' --core html5 --dist ./html/')
-    cmd('./cli.sh fs-replace ./html/game.lua ./html/game.lua --format http: --replace https:')
+if game == 'launcher' then
+    cmd('./cli.sh build @'..game..' --core html5 --dist ./html/ --enginecdn')
+elseif game == 'gridsystem' or game == 'maze3d' or game == 'two_games' then
+    cmd('./cli.sh build @'..game..' --core html5 --dist ./html/ --enginecdn --fengari')
+elseif game == 'pong' then
+    cmd('./cli.sh build @'..game..' --core html5_micro --dist ./html/ --fengari --enginecdn')
 else
-    cmd('./cli.sh build @'..game..' --core html5_lite --dist ./html/ --fengari --enterprise')
+    cmd('./cli.sh build @'..game..' --core html5_lite --dist ./html/ --fengari --enginecdn')
 end

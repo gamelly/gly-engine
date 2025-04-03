@@ -168,7 +168,7 @@ function main()
     if is_game then
         local game = dofile(arg[1])
         local game_name = arg[1]:match('([%w_]+)/%w%w%w%w.lua$')
-        local game_link = game_link == 'two_games' and '2games' or game_name 
+        local game_link = game_name == 'two_games' and '2games' or game_name 
         if not game.meta then
             game.meta, game.require = game, game.require
         end
