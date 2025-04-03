@@ -72,7 +72,8 @@ end
 local function correct_usage(args)
   local index = 1
   local lua = args[0] or 'gly-cli'
-  local command = 'usage: '..lua..' '..args.command
+  local runner = lua:find('.lua') and 'lua ' or ''
+  local command = 'usage: '..runner..lua..' '..args.command
 
   while index <= #args.params do
     local param = args.params[index]
