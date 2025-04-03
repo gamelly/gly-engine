@@ -90,7 +90,7 @@ local function create_request(method, uri)
 
     self.to_http_protocol = function ()
         local index = 1
-        local request = method..' '..uri..' HTTP/1.1\r\n'
+        local request = method..' '..uri..' HTTP/1'..'.1\r\n'
         
         while index <= #self.header_list do
             local header = self.header_list[index]

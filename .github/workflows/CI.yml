@@ -73,6 +73,20 @@ jobs:
       run: |
         lua tools/ci_asciicheck.lua
 
+  float:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+    -
+      uses: actions/checkout@master
+    - 
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: '5.4'
+    -
+      run: |
+        lua tools/ci_floatcheck.lua
+
   lint:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest

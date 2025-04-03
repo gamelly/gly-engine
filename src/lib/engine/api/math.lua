@@ -219,6 +219,45 @@ local function min(...)
     return min_value
 end
 
+--! @pre require @c math.wave
+local function sine(t, freq)
+    local math = require('math')
+    return math.pi and math.sin(2 * math.pi * freq * t) or 1
+end
+
+--! @cond
+local function ramp(t, freq, ratio)
+    t = (t / 2) % (1 / freq) * freq
+    if t < ratio then
+        return 2 * t / ratio - 1
+    else
+        return (2 * t - ratio - 1) / (ratio - 1)
+    end
+end
+--! @endcond
+
+--! @pre require @c math.wave
+local function saw(t, freq)
+    return ramp(t, freq, 1)
+end
+
+--! @pre require @c math.wave
+local function triangle(t, freq)
+    return ramp(t, freq, 1/2)
+end
+
+--! @cond
+local function rect(t, freq, duty)
+    duty = 1 - duty * 2
+    return saw(t, freq) > duty and 1 or -1
+end
+--! @endcond
+
+--! @pre require @c math.wave
+local function square(t, freq)
+    return rect(t, freq, 1/2)
+end
+
 --! @}
 --! @}
 
@@ -237,6 +276,14 @@ local function install(std)
     std.math.max=max
     std.math.min=min
     return std.math
+end
+
+local function install_wave(std)
+    std.math = std.math or {}
+    std.math.sine=sine
+    std.math.saw=saw
+    std.math.square=square
+    std.math.triangle=triangle
 end
 
 local function install_clib(std)
@@ -285,6 +332,9 @@ end
 
 local P = {
     install = install,
+    wave = {
+        install = install_wave
+    },
     clib = {
         install = install_clib
     },
