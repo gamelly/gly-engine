@@ -5,6 +5,16 @@
 @brief Build apps for LG televisors
 @{
 
+@li <https://webostv.developer.lge.com/develop/tools/simulator-installation>
+
+@page webos6 WebOS6
+
+@note Use the @c --enginecdn flag if yout don't want to vendorize the entire engine and prefer the online CDN.
+
+@pre You Need use @c --fengari flag to disable WebAssembly.
+
+@page publishing_lg Publish LG Store
+
 @todo We are in the process of publishing a game on the **LG Store**.
 As the validation steps progress, they are being thoroughly documented.
 

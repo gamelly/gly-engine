@@ -22,6 +22,8 @@ local function build(args)
     zeebo_fs.clear(args.dist)
     zeebo_fs.mkdir(args.dist..'_bundler/')
 
+    local atob = env_build.need_atobify(args)
+
     local build_game = zeebo_buildsystem.from({core='game', bundler=true, dist=args.dist})
         :add_core('game', {src=args.game, as='game.lua', prefix='game_', assets=true})
 
@@ -62,8 +64,6 @@ local function build(args)
         --
         :add_core('html5_ginga', {src='src/engine/core/native/main.lua', force_bundler=true})
         :add_file('assets/icon80x80.png')
-        :add_func(atobify.builder('engine_code', args.dist..'main.lua', args.dist..'index.js'),{when=not args.enginecdn})
-        :add_func(atobify.builder('game_code', args.dist..'game.lua', args.dist..'index.js'))
         :add_meta('src/engine/core/html5/index.mustache', {as='index.html'})
         --
         :add_core('html5_tizen', {src='src/engine/core/native/main.lua', force_bundler=true})
@@ -79,8 +79,10 @@ local function build(args)
         :add_meta('src/engine/meta/html5_webos/appinfo.json')
         :add_step('webos24 $(pwd)/dist', {when=args.run})
         --
-        :add_common_func(zeebo_fs.lazy_del(args.dist..'main.lua'), {when=args.core=='html5_ginga' or args.enginecdn})
-        :add_common_func(zeebo_fs.lazy_del(args.dist..'game.lua'), {when=args.core=='html5_ginga'})
+        :add_common_func(atobify.builder('engine_code', args.dist..'main.lua', args.dist..'index.js'), {when=atob and not args.enginecdn})
+        :add_common_func(atobify.builder('game_code', args.dist..'game.lua', args.dist..'index.js'), {when=atob})
+        :add_common_func(zeebo_fs.lazy_del(args.dist..'main.lua'), {when=atob or args.enginecdn})
+        :add_common_func(zeebo_fs.lazy_del(args.dist..'game.lua'), {when=atob})
 
     local ok, message = build_game:run()
 
