@@ -79,7 +79,7 @@ function color()
     end
     
     for line in io.lines('src/lib/object/color.lua') do
-        local var, hex = line:match("local%s+([%w_]+)%s*=%s*(0x[0-9A-Fa-f]+)")
+        local var, hex = line:match("std.color.([%w_]+)%s*=%s*(0x[0-9A-Fa-f]+)")
         if var and hex then
             local hex_value = tonumber(hex)
             local prefix = is_dark(hex_value) and "agent" or "rectangle"
