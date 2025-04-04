@@ -73,12 +73,12 @@ local http_util = require('src/lib/util/http')
 local lua_util = require('src/lib/util/lua')
 
 --! @todo refactor this
-local application_internal = {}
+local application_internal
+application_internal = {}
 
 --! @cond
 local function http_connect(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
-    msg2=self.p_host..self.p_uri..params
     local request, cleanup = http_util.create_request(self.method, self.p_uri..params)
         .add_imutable_header('Host', self.p_host)
         .add_imutable_header('Cache-Control', 'max-age=0')
@@ -406,8 +406,7 @@ local function event_loop(evt)
     local self = application_internal.http.context.pull(evt)
 
     local value = tostring(evt.value)
-    local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:gsub('\n', ''):sub(1, 90)
-    msg3 = debug
+    local _debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:gsub('\n', ''):sub(1, 90)
 
     if self and self.evt and self.evt.type then
         local index = 'http_'..self.evt.type..self.speed
@@ -457,7 +456,7 @@ local function install(std, engine)
     std.bus.listen('ginga', event_loop)
 
     return {
-        handler=http_handler
+        http=application_internal.http
     }
 end
 

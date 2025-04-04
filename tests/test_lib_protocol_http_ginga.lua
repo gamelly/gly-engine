@@ -1,8 +1,9 @@
---local luaunit = require('luaunit')
+local test = require('src/lib/util/test')
 local protocol_http = require('ee/lib/protocol/http_ginga')
 
 event = {
-    post=function() end
+    post=function(evt)
+    end
 }
 
 local std = {
@@ -12,19 +13,17 @@ local std = {
         end
     }
 }
-local game = {}
 local application = {internal={http={}}}
-local protocol = protocol_http.install(std, game, application)
-local http_handler = protocol.handler
+local http_handler = protocol_http.handler
+local http_reset = function() return protocol_http.install(std) end
 application.internal.fixed_loop = { function() event.loop() end }
 application.internal.event_loop = { function(evt) event.ginga(evt) end }
 
 function test_http_fast_post_201()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='_fast',
         method='POST',
         body_content='',
@@ -51,19 +50,18 @@ function test_http_fast_post_201()
         value='HTTP/1.1 201 OK\r\nContent-Length: 2\r\n\r\nOK\r\n\r\n',
         connection=1
     })
-    
-    luaunit.assertEquals(response.ok, true)
-    luaunit.assertEquals(response.status, 201)
-    luaunit.assertEquals(response.body, '')
-    luaunit.assertEquals(response.error, nil)
+
+    assert(response.ok == true)
+    assert(response.status == 201)
+    assert(response.body == '')
+    assert(response.error == nil)
 end
 
 function test_http_get_200()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -103,18 +101,17 @@ function test_http_get_200()
         connection=1
     })
     
-    luaunit.assertEquals(response.ok, true)
-    luaunit.assertEquals(response.status, 200)
-    luaunit.assertEquals(response.body, 'eu amo pudim!')
-    luaunit.assertEquals(response.error, nil)
+    assert(response.ok == true)
+    assert(response.status == 200)
+    assert(response.body == 'eu amo pudim!')
+    assert(response.error == nil)
 end
 
 function test_http_redirect_300()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -155,18 +152,18 @@ function test_http_redirect_300()
         connection=2
     })
     
-    luaunit.assertEquals(response.ok, true)
-    luaunit.assertEquals(response.status, 200)
-    luaunit.assertEquals(response.body, 'eu amo pudim!')
-    luaunit.assertEquals(response.error, nil)
+    assert(response.ok == true)
+    assert(response.status == 200)
+    assert(response.body == 'eu amo pudim!')
+    assert(response.error == nil)
 end
 
+
 function test_http_simultaneous_requests()
+    http_reset().http.dns_state = 2
+
     local response1 = {}
     local http1 = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -179,9 +176,6 @@ function test_http_simultaneous_requests()
     }
     local response2 = {}
     local http2 = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -194,9 +188,6 @@ function test_http_simultaneous_requests()
     }
     local response3 = {}
     local http3 = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -271,18 +262,18 @@ function test_http_simultaneous_requests()
         connection=1
     })
 
-    luaunit.assertEquals(response1.body, 'amo pudim de chocolate!')
-    luaunit.assertEquals(response2.body, 'amo pudim de doce de leite!')
-    luaunit.assertEquals(response3.body, 'amo pudim de leite!')
+    assert(response1.body == 'amo pudim de chocolate!')
+    assert(response2.body == 'amo pudim de doce de leite!')
+    assert(response3.body == 'amo pudim de leite!')
 end
 
+
+
 function test_http_get_200_samsung()
---[[
+    http_reset().http.dns_state = 0
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -319,20 +310,17 @@ function test_http_get_200_samsung()
     })
     application.internal.http.dns_state = 2
 
-    luaunit.assertEquals(response.ok, true)
-    luaunit.assertEquals(response.status, 200)
-    luaunit.assertEquals(response.body, 'google it!')
-    luaunit.assertEquals(response.error, nil)    
-]]
+    assert(response.ok  == true)
+    assert(response.status == 200)
+    assert(response.body == 'google it!')
+    assert(response.error == nil)    
 end
 
 function test_http_get_200_samsung_first_time()
---[[
+    http_reset().http.dns_state = 0
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -369,19 +357,17 @@ function test_http_get_200_samsung_first_time()
     })
     application.internal.http.dns_state = 2
 
-    luaunit.assertEquals(response.ok, true)
-    luaunit.assertEquals(response.status, 200)
-    luaunit.assertEquals(response.body, 'bing it!')
-    luaunit.assertEquals(response.error, nil)  
-]]  
+    assert(response.ok == true)
+    assert(response.status == 200)
+    assert(response.body == 'bing it!')
+    assert(response.error == nil)  
 end
 
 function test_http_error_http()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         method='GET',
         body_content='',
         url='https://pudim.com.br/',
@@ -395,18 +381,17 @@ function test_http_error_http()
     http_handler(http)
     application.internal.fixed_loop[1]()
     
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'HTTPS is not supported!')
+    assert(response.ok == false)
+    assert(response.status == nil)
+    assert(response.body == nil)
+    assert(response.error == 'HTTPS is not supported!')
 end
 
 function test_http_error_https_redirect()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -434,18 +419,17 @@ function test_http_error_https_redirect()
         connection=1
     })
     
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'HTTPS is not supported!')
+    assert(response.ok == false)
+    assert(response.status == nil)
+    assert(response.body == nil)
+    assert(response.error == 'HTTPS is not supported!')
 end
 
 function test_http_error_too_many_redirect()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='GET',
         body_content='',
@@ -474,18 +458,17 @@ function test_http_error_too_many_redirect()
         connection=1
     })
     
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'Too Many Redirects!')
+    assert(response.ok == false)
+    assert(response.status == nil)
+    assert(response.body == nil)
+    assert(response.error == 'Too Many Redirects!')
 end
 
 function test_http_fast_empty_status_error()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='_fast',
         method='POST',
         body_content='',
@@ -513,18 +496,17 @@ function test_http_fast_empty_status_error()
         connection=1
     })
     
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'some error')
+    assert(response.ok == false)
+    assert(response.status == nil)
+    assert(response.body == nil)
+    assert(response.error == 'some error')
 end
 
 function test_http_dns_error()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='POST',
         body_content='',
@@ -546,18 +528,18 @@ function test_http_dns_error()
         error='cannot resolve pudim.com'
     })
 
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'cannot resolve pudim.com')
+    assert(response.ok == false)
+    assert(response.status == nil)
+    assert(response.body == nil)
+    assert(response.error == 'cannot resolve pudim.com')
 end
 
+
 function test_http_data_error()
+    http_reset().http.dns_state = 2
+
     local response = {}
     local http = {
-        std=std,
-        game=game,
-        application=application,
         speed='',
         method='POST',
         body_content='',
@@ -584,13 +566,11 @@ function test_http_data_error()
         error='some data error',
         connection=1
     })
---[[
-    luaunit.assertEquals(response.ok, false)
-    luaunit.assertEquals(response.status, nil)
-    luaunit.assertEquals(response.body, nil)
-    luaunit.assertEquals(response.error, 'some data error')
-]]
+
+    assert(response.ok == false)
+    assert(response.status == nil)
+    assert(response.body == nil)
+    assert(response.error == 'some data error')
 end
 
---os.exit(luaunit.LuaUnit.run())
---! @todo use default test module
+test.unit(_G)
