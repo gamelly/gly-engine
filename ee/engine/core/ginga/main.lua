@@ -79,10 +79,6 @@ local cfg_text = {
     font_previous = core_text.font_previous
 }
 
-local system_language = function()
-    return 'pt-BR'
-end
-
 local function register_event_loop()
     event.register(std.bus.trigger('ginga'))
 end
