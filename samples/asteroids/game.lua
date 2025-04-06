@@ -276,11 +276,11 @@ local function loop(std, game)
     game.player_angle = (game.player_angle + (std.key.axis.x * 0.1)) % (std.math.pi * 2)
     game.player_pos_x = game.player_pos_x + (game.player_spd_x/16 * std.delta)
     game.player_pos_y = game.player_pos_y + (game.player_spd_y/16 * std.delta)
-    if not std.key.press.up and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
+    if not (std.key.press.up or std.key.press.b) and (std.math.abs(game.player_spd_x) + std.math.abs(game.player_spd_y)) < 0.45 then
         game.player_spd_x = 0
         game.player_spd_y = 0
     end
-    if std.key.press.up then
+    if std.key.press.up or std.key.press.b then
         game.player_spd_x = game.player_spd_x + (game.boost * std.math.cos(game.player_angle - std.math.pi/2))
         game.player_spd_y = game.player_spd_y + (game.boost * std.math.sin(game.player_angle - std.math.pi/2))
         local max_spd_x = std.math.abs(game.speed_max * std.math.cos(game.player_angle - std.math.pi/2))
@@ -301,7 +301,7 @@ local function loop(std, game)
         game.player_pos_x = 3
     end
     -- player teleport
-    if std.key.press.down and std.milis > game.player_last_teleport + 1000 then
+    if (std.key.press.down or std.key.press.c) and std.milis > game.player_last_teleport + 1000 then
         game.player_last_teleport = std.milis
         game.laser_pos_x1 = game.player_pos_x
         game.laser_pos_y1 = game.player_pos_y 
@@ -399,7 +399,6 @@ end
 local function draw(std, game)
     local death_anim = game.state == 5 and std.milis < game.menu_time + 50 
     std.draw.clear(death_anim and std.color.white or std.color.black)
-    local s = 0
     if game.state == 1 then
         local h = game.height/24
         local hmenu = (game.menu*h) + (h*11) - (h/3)
@@ -469,7 +468,7 @@ local function draw(std, game)
         end
         std.draw.color(std.color.red)
         -- boost
-        if std.key.press.up then
+        if std.key.press.up or std.key.press.b  then
             local s = std.math.random(4, 12)
             local sin = std.math.cos(game.player_angle - std.math.pi/2)
             local cos = std.math.sin(game.player_angle - std.math.pi/2)

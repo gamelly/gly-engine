@@ -1,3 +1,5 @@
+local function install(std)
+    std.color = std.color or {}
 --! @defgroup std
 --! @{
 --! @defgroup color
@@ -11,66 +13,34 @@
 --! @call color
 --! @par List
 --! @call code
-
-local white = 0xFFFFFFFF
-local lightgray = 0xC8CCCCFF
-local gray = 0x828282FF
-local darkgray = 0x505050FF
-local yellow = 0xFDF900FF
-local gold = 0xFFCB00FF
-local orange = 0xFFA100FF
-local pink = 0xFF6DC2FF
-local red = 0xE62937FF
-local maroon = 0xBE2137FF
-local green = 0x00E430FF
-local lime = 0x009E2FFF
-local darkgreen = 0x00752CFF
-local skyblue = 0x66BFFFFF
-local blue = 0x0079F1FF
-local darkblue = 0x0052ACFF
-local purple = 0xC87AFFFF
-local violet = 0x873CBEFF
-local darkpurple = 0x701F7EFF
-local beige = 0xD3B083FF
-local brown = 0x7F6A4FFF
-local darkbrown = 0x4C3F2FFF
-local black = 0x000000FF
-local blank = 0x00000000
-local magenta = 0xFF00FFFF
-
+    std.color.white = 0xFFFFFFFF
+    std.color.lightgray = 0xC8CCCCFF
+    std.color.gray = 0x828282FF
+    std.color.darkgray = 0x505050FF
+    std.color.yellow = 0xFDF900FF
+    std.color.gold = 0xFFCB00FF
+    std.color.orange = 0xFFA100FF
+    std.color.pink = 0xFF6DC2FF
+    std.color.red = 0xE62937FF
+    std.color.maroon = 0xBE2137FF
+    std.color.green = 0x00E430FF
+    std.color.lime = 0x009E2FFF
+    std.color.darkgreen = 0x00752CFF
+    std.color.skyblue = 0x66BFFFFF
+    std.color.blue = 0x0079F1FF
+    std.color.darkblue = 0x0052ACFF
+    std.color.purple = 0xC87AFFFF
+    std.color.violet = 0x873CBEFF
+    std.color.darkpurple = 0x701F7EFF
+    std.color.beige = 0xD3B083FF
+    std.color.brown = 0x7F6A4FFF
+    std.color.darkbrown = 0x4C3F2FFF
+    std.color.black = 0x000000FF
+    std.color.blank = 0x00000000
+    std.color.magenta = 0xFF00FFFF
 --! @call endcode
 --! @}
 --! @}
-
-local function install(std)
-    std = std or {}
-    std.color = std.color or {}
-    std.color.white = white
-    std.color.lightgray = lightgray
-    std.color.gray = gray
-    std.color.darkgray = darkgray
-    std.color.yellow = yellow
-    std.color.gold = gold
-    std.color.orange = orange
-    std.color.pink = pink
-    std.color.red = red
-    std.color.maroon = maroon
-    std.color.green = green
-    std.color.lime = lime
-    std.color.darkgreen = darkgreen
-    std.color.skyblue = skyblue
-    std.color.blue = blue
-    std.color.darkblue = darkblue
-    std.color.purple = purple
-    std.color.violet = violet
-    std.color.darkpurple = darkpurple
-    std.color.beige = beige
-    std.color.brown = brown
-    std.color.darkbrown = darkbrown
-    std.color.black = black
-    std.color.blank = blank
-    std.color.magenta = magenta
-    return std.color
 end
 
 local P = {

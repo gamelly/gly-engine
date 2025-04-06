@@ -4,7 +4,7 @@ for i = 1, #b64_chars do
   b64_table[b64_chars:sub(i, i)] = i - 1
 end
 
-function base64_encode(input)
+local function base64_encode(input)
   local output = ""
   local padding = 0
   local len = #input
@@ -30,7 +30,7 @@ function base64_encode(input)
   return output
 end
 
-function base64_decode(input)
+local function base64_decode(input)
   local output = ""
   local padding = 0
   local len = #input
@@ -61,8 +61,8 @@ function base64_decode(input)
 end
 
 local P = {
-    decode = base64_decode,
-    encode = base64_encode
+  decode = base64_decode,
+  encode = base64_encode
 }
 
 return P

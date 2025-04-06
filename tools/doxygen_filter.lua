@@ -79,7 +79,7 @@ function color()
     end
     
     for line in io.lines('src/lib/object/color.lua') do
-        local var, hex = line:match("local%s+([%w_]+)%s*=%s*(0x[0-9A-Fa-f]+)")
+        local var, hex = line:match("std.color.([%w_]+)%s*=%s*(0x[0-9A-Fa-f]+)")
         if var and hex then
             local hex_value = tonumber(hex)
             local prefix = is_dark(hex_value) and "agent" or "rectangle"
@@ -168,9 +168,12 @@ function main()
     if is_game then
         local game = dofile(arg[1])
         local game_name = arg[1]:match('([%w_]+)/%w%w%w%w.lua$')
-        local game_link = game_link == 'two_games' and '2games' or game_name 
+        local game_link = game_name == 'two_games' and '2games' or game_name 
         if not game.meta then
             game.meta, game.require = game, game.require
+        end
+        if game_link == 'stream' then
+            game_link = 'fakestream.gamely.com.br @n https://videostream'
         end
         io.write(group('Examples', game_name, game.meta.title))
         io.write('//! @short @c \\@'..game_name..' @brief https://'..game_link..'.gamely.com.br\n')

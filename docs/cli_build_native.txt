@@ -41,6 +41,8 @@ make -C build
  - @c "@lite" @n reduced version of the engine to promote performance
  on limited devices and with small screens where certain features are not needed. @n
  <i>(removed: @c std.node @c std.bus @c std.ui)</i>
+ - @c "@micro" @n smallest version with 50% reduced size of @c @lite, with only essentials apis. @n
+ <i>(support: @c std.draw @c std.text @c std.image @c std.key)</i>
  - @c "@native" @n complete engine
 
 

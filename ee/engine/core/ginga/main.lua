@@ -26,6 +26,7 @@ local engine_memory = require('src/lib/engine/raw/memory')
 local cfg_json_rxi = require('third_party/json/rxi')
 local cfg_logsystem = require('src/lib/protocol/logsystem_print')
 local cfg_http_ginga = require('ee/lib/protocol/http_ginga')
+--local cfg_http_ginga2 = require('ee/lib/protocol/http_ginga2')
 --
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
@@ -78,10 +79,6 @@ local cfg_text = {
     font_previous = core_text.font_previous
 }
 
-local system_language = function()
-    return 'pt-BR'
-end
-
 local function register_event_loop()
     event.register(std.bus.trigger('ginga'))
 end
@@ -126,11 +123,13 @@ local function install(evt, gamefile)
         :package('@color', color)
         :package('@log', engine_log, cfg_logsystem)
         :package('math', engine_math.clib)
-        :package('hash', engine_hash, {'ginga'})
+        :package('math.wave', engine_math.wave)
         :package('math.random', engine_math.clib_random)
-        :package('mock.video', engine_media)
-        :package('mock.audio', engine_media)
+        :package('hash', engine_hash, {'ginga'})
+        :package('mock.video', engine_media, {})
+        :package('mock.audio', engine_media, {})
         :package('json', engine_encoder, cfg_json_rxi)
+        --:package('http', engine_http, cfg_http_ginga2)
         :package('http', engine_http, cfg_http_ginga)
         :package('i18n', engine_i18n, cfg_system)
         :run()

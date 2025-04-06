@@ -232,7 +232,8 @@ local function build(src, dest)
                     main_after = main_after:gsub(line, '')
                     main_content = main_content:gsub(line, '')                    
                 elseif lib_type == 'part' then
-                    local replacer = deps_dict[lib].func..'()'..deps_dict[lib].suffix[index2]..'\n'
+                    local replacer = deps_dict[lib].func..'()'..deps_dict[lib].suffix[index2]
+                    line = line:sub(1, #line - 2)..'-'
                     main_after = main_after:gsub(line, replacer)
                     main_content = main_content:gsub(line, replacer)
                 else

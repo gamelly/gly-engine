@@ -6,9 +6,33 @@
 
 @brief @brief Create game in Javascript
 
-@li **Pong Example** https://github.com/gamelly/game-pong-javascript
+@pre javascript/typescript is only supported with @b WebAssembly (wasmoon), it cannot be build with @c --fengari flag.
 
 @todo explain better about JS
+
+@li **Pong Example** https://github.com/gamelly/game-pong-javascript
+
+@par Template
+```java
+const Game = {
+    meta: {
+        title: "Your Awesome Game",
+        author: "IntellectualAuthor",
+        description: "The best game in the world made in GlyEngine",
+        version: "1.0.0"
+    },
+    callbacks: {
+        init: (std) => {
+        },
+        loop: (std) => {
+        },
+        draw: (std) => {
+        },
+        exit: (std) => {
+        }
+    }
+}
+```
 
 @}
 @}

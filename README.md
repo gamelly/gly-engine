@@ -2,9 +2,9 @@
 <h1>:mechanical_arm:<br>GLY Engine<br><sup><sub>powered by <a href="https://gamely.com.br" target="_blank">gamely.com.br</a></sub></sup></h1>
 </div>
 
-[<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/RodrigoDornelles/codename-videogame-engine/blob/main/samples/asteroids/game.lua)
+[<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gamelly/gly-engine/blob/main/samples/asteroids/game.lua)
 
-[![codecov](https://codecov.io/github/RodrigoDornelles/codename-videogame-engine/graph/badge.svg?token=MM0TY7VVAT)](https://codecov.io/github/RodrigoDornelles/codename-videogame-engine)
+[![codecov](https://codecov.io/github/gamelly/gly-engine/graph/badge.svg?token=MM0TY7VVAT)](https://codecov.io/github/gamelly/gly-engine)
 
 > A cross-platform embeddable LUA game engine such as ginga, pc, mobile, browser and its own console like a Wii clone.
 
@@ -38,7 +38,7 @@ lua cli.lua build @asteroids --core html5
 | :----- | :------------------------ | :------------ |
 | Tier 2 | Love2D                    | main plataform for development and tests
 | Tier 3 | Tizen 8                   | full support WIP
-| Tier 4 | WebOS 6                   | coming soon
+| Tier 4 | WebOS 6                   | support
 | Tier 5 | Native Core Desktop       | full support, not available for download yet
 | Tier 6 | Native Core Arduino       | coming soon
 | Tier 7 | Ginga                     | support

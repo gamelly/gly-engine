@@ -72,7 +72,8 @@ end
 local function correct_usage(args)
   local index = 1
   local lua = args[0] or 'gly-cli'
-  local command = 'usage: '..lua..' '..args.command
+  local runner = lua:find('.lua') and 'lua ' or ''
+  local command = 'usage: '..runner..lua..' '..args.command
 
   while index <= #args.params do
     local param = args.params[index]
@@ -83,14 +84,16 @@ local function correct_usage(args)
   index = 1
   while index <= #args.option_get do
     local option = args.option_get[index]
-    command = command..' -'..'-'..option..' ['..option..']'
+    if not args.hidden[option] or args.extra then
+      command = command..' -'..'-'..option..' ['..option..']'
+    end
     index = index + 1
   end
 
   index = 1
   while index <= #args.option_has do
     local option = args.option_has[index]
-    if not args.hidden[option] then
+    if not args.hidden[option] or args.extra then
       command = command..' --'..option
     end
     index = index + 1

@@ -5,12 +5,20 @@ local zeebo_bundler = require('src/lib/cli/bundler')
 local zeebo_builder = require('src/lib/cli/builder')
 local zeebo_assets = require('src/lib/cli/assets')
 local zeebo_fs = require('src/lib/cli/fs')
+local util_decorator = require('src/lib/util/decorator')
 local util_fs = require('src/lib/util/fs')
+local env_build = require('src/env/build')
 local lustache = require('third_party/lustache/olivinelabs')
 
+local function add_func(self, func, options)
+    self.pipeline[#self.pipeline + 1] = function()
+        local ok, msg = func()
+        if not ok then error(msg or 'func error', 0) end
+    end
+    return self
+end
+
 local function add_step(self, command, options)
-    if not self.selected then return self end
-    if options and not options.when then return self end
     self.pipeline[#self.pipeline + 1] = function()
         os.execute(command)
     end
@@ -36,20 +44,20 @@ local function add_core(self, core_name, options)
         if not options.src then return end
         local from = util_fs.file(options.src)
         local to = util_fs.path(self.args.dist..self.bundler, options.as or from.get_file())
-        zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '', self.args)
+        assert(zeebo_builder.build(from.get_unix_path(), from.get_file(), to.get_unix_path(), to.get_file(), options.prefix or '', self.args))
     end
 
     if #self.bundler > 0 and options.src then 
         self.pipeline[#self.pipeline + 1] = function()
             local file = options.as or util_fs.file(options.src).get_file()
-            zeebo_bundler.build(self.args.dist..self.bundler..file, self.args.dist..file)
+            assert(zeebo_bundler.build(self.args.dist..self.bundler..file, self.args.dist..file))
         end
     end
 
     if options.assets then
         self.pipeline[#self.pipeline + 1] = function()
             local game = zeebo_module.loadgame(self.args.dist..'game.lua')
-            zeebo_assets.build(game and game.assets or {}, self.args.dist)
+            assert(zeebo_assets.build(game and game.assets or {}, self.args.dist))
         end
     end
 
@@ -57,9 +65,6 @@ local function add_core(self, core_name, options)
 end
 
 local function add_file(self, file_in, options)
-    if not self.selected then return self end
-    if options and not options.when then return self end
-
     self.pipeline[#self.pipeline + 1] = function()
         local from = util_fs.file(file_in)
         local to = util_fs.path(self.args.dist, (options and options.as) or from.get_file())
@@ -71,7 +76,6 @@ local function add_file(self, file_in, options)
 end
 
 local function add_meta(self, file_in, options)
-    if not self.selected then return self end
     self.pipeline[#self.pipeline + 1] = function()
         local from = util_fs.file(file_in)
         local to = util_fs.path(self.args.dist, (options and options.as) or from.get_file())
@@ -81,6 +85,12 @@ local function add_meta(self, file_in, options)
         local content = input:read('*a')
         if game then 
             content = lustache:render(content, {
+                core={
+                    [self.args.core] = true
+                },
+                env={
+                    build=util_decorator.prefix1_t(self.args, env_build)
+                },
                 args=self.args,
                 meta=game.meta
             })
@@ -97,7 +107,7 @@ local function add_rule(self, error_message, ...)
     self.pipeline[#self.pipeline + 1] = function()
         local index = 1
         while index <= #arg_list do
-            local arg_name, arg_val = arg_list[index]:match('(%w+)=(%w+)')
+            local arg_name, arg_val = arg_list[index]:match('(%w+)=([%w_]+)')
             if tostring(self.args[arg_name]) ~= arg_val then
                 error_message = nil
             end
@@ -111,15 +121,26 @@ local function add_rule(self, error_message, ...)
 end
 
 local function from(args)
+    local decorator = function(func, for_all)
+        return function(self, step, options)
+            if not self.selected and not for_all then return self end
+            if options and options.when ~= nil and not options.when then return self end
+            return func(self, step, options)
+        end        
+    end
+
     local self = {
         args=args,
         found=false,
         selected=false,
-        add_step=add_step,
-        add_core=add_core,
-        add_file=add_file,
-        add_meta=add_meta,
         add_rule=add_rule,
+        add_core=add_core,
+        add_func=decorator(add_func),
+        add_step=decorator(add_step),
+        add_file=decorator(add_file),
+        add_meta=decorator(add_meta),
+        add_common_func=decorator(add_func, true),
+        add_common_step=decorator(add_step, true),
         pipeline={}
     }
 

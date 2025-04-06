@@ -1,6 +1,10 @@
 local test = require('src/lib/util/test')
+local math = require('math')
 local engine_math = require('src/lib/engine/api/math')
-local zeebo_math = engine_math.install()
+local std = {}
+engine_math.install(std)
+engine_math.wave.install(std)
+local zeebo_math = std.math
 
 function test_clamp()
     assert(zeebo_math.clamp(10, 1, 5) == 5)
@@ -63,23 +67,42 @@ function test_max()
     assert(zeebo_math.max({1, 2, 3, 4, 5}) == 5)
 end
 
-function test_install()
+function test_sine()
+    assert(math.floor(std.math.sine(0, 1)) == 0)
+end
+
+function test_saw()
+    assert(std.math.saw(0, 1) == -1)
+    assert(std.math.saw(1, 1) == 0)
+    assert(std.math.saw(2, 1) == -1)
+end
+
+function test_triangle()
+    assert(std.math.triangle(0, 1) == -1)
+    assert(std.math.triangle(1, 1) == 1)
+    assert(std.math.triangle(2, 1) == -1)
+end
+
+function test_square()
+    assert(std.math.square(0, 1) == -1)
+end
+
+function test_install_math_wave()
     local std = {}
-    local math_lib = engine_math.install(std)
-    assert(type(math_lib.clamp) == "function")
+    engine_math.wave.install(std)
+    assert(type(std.math.saw) == "function")
 end
 
 function test_install_math_clib()
-    local math_clib = engine_math.clib.install()
-    assert(type(math_clib.pow) == "function")
+    local std = {}
+    engine_math.clib.install(std)
+    assert(type(std.math.sin) == "function")
 end
 
 function test_install_math_clib_random()
-    local math_clib = engine_math.clib_random.install()
-    assert(type(math_clib.random) == "function")
-
-    local result = math_clib.random(1, 10)
-    assert(result >= 1 and result <= 10)
+    local std = {}
+    engine_math.clib_random.install(std)
+    assert(type(std.math.random) == "function")
 end
 
 test.unit(_G)

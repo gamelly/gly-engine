@@ -1,4 +1,3 @@
-local fixture190 = ''
 local key_bindings={
     BACK='menu',
     BACKSPACE='menu',

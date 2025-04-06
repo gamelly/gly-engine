@@ -47,9 +47,11 @@ local cfg_media = {
     bootstrap=native_media_bootstrap,
     position=native_media_position,
     resize=native_media_resize,
+    resume=native_media_resume,
+    source=native_media_source,
     pause=native_media_pause,
-    load=native_media_load,
-    play=native_media_play
+    play=native_media_play,
+    stop=native_media_stop
 }
 
 local cfg_poly = {
@@ -154,7 +156,9 @@ function native_callback_init(width, height, game_lua)
     std.draw.clear=clear
     std.draw.rect=util_decorator.offset_xy2(engine, native_draw_rect)
     std.draw.line=util_decorator.offset_xyxy1(engine, native_draw_line)
-    std.draw.image=util_decorator.offset_xy2(engine, native_draw_image)
+    std.draw.image=util_decorator.offset_xy2(engine, native_image_draw)
+    std.image.load=native_image_load
+    std.image.draw=util_decorator.offset_xy2(engine, native_image_draw)
     std.text.print = util_decorator.offset_xy1(engine, native_text_print)
     std.text.mensure=native_text_mensure
     std.text.font_size=native_text_font_size
@@ -176,6 +180,7 @@ function native_callback_init(width, height, game_lua)
         :package('@color', color)
         :package('@log', engine_log, cfg_log)
         :package('math', engine_math.clib)
+        :package('math.wave', engine_math.wave)
         :package('math.random', engine_math.clib_random)
         :package('http', engine_http, cfg_http)
         :package('base64', engine_encoder, cfg_base64)

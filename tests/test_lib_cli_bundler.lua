@@ -3,6 +3,8 @@ local zeebo_bundler = require('src/lib/cli/bundler')
 local mock_io = require('mock/io')
 
 io.open = mock_io.open({
+    ['src/lovemath.lua'] = 'l = true',
+    ['src/love.lua'] = 'require "lovemath"\nreturn l',
     ['src/foo.lua'] = 'local math = require(\'math\')',
     ['src/bar.lua'] = 'local z = require(\'foo\')',
     ['src/baz.lua'] = 'local z = require(\'bar\')',
@@ -32,6 +34,14 @@ function test_recursion()
     local dist_file = io.open('dist/main2.lua', 'r')
     local dist_text = dist_file and dist_file:read('*a')
     assert(dist_text:match('_G.math'))
+end
+
+function test_simple_require()
+    zeebo_bundler.build('src/love.lua', 'dist/love.lua')
+    local dist_file = io.open('dist/love.lua', 'r')
+    local dist_text = dist_file and dist_file:read('*a')
+    local dist_func = loadstring and loadstring(dist_text) or load(dist_text)
+    assert(dist_func() == true)
 end
 
 test.unit(_G)

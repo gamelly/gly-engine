@@ -145,7 +145,9 @@ function native_callback_init(width, height, game_lua)
     std.draw.font=native_draw_font
     std.draw.rect=native_draw_rect
     std.draw.line=native_draw_line
-    std.draw.image=native_draw_image
+    std.draw.image=native_image_draw
+    std.image.load=native_image_load
+    std.image.draw=native_image_draw
     std.text.print=native_text_print
     std.text.mensure=native_text_mensure
     std.text.font_size=native_text_font_size
@@ -168,6 +170,7 @@ function native_callback_init(width, height, game_lua)
         :package('@color', color)
         :package('@log', engine_log, cfg_log)
         :package('math', engine_math.clib)
+        :package('math.wave', engine_math.wave)
         :package('math.random', engine_math.clib_random)
         :package('http', engine_http, cfg_http)
         :package('base64', engine_encoder, cfg_base64)

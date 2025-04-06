@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncl>
+  <head>
+    <regionBase>
+      <region id="luaRegion" width="100%" height="100%" />
+    </regionBase>
+    <descriptorBase>
+      <descriptor id="luaDesc" region="luaRegion" focusIndex="application"/>
+    </descriptorBase>
+    <connectorBase>
+      <causalConnector id="onBeginSet">
+        <connectorParam name="var" />
+        <simpleCondition role="onBegin" />
+        <simpleAction role="set" value="$var" />
+      </causalConnector>
+    </connectorBase>
+  </head>
+  <body>
+    <port id="init" component="application" />
+    <media id="application" descriptor="luaDesc" src="main.lua">
+      <property name="currentKeyMaster" />
+    </media>
+    <media type="application/x-ginga-settings" id="settings">
+      <property name="service.currentKeyMaster" value="application" />
+    </media>
+    <!-- focus begin -->
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="application" />
+      <bind role="set" component="settings" interface="service.currentKeyMaster">
+        <bindParam name="var" value="application" />
+      </bind>
+    </link>
+    <!-- focus end -->
+  </body>
+</ncl>

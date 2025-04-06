@@ -45,7 +45,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: ['asteroids', 'dvdplayer', 'launcher', '2games', 'helloworld', 'gridsystem', 'pong', 'capybird', 'maze3d']
+        game: [
+          'asteroids', 'dvdplayer', 'launcher', '2games', 'helloworld', 'gridsystem', 'pong',
+          'capybird', 'maze3d', 'videostream', 'fakestream'
+        ]
     steps:
       - 
         uses: actions/checkout@master

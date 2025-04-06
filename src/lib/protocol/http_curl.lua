@@ -15,16 +15,16 @@ local function http_handler(self)
         local index = stdout:find("[^\n]*$") or 1
         local status = tonumber(stdout:sub(index))
         if not ok then
-            self.std.http.ok = false
-            self.std.http.error = stderr or stdout or 'unknown error!'
+            self.set('ok', false)
+            self.set('error', stderr or stdout or 'unknown error!')
         else
-            self.std.http.ok = 200 <= status and status < 300
-            self.std.http.body = stdout:sub(1, index - 2)
-            self.std.http.status = status
+            self.set('ok', 200 <= status and status < 300)
+            self.set('body', stdout:sub(1, index - 2))
+            self.set('status', status)
         end        
     else 
-        self.std.http.ok = false
-        self.std.http.error = 'failed to spawn process!'
+        self.set('ok', false)
+        self.set('error', 'failed to spawn process!')
     end
 
     cleanup()

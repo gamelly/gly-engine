@@ -73,7 +73,8 @@ local http_util = require('src/lib/util/http')
 local lua_util = require('src/lib/util/lua')
 
 --! @todo refactor this
-local application_internal = {}
+local application_internal
+application_internal = {}
 
 --! @cond
 local function http_connect(self)
@@ -104,17 +105,18 @@ end
 
 --! @cond
 local function http_connect_dns(self)
-    if self.p_host == self.evt.host then
+    if self.p_host == self.evt.host then -- behavior when mixing ip and domain???
         application_internal.http.dns_state = 2
     else
         application_internal.http.context.dns(self)
         application_internal.http.dns_state = 3
     end
-    event.post({
+    -- LG 2024 not working 
+    --[[event.post({
         class      = 'tcp',
         type       = 'disconnect',
         connection =  self.evt.connection,
-    })
+    })]]--
 end
 --! @endcond
 
@@ -213,11 +215,14 @@ local function http_data(self)
         local evt = self.evt
         application_internal.http.context.remove(self.evt)
         application_internal.http.callbacks.http_resolve(self)
-        event.post({
-            class      = 'tcp',
-            type       = 'disconnect',
-            connection =  evt.connection,
-        })
+        ---! @bug LG 2024 not working close contection with ID 0
+        if tostring(evt.connection) ~= '0' then
+            event.post({
+                class      = 'tcp',
+                type       = 'disconnect',
+                connection =  evt.connection,
+            })
+        end
     end
 end
 --! @endcond
@@ -397,15 +402,16 @@ end
 --! @short resolve request
 local function event_loop(evt)
     if evt.class ~= 'tcp' then return end
-
+    if evt.type == 'disconnect' then return end
     local self = application_internal.http.context.pull(evt)
 
     local value = tostring(evt.value)
-    local debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:sub(1, (value:find('\n') or 30) - 2)
+    local _debug = evt.type..' '..tostring(evt.host)..' '..tostring(evt.connection)..' '..value:gsub('\n', ''):sub(1, 90)
 
-    if self then
+    if self and self.evt and self.evt.type then
         local index = 'http_'..self.evt.type..self.speed
-        application_internal.http.callbacks[index](self)
+        local callback = application_internal.http.callbacks[index]
+        pcall(callback, self)
     end
 end
 
@@ -450,7 +456,7 @@ local function install(std, engine)
     std.bus.listen('ginga', event_loop)
 
     return {
-        handler=http_handler
+        http=application_internal.http
     }
 end
 

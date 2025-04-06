@@ -1,6 +1,15 @@
 local util_fs = require('src/lib/util/fs')
 local util_cmd = require('src/lib/util/cmd')
 
+local function lazy(func)
+    return function(a, b, c)
+        return function()
+            func(a, b, c)
+            return true
+        end
+    end
+end
+
 local function ls(src_path)
     local p = util_fs.path(src_path).get_fullfilepath()
     local ls_cmd = io.popen(util_cmd.lsdir()..p)
@@ -15,6 +24,11 @@ local function ls(src_path)
     end
 
     return ls_files
+end
+
+local function del(src)
+    local p = util_fs.file(src).get_fullfilepath()
+    os.execute(util_cmd.del()..p..util_cmd.silent())
 end
 
 local function mkdir(src_path)
@@ -58,10 +72,12 @@ end
 
 local P = {
     ls = ls,
+    del = del,
     move = move,
     clear = clear,
     rmdir = rmdir,
-    mkdir = mkdir
+    mkdir = mkdir,
+    lazy_del = lazy(del)
 }
 
 return P

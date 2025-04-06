@@ -24,6 +24,10 @@ local P = {
         font_name = function() end,
         font_default = function() end
     },
+    image = {
+        load = function() end,
+        draw = function() end
+    },
     app = {
         width = 1280,
         height = 720,
