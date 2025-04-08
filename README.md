@@ -47,4 +47,5 @@ lua cli.lua build @asteroids --core html5
 | Tier 9 | Nintendo Wii              | support is reworking
 | Tier 10 | Nintendo DS              | support, except images
 | Tier 11 | Nintendo GBA             | support, except images
-| Tier 12 | Play Station 1           | support, very limited
+| Tier 12 | TIC-80 fantasy console   | support, limited
+| Tier 13 | Play Station 1           | support, very limited
