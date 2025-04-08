@@ -6,11 +6,11 @@ local zeebo_bootstrap = require('src/lib/cli/bootstrap')
 
 local function cli_test(args)
     local coverage = args.coverage and '-lluacov' or ''
-    local files = zeebo_fs.ls('./tests')
+    local files = zeebo_fs.ls('./tests/unit')
     local index = 1
     local ok = true
     while index <= #files do
-        ok = ok and os.execute('lua '..coverage..' ./tests/'..files[index])
+        ok = ok and os.execute('lua '..coverage..' ./tests/unit/'..files[index])
         index = index + 1
     end
     if #coverage > 0 then
