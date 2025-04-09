@@ -13,7 +13,10 @@ elseif game == 'gridsystem' or game == 'maze3d' or game == 'two_games' then
 elseif game == 'pong' then
     cmd('./cli.sh build @'..game..' --core html5_micro --dist ./html/ --fengari --enginecdn')
 elseif game == 'fakestream' then
-    cmd('./cli.sh build @stream --core html5 --dist ./html/ --fengari --enginecdn --videofake')
+    cmd('./cli.sh build @stream --core html5_lite --dist ./html/ --fengari --enginecdn --videofake')
+elseif game == 'rickstream' then
+    cmd('./cli.sh build @stream --core html5 --fengari --dist ./html/ --enginecdn --videojs --enterprise')
+    cmd('./cli.sh fs-replace ./html/game.lua ./html/game.lua --format medias --replace rick')
 elseif game == 'videostream' then
     cmd('./cli.sh build @stream --core html5_ginga --dist ./html/ --fengari --enginecdn --videojs --enterprise')
 else

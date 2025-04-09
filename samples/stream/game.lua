@@ -48,17 +48,19 @@ local function draw(std, data)
         std.text.put(1, 1, data.msg)
     end
     if data.list and #data.list > 0 then
+        local font_size = 12
         local w, h = data.width/6, data.height/4
-        local w2, h2, index = data.width - data.wmax - 16, h*2, 1
-        local h3 = (#data.list + 1) * 8
+        local w2, h2, index = data.width - data.wmax, h*2, 1
+        local h3 = (#data.list + 1) * font_size
         std.draw.color(std.color.blue)
-        std.draw.rect(0, w2, h, data.wmax + 16, h3)
+        std.draw.rect(0, w2 - 16, h, data.wmax + 32, h3 + font_size)
+        std.draw.color(std.color.skyblue)
+        std.text.font_size(font_size)
+        std.draw.rect(0, w2 - 16, (data.menu * font_size) + h, data.wmax + 16, font_size)
         std.draw.color(std.color.white)
-        std.draw.rect(1, w2, h, data.wmax + 16, h3)
-        std.text.font_size(8)
-        std.text.print(w2 + 4, (data.menu * 8) + h, '>', 1)
+        std.draw.rect(1, w2 - 16, h, data.wmax + 32, h3 + font_size)
         while index <= #data.list do
-            data.wmax = std.math.max(data.wmax, std.text.print_ex(data.width, (index * 8) + h, data.list[index], -1))
+            data.wmax = std.math.max(data.wmax, std.text.print_ex(data.width - 8, (index * font_size) + h, data.list[index], -1))
             index = index + 1
         end
     end
