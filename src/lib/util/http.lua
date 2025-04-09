@@ -22,7 +22,7 @@ local function url_search_param(param_list, param_dict)
         else
             params = params..'&'
         end
-        params = params..param..'='..(value or '')
+        params = params..param:gsub(' ', '%20')..'='..(value or ''):gsub(' ', '%20')
         index = index + 1
     end
     return params
