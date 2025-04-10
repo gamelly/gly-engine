@@ -16,8 +16,13 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @page http_post POST
 --! 
 --! @code{.java}
---! std.http.post('https://example.com.br')
---!     :body('{"foo": "bar"}')
+--! std.http.post('https://example.com.br'):json()
+--!     :header('Authorization', 'Basic dXN1YXJpb3NlY3JldG86c2VuaGFzZWNyZXRh')
+--!     :param('telefone', '188')
+--!     :body({
+--!         user = 'Joao',
+--!         message = 'Te ligam!'
+--!     })
 --!     :run()
 --! @endcode
 --!
@@ -61,17 +66,19 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! end
 --! @endcode
 
+--! @short json response
+--! @hideparam self
+--! @brief decode body to table on response
+local function json(self)
+    self.use_json = true
+    return self
+end
+
 --! @short reduced response
 --! @hideparam self
 --! @brief disconnect when receiving status
 local function fast(self)
     self.speed = '_fast'
-    return self
-end
-
---! @hideparam self
-local function body(self, content)
-    self.body_content=content
     return self
 end
 
@@ -84,10 +91,37 @@ local function param(self, name, value)
 end
 
 --! @hideparam self
+--! @par Eaxmaple
+--! @code{.java}
+--! std.http.post('http://example.com/secret-ednpoint')
+--!     :header('Authorization', 'Bearer c3VwZXIgc2VjcmV0IHRva2Vu')
+--!     :run()
+--! @endcode
 local function header(self, name, value)
     local index = #self.header_list + 1
     self.header_list[index] = name
     self.header_dict[name] = value
+    return self
+end
+
+--! @hideparam self
+--! @hideparam json_encode
+--! @pre you can directly place a @b table in your body which will automatically be encoded and passed the header `Content-Type: application/json`,
+--! but for this you previously need to require @c json
+--! 
+--! @par Examples
+--! @code{.java}
+--! std.http.post('http://example.com/plain-text'):body('foo is bar'):run()
+--! @endcode
+--! @code{.java}
+--! std.http.post('http://example.com/json-object'):body({foo = bar}):run()
+--! @endcode
+local function body(self, content, json_encode)
+    if type(content) == 'table' then
+        header(self, 'Content-Type', 'application/json')
+        content = json_encode(content)
+    end
+    self.body_content=content
     return self
 end
 
@@ -132,6 +166,9 @@ local function request(method, std, engine, protocol)
             url = url:gsub("^[^:]+://", protocol.force.."://")
         end
 
+        local json_encode = std.json and std.json.encode
+        local json_decode = std.json and std.json.decode
+        local http_body = function(self, content) return body(self, content, json_encode) end
         local game = engine.current.data
 
         local self = {
@@ -150,7 +187,8 @@ local function request(method, std, engine, protocol)
             error_handler = function (std, game) end,
             -- functions
             fast = fast,
-            body = body,
+            json = json,
+            body = http_body,
             param = param,
             header = header,
             success = success,
@@ -177,6 +215,17 @@ local function request(method, std, engine, protocol)
                 if protocol.has_callback then engine.http_requests[self.id] = self end
                 protocol.handler(self, self.id)
             end,
+            -- parse json
+            function()
+                std.http.body_is_table = std.http.body and false
+                if self.use_json and json_decode and std.http.body then
+                    pcall(function()
+                        local new_body = json_decode(std.http.body)
+                        std.http.body_is_table = true
+                        std.http.body = new_body
+                    end)
+                end
+            end,
             -- callbacks
             function()
                 -- global handler
@@ -199,6 +248,7 @@ local function request(method, std, engine, protocol)
                 std.http.body = nil
                 std.http.error = nil
                 std.http.status = nil
+                std.http.body_is_table = nil
             end,
             -- reset request
             function()

@@ -3,7 +3,7 @@ local function init(std, data)
     data.msg = 'loading...'
     data.time = std.milis
     data.wmax = 1
-    std.http.get('http://t.gamely.com.br/medias.json')
+    std.http.get('http://t.gamely.com.br/medias.json'):json()
         :error(function()
             data.msg = std.http.error
         end)
@@ -11,7 +11,7 @@ local function init(std, data)
             data.msg = tostring(std.http.status)
         end)
         :success(function()
-            data.list = std.json.decode(std.http.body)
+            data.list = std.http.body
             data.msg = nil
         end)
         :run()
