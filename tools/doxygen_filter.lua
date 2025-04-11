@@ -34,6 +34,24 @@ function hardcore()
     
 end
 
+function gingaenvs()
+    local content, index1, index2 = '', 1, 1
+    local obj_ncl = require('src/lib/object/ncl')
+
+    while index1 <= #obj_ncl.settings do
+        content = content..'| '..obj_ncl.settings[index1].env..' |'
+        while index2 <= #obj_ncl.settings[index1].ginga do
+            content = content..' @c '..obj_ncl.settings[index1].ginga[index2]
+            index2 = index2 + 1
+        end
+        content = content..'\n'
+        index1 = index1 + 1
+        index2 = 1
+    end
+
+    return content
+end
+
 function listlibmath()
     local content = ''
     local started = false
