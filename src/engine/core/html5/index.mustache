@@ -39,13 +39,8 @@
           image-rendering: pixelated;
         }
     </style>
-    {{^ core.html5_ginga }}
-    <style>
-      body {
-        background-color: gray;
-      }
-    </style>
-    {{/ args.fengari }}
+    {{# env.build.screen_flag }}<style>#gameCanvas { width: 100%; }</style>{{/ env.build.screen_flag }}
+    {{^ core.html5_ginga }}<style>body { background-color: gray; }</style>{{/ core.html5_ginga }}
     {{# args.gamepadzilla }}
     <style>
       .gpz-btn4{
@@ -61,7 +56,7 @@
   </head>
   <body>
     <main>
-      <canvas id="gameCanvas"></canvas>
+      <canvas id="gameCanvas" {{& env.build.screen_html5 }}></canvas>
       {{# args.gamepadzilla }}
       <canvas width="150" height="150"
         class="gpz-joy"
@@ -108,7 +103,7 @@
           .set_library('runtime', {unfocus_pause: true})
           .set_library('gamepad')
           .set_library('keyboard')
-          .set_library('resize')
+          .set_library('{{ env.build.html5_lib_resize }}')
           .set_library('player-html5')
           .set_library('player-youtube')
           .set_library('player-fake', window.videofake)
