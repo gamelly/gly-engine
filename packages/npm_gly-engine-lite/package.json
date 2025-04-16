@@ -9,6 +9,7 @@
     "bugs": "https://github.com/gamelly/gly-engine/issues",
     "description": "Game Engine written in 100% lua that runs in a vacuum.",
     "main": "dist/main.lua",
+    "browser": "dist/main.lua",
     "types": "types/main.d.ts",
     "keywords": [
         "game engine",
