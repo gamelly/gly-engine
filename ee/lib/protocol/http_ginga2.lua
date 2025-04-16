@@ -11,6 +11,10 @@ local function handler(self)
     local headers = self.header_dict
     local session = self.id
 
+    if not header_dict['User-Agent'] then
+        header_dict['User-Agent'] = http_util.user_agent()
+    end
+
     data_dict[session] = ''
     request_dict[session] = self
 
@@ -28,11 +32,14 @@ end
 
 local function callback(evt)
     if evt.class ~= 'http' then return end
+    local empty = not evt.headers or not evt.body or not evt.code
+    local raise_error = false
     local session = evt.session
     local self = request_dict[session]
 
-    if evt.error and #evt.error > 0 then
+    if evt.error and #evt.error > 0 and empty then
         self.set('error', evt.error)
+        raise_error = true
     end
 
     if evt.headers then
@@ -48,7 +55,7 @@ local function callback(evt)
         data_dict[session] = data_dict[session]..evt.body
     end
 
-    if evt.finished or evt.error then
+    if evt.finished or raise_error then
         self.set('body', data_dict[session])
         request_dict[session] = nil
         data_dict[session] = nil

@@ -12,6 +12,10 @@ local function is_redirect(status)
     return (status and 300 <= status and status < 400) or false
 end
 
+local function user_agent()
+    return 'Ginga (GlyOS;SmartTv/Linux)'
+end
+
 local function url_search_param(param_list, param_dict)
     local index, params = 1, ''
     while param_list and param_dict and index <= #param_list do
