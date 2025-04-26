@@ -11,6 +11,23 @@ local obj_ncl = require('src/lib/object/ncl')
 local env_build = require('src/env/build')
 local lustache = require('third_party/lustache/olivinelabs')
 
+--! @todo move this function!
+local function parser_assets(font_list, register_key, register_value)
+    local index = 1
+    local res = {}
+    while index <= #font_list do
+        local key, value = font_list[index]:match("([^:]+):(.+)")
+        if key and value then
+            res[#res + 1] = {
+                [register_key] = key,
+                [register_value] = value
+            }
+        end
+        index = index + 1
+    end
+    return res
+end
+
 local function add_func(self, func, options)
     self.pipeline[#self.pipeline + 1] = function()
         local ok, msg = func()
@@ -90,6 +107,9 @@ local function add_meta(self, file_in, options)
             },
             env={
                 build=util_decorator.prefix1_t(self.args, env_build)
+            },
+            assets = {
+                fonts = parser_assets(game_ok and game_app and game_app.fonts or {}, 'font', 'url')
             },
             ncl=obj_ncl,
             args=self.args,
