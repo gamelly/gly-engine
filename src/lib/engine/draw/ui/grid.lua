@@ -223,6 +223,7 @@ local function component(std, engine, layout)
     end
 
     std.node.spawn(node)
+    node.config.depth = engine.current.depht
     return self
 end
 
