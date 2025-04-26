@@ -20,11 +20,10 @@ new variables are exclusive to the framework.
 
 | name               | values                                                    | description |
 | :----------------  | :-------------------------------------------------------- | :---------- |
-| ginga_manufacturer | @c lg @c samsung @c tcl @c intelbras @c philco @c philips | television brand
+| ginga_manufacturer | @c lg @c samsung @c intelbras @c telemedia | television brand
 | ginga_tv_inches    | @c 0 @c 32 @c 43 @c 50 @c 55 @c 65 @c 75 @c 85 | screen measurement
 | ginga_has_ccws     | @c 0 @c 1 | ginga cc web server
 | ginga_fsc_09       | @c 0 @c 1 | ginga profile c
-| ginga_fsd_09       | @c 0 @c 1 | ginga profile d
 
 @}
 @}

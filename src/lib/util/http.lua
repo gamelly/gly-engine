@@ -12,7 +12,17 @@ local function is_redirect(status)
     return (status and 300 <= status and status < 400) or false
 end
 
-local function user_agent()
+local function get_content(response)
+    local header, body = response:match("^(.-\r\n\r\n)(.*)")
+    if not header or not body then return nil end
+    local content_length = tonumber(header:match("Content%-Length:%s*(%d+)"))
+    if not content_length then return nil end
+    if #body < content_length then return nil end
+    local content = body:sub(1, content_length)
+    return content
+end
+
+local function get_user_agent()
     return 'Ginga (GlyOS;SmartTv/Linux)'
 end
 
@@ -176,6 +186,8 @@ return {
     is_ok=is_ok,
     is_ok_header=is_ok_header,
     is_redirect=is_redirect,
+    get_content=get_content,
+    get_user_agent=get_user_agent,
     url_search_param=url_search_param,
     create_request=create_request
 }

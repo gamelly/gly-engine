@@ -12,7 +12,7 @@ local function handler(self)
     local session = self.id
 
     if not header_dict['User-Agent'] then
-        header_dict['User-Agent'] = http_util.user_agent()
+        header_dict['User-Agent'] = http_util.get_user_agent()
     end
 
     data_dict[session] = ''

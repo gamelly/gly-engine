@@ -6,4 +6,5 @@ html/
 rtf/
 latex/
 doxygen/
+crt0.lua
 .out

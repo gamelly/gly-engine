@@ -85,7 +85,7 @@ local function http_connect(self)
         .add_mutable_header('Accept', '*/*')
         .add_mutable_header('Accept-Charset', 'utf-8', lua_util.has_support_utf8())
         .add_mutable_header('Accept-Charset', 'windows-1252, cp1252')
-        .add_mutable_header('User-Agent', http_util.user_agent())
+        .add_mutable_header('User-Agent', http_util.get_user_agent())
         .add_custom_headers(self.header_list, self.header_dict)
         .add_imutable_header('Content-Length', tostring(#self.body_content), #self.body_content > 0)
         .add_imutable_header('Connection', 'close')
@@ -462,6 +462,7 @@ end
 
 local P = {
     force = 'http',
+    util = http_util,
     handler = http_handler,
     install = install
 }
