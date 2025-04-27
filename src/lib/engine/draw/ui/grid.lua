@@ -142,8 +142,8 @@ local function apply(std, engine, self)
         local size = self.items_size[index]
         local ui = self.items_ui[node]
     
-        node.config.offset_x = offset_x + (x * hem)
-        node.config.offset_y = offset_y + (y * vem)
+        node.config.offset_x = offset_x + (x * (hem + gap_x))
+        node.config.offset_y = offset_y + (y * (vem + gap_y))
         node.data.width = hem
         node.data.height = size * vem
     
