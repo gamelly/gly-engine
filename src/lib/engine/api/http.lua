@@ -70,7 +70,16 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @hideparam self
 --! @brief decode body to table on response
 local function json(self)
-    self.use_json = true
+    self.options['json'] = true
+    return self
+end
+
+--! @short not force protocol
+--! @hideparam self
+--! @brief By default, requests follow the protocol (HTTP or HTTPS) based on their origin (e.g., HTML5).
+--! This setting allows opting out of that behavior and disabling automatic protocol enforcement.
+local function noforce(self)
+    self.options['noforce'] = true
     return self
 end
 
@@ -162,10 +171,6 @@ local function request(method, std, engine, protocol)
             engine.http_count = engine.http_count + 1
         end
 
-        if protocol.force then
-            url = url:gsub("^[^:]+://", protocol.force.."://")
-        end
-
         local json_encode = std.json and std.json.encode
         local json_decode = std.json and std.json.decode
         local http_body = function(self, content) return body(self, content, json_encode) end
@@ -176,6 +181,7 @@ local function request(method, std, engine, protocol)
             id = engine.http_count,
             url = url,
             speed = '',
+            options = {},
             method = method,
             body_content = '',
             header_list = {},
@@ -188,6 +194,7 @@ local function request(method, std, engine, protocol)
             -- functions
             fast = fast,
             json = json,
+            noforce = noforce,
             body = http_body,
             param = param,
             header = header,
@@ -210,6 +217,11 @@ local function request(method, std, engine, protocol)
         end
 
         self.pipeline = {
+            -- prepare
+            function()
+                if not protocol.force or self.options['noforce'] then return end
+                self.url = url:gsub("^[^:]+://", protocol.force.."://")
+            end,
             -- eval
             function()
                 if protocol.has_callback then engine.http_requests[self.id] = self end
@@ -218,7 +230,7 @@ local function request(method, std, engine, protocol)
             -- parse json
             function()
                 std.http.body_is_table = std.http.body and false
-                if self.use_json and json_decode and std.http.body then
+                if self.options['json'] and json_decode and std.http.body then
                     pcall(function()
                         local new_body = json_decode(std.http.body)
                         std.http.body_is_table = true
