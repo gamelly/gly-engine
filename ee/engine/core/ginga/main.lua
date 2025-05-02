@@ -157,9 +157,7 @@ local function main(evt, gamefile)
 end
 
 --! @defgroup ginga
---! @{
---! @note for enterprise features contact bizdev@zedia.com.br
---! @}
+--! @{ @note for enterprise features contact bizdev@zedia.com.br @}
 local ok, crt0 = pcall(require, 'crt0') 
 if ok then
     crt0(main, cfg_json_rxi, cfg_http_ginga.http_util)

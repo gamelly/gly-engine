@@ -25,10 +25,10 @@ local util_decorator = require('src/lib/util/decorator')
 --! @par Breakpoints
 --! @todo comming soon breakpoints
 --!
---! |        | 1seg | SD 480 | HD 720  | FULL HD 1080 | QUAD HD 1440 | ULTRA HD 4K |
---! | :----- |      | :----: | :-----: | :----------: | :----------: | :---------: |
---! | prefix |      | sd     | hd      | full         | quad         | ultra       |
---! | width  | >0px | >679px | >1279px | >1919px      | >2569px      | >3839px     |
+--! |        | 1seg | SD 480 | HD 720  | FULL HD 1080 | QUAD HD 1440 |
+--! | :----- |      | :----: | :-----: | :----------: | :----------: |
+--! | prefix |      | sd     | hd      | full         | quad         |
+--! | width  | >0px | >479px | >719px  | >1079px      | >1439px      |
 --! 
 --! @par Offset
 --! To create blank columns, simply add an empty table @c {} to represent an empty node.
