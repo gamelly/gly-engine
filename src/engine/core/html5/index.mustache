@@ -83,11 +83,21 @@
       </canvas>
       {{/ args.gamepadzilla }}
     </main>
-    {{# args.videofake }}<script>window.videofake=100</script>{{/ args.videofake }}
-    {{# env.build.need_atobify }}<script src="index.js" defer></script>{{/ env.build.need_atobify }}
-    {{# args.gamepadzilla }}<script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1" defer></script>{{/ args.gamepadzilla }}
-    {{# args.videojs }}<script src="https://cdn.jsdelivr.net/npm/video.js@8.22.0/dist/video.min.js" defer></script>{{/ args.videojs }}
-    {{# args.fengari }}<script src="https://cdn.jsdelivr.net/npm/fengari-web@latest/dist/fengari-web.js" defer></script>{{/ args.fengari }}
+    {{# args.videofake }}
+    <script>window.videofake=100</script>
+    {{/ args.videofake }}
+    {{# env.build.need_atobify }}
+    <script src="index.js" defer></script>
+    {{/ env.build.need_atobify }}
+    {{# args.gamepadzilla }}
+    <script src="https://cdn.jsdelivr.net/npm/gamepadzilla@1" defer></script>
+    {{/ args.gamepadzilla }}
+    {{# args.videojs }}
+    <script src="https://cdn.jsdelivr.net/npm/video.js@8.22.0/dist/video.min.js" defer></script>
+    {{/ args.videojs }}
+    {{# args.fengari }}
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@latest/dist/fengari-web.js" defer></script>
+    {{/ args.fengari }}
     {{^ args.fengari }}
     <script type="module">
     import { LuaFactory, LuaMultiReturn } from 'https://cdn.jsdelivr.net/npm/wasmoon@1.16.0/+esm'
