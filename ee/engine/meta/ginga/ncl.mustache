@@ -15,12 +15,6 @@
         <simpleCondition role="onBegin"/>
         <simpleAction role="set" value="$var"/>
       </causalConnector>
-      <causalConnector id="onKeySelectionSet">
-        <connectorParam name="var" />
-        <connectorParam name="keyCode" />
-        <simpleCondition role="onSelection" key="$keyCode" />
-        <simpleAction role="set" value="$var" />
-      </causalConnector>
       <causalConnector id="onEndAttributionSet">
         <connectorParam name="valueSet"/>
         <simpleCondition role="onEndAttribution" max="unbounded" qualifier="or"/>
@@ -58,15 +52,6 @@
     {{! focus begin }}
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="application"/>
-      <bind role="set" component="settings" interface="service.currentKeyMaster">
-        <bindParam name="var" value="application"/>
-      </bind>
-    </link>
-    {{! BACK button focus}}
-    <link xconnector="onKeySelectionSet">
-      <bind role="onSelection" component="application">
-        <bindParam name="keyCode" value="BACK" />
-      </bind>
       <bind role="set" component="settings" interface="service.currentKeyMaster">
         <bindParam name="var" value="application"/>
       </bind>
