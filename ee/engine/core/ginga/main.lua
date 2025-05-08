@@ -58,10 +58,6 @@ local engine = {
     fps = 0
 }
 
---! @short clear ENV
---! @brief GINGA?
-_ENV = nil
-
 local cfg_system = {
     get_language = function() return 'pt-BR' end
 }
@@ -83,7 +79,7 @@ local cfg_text = {
 }
 
 local function register_event_loop()
-    event.register(std.bus.trigger('ginga'))
+    event.register(function(evt) pcall(std.bus.emit, 'ginga', evt) end)
 end
 
 local function register_fixed_loop()
@@ -91,10 +87,10 @@ local function register_fixed_loop()
     local loop = std.bus.trigger('loop')
     local draw = std.bus.trigger('draw')    
     tick = function()
-        loop()
+        pcall(loop)
         canvas:attrColor(0, 0, 0, 0)
         canvas:clear()
-        draw()
+        pcall(draw)
         canvas:flush()
         event.timer(engine.delay, tick)
     end
