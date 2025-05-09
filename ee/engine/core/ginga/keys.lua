@@ -20,17 +20,15 @@ local key_bindings={
 local function event_ginga(std, evt)
     if evt.class ~= 'key' then return end
     if not key_bindings[evt.key] then return end
-    if evt.key == "BACK" then
-        event.post("out",
-        {
-            class = "ncl",
-            type = "edit",
-            command = "setPropertyValue",
-            nodeId = "settings",
-            propertyId = "service.currentKeyMaster",
-            value = "application"
-        }
-        )
+    if evt.key == 'BACK' then
+        event.post('out', {
+            class = 'ncl',
+            type = 'edit',
+            command = 'setPropertyValue',
+            nodeId = 'settings',
+            propertyId = 'service.currentKeyMaster',
+            value = 'application'
+        })
     end
     std.bus.emit('rkey', key_bindings[evt.key], evt.type == 'press')
 
