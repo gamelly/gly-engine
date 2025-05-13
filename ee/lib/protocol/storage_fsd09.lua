@@ -8,7 +8,7 @@ local headers = {
 local function storage_set(key, value, promise, resolve)
     local self = {promise=promise,resolve=resolve}
     local session = tonumber(tostring(self):match("0x(%x+)$"), 16)
-    local uri = base_url..'?var-name=channel.'..key
+    local uri = base_url..'/channel.'..key..'?var-name=channel.'..key
     local body = '{"varValue": "'..value..'"}'
 
     requests[session] = self
@@ -28,7 +28,7 @@ end
 local function storage_get(key, push, promise, resolve)
     local self = {push=push,promise=promise,resolve=resolve,body=''}
     local session = tonumber(tostring(self):match("0x(%x+)$"), 16)
-    local uri = base_url..'/channel.'..key..'?var-name=channel.'..key
+    local uri = base_url..'/channel.'..key
 
     requests[session] = self
 
@@ -49,25 +49,25 @@ local function callback(std, engine, evt)
     local self = requests[evt.session]
 
     if self then
-        if not self.body then
-            requests[evt.session] = nil
-            return self.resolve()
-        end
-
         if evt.body then
             self.body = self.body..evt.body
         end
-       
-        if evt.error or evt.code ~= 200 then
+
+        if (evt.error and (not evt.body or not evt.code)) or evt.code ~= 200 then
             requests[evt.session] = nil
             return self.resolve()
         end
 
-        if evt.finished then
+        if evt.finished or evt.code == 200 then
             requests[evt.session] = nil
-            local data = std.json.decode(self.body)
-            self.push(data[1] and data[1].value or data.value or '')
-            return self.resolve()
+            local ok, data = pcall(std.json.decode, self.body)
+            data = ok and data and data.persistent or data
+            data = data and data[1] or data
+            data = data and data.value or data
+            if ok or evt.finished then
+                self.push(data or '')
+                return self.resolve()
+            end
         end
     end
 end

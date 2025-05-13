@@ -1,7 +1,7 @@
 local function init(std, props)
     props.exclamation = '!'
     std.storage.get('message'):as('exclamation'):default('!!')
-        :callback(function() std.storage.set('message', 'back!'):run() end)
+        :callback(function() std.storage.set('message', ' back!'):run() end)
         :run()
 end
 
@@ -12,7 +12,7 @@ local function draw(std, props)
     std.draw.clear(std.color.blue)
     std.draw.color(std.color.white)
     std.text.font_size(16)
-    std.text.print(std.text.print_ex(8, 8, 'Wellcome ') + 8, 8, tostring(props.exclamation))
+    std.text.print(std.text.print_ex(8, 8, 'Wellcome') + 8, 8, tostring(props.exclamation))
 end
 
 local function exit(std, props)
