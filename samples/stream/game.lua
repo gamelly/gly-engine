@@ -52,7 +52,8 @@ local function draw(std, data)
         local w, h = data.width/6, data.height/4
         local w2, h2, index = data.width - data.wmax, h*2, 1
         local h3 = (#data.list + 1) * font_size
-        std.draw.color(std.color.blue)
+        local color = std.media.video():get_error() and std.color.red or std.color.blue
+        std.draw.color(std.media.video():in_mutex() and std.color.green or color)
         std.draw.rect(0, w2 - 16, h, data.wmax + 32, h3 + font_size)
         std.draw.color(std.color.skyblue)
         std.text.font_size(font_size)
