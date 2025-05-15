@@ -94,8 +94,8 @@ end
 --! @hideparam self
 local function param(self, name, value)
     local index = #self.param_list + 1
-    self.param_list[index] = name
-    self.param_dict[name] = value
+    self.param_list[index] = tostring(name)
+    self.param_dict[name] = tostring(value)
     return self
 end
 
@@ -108,8 +108,8 @@ end
 --! @endcode
 local function header(self, name, value)
     local index = #self.header_list + 1
-    self.header_list[index] = name
-    self.header_dict[name] = value
+    self.header_list[index] = tostring(name)
+    self.header_dict[name] = tostring(value)
     return self
 end
 
@@ -229,11 +229,9 @@ local function request(method, std, engine, protocol)
             end,
             -- parse json
             function()
-                std.http.body_is_table = std.http.body and false
                 if self.options['json'] and json_decode and std.http.body then
                     pcall(function()
                         local new_body = json_decode(std.http.body)
-                        std.http.body_is_table = true
                         std.http.body = new_body
                     end)
                 end

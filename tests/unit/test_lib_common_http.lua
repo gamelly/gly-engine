@@ -13,7 +13,7 @@ local http_handler = mock_http.requests({
     ['example.com/set-status-body-param1-param2'] = {
         ok = true,
         status = function(http_object)
-            return http_object.param_dict[http_object.param_list[1]]
+            return tonumber(http_object.param_dict[http_object.param_list[1]])
         end,
         body = function(http_object)
             return http_object.param_dict[http_object.param_list[2]]

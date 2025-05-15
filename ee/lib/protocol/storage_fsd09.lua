@@ -55,7 +55,8 @@ local function callback(std, engine, evt)
 
         if (evt.error and (not evt.body or not evt.code)) or evt.code ~= 200 then
             requests[evt.session] = nil
-            return self.resolve()
+            self.resolve()
+            return
         end
 
         if evt.finished or evt.code == 200 then
@@ -66,7 +67,8 @@ local function callback(std, engine, evt)
             data = data and data.value or data
             if ok or evt.finished then
                 self.push(data or '')
-                return self.resolve()
+                self.resolve()
+                return
             end
         end
     end
