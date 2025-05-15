@@ -27,10 +27,10 @@ local engine_memory = require('src/lib/engine/raw/memory')
 --
 local cfg_json_rxi = require('third_party/json/rxi')
 local cfg_logsystem = require('src/lib/protocol/logsystem_print')
-local cfg_http_ginga = require('ee/lib/protocol/http_ginga')
+local cfg_http_ginga = require('ee/lib/protocol/http_fsb09')
 local cfg_persistent = require('ee/lib/protocol/storage_fsd09')
 local cfg_mediaplayer = require('ee/lib/protocol/media_fsd09')
---local cfg_http_ginga2 = require('ee/lib/protocol/http_ginga2')
+local cfg_http_ginga2 = require('ee/lib/protocol/http_fsc09')
 --
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
