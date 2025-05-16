@@ -4,10 +4,6 @@
 
 [<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
 
-[![codecov](https://codecov.io/github/gly-engine/gly-engine/graph/badge.svg?token=MM0TY7VVAT)](https://codecov.io/github/gly-engine/gly-engine)
-[![download](https://img.shields.io/badge/download-1.5MB-blue?logo=curl)](https://get.gamely.com.br/cli.lua)
-[![npmjs.com](https://img.shields.io/npm/v/%40gamely%2Fgly-engine?logo=npm&color=blue)](https://www.npmjs.com/package/@gamely/gly-cli)
-
 > **A cross-platform engine built with Lua**, designed to create games and apps that run on smart TVs, browsers, mobile devices, retro platforms, and can be embedded into other engines or native applications.
 
  * **Multiple Programming language support** <br/><sup>_(Lua, Javascript, Typescript, Haxe, Dart...)_</sup>
