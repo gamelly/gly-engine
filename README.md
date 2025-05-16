@@ -2,15 +2,25 @@
 <h1>:mechanical_arm:<br>GLY Engine<br><sup><sub>powered by <a href="https://gamely.com.br" target="_blank">gamely.com.br</a></sub></sup></h1>
 </div>
 
-[<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
+[<img align="right" height="256px" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
 
 [![codecov](https://codecov.io/github/gly-engine/gly-engine/graph/badge.svg?token=MM0TY7VVAT)](https://codecov.io/github/gly-engine/gly-engine)
+[![download](https://img.shields.io/badge/download-1.5MB-blue?logo=curl)](https://get.gamely.com.br/cli.lua)
+[![npmjs.com](https://img.shields.io/npm/v/%40gamely%2Fgly-engine?logo=npm&color=blue)](https://www.npmjs.com/package/@gamely/gly-cli)
 
-> A cross-platform embeddable LUA game engine such as ginga, pc, mobile, browser and its own console like a Wii clone.
+> **A cross-platform engine built with Lua**, designed to create games and apps that run on smart TVs, browsers, mobile devices, retro platforms, and can be embedded into other engines or native applications.
 
- * **Progressive "Television" Apps** _(PWA but is for Brazilian TVs)_
- * **Many testing tools** _(REPL, Unit Tests, [TAS](https://tasvideos.org/WelcomeToTASVideos#WhatIsATas) Tests)_
+ * **Multiple Programming language support** <br/><sup>_(Lua, Javascript, Typescript, Haxe, Dart...)_</sup>
+ * **Frictionless Develeopment** <br/><sup>_(Online [IDE](https://playground.gamely.com.br) or very easy installation)_</sup>
+ * **Progressive "Television" Apps** <br/><sup>_(PWA but is for Brazilian TVs)_</sup>
+ * **Many testing tools** <br/><sup>_(REPL, Unit Tests, [TAS](https://tasvideos.org/WelcomeToTASVideos#WhatIsATas) Tests)_</sup>
  * **Pure functions**
+
+### Browser :globe_with_meridians:
+
+```sql
+lua cli.lua build @asteroids
+```
 
 ### Love 2D :heart_decoration: :desktop_computer:
 
@@ -18,21 +28,27 @@
 lua cli.lua build @asteroids --core love --run
 ```
 
-### Browser :globe_with_meridians:
+### Ginga :brazil: :tv:
 
 ```sql
-lua cli.lua build @asteroids --core html5
+lua cli.lua @asteroids --core ginga --enterprise
 ```
 
-#### CLI Platform Support
+## How to Install
 
-| command | lua 5.4 | lua 5.3 | lua 5.1 | luajit | installation |
-| :-----: | :-----: | :-----: | :-----: | :----: | :----------- |
-| cli.sh  |    :ok: |    :ok: |    :ok: |   :ok: | `git clone https://github.com/gly-engine/gly-engine`
-| cli.lua |    :ok: |    :ok: |    :ok: |   :ok: | `wget http://get.gamely.com.br/cli.lua`
-| gly-cli |    :ok: |         |         |        | `npm install -g @gamely/gly-cli`
+#### Using Lua
 
-#### Engine Platform Support
+```
+wget http://get.gamely.com.br/cli.lua
+```
+
+#### Using Javascript
+
+```
+npm install @gamely/gly-cli
+```
+
+## Engine Platform Support
 
 | Tier 1 | HTML5, WebOS2020 or later | main platform for production |
 | :----- | :------------------------ | :------------ |
