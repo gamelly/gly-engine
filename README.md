@@ -2,9 +2,9 @@
 <h1>:mechanical_arm:<br>GLY Engine<br><sup><sub>powered by <a href="https://gamely.com.br" target="_blank">gamely.com.br</a></sub></sup></h1>
 </div>
 
-[<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
+> A Lua-based cross-platform engine for building games and apps that run on smart TVs, browsers, old consoles, and can be embedded into other engines or native apps.
 
-> **A cross-platform engine built with Lua**, designed to create games and apps that run on smart TVs, browsers, mobile devices, retro platforms, and can be embedded into other engines or native applications.
+[<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
 
  * **Multiple Programming language support** <br/><sup>_(Lua, Javascript, Typescript, Haxe, Dart...)_</sup>
  * **Frictionless Develeopment** <br/><sup>_(Online [IDE](https://playground.gamely.com.br) or very easy installation)_</sup>
