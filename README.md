@@ -2,7 +2,7 @@
 <h1>:mechanical_arm:<br>GLY Engine<br><sup><sub>powered by <a href="https://gamely.com.br" target="_blank">gamely.com.br</a></sub></sup></h1>
 </div>
 
-[<img align="right" height="256px" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
+[<img align="right" width="40%" src="https://raw.githubusercontent.com/RodrigoDornelles/RodrigoDornelles/master/media/ginga-asteroids.gif">](https://github.com/gly-engine/gly-engine/blob/main/samples/asteroids/game.lua)
 
 [![codecov](https://codecov.io/github/gly-engine/gly-engine/graph/badge.svg?token=MM0TY7VVAT)](https://codecov.io/github/gly-engine/gly-engine)
 [![download](https://img.shields.io/badge/download-1.5MB-blue?logo=curl)](https://get.gamely.com.br/cli.lua)
