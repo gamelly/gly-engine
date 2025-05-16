@@ -10,7 +10,7 @@
 
 @todo explain better about JS
 
-@li **Pong Example** https://github.com/gamelly/game-pong-javascript
+@li **Pong Example** https://github.com/gly-engine/game-pong-javascript
 
 @par Template
 ```java

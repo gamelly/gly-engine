@@ -24,8 +24,8 @@ and older video games like @ref nintendo_gba "gba" and @ref nintendo_ds "nds" ar
 
 @par Tool IMG Gen
 @details It is possible to create logos or any images using the engine's real-time drawing API while writing the rendering code and clicking download.
-@li source: https://github.com/gamelly/tool-img-gen
-@li website: https://gamelly.github.io/tool-img-gen
+@li source: https://github.com/gly-engine/tool-img-gen
+@li website: https://gly-engine.github.io/tool-img-gen
 
 @call divcpp
 @short std.draw.clear

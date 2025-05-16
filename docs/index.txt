@@ -7,7 +7,7 @@
 @li @ref Examples "List of examples"
 @li @ref support "Plataform Support"
 @li @ref support "View Engine API Guide"
-@li [View the CLI/Engine source code](https://github.com/gamelly/gly-engine)
+@li [View the CLI/Engine source code](https://github.com/gly-engine/gly-engine)
 @li @ref support "Comparison between Game Engines"
 
 ## Requirements
