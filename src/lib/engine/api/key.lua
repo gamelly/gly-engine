@@ -1,26 +1,3 @@
---! @defgroup std
---! @{
---! @defgroup key
---! @{
---!
---! | input              | values |
---! | :----------------- | :----- |
---! | std.key.axis.x     | -1 0 1 |
---! | std.key.axis.y     | -1 0 1 |
---! | std.key.axis.a     | 0 1    |
---! | std.key.axis.b     | 0 1    |
---! | std.key.axis.c     | 0 1    |
---! | std.key.axis.d     | 0 1    |
---! | std.key.axis.menu  | 0 1    |
---! | std.key.press.a    | false true |
---! | std.key.press.b    | false true |
---! | std.key.press.c    | false true |
---! | std.key.press.d    | false true |
---! | std.key.press.menu | false true |
---!
---! @}
---! @}
-
 local function real_key(std, engine, rkey, rvalue)
     local value = rvalue == 1 or rvalue == true
     local key = engine.key_bindings[rkey] or (std.key.axis[rkey] and rkey)

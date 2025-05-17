@@ -47,7 +47,7 @@ jobs:
       matrix:
         game: [
           'asteroids', 'dvdplayer', 'launcher', '2games', 'helloworld', 'gridsystem', 'pong',
-          'capybird', 'maze3d', 'videostream', 'fakestream'
+          'capybird', 'maze3d', 'videostream', 'fakestream', 'rickstream'
         ]
     steps:
       - 

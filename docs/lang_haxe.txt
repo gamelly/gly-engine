@@ -8,7 +8,7 @@
 
 @li **Official site** https://haxe.org/
 @li **Official wiki** https://haxe.org/manual
-@li **Pong Example** https://github.com/gamelly/game-pong-haxe
+@li **Pong Example** https://github.com/gly-engine/game-pong-haxe
 
 @par Tutorial
 

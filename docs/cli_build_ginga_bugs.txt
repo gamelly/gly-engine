@@ -31,7 +31,7 @@ it is cached to ensure there is an understanding between the connection ID, host
 
 @page ginga_bug_155 HTTP disconnect crash LG 2024
 
-@li https://github.com/gamelly/gly-engine/issues/155
+@li https://github.com/gly-engine/gly-engine/issues/155
 
 @b problem: 
 LGs have incremental connection IDs starting from 0.

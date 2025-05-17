@@ -6,5 +6,5 @@
     "main": "index.html",
     "title": "{{ meta.title }}",
     "icon": "icon80x80.png",
-    "iconLarge": "icon512x423.png"
+    "largeIcon": "icon512x423.png"
 }

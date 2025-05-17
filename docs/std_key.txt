@@ -1,0 +1,45 @@
+@defgroup std
+@{
+@defgroup key
+@{
+
+<div style="float:left;margin-right:30px;">
+
+@par action buttons
+
+| input              | values |
+| :----------------- | :----- |
+| std.key.press.a    | false true |
+| std.key.press.b    | false true |
+| std.key.press.c    | false true |
+| std.key.press.d    | false true |
+| std.key.axis.a     | 0 1    |
+| std.key.axis.b     | 0 1    |
+| std.key.axis.c     | 0 1    |
+| std.key.axis.d     | 0 1    |
+| std.key.axis.menu  | 0 1    |
+| std.key.press.menu | false true |
+| std.key.press.any | false true |
+
+<div>
+
+<div style="float:right;">
+
+@par cursor buttons
+
+| input              | values |
+| :----------------- | :----- |
+| std.key.press.left  | false true |
+| std.key.press.right | false true |
+| std.key.press.up    | false true |
+| std.key.press.down  | false true |
+| std.key.axis.left  | 0 1 |
+| std.key.axis.right | 0 1 |
+| std.key.axis.up    | 0 1 |
+| std.key.axis.down  | 0 1 |
+| std.key.axis.x     | -1 0 1 |
+| std.key.axis.y     | -1 0 1 |
+</div>
+
+@}
+@}

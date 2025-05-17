@@ -12,11 +12,11 @@ You can make your Lua games for gameboy advanced using the Gly engine,
 although the hardware is somewhat limited, small games can run well.
 
  - online IDE <https://playground.gamely.com.br>
- - source code <https://github.com/gamelly/core-native-gba>
+ - source code <https://github.com/gly-engine/core-native-gba>
  - @ref cmake "more details"
 
 ```text
-git clone https://github.com/gamelly/core-native-gba
+git clone https://github.com/gly-engine/core-native-gba
 ```
 
 ```text
@@ -32,11 +32,11 @@ make -C build
 You can make your Lua games for nintendo ds using the Gly engine!
 
  - online IDE <https://playground.gamely.com.br>
- - source code <https://github.com/gamelly/core-native-nds>
+ - source code <https://github.com/gly-engine/core-native-nds>
  - @ref cmake "more details"
 
 ```text
-git clone https://github.com/gamelly/core-native-nds
+git clone https://github.com/gly-engine/core-native-nds
 ```
 
 ```text

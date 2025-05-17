@@ -56,7 +56,7 @@ local function init(std, game)
 end
 
 local function spawn_pipe(std, game)
-    local pipe_height = std.math.random(100, game.height - game.pipe_gap - 100)
+    local pipe_height = (std.milis % (game.height - game.pipe_gap - 200)) + 100
     table.insert(game.pipes, {
         x = game.width,
         y = pipe_height,
@@ -69,7 +69,7 @@ local function loop(std, game)
         -- Menu navigation
         local keyh = std.key.axis.x + std.key.axis.a 
         if std.key.axis.y ~= 0 and std.milis > game.menu_time + 250 then
-            game.menu = std.math.clamp(game.menu + std.key.axis.y, 2, 4)
+            game.menu = ((game.menu + std.key.axis.y - 2) % 3) + 2
             game.menu_time = std.milis
         end
         
@@ -136,7 +136,7 @@ local function loop(std, game)
     -- Game over state
     if game.state == 3 and std.milis > game.menu_time + 2000 then
         game.state = 1
-        game.highscore = std.math.max(game.score, game.highscore or 0)
+        game.highscore = (game.highscore and game.highscore < game.score)  and game.score or game.highscore
     end
 end
 
@@ -186,7 +186,6 @@ local function draw(std, game)
 end
 
 local function exit(std, game)
-    game.highscore = std.math.max(game.score, game.highscore or 0)
     game.pipes = nil
 end
 

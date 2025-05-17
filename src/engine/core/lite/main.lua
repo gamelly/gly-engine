@@ -42,9 +42,11 @@ local cfg_media = {
     bootstrap=native_media_bootstrap,
     position=native_media_position,
     resize=native_media_resize,
+    resume=native_media_resume,
+    source=native_media_source,
     pause=native_media_pause,
-    load=native_media_load,
-    play=native_media_play
+    play=native_media_play,
+    stop=native_media_stop
 }
 
 local cfg_poly = {
@@ -179,7 +181,6 @@ function native_callback_init(width, height, game_lua)
         :package('i18n', engine_i18n, cfg_system)
         :package('hash', engine_hash, cfg_system)
         :package('media.video', engine_media, cfg_media)
-        :package('media.audio', engine_media, cfg_media)
         :package('mock.video', engine_media)
         :package('mock.audio', engine_media)
         :run()

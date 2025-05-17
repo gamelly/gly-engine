@@ -113,12 +113,15 @@ end
 --! @endcode
 local function spawn(engine, application)
     if not application or buses.inverse_list[application] then return end
+    local depth = 1
     local index = #buses.list + 1
     buses.list[index] = application
     buses.inverse_list[application] = index
     if engine.current then
         application.config.parent = engine.current
+        depth = (engine.current.config.depth or 0) + 1
     end
+    application.config.depth = depth
 end
 
 --! @short unregister node from event bus
@@ -183,31 +186,43 @@ end
 --! note no remove
 local function event_bus(std, engine, key, a, b, c, d, e, f)
     local index = 1
+    local count = 0
     local depth = 0
-    
-    while index <= #buses.list do
-        local application = buses.list[index]
-        if engine.current ~= application then
-            local node = application
-            engine.current = application
-            engine.offset_x = 0
-            engine.offset_y = 0
-            while node and depth < 100 do
-                engine.offset_x = engine.offset_x + node.config.offset_x
-                engine.offset_y = engine.offset_y + node.config.offset_y
-                node = node.config.parent
-                depth = depth + 1
-            end
-        end
 
-        local ret = emit(std, application, key, a, b, c, d, e, f)
+    repeat
+        index = 1
+        count = 0
+        depth = depth + 1
+        while index <= #buses.list do
+            local application = buses.list[index]
+            if application.config.depth == depth then
+                count = count + 1
+                if engine.current ~= application then
+                    local node = application
+                    local safe_depth = 0
+                    engine.current = application
+                    engine.offset_x = 0
+                    engine.offset_y = 0
+                    while node and safe_depth < 100 do
+                        if safe_depth > 50 then
+                            error('fatal error parent three')
+                        end
+                        engine.offset_x = engine.offset_x + node.config.offset_x
+                        engine.offset_y = engine.offset_y + node.config.offset_y
+                        node = node.config.parent
+                        safe_depth = safe_depth + 1
+                    end
+                end
         
-        if ret ~= nil then
-            engine.bus_emit_ret(key, ret)
+                local ret = emit(std, application, key, a, b, c, d, e, f)
+                
+                if ret ~= nil then
+                    engine.bus_emit_ret(key, ret)
+                end
+            end
+            index = index + 1
         end
-        
-        index = index + 1
-    end
+    until count == 0
 end
 
 local function install(std, engine)

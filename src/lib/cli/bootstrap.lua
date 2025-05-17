@@ -23,7 +23,7 @@ local function string_to_hex(input)
     local result = ""
     for i = 1, #input do
         local byte = input:byte(i)
-        result = result .. string.format("\\x%02x", byte)
+        result = result .. string.format("\\%03d", byte)
     end
     return result
 end

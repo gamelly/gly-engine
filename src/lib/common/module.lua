@@ -24,6 +24,7 @@ local function default(application, defaults)
     end
 
     normalized_aplication.config.id = tostring(application) 
+    normalized_aplication.fonts = application.fonts or {}
     normalized_aplication.assets = application.assets or {}
 
     if application.callbacks then
@@ -53,6 +54,7 @@ local function normalize(application)
     local normalized_aplication = {
         data = {},
         meta = {},
+        fonts = {},
         assets = {},
         config = {},
         callbacks = {}
@@ -61,6 +63,8 @@ local function normalize(application)
     for key, value in pairs(application) do
         if key == 'assets' then
             normalized_aplication.assets = value
+        elseif key == 'fonts' then
+            normalized_aplication.fonts = value
         elseif application_default.meta[key] then
             normalized_aplication.meta[key] = value
         elseif application_default.config[key] then

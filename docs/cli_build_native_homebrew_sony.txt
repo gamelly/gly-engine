@@ -13,11 +13,11 @@ but as limitations of only fixed point and without cmath library,
 as it has not been worked on yet.
 
  - online IDE <https://playground.gamely.com.br>
- - source code <https://github.com/gamelly/core-native-ps1>
+ - source code <https://github.com/gly-engine/core-native-ps1>
  - @ref cmake "more details"
 
 ```text
-git clone https://github.com/gamelly/core-native-ps1
+git clone https://github.com/gly-engine/core-native-ps1
 ```
 
 ```text

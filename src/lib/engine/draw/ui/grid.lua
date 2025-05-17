@@ -25,10 +25,10 @@ local util_decorator = require('src/lib/util/decorator')
 --! @par Breakpoints
 --! @todo comming soon breakpoints
 --!
---! |        | 1seg | SD 480 | HD 720  | FULL HD 1080 | QUAD HD 1440 | ULTRA HD 4K |
---! | :----- |      | :----: | :-----: | :----------: | :----------: | :---------: |
---! | prefix |      | sd     | hd      | full         | quad         | ultra       |
---! | width  | >0px | >679px | >1279px | >1919px      | >2569px      | >3839px     |
+--! |        | 1seg | SD 480 | HD 720  | FULL HD 1080 | QUAD HD 1440 |
+--! | :----- |      | :----: | :-----: | :----------: | :----------: |
+--! | prefix |      | sd     | hd      | full         | quad         |
+--! | width  | >0px | >479px | >719px  | >1079px      | >1439px      |
 --! 
 --! @par Offset
 --! To create blank columns, simply add an empty table @c {} to represent an empty node.
@@ -130,16 +130,20 @@ local function apply(std, engine, self)
         index2 = index2 + 1
     end
     
-    local hem = self.node.data.width / self.rows
-    local vem = self.node.data.height / self.cols
+    local gap_x, gap_y = self.px_gap, self.px_gap
+    local offset_x, offset_y = (self.px_margin/2) + (gap_x/2), (self.px_margin/2) + (gap_y/2)
+    local width = self.node.data.width - self.px_margin
+    local height = self.node.data.height - self.px_margin
+    local hem = (width / self.rows) - gap_x
+    local vem = (height / self.cols) - gap_y
 
     while self.direction == 1 and index <= #self.items_node do
         local node = self.items_node[index]
         local size = self.items_size[index]
         local ui = self.items_ui[node]
     
-        node.config.offset_x = x * hem
-        node.config.offset_y = y * vem
+        node.config.offset_x = offset_x + (x * (hem + gap_x))
+        node.config.offset_y = offset_y + (y * (vem + gap_y))
         node.data.width = hem
         node.data.height = size * vem
     
@@ -161,8 +165,8 @@ local function apply(std, engine, self)
         local size = self.items_size[index]
         local ui = self.items_ui[node]
 
-        node.config.offset_x = x * hem
-        node.config.offset_y = y * vem
+        node.config.offset_x = offset_x + (x * (hem + gap_x))
+        node.config.offset_y = offset_y + (y * (vem + gap_y))
         node.data.width = size * hem
         node.data.height = vem
 
@@ -197,7 +201,11 @@ local function component(std, engine, layout)
         items_size = {},
         items_ui = {},
         node=node,
+        px_gap=0,
+        px_margin=0,
         classlist='',
+        gap=ui_common.gap,
+        margin=ui_common.margin,
         dir=util_decorator.prefix2(std, engine, dir),
         add=util_decorator.prefix2(std, engine, ui_common.add),
         add_items=util_decorator.prefix2(std, engine, ui_common.add_items),
@@ -223,6 +231,7 @@ local function component(std, engine, layout)
     end
 
     std.node.spawn(node)
+    node.config.depth = engine.current.depht
     return self
 end
 

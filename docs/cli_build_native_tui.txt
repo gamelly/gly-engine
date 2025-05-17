@@ -8,10 +8,10 @@
 
 @page tui_ascii Ascii
 
- - source code <https://github.com/gamelly/core-native-ascii>
+ - source code <https://github.com/gly-engine/core-native-ascii>
 
 ```text
-git clone https://github.com/gamelly/core-native-ascii
+git clone https://github.com/gly-engine/core-native-ascii
 ```
 
 ```text

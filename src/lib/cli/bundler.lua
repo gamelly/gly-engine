@@ -97,7 +97,7 @@ local function build(src, dest)
     local dest_path = util_fs.file(dest)
     local relative = src_path and dest_path and src_path.get_unix_path()
     local src_file, src_err = io.open((src_path and src_path.get_fullfilepath()) or '')
-    local pattern_identify = '^table: 0x(%w+)$'
+    local pattern_identify = '^table: (%w+)$'
     local pattern_require1 = '^%s*require%([\'"](.-)[\'"]%)(.*)'
     local pattern_require2 = '^%s*([%w_%-]+)%s*=%s*require%([\'"](.-)[\'"]%)(.*)'
     local pattern_require3 = '^%s*local%s*([%w_%-]+)%s*=%s*require%([\'"](.-)[\'"]%)(.*)'
@@ -168,7 +168,7 @@ local function build(src, dest)
                 end
 
                 local index = #deps_dict[line_package].line + 1
-                local lib_id = tostring(deps_dict[line_package]):match(pattern_identify)
+                local lib_id = tostring(deps_dict[line_package]):gsub('0x', ''):match(pattern_identify)
                 local lib_func = line_package:gsub('/', '_'):gsub('%.', '_'):gsub('\\', '_')..'_'..lib_id
 
                 line = line..lib_func..' '..line_variable..' '
@@ -255,7 +255,7 @@ local function build(src, dest)
     end
 
     do
-        local id = tostring(deps_dict):match(pattern_identify)
+        local id = tostring(deps_dict):gsub('0x', ''):match(pattern_identify)
         main_content = 'local function main_'..id..'()\n'..main_content..'end\n'
         main_content = main_before..main_content..main_after..'return main_'..id..'()\n'
     end

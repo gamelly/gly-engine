@@ -1,7 +1,7 @@
 local http_util = require('src/lib/util/http')
 local json = require('third_party/json/rxi')
 
-local url = 'https://api.github.com/repos/gamelly/gly-engine/releases'
+local url = 'https://api.github.com/repos/gly-engine/gly-engine/releases'
 local ver_file = io.open('src/version.lua')
 local ver_text = ver_file and ver_file:read('*a')
 local lmajor, lminor, lpatch = (ver_text or '0.0.0'):match('(%d+)%.(%d+)%.(%d+)')
