@@ -52,7 +52,7 @@ end
 local function fix_navbar_index()
     local filepath = dirs[1]..'/navtreedata.js'
     local f = io.open(filepath, 'r')
-    local fixed = 'asteroids.html'
+    local fixed = '0.html'
     local content = f:read('*a'):gsub('NAVTREEINDEX%s*=%s*%[([^%]]*)%]', function(s)
         return 'NAVTREEINDEX = ["'..fixed..'"]'
     end)

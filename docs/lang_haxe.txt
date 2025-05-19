@@ -4,7 +4,7 @@
 @defgroup haxe Haxe
 @{
 
-@brief Create game in Haxe
+@brief Create games and apps with Haxe
 
 @li **Official site** https://haxe.org/
 @li **Official wiki** https://haxe.org/manual

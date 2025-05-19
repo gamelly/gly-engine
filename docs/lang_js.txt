@@ -4,7 +4,7 @@
 @defgroup javascript Javascript
 @{
 
-@brief @brief Create game in Javascript
+@brief Create games and apps with javascript
 
 @pre javascript/typescript is only supported with @b WebAssembly (wasmoon), it cannot be build with @c --fengari flag.
 
