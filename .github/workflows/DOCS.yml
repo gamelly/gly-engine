@@ -31,6 +31,10 @@ jobs:
         run: |
           docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua doxygen
       - 
+        if: false
+        run: |
+          docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua lua tools/doxygen_urlfix.lua
+      - 
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'workflow_dispatch'
         uses: cloudflare/pages-action@v1
         with:
