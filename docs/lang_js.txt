@@ -1,7 +1,7 @@
 @defgroup Languages
 @{
 
-@defgroup js Javascript
+@defgroup javascript Javascript
 @{
 
 @brief @brief Create game in Javascript

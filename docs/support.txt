@@ -26,7 +26,7 @@
 | :--------------- | :--------- | :--------- | :--------- | :--------- | :----------- |
 | CLI toolchain    | Yes        | No         | No         | No         | Yes          |
 | REPL script      | Lua        | No         | No         | No         | No           |
-| Code script      | Lua, Haxe or JS | Lua   | GMS        | C#         | C#, GDScript |
+| Code script      | Lua, and many others|Lua| GMS        | C#         | C#, GDScript |
 | Visual script    | No         | No         | Yes        | Yes        | No           |
 | Package manager  | Yes        | No         | Yes        | Yes        | No           |
 | IDE Programming  | Yes        | No         | Yes        | Yes        | Yes          |
@@ -39,8 +39,10 @@
 
 ### Development environment
 
-| Tier 1 | Linux, MacOS or BSD | main platform |
-| :----- | :------------------ | :------------ |
-| Tier 2 | NodeJS CLI          | full support WIP
+| Support| Target              | Current Status |
+| :----: | :------------------ | :------------- |
+| Tier 1 | Linux, MacOS or BSD | main platform
+| Tier 2 | NodeJS CLI          | support
 | Tier 3 | HTML5 IDE           | support
 | Tier 4 | Windows             | support
+| Tier 5 | HTML5 CLI           | comming soon

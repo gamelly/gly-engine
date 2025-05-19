@@ -1,12 +1,12 @@
 @defgroup homebrew
 @{
 
-@defgroup Sony
+@defgroup sony Sony
 @{
 
 @short consoles: ps1, ps2
 
-@page sony_ps1 PlayStation 1
+@page ps1 PlayStation 1
 
 You can make your Lua games for nintendo ds using the Gly engine,
 but as limitations of only fixed point and without cmath library,

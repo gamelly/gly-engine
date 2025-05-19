@@ -5,9 +5,9 @@
 @{
 
 @warning There is no support for 
-@ref sony_ps1 "ps1",
-@ref nintendo_gba "gba" 
-and @ref nintendo_ds "nds" to draw images,
+@ref ps1 "ps1",
+@ref gba "gba" 
+and @ref nds "nds" to draw images,
 as they use a specific bitmap and it is necessary to implement a
 [sprite conversion tool](https://github.com/RodrigoDornelles/ultimate-sprite-sheet-replacer/).
 

@@ -1,13 +1,15 @@
 function support()
     local file = io.open('README.md')
     local content = file:read('*a')
-    local begin_pos = content:find('#### CLI Platform Support')
-    local end_pos = content:find('\n%-%-%-\n')
-    content = content:sub(begin_pos, end_pos)
+    local title1 = '## Engine Platform Support'
+    local title2 = '### Execution Environments'
+    local begin_pos = content:find(title1)
+    local end_pos = #content --content:find('\n%-%-%-\n')
+    content = content:sub(begin_pos + #title1, end_pos)
     content = content:gsub(':ok:', 'yes')
     content = content:gsub(':x:', 'no')
     file:close()
-    return content
+    return title2..content
 end
 
 function commands()
