@@ -49,6 +49,7 @@ local function add_core(self, core_name, options)
         return self
     end
     options = options or {}
+    options.src = options.src and #options.src > 0 and options.src
 
     self.found = true
     self.selected = true
