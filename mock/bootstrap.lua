@@ -62,12 +62,13 @@ end
 
 io.open = function(filename, mode)
     local file = real_io_open(filename, mode)
-    filename = (filename or ''):gsub('^./', '')
-
+    
+    filename = filename or ''
     if javascript_fs then
         file = javascript_io_open(filename, mode)
     end
 
+    filename = filename:gsub('\\', '/'):gsub('^./', '')
     if not file and bootstrap_has_file(filename, mode) then
         file = bootstrap_io_open(filename, mode)
     end

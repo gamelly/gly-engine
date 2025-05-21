@@ -28,6 +28,7 @@ local function build(args)
         :add_core('game', {src=args.game, as='game.lua', prefix='game_', assets=true})
 
     local build_core = zeebo_buildsystem.from(args)
+        :add_rule('the middlware ginga html5 already has a streamming player', 'core=html5_ginga', 'videojs=true')
         :add_rule('please use flag -'..'-enterprise to use commercial modules', 'core=html5_ginga', 'enterprise=false')
         :add_rule('please use flag -'..'-enterprise to use commercial modules', 'core=ginga', 'enterprise=false')
         :add_rule('please use flag -'..'-gpl3 to use free software modules', 'gamepadzilla=true', 'gpl3=false')

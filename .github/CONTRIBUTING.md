@@ -195,7 +195,7 @@ local half = 0.5
 local half = 1/2
 ```
 
- - there is a [`ci_floatcheck.lua`](https://github.com/gamelly/gly-engine/blob/main/tools/ci_floatcheck.lua) script that checks for this and is in the pipeline.
+ - there is a [`ci_floatcheck.lua`](https://github.com/gly-engine/gly-engine/blob/main/tools/ci_floatcheck.lua) script that checks for this and is in the pipeline.
  - script doesn't know strings, so don't `'HTTP 1.1'` instead do `'HTTP 1'..'.1'`
 
 ## no `"--"`
@@ -214,4 +214,4 @@ local flag = '-'..'-hello'
 
 No non-ascii characters can be used in engine and cli examples or sourcecode, this hinders such broad compatibility, and may cause unicode breaks.
 
- - there is a [`ci_asciicheck.lua`](https://github.com/gamelly/gly-engine/blob/main/tools/ci_asciicheck.lua) script that checks for this and is in the pipeline.
+ - there is a [`ci_asciicheck.lua`](https://github.com/gly-engine/gly-engine/blob/main/tools/ci_asciicheck.lua) script that checks for this and is in the pipeline.

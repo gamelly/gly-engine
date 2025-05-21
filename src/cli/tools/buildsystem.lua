@@ -7,8 +7,26 @@ local zeebo_assets = require('src/lib/cli/assets')
 local zeebo_fs = require('src/lib/cli/fs')
 local util_decorator = require('src/lib/util/decorator')
 local util_fs = require('src/lib/util/fs')
+local obj_ncl = require('src/lib/object/ncl')
 local env_build = require('src/env/build')
 local lustache = require('third_party/lustache/olivinelabs')
+
+--! @todo move this function!
+local function parser_assets(font_list, register_key, register_value)
+    local index = 1
+    local res = {}
+    while index <= #font_list do
+        local key, value = font_list[index]:match("([^:]+):(.+)")
+        if key and value then
+            res[#res + 1] = {
+                [register_key] = key,
+                [register_value] = value
+            }
+        end
+        index = index + 1
+    end
+    return res
+end
 
 local function add_func(self, func, options)
     self.pipeline[#self.pipeline + 1] = function()
@@ -31,6 +49,7 @@ local function add_core(self, core_name, options)
         return self
     end
     options = options or {}
+    options.src = (options.src and #options.src > 0) and options.src or nil
 
     self.found = true
     self.selected = true
@@ -81,20 +100,22 @@ local function add_meta(self, file_in, options)
         local to = util_fs.path(self.args.dist, (options and options.as) or from.get_file())
         local input = io.open(from.get_fullfilepath(), 'r')
         local output = io.open(to.get_fullfilepath(), 'w')
-        local game = zeebo_module.loadgame(self.args.dist..'game.lua')
-        local content = input:read('*a')
-        if game then 
-            content = lustache:render(content, {
-                core={
-                    [self.args.core] = true
-                },
-                env={
-                    build=util_decorator.prefix1_t(self.args, env_build)
-                },
-                args=self.args,
-                meta=game.meta
-            })
-        end
+        local game_ok, game_app = pcall(zeebo_module.loadgame, self.args.dist..'game.lua')
+        local meta = (game_ok and game_app and game_app.meta) or {}
+        local content = lustache:render(input:read('*a'), {
+            core={
+                [self.args.core] = true
+            },
+            env={
+                build=util_decorator.prefix1_t(self.args, env_build)
+            },
+            assets = {
+                fonts = parser_assets(game_ok and game_app and game_app.fonts or {}, 'font', 'url')
+            },
+            ncl=obj_ncl,
+            args=self.args,
+            meta=meta
+        })
         output:write(content)
         output:close()
         input:close()

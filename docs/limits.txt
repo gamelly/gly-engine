@@ -31,7 +31,7 @@ does not support requests with SSL and also HTTP 2.0 or higher.
 
 ## Limits in Sony PlayStation 1
 
-@ref sony_ps1 It is a difficult hardware to work, **lua puc rio** cannot be used natively and a modified third-party version is used,
+@ref ps1 It is a difficult hardware to work, **lua puc rio** cannot be used natively and a modified third-party version is used,
 because it is an outdated version 5.2 _(fixedpoint only)_ there are slowness problems caused by the garbage collector and no support for `float`.
 
 @par Images
@@ -58,7 +58,7 @@ Currently not supported, but will be worked on in the future.
 
 ## Limits in Gameboy Advanced
 
-@ref nintendo_gba does not have an FPU so the lua number type is emulated via software by the compiler, 
+@ref gba does not have an FPU so the lua number type is emulated via software by the compiler, 
 it is also CPU is 16.78 MHz with 288 KB of RAM, so don't expect to make a big game, but it is a good hobby,
 if you make a well optimized code you can play at 30 or 60 FPS.
 

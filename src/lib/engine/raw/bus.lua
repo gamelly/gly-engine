@@ -220,6 +220,7 @@ end
 --! end)
 --! @endcode
 local function listen(key, handler_func)
+    if not key or not handler_func then return end
     if not buses.dict[key] then
         buses.list[#buses.list + 1] = key
         buses.dict[key] = {}

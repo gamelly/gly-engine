@@ -5,9 +5,9 @@
 @{
 
 @warning There is no support for 
-@ref sony_ps1 "ps1",
-@ref nintendo_gba "gba" 
-and @ref nintendo_ds "nds" to draw images,
+@ref ps1 "ps1",
+@ref gba "gba" 
+and @ref nds "nds" to draw images,
 as they use a specific bitmap and it is necessary to implement a
 [sprite conversion tool](https://github.com/RodrigoDornelles/ultimate-sprite-sheet-replacer/).
 
@@ -24,8 +24,8 @@ and older video games like @ref nintendo_gba "gba" and @ref nintendo_ds "nds" ar
 
 @par Tool IMG Gen
 @details It is possible to create logos or any images using the engine's real-time drawing API while writing the rendering code and clicking download.
-@li source: https://github.com/gamelly/tool-img-gen
-@li website: https://gamelly.github.io/tool-img-gen
+@li source: https://github.com/gly-engine/tool-img-gen
+@li website: https://gly-engine.github.io/tool-img-gen
 
 @call divcpp
 @short std.draw.clear

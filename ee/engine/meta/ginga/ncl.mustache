@@ -2,34 +2,86 @@
 <ncl>
   <head>
     <regionBase>
-      <region id="luaRegion" width="100%" height="100%" />
+      <region id="regionTv" left="0" top="0" width="1280" height="720" zIndex="2"/>
+      {{# args.dev }}
+      <region id="regionApplication" width="100%" height="100%" zIndex="1"/>
+      {{/ args.dev }}
+      {{^ args.dev }}
+      <region id="regionApplication" width="1280" height="720" zIndex="1"/>
+      {{/ args.dev }}
     </regionBase>
     <descriptorBase>
-      <descriptor id="luaDesc" region="luaRegion" focusIndex="application"/>
+      <descriptor id="descriptorTv" region="regionTv"/>
+      <descriptor id="descriptorApplication" region="regionApplication" focusIndex="application"/>
     </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginSet">
-        <connectorParam name="var" />
-        <simpleCondition role="onBegin" />
-        <simpleAction role="set" value="$var" />
+        <connectorParam name="var"/>
+        <simpleCondition role="onBegin"/>
+        <simpleAction role="set" value="$var"/>
+      </causalConnector>
+      <causalConnector id="onEndAttributionSet">
+        <connectorParam name="valueSet"/>
+        <simpleCondition role="onEndAttribution" max="unbounded" qualifier="or"/>
+        <compoundAction operator="seq">
+            <simpleAction role="pause"/>
+            <simpleAction role="set" max="unbounded" qualifier="seq" value="$valueSet"/>
+            <simpleAction role="resume"/>
+        </compoundAction>
       </causalConnector>
     </connectorBase>
   </head>
   <body>
-    <port id="init" component="application" />
-    <media id="application" descriptor="luaDesc" src="main.lua">
-      <property name="currentKeyMaster" />
+    <port id="portTv" component="tv"/>
+    <port id="portApplication" component="application"/>
+    <media id="tv" src="sbtvd-ts://video" descriptor="descriptorTv"> 
+        <property name="bounds"/>
+    </media>
+    <media id="application" descriptor="descriptorApplication" src="main.lua">
+      <property name="currentKeyMaster"/>
+      {{# ncl.screens }}
+      <property name="screen_{{ left }}_{{ top }}_{{ width }}_{{ height }}"/>
+      {{/ ncl.screens }}
+      {{# ncl.settings }}
+      <property name="{{ env }}"/>
+      {{/ ncl.settings }}
     </media>
     <media type="application/x-ginga-settings" id="settings">
-      <property name="service.currentKeyMaster" value="application" />
+      <property name="service.currentKeyMaster" value="application"/>
+      {{# ncl.settings }}
+      {{# ginga }}
+      <property name="{{ . }}"/>
+      {{/ ginga }}
+      {{/ ncl.settings }}
     </media>
-    <!-- focus begin -->
+    {{! focus begin }}
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="application" />
+      <bind role="onBegin" component="application"/>
       <bind role="set" component="settings" interface="service.currentKeyMaster">
-        <bindParam name="var" value="application" />
+        <bindParam name="var" value="application"/>
       </bind>
     </link>
-    <!-- focus end -->
+    {{! focus end }}
+    {{# ncl.screens }}
+    <link xconnector="onEndAttributionSet">      
+      <bind component="application" interface="screen_{{ left }}_{{ top }}_{{ width }}_{{ height }}" role="onEndAttribution"/>
+      <bind role="pause" component="tv"/>
+      <bind component="tv" role="set" interface="bounds">
+        <bindParam name="valueSet" value="{{ left }}, {{ top }}, {{ width }}, {{ height }}"/> 
+      </bind>
+      <bind role="resume" component="tv"/>
+    </link>
+    {{/ ncl.screens }}
+    {{# ncl.settings }}
+    {{# ginga }}
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="application"/>
+      <bind role="set" component="application" interface="{{ env }}">
+        <bindParam name="var" value="$get"/>
+      </bind>
+      <bind role="get" component="settings" interface="{{ . }}"/>
+    </link>
+    {{/ ginga }}
+    {{/ ncl.settings }}
   </body>
 </ncl>

@@ -1,13 +1,15 @@
 function support()
     local file = io.open('README.md')
     local content = file:read('*a')
-    local begin_pos = content:find('#### CLI Platform Support')
-    local end_pos = content:find('\n%-%-%-\n')
-    content = content:sub(begin_pos, end_pos)
+    local title1 = '## Engine Platform Support'
+    local title2 = '### Execution Environments'
+    local begin_pos = content:find(title1)
+    local end_pos = #content --content:find('\n%-%-%-\n')
+    content = content:sub(begin_pos + #title1, end_pos)
     content = content:gsub(':ok:', 'yes')
     content = content:gsub(':x:', 'no')
     file:close()
-    return content
+    return title2..content
 end
 
 function commands()
@@ -32,6 +34,24 @@ end
 
 function hardcore()
     
+end
+
+function gingaenvs()
+    local content, index1, index2 = '', 1, 1
+    local obj_ncl = require('src/lib/object/ncl')
+
+    while index1 <= #obj_ncl.settings do
+        content = content..'| '..obj_ncl.settings[index1].env..' |'
+        while index2 <= #obj_ncl.settings[index1].ginga do
+            content = content..' @c '..obj_ncl.settings[index1].ginga[index2]
+            index2 = index2 + 1
+        end
+        content = content..'\n'
+        index1 = index1 + 1
+        index2 = 1
+    end
+
+    return content
 end
 
 function listlibmath()

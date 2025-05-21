@@ -1,9 +1,18 @@
 local util_fs = require('src/lib/util/fs')
 
 local function optmizer(content, srcname, args)
-    if args.telemedia190 and srcname == 'eeenginecoregingakeyslua' then
+    if args.dev and srcname == 'eeenginecoregingakeyslua' then
         content = content:gsub('evt%.type == \'press\'', 'evt.type ~= \'press\'')
     end
+    if args.dev and srcname == 'eeenginecoregingamainlua' then
+        content = content:gsub('pcall%(draw%)', 'draw()')
+        content = content:gsub('pcall%(loop%)', 'loop()')
+        content = content:gsub('event%.register%(%s*function%b()%s*.-end%s*%)', 'event.register(std.bus.trigger(\'ginga\'))')
+    end
+    if args.bundler and srcname == 'eeenginecoregingamainlua' then
+        content = content:gsub('_ENV=nil', '')
+    end
+
     return content:split('\n')
 end
 

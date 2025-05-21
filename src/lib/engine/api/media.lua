@@ -72,6 +72,8 @@ local function media_create(node, channels, handler)
         stop = decorator(handler.stop),
         position = decorator(handler.position),
         resize = decorator(handler.resize),
+        in_mutex = handler.mutex or function() return false end,
+        get_error = handler.error or function() return nil end,
         -- internal
         node = node,
         apply = function() end
@@ -85,6 +87,9 @@ end
 local function install(std, engine, handler, name)
     std.media = std.media or {}
     local mediatype = name:match('%w+%.(%w+)')
+    if handler.install then
+        handler.install(std, engine, mediatype, name)
+    end
     if not std.media[mediatype] then
         local channels = handler.bootstrap and handler.bootstrap(mediatype)
         if (not channels or channels == 0) and handler.bootstrap then

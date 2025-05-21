@@ -79,13 +79,13 @@ application_internal = {}
 --! @cond
 local function http_connect(self)
     local params = http_util.url_search_param(self.param_list, self.param_dict)
-    local request, cleanup = http_util.create_request(self.method, self.p_uri..params)
+    local request = http_util.create_request(self.method, self.p_uri..params)
         .add_imutable_header('Host', self.p_host)
         .add_imutable_header('Cache-Control', 'max-age=0')
         .add_mutable_header('Accept', '*/*')
         .add_mutable_header('Accept-Charset', 'utf-8', lua_util.has_support_utf8())
         .add_mutable_header('Accept-Charset', 'windows-1252, cp1252')
-        .add_mutable_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 4.0; Windows 95; Win 9x 4.90)')
+        .add_mutable_header('User-Agent', http_util.get_user_agent())
         .add_custom_headers(self.header_list, self.header_dict)
         .add_imutable_header('Content-Length', tostring(#self.body_content), #self.body_content > 0)
         .add_imutable_header('Connection', 'close')
@@ -98,8 +98,6 @@ local function http_connect(self)
         connection = self.evt.connection,
         value      = request,
     })
-
-    cleanup()
 end
 --! @endcond
 
@@ -111,12 +109,13 @@ local function http_connect_dns(self)
         application_internal.http.context.dns(self)
         application_internal.http.dns_state = 3
     end
-    -- LG 2024 not working 
-    --[[event.post({
-        class      = 'tcp',
-        type       = 'disconnect',
-        connection =  self.evt.connection,
-    })]]--
+    if tostring(self.evt.connection) ~= '0' then
+        event.post({
+            class      = 'tcp',
+            type       = 'disconnect',
+            connection =  self.evt.connection,
+        })
+    end
 end
 --! @endcond
 
@@ -145,11 +144,13 @@ local function http_redirect(self)
     else
         local index = #application_internal.http.queue + 1
 
-        event.post({
-            class      = 'tcp',
-            type       = 'disconnect',
-            connection =  self.evt.connection,
-        })
+        if tostring(self.evt.connection) ~= '0' then
+            event.post({
+                class      = 'tcp',
+                type       = 'disconnect',
+                connection =  self.evt.connection,
+            })
+        end
 
         application_internal.http.context.remove(self.evt)
         application_internal.http.callbacks.http_clear(self)
@@ -462,6 +463,7 @@ end
 
 local P = {
     force = 'http',
+    util = http_util,
     handler = http_handler,
     install = install
 }

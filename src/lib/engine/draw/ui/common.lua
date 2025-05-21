@@ -3,6 +3,18 @@
 --! @defgroup ui
 --! @{
 
+--! @hideparam self
+local function gap(self, space_between_items)
+    self.px_gap = space_between_items
+    return self
+end
+
+--! @hideparam self
+local function margin(self, space_container)
+    self.px_margin = space_container
+    return self
+end
+
 --! @hideparam std
 --! @hideparam engine
 --! @hideparam self
@@ -58,6 +70,8 @@ end
 
 local P = {
     add=add,
+    gap=gap,
+    margin=margin,
     style=style,
     get_item=get_item,
     add_items=add_items,

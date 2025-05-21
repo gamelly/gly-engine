@@ -12,6 +12,7 @@ local engine_log = require('src/lib/engine/api/log')
 local engine_key = require('src/lib/engine/api/key')
 local engine_math = require('src/lib/engine/api/math')
 local engine_array = require('src/lib/engine/api/array')
+local engine_storage = require('src/lib/engine/api/storage')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
 local engine_draw_text = require('src/lib/engine/draw/text')
@@ -99,6 +100,12 @@ local cfg_xml = {
 
 local cfg_text = {
     font_previous = native_text_font_previous
+}
+
+local cfg_storage = {
+    install = native_storage_install and function() native_storage_install() end,
+    get = native_storage_get,
+    set = native_storage_set
 }
 
 local function clear(tint)
@@ -191,6 +198,7 @@ function native_callback_init(width, height, game_lua)
         :package('media.music', engine_media, cfg_media)
         :package('mock.video', engine_media)
         :package('mock.music', engine_media)
+        :package('storage', engine_storage, cfg_storage)
         :package('hash', engine_hash, cfg_system)
         :run()
 

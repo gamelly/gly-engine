@@ -77,10 +77,10 @@ local function text_put(std, engine, font_previous, pos_x, pos_y, text, size)
 end
 
 --! @cond
-local function text_print_ex(std, engine, x, y, text, align)
+local function text_print_ex(std, engine, x, y, text, align_x, align_y)
     local w, h = std.text.mensure(text)
-    local aligns = {w, w/2, 0}
-    std.text.print(x - aligns[(align or 1) + 2], y, text)
+    local aligns_x, aligns_y = {w, w/2, 0}, {h, h/2, 0}
+    std.text.print(x - aligns_x[(align_x or 1) + 2], y - aligns_y[(align_y or 1) + 2], text)
     return w, h
 end
 --! @endcond

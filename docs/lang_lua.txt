@@ -4,7 +4,7 @@
 @defgroup lua Lua
 @{
 
-@brief @brief Create game in Lua
+@brief Create games and apps with Lua
 
 @li **Official site** https://www.lua.org
 @li **Online Lua REPL** https://lua.ceifa.dev

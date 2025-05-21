@@ -1,16 +1,16 @@
 @defgroup Languages
 @{
 
-@defgroup js Javascript
+@defgroup javascript Javascript
 @{
 
-@brief @brief Create game in Javascript
+@brief Create games and apps with javascript
 
 @pre javascript/typescript is only supported with @b WebAssembly (wasmoon), it cannot be build with @c --fengari flag.
 
 @todo explain better about JS
 
-@li **Pong Example** https://github.com/gamelly/game-pong-javascript
+@li **Pong Example** https://github.com/gly-engine/game-pong-javascript
 
 @par Template
 ```java

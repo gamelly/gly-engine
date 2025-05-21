@@ -31,6 +31,9 @@ jobs:
         run: |
           docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua doxygen
       - 
+        run: |
+          docker run --rm -v $(pwd):/app -w /app rodrigodornelles/doxygen:lua lua tools/doxygen_urlfix.lua
+      - 
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'workflow_dispatch'
         uses: cloudflare/pages-action@v1
         with:
@@ -47,7 +50,7 @@ jobs:
       matrix:
         game: [
           'asteroids', 'dvdplayer', 'launcher', '2games', 'helloworld', 'gridsystem', 'pong',
-          'capybird', 'maze3d', 'videostream', 'fakestream'
+          'capybird', 'maze3d', 'videostream', 'fakestream', 'rickstream'
         ]
     steps:
       - 

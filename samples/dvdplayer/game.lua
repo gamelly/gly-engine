@@ -7,12 +7,12 @@ local function init(std, game)
 end
 
 local function loop(std, game)
-    game.x = std.math.clamp(game.x + (game.hspeed * std.delta), 0, game.width - game.size)
-    game.y = std.math.clamp(game.y + (game.vspeed * std.delta), 0, game.height - game.size)
-    if game.x == 0 or game.x == game.width - game.size then
+    game.x = game.x + (game.hspeed * std.delta)
+    game.y = game.y + (game.vspeed * std.delta)
+    if game.x <= 1 or game.x >= game.width - game.size then
         game.hspeed = -1 * game.hspeed
     end
-    if game.y == 0 or game.y == game.height - game.size then
+    if game.y <= 1 or game.y >= game.height - game.size then
         game.vspeed = -1 * game.vspeed
     end
 end

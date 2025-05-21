@@ -9,10 +9,6 @@
 
 @short build web pages, pwa's and tv apps
 
-@li html5
-@li html5_tizen 
-@li html5_webos
-
 @page cli_build_html5_global create HTML5 project using gly-deps.json
 
 @par Install CLI

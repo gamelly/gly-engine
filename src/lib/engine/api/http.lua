@@ -16,8 +16,13 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! @page http_post POST
 --! 
 --! @code{.java}
---! std.http.post('https://example.com.br')
---!     :body('{"foo": "bar"}')
+--! std.http.post('https://example.com.br'):json()
+--!     :header('Authorization', 'Basic dXN1YXJpb3NlY3JldG86c2VuaGFzZWNyZXRh')
+--!     :param('telefone', '188')
+--!     :body({
+--!         user = 'Joao',
+--!         message = 'Te ligam!'
+--!     })
 --!     :run()
 --! @endcode
 --!
@@ -61,6 +66,23 @@ local zeebo_pipeline = require('src/lib/util/pipeline')
 --! end
 --! @endcode
 
+--! @short json response
+--! @hideparam self
+--! @brief decode body to table on response
+local function json(self)
+    self.options['json'] = true
+    return self
+end
+
+--! @short not force protocol
+--! @hideparam self
+--! @brief By default, requests follow the protocol (HTTP or HTTPS) based on their origin (e.g., HTML5).
+--! This setting allows opting out of that behavior and disabling automatic protocol enforcement.
+local function noforce(self)
+    self.options['noforce'] = true
+    return self
+end
+
 --! @short reduced response
 --! @hideparam self
 --! @brief disconnect when receiving status
@@ -70,24 +92,45 @@ local function fast(self)
 end
 
 --! @hideparam self
-local function body(self, content)
-    self.body_content=content
-    return self
-end
-
---! @hideparam self
 local function param(self, name, value)
     local index = #self.param_list + 1
-    self.param_list[index] = name
-    self.param_dict[name] = value
+    self.param_list[index] = tostring(name)
+    self.param_dict[name] = tostring(value)
     return self
 end
 
 --! @hideparam self
+--! @par Eaxmaple
+--! @code{.java}
+--! std.http.post('http://example.com/secret-ednpoint')
+--!     :header('Authorization', 'Bearer c3VwZXIgc2VjcmV0IHRva2Vu')
+--!     :run()
+--! @endcode
 local function header(self, name, value)
     local index = #self.header_list + 1
-    self.header_list[index] = name
-    self.header_dict[name] = value
+    self.header_list[index] = tostring(name)
+    self.header_dict[name] = tostring(value)
+    return self
+end
+
+--! @hideparam self
+--! @hideparam json_encode
+--! @pre you can directly place a @b table in your body which will automatically be encoded and passed the header `Content-Type: application/json`,
+--! but for this you previously need to require @c json
+--! 
+--! @par Examples
+--! @code{.java}
+--! std.http.post('http://example.com/plain-text'):body('foo is bar'):run()
+--! @endcode
+--! @code{.java}
+--! std.http.post('http://example.com/json-object'):body({foo = bar}):run()
+--! @endcode
+local function body(self, content, json_encode)
+    if type(content) == 'table' then
+        header(self, 'Content-Type', 'application/json')
+        content = json_encode(content)
+    end
+    self.body_content=content
     return self
 end
 
@@ -128,10 +171,9 @@ local function request(method, std, engine, protocol)
             engine.http_count = engine.http_count + 1
         end
 
-        if protocol.force then
-            url = url:gsub("^[^:]+://", protocol.force.."://")
-        end
-
+        local json_encode = std.json and std.json.encode
+        local json_decode = std.json and std.json.decode
+        local http_body = function(self, content) return body(self, content, json_encode) end
         local game = engine.current.data
 
         local self = {
@@ -139,6 +181,7 @@ local function request(method, std, engine, protocol)
             id = engine.http_count,
             url = url,
             speed = '',
+            options = {},
             method = method,
             body_content = '',
             header_list = {},
@@ -150,7 +193,9 @@ local function request(method, std, engine, protocol)
             error_handler = function (std, game) end,
             -- functions
             fast = fast,
-            body = body,
+            json = json,
+            noforce = noforce,
+            body = http_body,
             param = param,
             header = header,
             success = success,
@@ -172,10 +217,24 @@ local function request(method, std, engine, protocol)
         end
 
         self.pipeline = {
+            -- prepare
+            function()
+                if not protocol.force or self.options['noforce'] then return end
+                self.url = url:gsub("^[^:]+://", protocol.force.."://")
+            end,
             -- eval
             function()
                 if protocol.has_callback then engine.http_requests[self.id] = self end
                 protocol.handler(self, self.id)
+            end,
+            -- parse json
+            function()
+                if self.options['json'] and json_decode and std.http.body then
+                    pcall(function()
+                        local new_body = json_decode(std.http.body)
+                        std.http.body = new_body
+                    end)
+                end
             end,
             -- callbacks
             function()
@@ -199,6 +258,7 @@ local function request(method, std, engine, protocol)
                 std.http.body = nil
                 std.http.error = nil
                 std.http.status = nil
+                std.http.body_is_table = nil
             end,
             -- reset request
             function()

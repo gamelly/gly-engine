@@ -14,6 +14,8 @@ local engine_log = require('src/lib/engine/api/log')
 local engine_math = require('src/lib/engine/api/math')
 local engine_media = require('src/lib/engine/api/media')
 local engine_array = require('src/lib/engine/api/array')
+local engine_getenv = require('src/lib/engine/api/getenv')
+local engine_storage = require('src/lib/engine/api/storage')
 local engine_draw_ui = require('src/lib/engine/draw/ui')
 local engine_draw_fps = require('src/lib/engine/draw/fps')
 local engine_draw_text = require('src/lib/engine/draw/text')
@@ -25,8 +27,10 @@ local engine_memory = require('src/lib/engine/raw/memory')
 --
 local cfg_json_rxi = require('third_party/json/rxi')
 local cfg_logsystem = require('src/lib/protocol/logsystem_print')
-local cfg_http_ginga = require('ee/lib/protocol/http_ginga')
---local cfg_http_ginga2 = require('ee/lib/protocol/http_ginga2')
+local cfg_http_ginga = require('ee/lib/protocol/http_fsb09')
+local cfg_persistent = require('ee/lib/protocol/storage_fsd09')
+local cfg_mediaplayer = require('ee/lib/protocol/media_fsd09')
+--local cfg_http_ginga2 = require('ee/lib/protocol/http_fsc09')
 --
 local application_default = require('src/lib/object/root')
 local color = require('src/lib/object/color')
@@ -80,7 +84,7 @@ local cfg_text = {
 }
 
 local function register_event_loop()
-    event.register(std.bus.trigger('ginga'))
+    event.register(function(evt) pcall(std.bus.emit, 'ginga', evt) end)
 end
 
 local function register_fixed_loop()
@@ -88,10 +92,10 @@ local function register_fixed_loop()
     local loop = std.bus.trigger('loop')
     local draw = std.bus.trigger('draw')    
     tick = function()
-        loop()
+        pcall(loop)
         canvas:attrColor(0, 0, 0, 0)
         canvas:clear()
-        draw()
+        pcall(draw)
         canvas:flush()
         event.timer(engine.delay, tick)
     end
@@ -99,9 +103,10 @@ local function register_fixed_loop()
     event.timer(engine.delay, tick)
 end
 
-local function install(evt, gamefile)
-    if evt.class ~= 'ncl' or evt.action ~= 'start' then return end
+local function main(evt, gamefile)
+    if evt.class and evt.class ~= 'ncl' or evt.action ~= 'start' and evt.type ~= 'presentation' then return end
 
+    engine.envs = evt
     application = zeebo_module.loadgame(gamefile)
 
     zeebo_module.require(std, application, engine)
@@ -122,15 +127,17 @@ local function install(evt, gamefile)
         :package('@draw.poly', engine_draw_poly, cfg_poly)
         :package('@color', color)
         :package('@log', engine_log, cfg_logsystem)
+        :package('@getenv', engine_getenv, engine)
         :package('math', engine_math.clib)
         :package('math.wave', engine_math.wave)
         :package('math.random', engine_math.clib_random)
         :package('hash', engine_hash, {'ginga'})
-        :package('mock.video', engine_media, {})
-        :package('mock.audio', engine_media, {})
+        :package('media.video', engine_media, cfg_mediaplayer)
+        --:package('media.audio', engine_media, {})
         :package('json', engine_encoder, cfg_json_rxi)
         --:package('http', engine_http, cfg_http_ginga2)
         :package('http', engine_http, cfg_http_ginga)
+        :package('storage', engine_storage, cfg_persistent)
         :package('i18n', engine_i18n, cfg_system)
         :run()
 
@@ -148,8 +155,18 @@ local function install(evt, gamefile)
     std.bus.emit_next('load')
     std.bus.emit_next('init')
 
-    event.unregister(install)
+    if evt.class then
+        event.unregister(main)
+    end
 end
 
-event.register(install)
-return install
+--! @defgroup ginga
+--! @{ @note for enterprise features contact bizdev@zedia.com.br @}
+local ok, crt0 = pcall(require, 'crt0') 
+if ok then
+    crt0(main, cfg_json_rxi, cfg_http_ginga.http_util)
+else
+    event.register(main)
+end
+
+return main
