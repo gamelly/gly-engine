@@ -59,6 +59,10 @@ local engine = {
     fps = 0
 }
 
+--! @short clear ENV
+--! @brief GINGA?
+_ENV = nil
+
 local cfg_system = {
     get_language = function() return 'pt-BR' end
 }

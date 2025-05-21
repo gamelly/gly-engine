@@ -54,7 +54,7 @@ However, this issue only occurs in the `ginga` (CLI) command and not in `gingagu
 (confirmed)
 
 @n @b solution: 
-For testing purposes with the engine (CLI), there is the `--telemedia190` building flag,
+For testing purposes with the engine (CLI), there is the `--dev` building flag,
 which compiles the engine with the swapped events. This can be useful when combined with the `--run` flag to immediately test after the build.
 
 @page bug_ginga_gc_clean Lua GC clear in Sony/TOTVS
